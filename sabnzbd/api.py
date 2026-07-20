@@ -30,7 +30,7 @@ import time
 import getpass
 import urllib.parse
 from threading import Thread
-from typing import Any, Callable, Optional, TypeAlias
+from typing import Any, Callable, NamedTuple, Optional, TypeAlias, Awaitable, TypeGuard
 
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import QueryParams
@@ -109,8 +109,23 @@ import sabnzbd.emailer
 import sabnzbd.sorting
 
 # Type handler shorthands
-ApiParams: TypeAlias = dict[str, str | list[str]]
-ApiHandler: TypeAlias = Callable[[str, ApiParams], bytes]
+SyncHandler: TypeAlias = Callable[[str, QueryParams], Response]
+AsyncHandler: TypeAlias = Callable[[str, QueryParams], Awaitable[Response]]
+ApiHandler: TypeAlias = SyncHandler | AsyncHandler
+
+
+class ApiEntry(NamedTuple):
+    """A single api-call. Handlers take the first parameter the call did not
+    consume for routing, plus the full set of request parameters."""
+
+    handler: ApiHandler
+    access_level: int
+    config_locked: bool = False
+
+
+# The api is addressed as mode(+name), so calls are keyed on both. An empty name is
+# the entry for the mode itself, and doubles as the fallback for an unknown name.
+ApiHandlerTable: TypeAlias = dict[tuple[str, str], ApiEntry]
 
 ##############################################################################
 # API error messages
@@ -127,15 +142,35 @@ _MSG_NO_SUCH_CONFIG = "Config item does not exist"
 _MSG_CONFIG_LOCKED = "Configuration locked"
 
 
+def is_async_handler(fn: ApiHandler) -> TypeGuard[AsyncHandler]:
+    return inspect.iscoroutinefunction(fn)
+
+
+def _api_lookup(mode: str, name: str, value: str = "") -> tuple[ApiEntry, str]:
+    """Resolve a call to its entry, plus the first parameter routing did not consume.
+    A call routed on mode and name passes "value" to its handler, one routed on mode
+    alone still has "name" free to use as a parameter. An unknown name falls back to
+    the entry for the mode itself, so it lands on the same handler and access level as
+    an omitted one. Used by both the dispatcher and api_level(), so the two can never
+    disagree about which entry, and therefore which access level, a call resolves to."""
+    if name and (entry := _api_table.get((mode, name))):
+        return entry, value
+    return _api_table.get((mode, ""), _API_UNDEFINED), name
+
+
 async def api_handler(kwargs: QueryParams) -> Response:
     """API Dispatcher. Coroutine handlers (e.g. shutdown) are awaited on the
     event loop; plain sync handlers are executed in the threadpool so blocking
     work (disk, database, network tests, benchmarks) cannot stall the loop.
     This also allows incremental conversion of handlers to native async."""
-    handler = _api_table.get(kwargs.get("mode", ""), (_api_undefined, 2))[0]
-    if inspect.iscoroutinefunction(handler):
-        return await handler(kwargs.get("name", ""), kwargs)
-    return await run_in_threadpool(handler, kwargs.get("name", ""), kwargs)
+    entry, argument = _api_lookup(kwargs.get("mode", ""), kwargs.get("name", ""), kwargs.get("value", ""))
+
+    if entry.config_locked and cfg.configlock():
+        return report(kwargs, _MSG_CONFIG_LOCKED)
+
+    if is_async_handler(entry.handler):
+        return await entry.handler(argument, kwargs)
+    return await run_in_threadpool(entry.handler, argument, kwargs)
 
 
 async def halt_and_shutdown():
@@ -157,8 +192,6 @@ def _api_get_config(name: str, kwargs: QueryParams) -> Response:
 
 def _api_set_config(name: str, kwargs: QueryParams) -> Response:
     """API: accepts keyword, section"""
-    if cfg.configlock():
-        return report(kwargs, _MSG_CONFIG_LOCKED)
     keyword = kwargs.get("keyword")
     if kwargs.get("section") == "servers":
         keyword = handle_server_api(kwargs)
@@ -179,8 +212,6 @@ def _api_set_config(name: str, kwargs: QueryParams) -> Response:
 
 def _api_set_config_default(name: str, kwargs: QueryParams) -> Response:
     """API: Reset requested config variables back to defaults. Currently only for misc-section"""
-    if cfg.configlock():
-        return report(kwargs, _MSG_CONFIG_LOCKED)
     for keyword in kwargs.getlist("keyword"):
         item = config.get_config("misc", keyword)
         if item:
@@ -191,20 +222,12 @@ def _api_set_config_default(name: str, kwargs: QueryParams) -> Response:
 
 def _api_del_config(name: str, kwargs: QueryParams) -> Response:
     """API: accepts keyword, section"""
-    if cfg.configlock():
-        return report(kwargs, _MSG_CONFIG_LOCKED)
     if del_from_section(kwargs):
         return report(
             kwargs,
         )
     else:
         return report(kwargs, _MSG_NOT_IMPLEMENTED)
-
-
-def _api_queue(name: str, kwargs: QueryParams) -> Response:
-    """API: Dispatcher for mode=queue"""
-    value = kwargs.get("value", "")
-    return _api_queue_table.get(name, (_api_queue_default, 2))[0](value, kwargs)
 
 
 def _api_queue_delete(value: str, kwargs: QueryParams) -> Response:
@@ -462,12 +485,6 @@ def _api_fullstatus(name: str, kwargs: QueryParams) -> Response:
     return report(kwargs, keyword="status", data=status)
 
 
-def _api_status(name: str, kwargs: QueryParams) -> Response:
-    """API: Dispatcher for mode=status, passing on the value"""
-    value = kwargs.get("value", "")
-    return _api_status_table.get(name, (_api_fullstatus, 2))[0](value, kwargs)
-
-
 def _api_unblock_server(value: str, kwargs: QueryParams) -> Response:
     """Unblock a blocked server"""
     sabnzbd.Downloader.unblock(value)
@@ -514,12 +531,6 @@ def _api_add_all_orphan(value: str, kwargs: QueryParams) -> Response:
     for path in paths:
         _api_add_orphan(path, kwargs)
     return report(kwargs)
-
-
-def _api_history(name: str, kwargs: QueryParams) -> Response:
-    """API: accepts value(=nzo_id), start, limit, search, nzo_ids"""
-    value = kwargs.get("value", "")
-    return _api_history_table.get(name, (_api_history_default, 2))[0](value, kwargs)
 
 
 def _api_history_delete(value: str, kwargs: QueryParams) -> Response:
@@ -999,42 +1010,31 @@ def _api_browse(name: str, kwargs: QueryParams) -> Response:
     return report(kwargs, keyword="paths", data=paths)
 
 
-def _api_config(name: str, kwargs: QueryParams) -> Response:
-    """API: Dispatcher for "config" """
-    if cfg.configlock():
-        return report(kwargs, _MSG_CONFIG_LOCKED)
-    return _api_config_table.get(name, (_api_config_undefined, 2))[0](kwargs)
-
-
-def _api_config_speedlimit(kwargs: QueryParams) -> Response:
+def _api_config_speedlimit(value: str, kwargs: QueryParams) -> Response:
     """API: accepts value(=speed)"""
-    value = kwargs.get("value")
-    if not value:
-        value = "0"
-    sabnzbd.Downloader.limit_speed(value)
+    sabnzbd.Downloader.limit_speed(value or "0")
     return report(kwargs)
 
 
-def _api_config_set_pause(kwargs: QueryParams) -> Response:
+def _api_config_set_pause(value: str, kwargs: QueryParams) -> Response:
     """API: accepts value(=pause interval)"""
-    value = kwargs.get("value")
     sabnzbd.Scheduler.plan_resume(int_conv(value))
     return report(kwargs)
 
 
-def _api_config_set_apikey(kwargs: QueryParams) -> Response:
+def _api_config_set_apikey(value: str, kwargs: QueryParams) -> Response:
     cfg.api_key.set(config.create_api_key())
     config.save_config()
     return report(kwargs, keyword="apikey", data=cfg.api_key())
 
 
-def _api_config_set_nzbkey(kwargs: QueryParams) -> Response:
+def _api_config_set_nzbkey(value: str, kwargs: QueryParams) -> Response:
     cfg.nzb_key.set(config.create_api_key())
     config.save_config()
     return report(kwargs, keyword="nzbkey", data=cfg.nzb_key())
 
 
-def _api_config_regenerate_certs(kwargs: QueryParams) -> Response:
+def _api_config_regenerate_certs(value: str, kwargs: QueryParams) -> Response:
     # Make sure we only over-write default locations
     result = False
     if (
@@ -1048,23 +1048,23 @@ def _api_config_regenerate_certs(kwargs: QueryParams) -> Response:
     return report(kwargs, data=result)
 
 
-def _api_config_test_server(kwargs: QueryParams) -> Response:
+def _api_config_test_server(value: str, kwargs: QueryParams) -> Response:
     """API: accepts server-params"""
     result, msg = test_nntp_server_dict(kwargs)
     return report(kwargs, data={"result": result, "message": msg})
 
 
-def _api_config_create_backup(kwargs: QueryParams) -> Response:
+def _api_config_create_backup(value: str, kwargs: QueryParams) -> Response:
     backup_file = config.create_config_backup()
     return report(kwargs, data={"result": bool(backup_file), "message": backup_file})
 
 
-def _api_config_purge_log_files(kwargs: QueryParams) -> Response:
+def _api_config_purge_log_files(value: str, kwargs: QueryParams) -> Response:
     purge_log_files()
     return report(kwargs)
 
 
-def _api_config_undefined(kwargs: QueryParams) -> Response:
+def _api_config_undefined(value: str, kwargs: QueryParams) -> Response:
     return report(kwargs, _MSG_NOT_IMPLEMENTED)
 
 
@@ -1096,113 +1096,99 @@ def _api_gc_stats(name: str, kwargs: QueryParams) -> Response:
 
 
 ##############################################################################
-_api_table = {
-    "server_stats": (_api_server_stats, 2),
-    "get_config": (_api_get_config, 3),
-    "set_config": (_api_set_config, 3),
-    "set_config_default": (_api_set_config_default, 3),
-    "del_config": (_api_del_config, 3),
-    "queue": (_api_queue, 2),
-    "translate": (_api_translate, 2),
-    "addfile": (_api_addfile, 1),
-    "retry": (_api_retry, 2),
-    "cancel_pp": (_api_cancel_pp, 2),
-    "addlocalfile": (_api_addlocalfile, 1),
-    "switch": (_api_switch, 2),
-    "change_cat": (_api_change_cat, 2),
-    "change_script": (_api_change_script, 2),
-    "change_opts": (_api_change_opts, 2),
-    "fullstatus": (_api_fullstatus, 2),
-    "status": (_api_status, 2),
-    "history": (_api_history, 2),
-    "get_files": (_api_get_files, 2),
-    "move_nzf_bulk": (_api_move_nzf_bulk, 2),
-    "addurl": (_api_addurl, 1),
-    "pause": (_api_pause, 2),
-    "resume": (_api_resume, 2),
-    "shutdown": (_api_shutdown, 3),
-    "warnings": (_api_warnings, 2),
-    "showlog": (_api_showlog, 3),
-    "config": (_api_config, 2),
-    "get_cats": (_api_get_cats, 2),
-    "get_scripts": (_api_get_scripts, 2),
-    "version": (_api_version, 1),
-    "auth": (_api_auth, 1),
-    "restart": (_api_restart, 3),
-    "restart_repair": (_api_restart_repair, 3),
-    "disconnect": (_api_disconnect, 2),
-    "gc_stats": (_api_gc_stats, 3),
-    "eval_sort": (_api_eval_sort, 3),
-    "watched_now": (_api_watched_now, 2),
-    "resume_pp": (_api_resume_pp, 2),
-    "pause_pp": (_api_pause_pp, 2),
-    "rss_now": (_api_rss_now, 2),
-    "browse": (_api_browse, 3),
-    "retry_all": (_api_retry_all, 2),
-    "reset_quota": (_api_reset_quota, 3),
-    "test_email": (_api_test_email, 3),
-    "test_windows": (_api_test_windows, 3),
-    "test_notif": (_api_test_notif, 3),
-    "test_osd": (_api_test_osd, 3),
-    "test_pushover": (_api_test_pushover, 3),
-    "test_pushbullet": (_api_test_pushbullet, 3),
-    "test_apprise": (_api_test_apprise, 3),
-    "test_prowl": (_api_test_prowl, 3),
-    "test_nscript": (_api_test_nscript, 3),
-}
+# Fallback for an unrecognised mode. The level matches the most restrictive access,
+# so an unknown call can never be dispatched on looser terms than a known one.
+_API_UNDEFINED = ApiEntry(_api_undefined, 4)
 
-_api_queue_table = {
-    "delete": (_api_queue_delete, 2),
-    "delete_nzf": (_api_queue_delete_nzf, 2),
-    "rename": (_api_queue_rename, 2),
-    "change_complete_action": (_api_queue_change_complete_action, 2),
-    "purge": (_api_queue_purge, 2),
-    "pause": (_api_queue_pause, 2),
-    "resume": (_api_queue_resume, 2),
-    "priority": (_api_queue_priority, 2),
-    "sort": (_api_queue_sort, 2),
-}
-
-_api_history_table = {
-    "delete": (_api_history_delete, 2),
-    "mark_as_completed": (_api_history_mark_as_completed, 2),
-}
-
-
-_api_status_table = {
-    "unblock_server": (_api_unblock_server, 2),
-    "delete_orphan": (_api_delete_orphan, 2),
-    "delete_all_orphan": (_api_delete_all_orphan, 2),
-    "add_orphan": (_api_add_orphan, 2),
-    "add_all_orphan": (_api_add_all_orphan, 2),
-}
-
-_api_config_table = {
-    "speedlimit": (_api_config_speedlimit, 2),
-    "set_pause": (_api_config_set_pause, 2),
-    "set_apikey": (_api_config_set_apikey, 3),
-    "set_nzbkey": (_api_config_set_nzbkey, 3),
-    "regenerate_certs": (_api_config_regenerate_certs, 3),
-    "test_server": (_api_config_test_server, 3),
-    "create_backup": (_api_config_create_backup, 3),
-    "purge_log_files": (_api_config_purge_log_files, 3),
+# Every api-call, keyed on (mode, name). Calls that route on mode alone use an empty
+# name, which also catches an unrecognised name for that mode.
+_api_table: ApiHandlerTable = {
+    ("server_stats", ""): ApiEntry(_api_server_stats, 2),
+    ("get_config", ""): ApiEntry(_api_get_config, 3),
+    ("set_config", ""): ApiEntry(_api_set_config, 3, config_locked=True),
+    ("set_config_default", ""): ApiEntry(_api_set_config_default, 3, config_locked=True),
+    ("del_config", ""): ApiEntry(_api_del_config, 3, config_locked=True),
+    ("translate", ""): ApiEntry(_api_translate, 2),
+    ("addfile", ""): ApiEntry(_api_addfile, 1),
+    ("retry", ""): ApiEntry(_api_retry, 2),
+    ("cancel_pp", ""): ApiEntry(_api_cancel_pp, 2),
+    ("addlocalfile", ""): ApiEntry(_api_addlocalfile, 1),
+    ("switch", ""): ApiEntry(_api_switch, 2),
+    ("change_cat", ""): ApiEntry(_api_change_cat, 2),
+    ("change_script", ""): ApiEntry(_api_change_script, 2),
+    ("change_opts", ""): ApiEntry(_api_change_opts, 2),
+    ("fullstatus", ""): ApiEntry(_api_fullstatus, 2),
+    ("get_files", ""): ApiEntry(_api_get_files, 2),
+    ("move_nzf_bulk", ""): ApiEntry(_api_move_nzf_bulk, 2),
+    ("addurl", ""): ApiEntry(_api_addurl, 1),
+    ("pause", ""): ApiEntry(_api_pause, 2),
+    ("resume", ""): ApiEntry(_api_resume, 2),
+    ("shutdown", ""): ApiEntry(_api_shutdown, 3),
+    ("warnings", ""): ApiEntry(_api_warnings, 2),
+    ("showlog", ""): ApiEntry(_api_showlog, 3),
+    ("get_cats", ""): ApiEntry(_api_get_cats, 2),
+    ("get_scripts", ""): ApiEntry(_api_get_scripts, 2),
+    ("version", ""): ApiEntry(_api_version, 1),
+    ("auth", ""): ApiEntry(_api_auth, 1),
+    ("restart", ""): ApiEntry(_api_restart, 3),
+    ("restart_repair", ""): ApiEntry(_api_restart_repair, 3),
+    ("disconnect", ""): ApiEntry(_api_disconnect, 2),
+    ("gc_stats", ""): ApiEntry(_api_gc_stats, 3),
+    ("eval_sort", ""): ApiEntry(_api_eval_sort, 3),
+    ("watched_now", ""): ApiEntry(_api_watched_now, 2),
+    ("resume_pp", ""): ApiEntry(_api_resume_pp, 2),
+    ("pause_pp", ""): ApiEntry(_api_pause_pp, 2),
+    ("rss_now", ""): ApiEntry(_api_rss_now, 2),
+    ("browse", ""): ApiEntry(_api_browse, 3),
+    ("retry_all", ""): ApiEntry(_api_retry_all, 2),
+    ("reset_quota", ""): ApiEntry(_api_reset_quota, 3),
+    ("test_email", ""): ApiEntry(_api_test_email, 3),
+    ("test_windows", ""): ApiEntry(_api_test_windows, 3),
+    ("test_notif", ""): ApiEntry(_api_test_notif, 3),
+    ("test_osd", ""): ApiEntry(_api_test_osd, 3),
+    ("test_pushover", ""): ApiEntry(_api_test_pushover, 3),
+    ("test_pushbullet", ""): ApiEntry(_api_test_pushbullet, 3),
+    ("test_apprise", ""): ApiEntry(_api_test_apprise, 3),
+    ("test_prowl", ""): ApiEntry(_api_test_prowl, 3),
+    ("test_nscript", ""): ApiEntry(_api_test_nscript, 3),
+    # mode=queue
+    ("queue", ""): ApiEntry(_api_queue_default, 2),
+    ("queue", "delete"): ApiEntry(_api_queue_delete, 2),
+    ("queue", "delete_nzf"): ApiEntry(_api_queue_delete_nzf, 2),
+    ("queue", "rename"): ApiEntry(_api_queue_rename, 2),
+    ("queue", "change_complete_action"): ApiEntry(_api_queue_change_complete_action, 2),
+    ("queue", "purge"): ApiEntry(_api_queue_purge, 2),
+    ("queue", "pause"): ApiEntry(_api_queue_pause, 2),
+    ("queue", "resume"): ApiEntry(_api_queue_resume, 2),
+    ("queue", "priority"): ApiEntry(_api_queue_priority, 2),
+    ("queue", "sort"): ApiEntry(_api_queue_sort, 2),
+    # mode=history
+    ("history", ""): ApiEntry(_api_history_default, 2),
+    ("history", "delete"): ApiEntry(_api_history_delete, 2),
+    ("history", "mark_as_completed"): ApiEntry(_api_history_mark_as_completed, 2),
+    # mode=status
+    ("status", ""): ApiEntry(_api_fullstatus, 2),
+    ("status", "unblock_server"): ApiEntry(_api_unblock_server, 2),
+    ("status", "delete_orphan"): ApiEntry(_api_delete_orphan, 2),
+    ("status", "delete_all_orphan"): ApiEntry(_api_delete_all_orphan, 2),
+    ("status", "add_orphan"): ApiEntry(_api_add_orphan, 2),
+    ("status", "add_all_orphan"): ApiEntry(_api_add_all_orphan, 2),
+    # mode=config, all of which are refused while the config is locked
+    ("config", ""): ApiEntry(_api_config_undefined, 2, config_locked=True),
+    ("config", "speedlimit"): ApiEntry(_api_config_speedlimit, 2, config_locked=True),
+    ("config", "set_pause"): ApiEntry(_api_config_set_pause, 2, config_locked=True),
+    ("config", "set_apikey"): ApiEntry(_api_config_set_apikey, 3, config_locked=True),
+    ("config", "set_nzbkey"): ApiEntry(_api_config_set_nzbkey, 3, config_locked=True),
+    ("config", "regenerate_certs"): ApiEntry(_api_config_regenerate_certs, 3, config_locked=True),
+    ("config", "test_server"): ApiEntry(_api_config_test_server, 3, config_locked=True),
+    ("config", "create_backup"): ApiEntry(_api_config_create_backup, 3, config_locked=True),
+    ("config", "purge_log_files"): ApiEntry(_api_config_purge_log_files, 3, config_locked=True),
 }
 
 
 def api_level(mode: str, name: str) -> int:
     """Return access level required for this API call"""
-    if mode == "queue" and name in _api_queue_table:
-        return _api_queue_table[name][1]
-    if mode == "history" and name in _api_history_table:
-        return _api_history_table[name][1]
-    if mode == "status" and name in _api_status_table:
-        return _api_status_table[name][1]
-    if mode == "config" and name in _api_config_table:
-        return _api_config_table[name][1]
-    if mode in _api_table:
-        return _api_table[mode][1]
-    # It is invalid if it's none of these, but that's is handled somewhere else
-    return 4
+    return _api_lookup(mode, name)[0].access_level
 
 
 def report(
