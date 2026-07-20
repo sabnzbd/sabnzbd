@@ -1,6 +1,6 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-apprise==1.11.0
+apprise==1.12.0
 sabctools==9.6.2
 CT3==3.4.0.post5
 cffi==2.0.0
@@ -26,9 +26,9 @@ PySocks==1.7.1
 puremagic # Version-less for Python 3.11 and below
 puremagic==2.2.0; python_version > '3.11'
 rarfile==4.3
-guessit==3.8.0
+guessit==4.1.0
 babelfish==0.6.1
-rebulk==4.2.2
+rebulk==6.0.1
 hachoir==3.3.0
 
 # Recent cryptography versions require Rust. If you run into issues compiling this
@@ -49,7 +49,7 @@ winrt-Windows.Data.Xml.Dom==3.2.1; sys_platform == 'win32'
 winrt-Windows.Foundation==3.2.1; sys_platform == 'win32'
 winrt-Windows.Foundation.Collections==3.2.1; sys_platform == 'win32'
 winrt-Windows.UI.Notifications==3.2.1; sys_platform == 'win32'
-typing_extensions==4.15.0; sys_platform == 'win32'
+typing_extensions==4.16.0; sys_platform == 'win32'
 
 # macOS system calls
 pyobjc-core==12.2.1; sys_platform == 'darwin'
