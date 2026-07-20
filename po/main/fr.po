@@ -294,6 +294,10 @@ msgid ""
 "'Articles per request' to a value between 5 and 10 can improve download "
 "speed. See: https://sabnzbd.org/wiki/advanced/nntp-pipelining"
 msgstr ""
+"Le serveur %s a mis %d ms à répondre. Sur les connexions à forte latence, "
+"augmenter le paramètre « Articles par requête » à une valeur comprise entre "
+"5 et 10 peut améliorer la vitesse de téléchargement. Voir : "
+"https://sabnzbd.org/wiki/advanced/nntp-pipelining"
 
 #: sabnzbd/api.py
 msgid "Resolving address"
@@ -1879,7 +1883,7 @@ msgstr "Échec de la suppression de %s"
 
 #: sabnzbd/postproc.py
 msgid "Removed %s files with unwanted extensions"
-msgstr ""
+msgstr "Suppression de %s fichiers comportant des extensions indésirables"
 
 #. Error message
 #: sabnzbd/powersup.py
@@ -4816,7 +4820,7 @@ msgstr "Maintenez la touche Maj pour sélectionner une plage"
 
 #: sabnzbd/skintext.py
 msgid "Select job"
-msgstr ""
+msgstr "Sélectionner la tâche"
 
 #: sabnzbd/skintext.py
 msgid "Check all"
