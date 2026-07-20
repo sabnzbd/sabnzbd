@@ -4,7 +4,7 @@ packaging==26.2
 pyinstaller-hooks-contrib==2026.6
 altgraph==0.17.5
 wrapt==2.2.2
-setuptools==82.0.1
+setuptools==83.0.0
 markdown==3.10.2
 pefile==2024.8.26
 
