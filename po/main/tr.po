@@ -4742,6 +4742,10 @@ msgid "Temp Folder"
 msgstr "Geçici Dizin"
 
 #: sabnzbd/skintext.py
+msgid "Clear search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "Çoklu-İşlemler"
 

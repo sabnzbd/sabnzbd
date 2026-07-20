@@ -4713,6 +4713,10 @@ msgid "Temp Folder"
 msgstr "Dočasná složka"
 
 #: sabnzbd/skintext.py
+msgid "Clear search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "Hromadné operace"
 

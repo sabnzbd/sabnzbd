@@ -4824,6 +4824,10 @@ msgid "Temp Folder"
 msgstr "Temporärer Ordner"
 
 #: sabnzbd/skintext.py
+msgid "Clear search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "Mehrfach-Funktionen"
 

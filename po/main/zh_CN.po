@@ -4514,6 +4514,10 @@ msgid "Temp Folder"
 msgstr "临时文件夹"
 
 #: sabnzbd/skintext.py
+msgid "Clear search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "多选操作"
 

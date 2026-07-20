@@ -4585,6 +4585,10 @@ msgid "Temp Folder"
 msgstr "Väliaikaiskansio"
 
 #: sabnzbd/skintext.py
+msgid "Clear search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "Monioperaatiot"
 

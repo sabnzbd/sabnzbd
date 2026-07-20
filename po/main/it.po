@@ -4759,6 +4759,10 @@ msgid "Temp Folder"
 msgstr "Cartella temporanea"
 
 #: sabnzbd/skintext.py
+msgid "Clear search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "Operazioni multiple"
 
