@@ -135,15 +135,20 @@
     <div class="history-footer">
 
     <div class="input-group search-box">
-        <input type="text" class="form-control" placeholder="$T('Glitter-search')" required data-bind="textInput: history.searchTerm, event: { keydown: history.clearSearchTerm }" />
-        <a data-bind="event: { mousedown: history.clearSearchTerm }">
+        <input type="text" class="form-control" placeholder="$T('Glitter-search')" aria-label="$T('Glitter-search')" required data-bind="textInput: history.searchTerm, event: { keydown: history.clearSearchTerm }" />
+        <a href="#" data-bind="click: history.clearSearchTerm, attr: { 'aria-label': history.searchTerm() ? '$T('Glitter-clearSearch')' : '$T('Glitter-search')' }">
             <span class="glyphicon" data-bind="css: { 'glyphicon-search' : !history.searchTerm(), 'glyphicon-remove' : history.searchTerm() }"></span>
         </a>
     </div>
 
     <ul class="pagination" data-bind="foreach: history.pagination.allpages(), visible: history.pagination.hasPagination" style="display: none;">
-        <li data-bind="css: { active: isCurrent, disabled: isDots }, click: onclick">
-            <span data-bind="text: page"></span>
+        <li data-bind="css: { active: isCurrent, disabled: isDots }">
+            <!-- ko ifnot: isDots -->
+            <a href="#" data-bind="text: page, click: onclick, attr: { 'aria-current': isCurrent ? 'page' : null }"></a>
+            <!-- /ko -->
+            <!-- ko if: isDots -->
+            <span aria-hidden="true" data-bind="text: page"></span>
+            <!-- /ko -->
         </li>
     </ul>
 
