@@ -144,12 +144,20 @@ class TestInterfaceFunctions:
         }
     )
     def test_check_access(
-        self, access_type, inet_exposure, local_ranges, remote_ip, xff_header, verify_xff_header, result_with_xff
+        self,
+        access_type,
+        inet_exposure,
+        local_ranges,
+        remote_ip,
+        xff_header,
+        verify_xff_header,
+        result_with_xff,
+        monkeypatch,
     ):
         def _func():
             # Insert fake request data
-            cherrypy.request.remote.ip = remote_ip
-            cherrypy.request.headers.update({"X-Forwarded-For": xff_header})
+            monkeypatch.setitem(cherrypy.request.headers, "X-Forwarded-For", xff_header)
+            monkeypatch.setattr(cherrypy.request.remote, "ip", remote_ip)
 
             if verify_xff_header:
                 result = result_with_xff
@@ -220,10 +228,10 @@ class TestInterfaceFunctions:
             "local_ranges": params["local_ranges"],
         }
     )
-    def test_remote_ip_from_xff(self, local_ranges, xff_ips, expected_result):
+    def test_remote_ip_from_xff(self, local_ranges, xff_ips, expected_result, monkeypatch):
         def _func():
             # Insert fake request data; should *not* influence the results of the tested function
-            cherrypy.request.remote.ip = "6.6.6.6"
+            monkeypatch.setattr(cherrypy.request.remote, "ip", "6.6.6.6")
             assert xff_ips
             assert interface.remote_ip_from_xff(xff_ips) is expected_result
 

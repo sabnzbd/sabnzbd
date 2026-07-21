@@ -213,6 +213,12 @@ class TestSecuredExpose:
     def main_page(self):
         return sabnzbd.interface.MainPage()
 
+    @pytest.fixture(autouse=True)
+    def setup(self, monkeypatch):
+        monkeypatch.setattr(cherrypy.request, "headers", {})
+        monkeypatch.setattr(cherrypy.request.remote, "ip", "127.0.0.1")
+        yield
+
     def api_wrapper(self, *args, **kwargs):
         """Wrapper to convert bytes to str"""
         if api_response := self.main_page.api(*args, **kwargs):
