@@ -44,6 +44,23 @@ from sabnzbd.misc import format_time_string, SABRarFile
 from sabnzbd.filesystem import long_path, create_all_dirs, listdir_full, clip_path
 
 
+@pytest.fixture(autouse=True)
+def _isolate_newsunpack_globals(monkeypatch):
+    """Snapshot the module globals that these tests mutate so they can't leak into other
+    tests/modules on the same pytest-xdist worker"""
+    for name in (
+        "NICE_COMMAND",
+        "IONICE_COMMAND",
+        "PAR2_COMMAND",
+        "RAR_COMMAND",
+        "SEVENZIP_COMMAND",
+    ):
+        monkeypatch.setattr(newsunpack, name, getattr(newsunpack, name))
+    # PostProcessor is unset by default; raising=False lets monkeypatch delete it on teardown
+    monkeypatch.setattr(sabnzbd, "PostProcessor", getattr(sabnzbd, "PostProcessor", None), raising=False)
+    yield
+
+
 class TestNewsUnpackFunctions:
     def test_is_sfv_file(self):
         assert newsunpack.is_sfv_file("tests/data/good_sfv_unicode.sfv")

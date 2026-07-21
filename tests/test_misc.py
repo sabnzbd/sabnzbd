@@ -59,8 +59,8 @@ class TestMisc:
         assert "%H:%M" == misc.time_format("%H:%M")
 
     @pytest.mark.config({"ampm": True})
-    def test_timeformatampm(self):
-        misc.HAVE_AMPM = True
+    def test_timeformatampm(self, monkeypatch):
+        monkeypatch.setattr(misc, "HAVE_AMPM", True)
         assert "%I:%M:%S %p" == misc.time_format("%H:%M:%S")
         assert "%I:%M %p" == misc.time_format("%H:%M")
 
@@ -1127,7 +1127,10 @@ class TestBuildAndRunCommand:
     @pytest.mark.config({"nice": "--adjustment=-7", "ionice": "-t -n9 -c7"})
     @mock.patch("sabnzbd.misc.userxbit")
     @mock.patch("subprocess.Popen")
-    def test_linux_features(self, mock_subproc_popen, userxbit):
+    def test_linux_features(self, mock_subproc_popen, userxbit, monkeypatch):
+        monkeypatch.setattr(newsunpack, "NICE_COMMAND", None)
+        monkeypatch.setattr(newsunpack, "IONICE_COMMAND", None)
+
         # Should break on no-execute permissions
         userxbit.return_value = False
         with pytest.raises(IOError):
@@ -1151,8 +1154,8 @@ class TestBuildAndRunCommand:
         assert mock_subproc_popen.call_args[0][0] == test_cmd
 
         # Have to fake these for it to work
-        newsunpack.IONICE_COMMAND = "ionice"
-        newsunpack.NICE_COMMAND = "nice"
+        monkeypatch.setattr(newsunpack, "IONICE_COMMAND", "ionice")
+        monkeypatch.setattr(newsunpack, "NICE_COMMAND", "nice")
         userxbit.return_value = True
         misc.build_and_run_command([self.script_path, "input 1"])
         assert mock_subproc_popen.call_args[0][0] == [

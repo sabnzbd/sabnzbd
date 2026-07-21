@@ -47,22 +47,22 @@ class TestOptions:
     test_section = "test_section"
     test_keyword = "test_keyword"
 
-    def test_base_option(self):
+    def test_base_option(self, monkeypatch):
+        monkeypatch.setattr(config, "CONFIG", config.SABnzbdConfig())
         test_option = config.Option(self.test_section, self.test_keyword)
         assert test_option.section == self.test_section
         assert test_option.keyword == self.test_keyword
         assert test_option.section in config.CONFIG.database
         assert test_option.keyword in config.CONFIG.database[test_option.section]
         assert config.CONFIG.database[test_option.section][test_option.keyword] == test_option
-        # Reset database
-        config.CONFIG.database = {}
 
     @pytest.mark.xfail(reason="These tests should be added")
     def test_all(self):
         # Need to add tests for all the relevant options
         raise NotImplementedError
 
-    def test_non_public(self):
+    def test_non_public(self, monkeypatch):
+        monkeypatch.setattr(config, "CONFIG", config.SABnzbdConfig())
         test_option = config.Option(self.test_section, self.test_keyword, public=True)
         assert test_option.get_dict() == {self.test_keyword: None}
         assert test_option.get_dict(for_public_api=False) == {self.test_keyword: None}
@@ -75,9 +75,6 @@ class TestOptions:
         test_option = config.OptionPassword(self.test_section, self.test_keyword, default_val="test_password")
         assert test_option.get_dict() == {self.test_keyword: "test_password"}
         assert test_option.get_dict(for_public_api=True) == {self.test_keyword: "**********"}
-
-        # Reset database
-        config.CONFIG.database = {}
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
@@ -181,8 +178,9 @@ class TestConfig:
             "complete_dir": os.path.join(SAB_COMPLETE_DIR, "test_config_backup"),
         }
     )
-    def test_config_backup(self):
+    def test_config_backup(self, monkeypatch):
         """Combined tests for the config.{create,validate,restore}_config_backup functions"""
+        monkeypatch.setattr(sabnzbd, "CONFIG_BACKUP_HTTPS_OK", [])
         # Prepare the basics
         admin_dir = sabnzbd.cfg.admin_dir.get_path()
         sabnzbd.cfg.set_root_folders2()
