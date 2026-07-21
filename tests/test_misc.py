@@ -34,8 +34,6 @@ from unittest import mock
 import pytest
 import rarfile
 
-import sabnzbd
-import sabnzbd.cfg
 from sabnzbd import lang, misc, newsunpack, cfg
 from sabnzbd.config import ConfigCat, get_sorters, save_config
 from sabnzbd.constants import (
@@ -50,16 +48,14 @@ from tests.testhelper import SAB_BASE_DIR
 
 
 @pytest.fixture
-def reset_language(monkeypatch):
-    """Guarantee translation state is restored on teardown, even if an assertion fails,
-    so a non-default language can't leak into other tests on the pytest-xdist worker.
-    set_language() swaps the builtins T/TT translators and set_locale_info() sets the
-    lang module globals."""
+def reset_language(compiled_language_files, monkeypatch):
+    """Provide a compiled-translations environment for a test and guarantee the global
+    translation state is restored on teardown"""
     monkeypatch.setattr(lang, "_DOMAIN", lang._DOMAIN)
     monkeypatch.setattr(lang, "_LOCALEDIR", lang._LOCALEDIR)
     monkeypatch.setitem(builtins.__dict__, "T", builtins.__dict__.get("T"))
     monkeypatch.setitem(builtins.__dict__, "TT", builtins.__dict__.get("TT"))
-    yield
+    yield compiled_language_files
     # Reset to the default (English) translators regardless of what the test selected
     lang.set_language()
 
@@ -344,11 +340,7 @@ class TestMisc:
         assert "2 days 2 hours 2 seconds" == misc.format_time_string(2 * 86400 + 2 * 60 * 60 + 2)
 
     def test_format_time_string_locale(self, reset_language):
-        # Have to set the languages, if it was compiled
-        locale_dir = os.path.join(SAB_BASE_DIR, "..", sabnzbd.constants.DEF_LANGUAGE)
-        if not os.path.exists(locale_dir):
-            pytest.mark.skip("No language files compiled")
-
+        locale_dir = reset_language
         lang.set_locale_info("SABnzbd", locale_dir)
         lang.set_language("de")
         assert "1 Sekunde" == misc.format_time_string(1)

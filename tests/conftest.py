@@ -77,6 +77,24 @@ def warm_up_guessit():
     guessit.api.guessit("Warm.Up.S01E01.1080p.mkv")
 
 
+@pytest.fixture(scope="session")
+def compiled_language_files():
+    """Ensure the gettext .mo translation files are compiled, once per session"""
+    locale_dir = os.path.join(SAB_BASE_DIR, "..", "locale")
+    if not os.path.isdir(locale_dir):
+        try:
+            # Language files missing; let make_mo do its thing
+            make_mo = subprocess.Popen([sys.executable, os.path.join(SAB_BASE_DIR, "..", "tools", "make_mo.py")])
+            make_mo.communicate(timeout=30)
+
+            # Check the dir again, should exist now
+            if not os.path.isdir(locale_dir):
+                raise FileNotFoundError
+        except Exception:
+            pytest.fail("Failed to compile language files in %s" % locale_dir)
+    return locale_dir
+
+
 def _port_is_open(host, port):
     """Return True if something is accepting connections on host:port"""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -121,7 +139,7 @@ def clean_cache_dir(request):
 
 
 @pytest.fixture(scope="module")
-def run_sabnzbd(clean_cache_dir, request):
+def run_sabnzbd(clean_cache_dir, compiled_language_files, request):
     """Start SABnzbd (with translations). A number of key configuration parameters are defined
     in testhelper.py (SAB_* variables). Scope is set to 'module' to prevent configuration
     changes made during functional tests from causing failures in unrelated tests."""
@@ -163,20 +181,6 @@ def run_sabnzbd(clean_cache_dir, request):
 
     # Copy basic config file with API key
     shutil.copyfile(os.path.join(SAB_DATA_DIR, ini_file), os.path.join(SAB_CACHE_DIR, DEF_INI_FILE))
-
-    # Check if we have language files
-    locale_dir = os.path.join(SAB_BASE_DIR, "..", "locale")
-    if not os.path.isdir(locale_dir):
-        try:
-            # Language files missing; let make_mo do its thing
-            make_mo = subprocess.Popen([sys.executable, os.path.join(SAB_BASE_DIR, "..", "tools", "make_mo.py")])
-            make_mo.communicate(timeout=30)
-
-            # Check the dir again, should exist now
-            if not os.path.isdir(locale_dir):
-                raise FileNotFoundError
-        except Exception:
-            pytest.fail("Failed to compile language files in %s" % locale_dir)
 
     # Start SABnzbd and continue
     sabnzbd_process = subprocess.Popen(
