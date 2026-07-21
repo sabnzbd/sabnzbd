@@ -66,6 +66,7 @@ import sabnzbd.interface
 from sabnzbd.constants import (
     DEF_NETWORKING_TIMEOUT,
     DEF_LOG_ERRFILE,
+    DEF_LOG_ACCESSFILE,
     DEF_MAIN_TMPL,
     DEF_STD_WEB_DIR,
     DEF_WORKDIR,
@@ -1199,12 +1200,34 @@ def main():
     # Format: https://github.com/encode/uvicorn/blob/d43afed1cfa018a85c83094da8a2dd29f656d676/uvicorn/config.py#L82-L114
     uvicorn_logging_config = {
         "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "access": {
+                "()": "uvicorn.logging.AccessFormatter",
+                "fmt": '%(asctime)s::%(levelname)s::%(client_addr)s - "%(request_line)s" %(status_code)s',
+                "use_colors": False,
+            },
+        },
+        "handlers": {},
         "loggers": {
             "uvicorn": {"propagate": True},
             "uvicorn.error": {"propagate": True},
-            "uvicorn.access": {"propagate": bool(weblogging)},
+            "uvicorn.access": {"propagate": False, "level": "INFO"},
         },
     }
+
+    # Do we want web-server access logging? Cannot be done via the config
+    if weblogging:
+        sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_ACCESSFILE)
+        uvicorn_logging_config["handlers"]["access_file"] = {
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "access",
+            "filename": sabnzbd.WEBLOGFILE,
+            "maxBytes": sabnzbd.cfg.log_size(),
+            "backupCount": sabnzbd.cfg.log_backups(),
+            "encoding": "utf-8",
+        }
+        uvicorn_logging_config["loggers"]["uvicorn.access"]["handlers"] = ["access_file"]
 
     server_config = uvicorn.Config(
         sabnzbd.interface.create_app(),
