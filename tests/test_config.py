@@ -47,8 +47,7 @@ class TestOptions:
     test_section = "test_section"
     test_keyword = "test_keyword"
 
-    def test_base_option(self, monkeypatch):
-        monkeypatch.setattr(config, "CONFIG", config.SABnzbdConfig())
+    def test_base_option(self):
         test_option = config.Option(self.test_section, self.test_keyword)
         assert test_option.section == self.test_section
         assert test_option.keyword == self.test_keyword
@@ -61,8 +60,7 @@ class TestOptions:
         # Need to add tests for all the relevant options
         raise NotImplementedError
 
-    def test_non_public(self, monkeypatch):
-        monkeypatch.setattr(config, "CONFIG", config.SABnzbdConfig())
+    def test_non_public(self):
         test_option = config.Option(self.test_section, self.test_keyword, public=True)
         assert test_option.get_dict() == {self.test_keyword: None}
         assert test_option.get_dict(for_public_api=False) == {self.test_keyword: None}

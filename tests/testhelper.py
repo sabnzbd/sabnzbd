@@ -19,6 +19,7 @@
 tests.testhelper - Basic helper functions
 """
 
+import copy
 import io
 import os
 import socket
@@ -45,10 +46,12 @@ from pyfakefs.fake_filesystem import OSType
 
 import sabnzbd
 import sabnzbd.cfg as cfg
+from sabnzbd.config import Option
 from sabnzbd.constants import (
     DEF_INI_FILE,
     Status,
     PP_LOOKUP,
+    NORMAL_PRIORITY,
 )
 import sabnzbd.database as db
 from sabnzbd.misc import pp_to_opts
@@ -92,6 +95,21 @@ SAB_NEWSSERVER_PORT = _find_free_port(SAB_NEWSSERVER_HOST)
 @pytest.fixture(autouse=True)
 def config_env(monkeypatch, request):
     """Change config-values on the fly, per test"""
+    monkeypatch.setattr(sabnzbd.config, "CONFIG", sabnzbd.config.SABnzbdConfig())
+
+    # Add default categories
+    sabnzbd.config.ConfigCat("*", {"order": 0, "pp": "3", "script": "None", "priority": NORMAL_PRIORITY})
+    sabnzbd.config.ConfigCat("movies", {"order": 1})
+    sabnzbd.config.ConfigCat("tv", {"order": 2})
+    sabnzbd.config.ConfigCat("audio", {"order": 3})
+    sabnzbd.config.ConfigCat("software", {"order": 4})
+
+    for attr in dir(cfg):
+        if isinstance(getattr(cfg, attr), Option):
+            option = copy.copy(getattr(cfg, attr))
+            monkeypatch.setattr(cfg, attr, option)
+            sabnzbd.config.add_to_database(option.section, option.keyword, option)
+
     marker = request.node.get_closest_marker("config")
     if marker is None:
         # No config changes for this test
@@ -113,17 +131,10 @@ def config_env(monkeypatch, request):
             raise RuntimeError("Missing 'config' param for @pytest.mark.config")
 
     # Setting up as requested
-    originals = {}
     for item, val in config.items():
-        cfg_item = getattr(cfg, item)
-        originals[item] = cfg_item.get()
-        cfg_item.set(val)
+        getattr(cfg, item).set(val)
 
     yield
-
-    # Restore values
-    for item, val in originals.items():
-        getattr(cfg, item).set(val)
 
 
 @pytest.mark.parametrize("config", [{"web_host": "0.0.0.0"}, {"web_host": "::1"}])

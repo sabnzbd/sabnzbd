@@ -239,9 +239,9 @@ class TestNewsWrapper:
         def mock_connect(self):
             pass
 
-        monkeypatch.setattr("sabnzbd.newswrapper.NNTP.connect", mock_connect)
-        nntp = newswrapper.NNTP(nw, nw.server.info)
-        monkeypatch.undo()
+        with monkeypatch.context() as m:
+            m.setattr("sabnzbd.newswrapper.NNTP.connect", mock_connect)
+            nntp = newswrapper.NNTP(nw, nw.server.info)
 
         # The connection has crashed but the socket should have been bound to the provided ip in the configuration
         with pytest.raises(OSError) as excinfo:
