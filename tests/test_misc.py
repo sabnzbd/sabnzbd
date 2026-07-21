@@ -19,6 +19,7 @@
 tests.test_misc - Testing functions in misc.py
 """
 
+import builtins
 import datetime
 import functools
 import os
@@ -46,6 +47,21 @@ from sabnzbd.constants import (
 )
 from sabnzbd.misc import SABRarFile
 from tests.testhelper import SAB_BASE_DIR
+
+
+@pytest.fixture
+def reset_language(monkeypatch):
+    """Guarantee translation state is restored on teardown, even if an assertion fails,
+    so a non-default language can't leak into other tests on the pytest-xdist worker.
+    set_language() swaps the builtins T/TT translators and set_locale_info() sets the
+    lang module globals."""
+    monkeypatch.setattr(lang, "_DOMAIN", lang._DOMAIN)
+    monkeypatch.setattr(lang, "_LOCALEDIR", lang._LOCALEDIR)
+    monkeypatch.setitem(builtins.__dict__, "T", builtins.__dict__.get("T"))
+    monkeypatch.setitem(builtins.__dict__, "TT", builtins.__dict__.get("TT"))
+    yield
+    # Reset to the default (English) translators regardless of what the test selected
+    lang.set_language()
 
 
 class TestMisc:
@@ -327,7 +343,7 @@ class TestMisc:
         assert "1 day 59 seconds" == misc.format_time_string(86400 + 59)
         assert "2 days 2 hours 2 seconds" == misc.format_time_string(2 * 86400 + 2 * 60 * 60 + 2)
 
-    def test_format_time_string_locale(self):
+    def test_format_time_string_locale(self, reset_language):
         # Have to set the languages, if it was compiled
         locale_dir = os.path.join(SAB_BASE_DIR, "..", sabnzbd.constants.DEF_LANGUAGE)
         if not os.path.exists(locale_dir):
@@ -341,8 +357,6 @@ class TestMisc:
         assert "1 Stunde 1 Minuten 1 Sekunde" == misc.format_time_string(60 * 60 + 60 + 1)
         assert "1 Tag 59 Sekunden" == misc.format_time_string(86400 + 59)
         assert "2 Tage 2 Stunden 2 Sekunden" == misc.format_time_string(2 * 86400 + 2 * 60 * 60 + 2)
-        # Reset language
-        lang.set_language()
 
     def test_format_time_left(self):
         assert "0:00:00" == misc.format_time_left(0)
