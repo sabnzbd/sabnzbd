@@ -20,6 +20,7 @@ tests.test_api - Tests for API functions
 """
 
 import os
+from functools import cached_property
 from random import choice, randint
 from unittest import mock
 
@@ -208,7 +209,9 @@ def set_remote_host_or_ip(hostname: str = "localhost", remote_ip: str = "127.0.0
 class TestSecuredExpose:
     """Test the security handling"""
 
-    main_page = sabnzbd.interface.MainPage()
+    @cached_property
+    def main_page(self):
+        return sabnzbd.interface.MainPage()
 
     def api_wrapper(self, *args, **kwargs):
         """Wrapper to convert bytes to str"""
