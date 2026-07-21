@@ -28,6 +28,7 @@ import sys
 import tempfile
 import wave
 from contextlib import nullcontext
+from functools import cached_property
 from random import randint, sample
 from unittest import mock
 
@@ -1091,7 +1092,9 @@ class TestMisc:
 
 class TestBuildAndRunCommand:
     # Path should exist
-    script_path = os.path.join(SAB_BASE_DIR, "test_misc.py")
+    @cached_property
+    def script_path(self):
+        return os.path.join(SAB_BASE_DIR, "test_misc.py")
 
     def test_none_check(self):
         with pytest.raises(IOError):

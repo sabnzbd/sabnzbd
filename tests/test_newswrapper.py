@@ -32,6 +32,7 @@ import threading
 import time
 import warnings
 from enum import Enum
+from functools import cached_property
 from typing import Optional
 from unittest import mock
 
@@ -113,8 +114,13 @@ def get_local_ip(protocol_version: IPProtocolVersion) -> Optional[str]:
 
 @flaky
 class TestNewsWrapper:
-    cert_file = os.path.join(tempfile.mkdtemp(), "test.cert")
-    key_file = os.path.join(tempfile.mkdtemp(), "test.key")
+    @cached_property
+    def cert_file(self):
+        return os.path.join(tempfile.mkdtemp(), "test.cert")
+
+    @cached_property
+    def key_file(self):
+        return os.path.join(tempfile.mkdtemp(), "test.key")
 
     @pytest.mark.parametrize(
         "server_tls, expected_client_tls, client_cipher, can_connect",
