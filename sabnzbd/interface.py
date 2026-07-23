@@ -187,12 +187,6 @@ def secured_expose(
         if check_for_login and not check_api_key and not check_login(request):
             return BaseRedirectResponse("/login")
 
-        # Verify host used for the visit
-        if not check_hostname(request):
-            if cfg.api_warnings():
-                return PlainTextResponse(_MSG_ACCESS_DENIED_HOSTNAME, status_code=403)
-            return PlainTextResponse("", status_code=403)
-
         # Some pages need correct API key
         if check_api_key:
             if msg := check_apikey(request):
@@ -2286,6 +2280,24 @@ class XFrameOptionsMiddleware:
         await self.app(scope, receive, send_with_header)
 
 
+class HostnameCheckMiddleware:
+    """Reject requests whose Host header is not allowed (DNS-rebinding mitigation).
+    Applied as global middleware rather than in secured_expose so a single place
+    guards every route, including the static mounts and error responses. The setting
+    is read per request, and check_hostname short-circuits to allow when a
+    username/password is configured. Pure ASGI, and no request body is consumed."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http" and not check_hostname(Request(scope, receive)):
+            message = _MSG_ACCESS_DENIED_HOSTNAME if cfg.api_warnings() else ""
+            response = PlainTextResponse(message, status_code=403)
+            return await response(scope, receive, send)
+        await self.app(scope, receive, send)
+
+
 class ThreadedServer(uvicorn.Server):
     """uvicorn server running in a background thread, so the main thread stays
     free for the SABnzbd main loop."""
@@ -2373,6 +2385,7 @@ def create_app() -> Starlette:
 
     middleware = [
         Middleware(XFrameOptionsMiddleware),
+        Middleware(HostnameCheckMiddleware),
         Middleware(GZipMiddleware, minimum_size=1000, compresslevel=2),
         # Signed session cookie, used for short-lived per-client UI state such as the
         # RSS read-out result message (flash). Secret key is regenerated each run,
