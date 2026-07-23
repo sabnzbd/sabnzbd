@@ -145,14 +145,6 @@ def secured_expose(
 
     @functools.wraps(wrap_func)
     async def internal_wrap(request: Request, *args, **kwargs):
-        # Store the parameters for this method on request.state, to be retrieved
-        # with request_params(request) in the handlers.Page routes are strict:
-        # GET reads the query string and POST reads the form body only. The /api
-        # route merges the query string with the form body (body wins), which
-        # third-party API clients rely on (e.g. multipart NZB uploads with
-        # mode/apikey in the URL).
-        request.state.params = await get_request_params(request, merge_query=check_api_key)
-
         # Check if config is locked
         if check_configlock and cfg.configlock():
             if cfg.api_warnings():
@@ -185,7 +177,14 @@ def secured_expose(
         return await run_in_threadpool(wrap_func, request, *args, **kwargs)
 
     if route:
-        INTERFACE_ROUTES.append(Route(route, endpoint=internal_wrap, methods=methods))
+        INTERFACE_ROUTES.append(
+            Route(
+                route,
+                endpoint=internal_wrap,
+                methods=methods,
+                middleware=[Middleware(ParamsMiddleware, merge_query=check_api_key)],
+            )
+        )
 
     return internal_wrap
 
@@ -425,7 +424,7 @@ async def get_request_params(request: Request, merge_query: bool = False) -> Mul
     An /api POST without a form body uses the query string alone, returned as
     the immutable QueryParams.
 
-    secured_expose stores the result on request.state.params so that
+    ParamsMiddleware stores the result on request.state.params so that
     request_params(request) returns it in every handler without an extra await.
     """
     if request.method == "POST":
@@ -446,11 +445,30 @@ async def get_request_params(request: Request, merge_query: bool = False) -> Mul
 
 
 def request_params(request: Request) -> MultiDict | QueryParams:
-    """The request's parameters, parsed once by secured_expose: the query
+    """The request's parameters, parsed once by ParamsMiddleware: the query
     string for a GET, the form body for a page POST, or the form body merged
     with the query string for an /api POST. See get_request_params for the
     exact rules and the returned types."""
     return request.state.params
+
+
+class ParamsMiddleware:
+    """Parse a request's parameters onto request.state.params before the handler
+    runs, so request_params(request) returns them without a further await. Attached
+    per route by secured_expose because the merge behavior is route-specific:
+    merge_query follows check_api_key (the /api and *_save routes that accept
+    mode/apikey in the query string alongside a form body). Pure ASGI, and the
+    request body is read once here; handlers only ever read the parsed params."""
+
+    def __init__(self, app, merge_query: bool = False):
+        self.app = app
+        self.merge_query = merge_query
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            request = Request(scope, receive)
+            request.state.params = await get_request_params(request, merge_query=self.merge_query)
+        await self.app(scope, receive, send)
 
 
 # Disable over-active logging for the form parser
@@ -1071,7 +1089,6 @@ def config_general_save(request: Request):
 @secured_expose(route="/config/general/upload_config", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_upload_backup(request: Request):
     """Restore a config backup"""
-    # secured_expose already parsed the multipart body into request.state.params
     config_backup_file = request_params(request).get("config_backup_file")
 
     # Only accept the backup file if it can be opened as a zip archive and only contains a config file
