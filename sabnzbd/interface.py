@@ -153,24 +153,6 @@ def secured_expose(
         # mode/apikey in the URL).
         request.state.params = await get_request_params(request, merge_query=check_api_key)
 
-        # Log all requests
-        if cfg.api_logging():
-            if xff_ips := request.headers.get("X-Forwarded-For"):
-                remote_label = "%s (X-Forwarded-For: %s) [%s]" % (
-                    client_address(request).host,
-                    xff_ips,
-                    request.headers.get("User-Agent"),
-                )
-            else:
-                remote_label = "%s [%s]" % (client_address(request).host, request.headers.get("User-Agent"))
-            logging.debug(
-                "Request %s %s from %s %s",
-                request.method,
-                request.url.path,
-                remote_label,
-                dict(request.state.params),
-            )
-
         # Check if config is locked
         if check_configlock and cfg.configlock():
             if cfg.api_warnings():
@@ -2298,6 +2280,43 @@ class HostnameCheckMiddleware:
         await self.app(scope, receive, send)
 
 
+class RequestLoggingMiddleware:
+    """Log every request when cfg.api_logging is enabled. The line is emitted after
+    the handler runs, once the request's parameters have been parsed onto
+    request.state; requests that never reach a secured handler (e.g. static files)
+    have no parsed params and are skipped, matching the previous
+    behavior. Pure ASGI to leave streaming responses untouched."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+        try:
+            await self.app(scope, receive, send)
+        finally:
+            # request.state stores params in scope["state"]; a missing key means the
+            # request did not pass through secured_expose, so there is nothing to log.
+            if cfg.api_logging() and (params := scope.get("state", {}).get("params")) is not None:
+                request = Request(scope)
+                if xff_ips := request.headers.get("X-Forwarded-For"):
+                    remote_label = "%s (X-Forwarded-For: %s) [%s]" % (
+                        client_address(request).host,
+                        xff_ips,
+                        request.headers.get("User-Agent"),
+                    )
+                else:
+                    remote_label = "%s [%s]" % (client_address(request).host, request.headers.get("User-Agent"))
+                logging.debug(
+                    "Request %s %s from %s %s",
+                    request.method,
+                    request.url.path,
+                    remote_label,
+                    dict(params),
+                )
+
+
 class ThreadedServer(uvicorn.Server):
     """uvicorn server running in a background thread, so the main thread stays
     free for the SABnzbd main loop."""
@@ -2386,6 +2405,7 @@ def create_app() -> Starlette:
     middleware = [
         Middleware(XFrameOptionsMiddleware),
         Middleware(HostnameCheckMiddleware),
+        Middleware(RequestLoggingMiddleware),
         Middleware(GZipMiddleware, minimum_size=1000, compresslevel=2),
         # Signed session cookie, used for short-lived per-client UI state such as the
         # RSS read-out result message (flash). Secret key is regenerated each run,
