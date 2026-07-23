@@ -214,6 +214,7 @@ def external_processing(
     extern_proc: str, nzo: NzbObject, complete_dir: str, status: int, newfiles: list[str]
 ) -> tuple[str, int]:
     """Run a user postproc script, return console output and exit value"""
+    complete_dir = clip_path(complete_dir)
     failure_url = nzo.nzo_info.get("failure", "")
     # Items can be bool or null, causing POpen to fail
     command = [

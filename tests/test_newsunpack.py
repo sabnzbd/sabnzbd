@@ -993,7 +993,7 @@ class TestExternalProcessingEnv:
         variable exactly as the receiving script saw it.
         """
         base = long_path(os.path.join(SAB_CACHE_DIR, "sab_env"))
-        complete_dir = clip_path(os.path.join(base, "complete"))
+        complete_dir = os.path.join(base, "complete")
         admin_dir = os.path.join(base, JOB_ADMIN)
         assert create_all_dirs(complete_dir), f"Failed to create {complete_dir}"
         assert create_all_dirs(admin_dir), f"Failed to create {admin_dir}"
@@ -1008,7 +1008,7 @@ class TestExternalProcessingEnv:
         output, ret = newsunpack.external_processing(script_path, nzo, complete_dir, status, newfiles)
 
         sab_env = json.loads(output)
-        return sab_env, complete_dir, ret
+        return sab_env, clip_path(complete_dir), ret
 
     def _run_files(self, filenames):
         """SAB_FILES convenience wrapper: returns (decoded_files, expected, ret).
