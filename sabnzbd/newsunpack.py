@@ -240,7 +240,7 @@ def external_processing(
         "avg_bps": int(nzo.avg_bps_total / nzo.avg_bps_freq) if nzo.avg_bps_freq else 0,
         "age": calc_age(nzo.avg_date),
         "orig_nzb_gz": clip_path(nzb_paths[0]) if nzb_paths else "",
-        "files": json.dumps(sorted([os.path.relpath(newfile, complete_dir) for newfile in newfiles])),
+        "files": json.dumps(sorted([os.path.relpath(clip_path(newfile), complete_dir) for newfile in newfiles])),
     }
 
     # Make sure that if we run a Python script it's output is unbuffered, so we can show it to the user
