@@ -20,7 +20,6 @@ sabnzbd.interface - webinterface
 """
 
 import os
-import inspect
 import secrets
 import threading
 import time
@@ -130,8 +129,8 @@ def secured_expose(
     check_api_key: bool = False,
     access_type: int = 4,
     methods: Collection = ("GET", "POST"),
-) -> Callable | str:
-    """Wrapper for both starlette routing and login/access check"""
+) -> Callable:
+    """Register a handler as a Starlette route and attach its access controls"""
     if not wrap_func:
         return functools.partial(
             secured_expose,
@@ -143,17 +142,11 @@ def secured_expose(
             methods=methods,
         )
 
-    @functools.wraps(wrap_func)
-    async def internal_wrap(request: Request, *args, **kwargs):
-        if inspect.iscoroutinefunction(wrap_func):
-            return await wrap_func(request, *args, **kwargs)
-        return await run_in_threadpool(wrap_func, request, *args, **kwargs)
-
     if route:
         INTERFACE_ROUTES.append(
             Route(
                 route,
-                endpoint=internal_wrap,
+                endpoint=wrap_func,
                 methods=methods,
                 middleware=[
                     Middleware(ParamsMiddleware, merge_query=check_api_key),
@@ -168,7 +161,7 @@ def secured_expose(
             )
         )
 
-    return internal_wrap
+    return wrap_func
 
 
 def client_address(request: Request) -> Address:
