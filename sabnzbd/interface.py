@@ -332,10 +332,14 @@ def check_apikey(request: Request) -> Optional[str]:
     Return None when OK, otherwise an error message
     """
     mode = request_params(request).get("mode", "")
-    name = request_params(request).get("name", "")
 
-    # Lookup required access level for the specific api-call
-    req_access = sabnzbd.api.api_level(mode, name)
+    # Resolve the call once here and stash it on the request, so the /api route can
+    # dispatch through api_handler without consulting the api table a second time.
+    entry, argument = sabnzbd.api.resolve_api_call(request_params(request))
+    request.state.api_call = (entry, argument)
+
+    # The entry carries the access level required for this specific api-call
+    req_access = entry.access_level
     if not check_access(request, access_type=req_access, warn_user=True):
         return _MSG_ACCESS_DENIED
 
@@ -566,7 +570,7 @@ async def shutdown(request: Request):
 @secured_expose(route="/api", check_api_key=True, access_type=1)
 async def api(request: Request):
     """Redirect to API-handler, we check the access_type in the API-handler"""
-    return await api_handler(request_params(request))
+    return await api_handler(request_params(request), request.state.api_call)
 
 
 @secured_expose(route="/scriptlog", methods=["GET"])

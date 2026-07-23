@@ -151,19 +151,31 @@ def _api_lookup(mode: str, name: str, value: str = "") -> tuple[ApiEntry, str]:
     A call routed on mode and name passes "value" to its handler, one routed on mode
     alone still has "name" free to use as a parameter. An unknown name falls back to
     the entry for the mode itself, so it lands on the same handler and access level as
-    an omitted one. Used by both the dispatcher and api_level(), so the two can never
-    disagree about which entry, and therefore which access level, a call resolves to."""
+    an omitted one. Used by both resolve_api_call() and api_level(), so the access
+    check and the dispatch can never disagree about which entry, and therefore which
+    access level, a call resolves to."""
     if name and (entry := _api_table.get((mode, name))):
         return entry, value
     return _api_table.get((mode, ""), _API_UNDEFINED), name
 
 
-async def api_handler(kwargs: QueryParams) -> Response:
+def resolve_api_call(kwargs: QueryParams) -> tuple[ApiEntry, str]:
+    """Resolve a request's parameters to the ApiEntry that will handle it and the
+    first parameter its handler receives. The /api route resolves the call once here
+    for its access check (see check_apikey) and hands the result straight to
+    api_handler, so the api table is consulted only once per request."""
+    return _api_lookup(kwargs.get("mode", ""), kwargs.get("name", ""), kwargs.get("value", ""))
+
+
+async def api_handler(kwargs: QueryParams, resolved: Optional[tuple[ApiEntry, str]] = None) -> Response:
     """API Dispatcher. Coroutine handlers (e.g. shutdown) are awaited on the
     event loop; plain sync handlers are executed in the threadpool so blocking
     work (disk, database, network tests, benchmarks) cannot stall the loop.
-    This also allows incremental conversion of handlers to native async."""
-    entry, argument = _api_lookup(kwargs.get("mode", ""), kwargs.get("name", ""), kwargs.get("value", ""))
+    This also allows incremental conversion of handlers to native async.
+
+    The /api route already resolved the call for its access check and passes the
+    result as "resolved"; other callers omit it and the call is resolved here."""
+    entry, argument = resolved if resolved is not None else resolve_api_call(kwargs)
 
     if entry.config_locked and cfg.configlock():
         return report(kwargs, _MSG_CONFIG_LOCKED)
