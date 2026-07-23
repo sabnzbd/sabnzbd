@@ -41,7 +41,7 @@ import sabnzbd.newsunpack as newsunpack
 from sabnzbd.constants import JOB_ADMIN
 from tests.testhelper import SAB_CACHE_DIR
 from sabnzbd.misc import format_time_string, SABRarFile
-from sabnzbd.filesystem import long_path, create_all_dirs, listdir_full
+from sabnzbd.filesystem import long_path, create_all_dirs, listdir_full, clip_path
 
 
 class TestNewsUnpackFunctions:
@@ -993,7 +993,7 @@ class TestExternalProcessingEnv:
         variable exactly as the receiving script saw it.
         """
         base = long_path(os.path.join(SAB_CACHE_DIR, "sab_env"))
-        complete_dir = os.path.join(base, "complete")
+        complete_dir = clip_path(os.path.join(base, "complete"))
         admin_dir = os.path.join(base, JOB_ADMIN)
         assert create_all_dirs(complete_dir), f"Failed to create {complete_dir}"
         assert create_all_dirs(admin_dir), f"Failed to create {admin_dir}"
