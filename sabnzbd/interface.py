@@ -145,33 +145,6 @@ def secured_expose(
 
     @functools.wraps(wrap_func)
     async def internal_wrap(request: Request, *args, **kwargs):
-        # Check if config is locked
-        if check_configlock and cfg.configlock():
-            if cfg.api_warnings():
-                return PlainTextResponse(_MSG_ACCESS_DENIED_CONFIG_LOCK, status_code=403)
-            return PlainTextResponse("", status_code=403)
-
-        # Check if external access and if it's allowed
-        if not check_access(request, access_type=access_type, warn_user=True):
-            if cfg.api_warnings():
-                return PlainTextResponse(_MSG_ACCESS_DENIED, status_code=403)
-            return PlainTextResponse("", status_code=403)
-
-        # Verify login status, only for non-key pages
-        if check_for_login and not check_api_key and not check_login(request):
-            return BaseRedirectResponse("/login")
-
-        # Some pages need correct API key
-        if check_api_key:
-            if msg := check_apikey(request):
-                if cfg.api_warnings():
-                    return PlainTextResponse(msg, status_code=403)
-                return PlainTextResponse("", status_code=403)
-
-        # All good, cool! Coroutine handlers are awaited on the event loop, so they
-        # must never block; plain sync handlers are executed in the threadpool so
-        # blocking work (template rendering, disk and database access) cannot stall
-        # the event loop.
         if inspect.iscoroutinefunction(wrap_func):
             return await wrap_func(request, *args, **kwargs)
         return await run_in_threadpool(wrap_func, request, *args, **kwargs)
@@ -182,7 +155,16 @@ def secured_expose(
                 route,
                 endpoint=internal_wrap,
                 methods=methods,
-                middleware=[Middleware(ParamsMiddleware, merge_query=check_api_key)],
+                middleware=[
+                    Middleware(ParamsMiddleware, merge_query=check_api_key),
+                    Middleware(
+                        SecurityMiddleware,
+                        check_configlock=check_configlock,
+                        check_for_login=check_for_login,
+                        check_api_key=check_api_key,
+                        access_type=access_type,
+                    ),
+                ],
             )
         )
 
@@ -469,6 +451,58 @@ class ParamsMiddleware:
             request = Request(scope, receive)
             request.state.params = await get_request_params(request, merge_query=self.merge_query)
         await self.app(scope, receive, send)
+
+
+class SecurityMiddleware:
+    """Enforce a route's access rules before its handler runs: config lock, local vs
+    external access, login, and API key. Attached per route by secured_expose with
+    that route's flags, and ordered after ParamsMiddleware so the API-key check can
+    read the parsed request_params. Pure ASGI; a failed check answers with a 403 (or
+    a redirect to /login) without ever invoking the handler."""
+
+    def __init__(
+        self,
+        app,
+        check_configlock: bool = False,
+        check_for_login: bool = True,
+        check_api_key: bool = False,
+        access_type: int = 4,
+    ):
+        self.app = app
+        self.check_configlock = check_configlock
+        self.check_for_login = check_for_login
+        self.check_api_key = check_api_key
+        self.access_type = access_type
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http" and (response := self.denied_response(Request(scope, receive))):
+            return await response(scope, receive, send)
+        await self.app(scope, receive, send)
+
+    def denied_response(self, request: Request) -> Optional[Response]:
+        """Return the response to send when a check fails, or None when allowed."""
+        # Check if config is locked
+        if self.check_configlock and cfg.configlock():
+            return forbidden(_MSG_ACCESS_DENIED_CONFIG_LOCK)
+
+        # Check if external access and if it's allowed
+        if not check_access(request, access_type=self.access_type, warn_user=True):
+            return forbidden(_MSG_ACCESS_DENIED)
+
+        # Verify login status, only for non-key pages
+        if self.check_for_login and not self.check_api_key and not check_login(request):
+            return BaseRedirectResponse("/login")
+
+        # Some pages need the correct API key
+        if self.check_api_key and (msg := check_apikey(request)):
+            return forbidden(msg)
+
+        return None
+
+
+def forbidden(message: str) -> PlainTextResponse:
+    """403 response, carrying the reason only when api_warnings is enabled."""
+    return PlainTextResponse(message if cfg.api_warnings() else "", status_code=403)
 
 
 # Disable over-active logging for the form parser
