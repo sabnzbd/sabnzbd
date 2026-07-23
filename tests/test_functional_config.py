@@ -19,7 +19,7 @@
 tests.test_functional_config - Basic testing if Config pages work
 """
 
-from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException, NoAlertPresentException
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from pytest_httpserver import HTTPServer
@@ -70,14 +70,10 @@ class TestBasicPages(SABnzbdBaseTest):
             # Click the right button
             submit_btn.click()
 
-            try:
-                self.wait_for_ajax()
-            except UnexpectedAlertPresentException:
-                try:
-                    # Ignore restart-request due to empty sabnzbd.ini in tests
-                    self.driver.switch_to.alert.dismiss()
-                except NoAlertPresentException:
-                    pass
+            # Saving here may or may not raise a restart-request (depends on whether
+            # an option actually changed against the test ini), so dismiss it only
+            # if it appears. Cancel = no restart, so the process keeps serving.
+            self.dismiss_alert_if_present()
 
             # For Specials page we get redirected after save, so check for no crash
             if "special" in test_url:
@@ -104,17 +100,9 @@ class TestConfigLogin(SABnzbdBaseTest):
         pass_inp.clear()
         pass_inp.send_keys("test_password")
 
-        # Submit and ignore alert
+        # Submit and dismiss the restart-request (cancel, so no restart happens)
         self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "saveButton").click()
-
-        try:
-            self.wait_for_ajax()
-        except UnexpectedAlertPresentException:
-            try:
-                # Ignore restart-request
-                self.driver.switch_to.alert.dismiss()
-            except NoAlertPresentException:
-                pass
+        self.dismiss_restart_prompt()
 
         # Open any page and check if we get redirected
         self.open_page("http://%s:%s/config/general" % (SAB_HOST, SAB_PORT))
@@ -154,17 +142,9 @@ class TestConfigLogin(SABnzbdBaseTest):
         pass_inp = self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, "input[data-hide='password']")
         pass_inp.clear()
 
-        # Submit and ignore alert
+        # Submit and dismiss the restart-request (cancel, so no restart happens)
         self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "saveButton").click()
-
-        try:
-            self.wait_for_ajax()
-        except UnexpectedAlertPresentException:
-            try:
-                # Ignore restart-request
-                self.driver.switch_to.alert.dismiss()
-            except NoAlertPresentException:
-                pass
+        self.dismiss_restart_prompt()
 
         # Open any page and check we are NOT redirected to login (no credentials set)
         self.open_page("http://%s:%s/config/general" % (SAB_HOST, SAB_PORT))
@@ -311,9 +291,11 @@ class TestConfigServers(SABnzbdBaseTest):
         self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "showserver").click()
 
     def remove_server(self):
-        # Remove the first server and accept the confirmation
+        # Remove the first server and accept the confirmation. The confirm() is
+        # opened synchronously by the click handler, but Selenium's click() can
+        # return before it is registered, so wait for it rather than racing.
         self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "delServer").click()
-        self.driver.switch_to.alert.accept()
+        self.wait_for_alert().accept()
 
         # Check that it's gone
         wait_for(
