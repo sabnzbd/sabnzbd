@@ -385,49 +385,71 @@ def log_warning_and_ip(request: Request, txt: str):
         logging.warning("%s %s", txt, remote_info)
 
 
+# CherryPy collapsed these API routing/scalar keys to their first value when a key
+# was supplied more than once (e.g. ?mode=queue&mode=version resolved to "queue"),
+# whereas Starlette's .get() would otherwise return the last. Dispatch and the
+# handlers still assume a single value, so the merged API routes reproduce this.
+# Genuinely multi-valued keys (keyword, file uploads) are left alone so getlist()
+# still sees every value.
+API_FIRST_WINS_KEYS = ("mode", "name", "value", "value2", "value3", "start", "limit", "search")
+
+
+def first_wins(params: MultiDict) -> MultiDict:
+    """Collapse the CherryPy API scalar keys to their first value, in place."""
+    for key in API_FIRST_WINS_KEYS:
+        if len(values := params.getlist(key)) > 1:
+            params[key] = values[0]
+    return params
+
+
+def is_form_post(request: Request) -> bool:
+    return request.method == "POST" and request.headers.get("content-type", "").startswith(
+        ("application/x-www-form-urlencoded", "multipart/form-data")
+    )
+
+
 async def get_request_params(request: Request, merge_query: bool = False) -> MultiDict | QueryParams:
     """Parse the request's parameters.
 
-    A GET renders a page and never changes state, so only the URL query
-    string is used, returned as the request's immutable QueryParams.
+    A page GET renders a page and never changes state, so only the URL query
+    string is used, returned as the request's immutable QueryParams. A page POST
+    reads the form body only (urlencoded or multipart, with file uploads kept as
+    UploadFile objects) into a mutable MultiDict; the query string is ignored, so
+    parameters cannot be smuggled into form handlers via the URL. A POST without a
+    form body yields an empty MultiDict.
 
-    A page POST reads the form body only (urlencoded or multipart, with file
-    uploads kept as UploadFile objects) into a mutable MultiDict; the query
-    string is ignored, so parameters cannot be smuggled into form handlers
-    via the URL. A POST without a form body yields an empty MultiDict.
-
-    The /api route (merge_query) keeps the CherryPy behavior instead:
-    3rd-party clients traditionally POST an NZB as a multipart body while
-    passing mode/apikey/output in the query string, so a form body is merged
-    with the query string into a mutable MultiDict, the body winning per key.
-    An /api POST without a form body uses the query string alone, returned as
-    the immutable QueryParams.
+    The merged API routes (merge_query, i.e. /api and the api-key protected
+    *_save routes) keep the CherryPy behavior instead: 3rd-party clients
+    traditionally POST an NZB as a multipart body while passing mode/apikey/output
+    in the query string, so the form body and query string are merged into a
+    mutable MultiDict, the body winning per key. A key supplied only in the query
+    string keeps all of its values. GET, form POST and bodyless POST all take this
+    same path, so a duplicated key resolves identically regardless of method, and
+    the API scalar keys collapse to their first value exactly as CherryPy did.
 
     ParamsMiddleware stores the result on request.state.params so that
     request_params(request) returns it in every handler without an extra await.
     """
-    if request.method == "POST":
-        is_form = request.headers.get("content-type", "").startswith(
-            ("application/x-www-form-urlencoded", "multipart/form-data")
-        )
-        if not merge_query:
-            return MultiDict(await request.form()) if is_form else MultiDict()
-        if is_form:
-            # Body values replace query values for the same key
-            params = MultiDict(await request.form())
-            for key, value in request.query_params.multi_items():
-                if key not in params:
-                    params.append(key, value)
-            return params
+    if not merge_query:
+        if is_form_post(request):
+            return MultiDict(await request.form())
+        return MultiDict() if request.method == "POST" else request.query_params
 
-    return request.query_params
+    # Start from the form body (if any) so it wins per key, then add query-string
+    # values for keys the body did not set.
+    params = MultiDict(await request.form()) if is_form_post(request) else MultiDict()
+    body_keys = set(params.keys())
+    for key, value in request.query_params.multi_items():
+        if key not in body_keys:
+            params.append(key, value)
+    return first_wins(params)
 
 
 def request_params(request: Request) -> MultiDict | QueryParams:
     """The request's parameters, parsed once by ParamsMiddleware: the query
-    string for a GET, the form body for a page POST, or the form body merged
-    with the query string for an /api POST. See get_request_params for the
-    exact rules and the returned types."""
+    string for a page GET, the form body for a page POST, or the form body
+    merged with the query string for the API routes. See get_request_params
+    for the exact rules and the returned types."""
     return request.state.params
 
 

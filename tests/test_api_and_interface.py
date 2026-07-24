@@ -192,6 +192,70 @@ def create_mock_request(
     return mock_request
 
 
+def run_get_request_params(method, query_string="", body=b"", content_type=None, merge_query=False):
+    """Drive interface.get_request_params with a real Starlette Request"""
+    headers = [(b"content-type", content_type.encode())] if content_type else []
+    scope = {
+        "type": "http",
+        "method": method,
+        "query_string": query_string.encode(),
+        "headers": headers,
+    }
+
+    async def receive():
+        return {"type": "http.request", "body": body, "more_body": False}
+
+    request = Request(scope, receive)
+    return asyncio.run(interface.get_request_params(request, merge_query=merge_query))
+
+
+FORM = "application/x-www-form-urlencoded"
+
+
+class TestGetRequestParams:
+    """The /api route must expose GET and POST arguments identically to CherryPy"""
+
+    def test_api_duplicate_scalar_key_first_wins(self):
+        """A repeated routing/scalar key resolves to its first value, as CherryPy did"""
+        params = run_get_request_params("GET", "mode=queue&mode=version", merge_query=True)
+        assert params.get("mode") == "queue"
+
+    def test_api_get_and_post_resolve_duplicates_identically(self):
+        """GET and a form POST must dispatch a duplicated key the same way"""
+        get_params = run_get_request_params("GET", "mode=queue&mode=version", merge_query=True)
+        post_params = run_get_request_params(
+            "POST", "mode=queue&mode=version", body=b"nzbname=x", content_type=FORM, merge_query=True
+        )
+        assert get_params.get("mode") == post_params.get("mode") == "queue"
+
+    def test_api_body_wins_over_query(self):
+        """On a form POST the body value replaces the query value for the same key"""
+        params = run_get_request_params(
+            "POST", "mode=version&apikey=K", body=b"mode=addfile", content_type=FORM, merge_query=True
+        )
+        assert params.get("mode") == "addfile"
+        assert params.get("apikey") == "K"
+
+    def test_api_query_only_multi_value_key_preserved(self):
+        """A genuinely multi-valued key supplied only in the query keeps every value"""
+        params = run_get_request_params(
+            "POST", "keyword=a&keyword=b", body=b"section=misc", content_type=FORM, merge_query=True
+        )
+        assert params.getlist("keyword") == ["a", "b"]
+
+    def test_api_bodyless_post_uses_query(self):
+        """An /api POST without a form body falls back to the query string"""
+        params = run_get_request_params("POST", "mode=queue&apikey=K", merge_query=True)
+        assert params.get("mode") == "queue"
+        assert params.get("apikey") == "K"
+
+    def test_page_post_ignores_query_string(self):
+        """A page POST (no merge) reads the form body only; the query is not merged in"""
+        params = run_get_request_params("POST", "smuggled=1", body=b"field=value", content_type=FORM, merge_query=False)
+        assert params.get("field") == "value"
+        assert params.get("smuggled") is None
+
+
 class TestOrphanPathTraversal:
     """Orphaned-job handlers must not allow deleting/adding paths outside the download folder"""
 
