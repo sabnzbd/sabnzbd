@@ -826,6 +826,12 @@ def parring(nzo: NzbObject) -> tuple[bool, bool]:
         logging.info("Skipping verification and repair, all sets previously verified: %s", verified)
         return par_error, re_add
 
+    # Combine the per-article crc32s into a whole-file crc32 for the quick-check and SFV-check below
+    # Done here rather than while assembling because crc32_combine is order-dependent and articles can
+    # be written to disk out of order
+    for nzf in nzo.finished_files:
+        nzf.finalize_crc32()
+
     if nzo.extrapars:
         # Need to make a copy because it can change during iteration
         for setname in list(nzo.extrapars):

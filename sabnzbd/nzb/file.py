@@ -107,7 +107,7 @@ class NzbFile(TryList):
         self.deleted = False
         self.import_finished = False
 
-        self.crc32: Optional[int] = 0
+        self.crc32: Optional[int] = None
         self.assembled: bool = False
         self.md5of16k: Optional[bytes] = None
         self.assembler_next_index: int = 0
@@ -192,11 +192,15 @@ class NzbFile(TryList):
         self.blocks = int_conv(blocks)
 
     @synchronized()
-    def update_crc32(self, crc32: Optional[int], length: int) -> None:
-        if self.crc32 is None or crc32 is None:
-            self.crc32 = None
-        else:
-            self.crc32 = sabctools.crc32_combine(self.crc32, crc32, length)
+    def finalize_crc32(self) -> None:
+        """Compute the whole-file crc32 by combining the per-article crc32s in decodetable order"""
+        crc = 0
+        for article in self.decodetable:
+            if article.crc32 is None or article.decoded_size is None:
+                self.crc32 = None
+                return
+            crc = sabctools.crc32_combine(crc, article.crc32, article.decoded_size)
+        self.crc32 = crc
 
     @synchronized()
     def get_articles(self, server: Server, servers: list[Server], fetch_limit: int):
