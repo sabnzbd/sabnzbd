@@ -400,7 +400,6 @@ def _api_retry(name: str, kwargs: QueryParams) -> Response:
     if name is None or isinstance(name, str):
         name = kwargs.get("nzbfile")
     password = kwargs.get("password")
-    password = password[0] if isinstance(password, list) else password
 
     if nzo_id := retry_job(value, name, password):
         return report(kwargs, keyword="", data={"status": True, "nzo_id": nzo_id})
