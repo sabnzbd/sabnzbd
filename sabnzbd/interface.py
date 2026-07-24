@@ -252,7 +252,7 @@ def set_login_cookie(request: Request, response: Response, remove=False, remembe
     cookie_str = utob(str(salt) + client_address(request).host + COOKIE_SECRET)
     cookie_value = hashlib.sha1(cookie_str).hexdigest()
 
-    secure = cfg.enable_https()
+    secure = cfg.enable_https() or request.url.scheme == "https"
     if remove:
         # Remove cookies
         response.set_cookie(
