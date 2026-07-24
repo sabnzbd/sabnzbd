@@ -557,7 +557,10 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: li
             while nzo.direct_unpacker.is_alive():
                 logging.debug("DirectUnpacker still alive for %s: %s", nzo.final_name, last_stats)
 
-                # Bump the file-lock in case it's stuck
+                # Resume the unpacker. DirectUnpacker.add() leaves it waiting when the
+                # download was damaged, so this is the notification that lets it pick up
+                # the volumes that par2 has repaired by now. Also covers a wait that got
+                # stuck for any other reason.
                 with nzo.direct_unpacker.next_file_lock:
                     nzo.direct_unpacker.next_file_lock.notify()
                 time.sleep(2)

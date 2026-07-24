@@ -132,7 +132,10 @@ class DirectUnpacker(threading.Thread):
         if not cfg.direct_unpack_tested():
             test_disk_performance()
 
-        # Stop if something is wrong or we shouldn't start yet
+        # Stop if something is wrong, or we shouldn't start yet.
+        # A running instance is deliberately left waiting on the volume it needs, so that
+        # rar_unpack() can resume it once par2 repaired the damage. Waking it up now would
+        # feed unrar a damaged volume and throw away everything unpacked so far.
         if not self.check_requirements():
             return
 
