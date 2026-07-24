@@ -25,7 +25,8 @@ from unittest import mock
 import pytest
 
 import sabnzbd.cfg as cfg
-from sabnzbd.directunpacker import DirectUnpacker
+import sabnzbd.directunpacker
+from sabnzbd.directunpacker import ACTIVE_UNPACKERS, DirectUnpacker
 from sabnzbd.newsunpack import rar_unpack
 from sabnzbd.nzb import NzbFile, NzbObject
 
@@ -39,11 +40,7 @@ def make_nzf(filename: str, setname: str, vol: int) -> NzbFile:
     return nzf
 
 
-@pytest.fixture
-def unpacker(tmp_path):
-    """A DirectUnpacker with an active unrar instance that finished volume 1 of the
-    set "test", positioned as if unrar is waiting for volume 2 to appear.
-    """
+def make_nzo(tmp_path) -> NzbObject:
     nzo = mock.MagicMock(spec=NzbObject)
     nzo.first_articles = []
     nzo.unpack = True
@@ -55,19 +52,72 @@ def unpacker(tmp_path):
     nzo.download_path = str(tmp_path)
     nzo.final_name = "test.job"
     nzo.delete = False
+    nzo.password = None
+    nzo.correct_password = None
+    return nzo
 
+
+@pytest.fixture
+def patched_cfg():
     with mock.patch.multiple(
         cfg,
         direct_unpack_tested=mock.Mock(return_value=True),
         direct_unpack=mock.Mock(return_value=True),
         enable_unrar=mock.Mock(return_value=True),
     ):
-        unpacker = DirectUnpacker(nzo)
-        unpacker.cur_setname = "test"
-        unpacker.cur_volume = 1
-        # Pretend unrar is running, so add() will not try to start a real one
-        unpacker.active_instance = mock.MagicMock()
+        yield
+
+
+@pytest.fixture
+def unpacker(tmp_path, patched_cfg):
+    """A DirectUnpacker with an active unrar instance that finished volume 1 of the
+    set "test", positioned as if unrar is waiting for volume 2 to appear.
+    """
+    unpacker = DirectUnpacker(make_nzo(tmp_path))
+    unpacker.cur_setname = "test"
+    unpacker.cur_volume = 1
+    # Pretend unrar is running, so add() will not try to start a real one
+    unpacker.active_instance = mock.MagicMock()
+    yield unpacker
+
+
+class FakeUnrar:
+    """An unrar process that produces no output until it is released"""
+
+    def __init__(self):
+        self.reading = threading.Event()
+        self.release = threading.Event()
+        self.instance = mock.MagicMock()
+        self.instance.poll.return_value = None
+        self.instance.stdout.read.side_effect = self.read
+
+    def read(self, _size: int) -> bytes:
+        self.reading.set()
+        assert self.release.wait(timeout=60)
+        return b""
+
+
+@pytest.fixture
+def startable_unpacker(tmp_path, patched_cfg):
+    """A DirectUnpacker that has not started yet, with volume 1 of the set "test" ready
+    on disk and a fake unrar that stays silent, so add() will start the real code path.
+    """
+    nzo = make_nzo(tmp_path)
+    nzo.finished_files.append(make_nzf("test.part01.rar", "test", 1))
+
+    unpacker = DirectUnpacker(nzo)
+    unpacker.unpack_dir_info = (str(tmp_path), str(tmp_path), None, False, None)
+    unpacker.fake_unrar = FakeUnrar()
+
+    with mock.patch.object(sabnzbd.directunpacker, "build_and_run_command", return_value=unpacker.fake_unrar.instance):
         yield unpacker
+
+    unpacker.fake_unrar.release.set()
+    unpacker.killed = True
+    if unpacker.is_alive():
+        unpacker.join(timeout=10)
+    while unpacker in ACTIVE_UNPACKERS:
+        ACTIVE_UNPACKERS.remove(unpacker)
 
 
 def park_in_wait_for_next_volume(unpacker: DirectUnpacker) -> threading.Thread:
@@ -142,3 +192,55 @@ class TestDirectUnpackerResume:
             rar_unpack(unpacker.nzo, str(unpacker.nzo.download_path), False, ["test.part01.rar"])
 
         assert not waiting.is_alive(), "rar_unpack() did not resume the parked unpacker"
+
+
+class TestDirectUnpackerOutput:
+    def test_reading_output_does_not_block_add(self, startable_unpacker):
+        """Reading unrar's output may not hold START_STOP_LOCK. add() needs that same
+        lock and is called from the single Assembler thread, so a quiet or stalled unrar
+        would otherwise stop assembly for every job in the queue.
+        """
+        unpacker = startable_unpacker
+        unpacker.add(make_nzf("test.part01.rar", "test", 1))
+        assert unpacker.is_alive(), "add() did not start the unpacker"
+        assert unpacker.fake_unrar.reading.wait(timeout=10), "unrar output was never read"
+
+        # The Assembler thread hands us the next volume while unrar produces nothing
+        adding = threading.Thread(target=unpacker.add, args=(make_nzf("test.part02.rar", "test", 2),), daemon=True)
+        adding.start()
+        adding.join(timeout=5)
+
+        assert not adding.is_alive(), "add() was blocked by a silent unrar"
+
+    def test_reads_all_output_of_the_instance(self, startable_unpacker):
+        """Whole lines, the prompt that has no newline after it and any trailing output
+        all have to survive the move off the main loop.
+        """
+        unpacker = startable_unpacker
+        output = b"\nUNRAR 6.11 freeware\n\nExtracting from test.part01.rar\n\nInsert disk with test.part02.rar [C]ontinue, [Q]uit "
+        unpacker.fake_unrar.instance.stdout.read.side_effect = [output[i : i + 1] for i in range(len(output))] + [b""]
+
+        with mock.patch.object(DirectUnpacker, "wait_for_next_volume") as wait_for_next_volume:
+            unpacker.add(make_nzf("test.part01.rar", "test", 1))
+            unpacker.join(timeout=10)
+
+        assert not unpacker.is_alive(), "unpacker did not stop at the end of the output"
+        # The prompt has no newline after it, so it is only recognized if partial output arrives
+        wait_for_next_volume.assert_called_once()
+        unpacker.fake_unrar.instance.stdin.write.assert_called_once_with(b"C\n")
+
+    def test_each_instance_reads_its_own_output(self, startable_unpacker):
+        """Output that a previous instance left behind may not leak into the next set"""
+        unpacker = startable_unpacker
+        unpacker.cur_setname = "test"
+        unpacker.create_unrar_instance()
+        first_queue = unpacker.output_queue
+        first_queue.put(b"stale ")
+
+        # This is how run() moves on to the next set
+        unpacker.reset_active()
+        unpacker.cur_setname = "test"
+        unpacker.create_unrar_instance()
+
+        assert unpacker.output_queue is not first_queue
+        assert unpacker.output_queue.empty()

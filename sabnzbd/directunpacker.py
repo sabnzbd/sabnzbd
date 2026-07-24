@@ -20,6 +20,7 @@ sabnzbd.directunpacker
 """
 
 import os
+import queue
 import re
 import subprocess
 import time
@@ -56,6 +57,7 @@ class DirectUnpacker(threading.Thread):
         self.active_instance: Optional[subprocess.Popen] = None
         self.killed: bool = False
         self.next_file_lock = threading.Condition(threading.RLock())
+        self.output_queue: queue.Queue[Optional[bytes]] = queue.Queue()
 
         self.unpack_dir_info = None
         self.rarfile_nzf: Optional[NzbFile] = None
@@ -78,10 +80,10 @@ class DirectUnpacker(threading.Thread):
         pass
 
     def reset_active(self):
-        # make sure the process and file handlers are closed nicely:
+        # make sure the process and file handlers are closed nicely.
+        # stdout is left to read_output(), closing it here could block until it stops reading
         try:
             if self.active_instance:
-                self.active_instance.stdout.close()
                 self.active_instance.stdin.close()
                 self.active_instance.wait(timeout=2)
         except Exception:
@@ -168,6 +170,47 @@ class DirectUnpacker(threading.Thread):
         with self.next_file_lock:
             self.next_file_lock.notify()
 
+    def read_output(self, instance: subprocess.Popen, output_queue: queue.Queue[Optional[bytes]]):
+        """Read the output of a single unrar instance and pass it on in chunks that end on
+        a space or a newline. This runs in its own thread, so that a silent or stalled
+        unrar can never block the callers of add() and abort(), which both need
+        START_STOP_LOCK. Ends by putting None in the queue.
+        """
+        chunk = b""
+        try:
+            # Need to read char-by-char because there's no newline after new-disk message
+            while char := instance.stdout.read(1):
+                chunk += char
+
+                # Hand over whole words, so we don't queue every single character
+                if char in (b" ", b"\n"):
+                    output_queue.put(chunk)
+                    chunk = b""
+        except (OSError, ValueError):
+            # The instance was killed and its pipes closed while we were reading
+            logging.debug("Exception in read_output()", exc_info=True)
+        finally:
+            try:
+                instance.stdout.close()
+            except Exception:
+                logging.debug("Exception closing DirectUnpack output", exc_info=True)
+            if chunk:
+                output_queue.put(chunk)
+            output_queue.put(None)
+
+    def get_output_chunk(self) -> Optional[bytes]:
+        """Wait for the next chunk of output of the active instance, None when there is
+        nothing left to read. The timeout makes sure we also notice an instance that was
+        killed without its output ever reaching end-of-file.
+        """
+        while self.active_instance:
+            try:
+                return self.output_queue.get(timeout=5)
+            except queue.Empty:
+                if self.killed:
+                    break
+        return None
+
     def run(self):
         # Input and output
         linebuf = b""
@@ -177,25 +220,20 @@ class DirectUnpacker(threading.Thread):
         extracted = []
         start_time = time.time()
 
-        # Need to read char-by-char because there's no newline after new-disk message
         while 1:
-            # We need to lock, so we don't crash if unpacker is deleted while we read
-            with START_STOP_LOCK:
-                if not self.active_instance or not self.active_instance.stdout:
-                    break
-
-                while 1:
-                    # Keep reading until reaching space or end of line
-                    # to prevent continuous locking and unlocking
-                    char = self.active_instance.stdout.read(1)
-                    linebuf += char
-
-                    if char in (b" ", b"\n", b""):
-                        break
+            chunk = self.get_output_chunk()
 
             # End of program
-            if not char:
+            if chunk is None:
                 break
+
+            linebuf += chunk
+            char = chunk[-1:]
+
+            # Trailing output that has no space or newline after it, so there is nothing
+            # to handle yet. Only happens right before the instance ends.
+            if char not in (b" ", b"\n"):
+                continue
 
             # Handle whole lines
             if char == b"\n":
@@ -452,6 +490,16 @@ class DirectUnpacker(threading.Thread):
         self.active_instance = build_and_run_command(
             command, windows_unrar_command=True, text_mode=False, stdin=subprocess.PIPE
         )
+
+        # Every instance gets its own queue and reader, so that output of a previous
+        # instance can never end up in what we read next
+        self.output_queue = output_queue = queue.Queue()
+        threading.Thread(
+            target=self.read_output,
+            args=(self.active_instance, output_queue),
+            name="DirectUnpackReader",
+            daemon=True,
+        ).start()
 
         # Add to runners
         ACTIVE_UNPACKERS.append(self)
