@@ -32,6 +32,7 @@ import urllib.parse
 from threading import Thread
 from typing import Any, Callable, NamedTuple, Optional, TypeAlias, Awaitable, TypeGuard
 
+from starlette.background import BackgroundTask
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import QueryParams
 from starlette.requests import Request
@@ -192,6 +193,8 @@ async def halt_and_shutdown():
     loop so we don't block it. The web server itself cannot be stopped from within
     its own event loop, so that part is deferred to a separate thread."""
     if not sabnzbd.SABSTOP:
+        if sabnzbd.WEB_SERVER:
+            sabnzbd.WEB_SERVER.stop_accepting_connections()
         await run_in_threadpool(sabnzbd.halt)
         Thread(target=sabnzbd.shutdown_program).start()
 
@@ -856,19 +859,32 @@ def _api_auth(name: str, kwargs: QueryParams) -> Response:
     return report(kwargs, keyword="auth", data=auth)
 
 
-def _api_restart(name: str, kwargs: QueryParams) -> Response:
+async def _api_restart(name: str, kwargs: QueryParams) -> Response:
     logging.info("Restart requested by API")
-    # Do the shutdown async to still send goodbye to browser
-    Thread(target=sabnzbd.trigger_restart, kwargs={"timeout": 1}).start()
-    return report(kwargs)
+    return _restart_response(kwargs)
 
 
-def _api_restart_repair(name: str, kwargs: QueryParams) -> Response:
+async def _api_restart_repair(name: str, kwargs: QueryParams) -> Response:
     logging.info("Queue repair requested by API")
     request_repair()
-    # Do the shutdown async to still send goodbye to browser
-    Thread(target=sabnzbd.trigger_restart, kwargs={"timeout": 1}).start()
-    return report(kwargs)
+    return _restart_response(kwargs)
+
+
+def _restart_response(kwargs: QueryParams) -> Response:
+    """Reply to a restart request, then restart once the reply has been sent.
+
+    Stop accepting new connections up-front so a client that receives the reply
+    cannot reconnect to this soon-to-be-replaced process, and defer the actual
+    re-exec to a background task that runs after the response is flushed. Together
+    these replace the old blind one-second delay before triggering the restart.
+
+    Must be called from an async handler (event-loop thread) so closing the
+    listening sockets is safe."""
+    if sabnzbd.WEB_SERVER:
+        sabnzbd.WEB_SERVER.stop_accepting_connections()
+    response = report(kwargs)
+    response.background = BackgroundTask(sabnzbd.trigger_restart)
+    return response
 
 
 def _api_disconnect(name: str, kwargs: QueryParams) -> Response:

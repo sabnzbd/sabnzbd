@@ -2421,6 +2421,18 @@ class ThreadedServer(uvicorn.Server):
         if self.thread and self.thread is not threading.current_thread():
             self.thread.join()
 
+    def stop_accepting_connections(self):
+        """Close the listening sockets so no new connections are accepted, while
+        in-flight requests (including the caller's own response) still complete.
+
+        Must be called from the event-loop thread, i.e. from within an async
+        request handler, so touching the asyncio Server objects needs no
+        cross-thread scheduling. Safe before start-up (uvicorn only sets `servers`
+        once serving) and after a previous close (uvicorn's own shutdown closes
+        them again, idempotently)."""
+        for server in getattr(self, "servers", []):
+            server.close()
+
 
 async def not_found_redirect(request: Request, exc):
     """Catch-all for unknown URLs: redirect to the UI root"""

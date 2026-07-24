@@ -454,13 +454,12 @@ def shutdown_program():
         SHUTDOWN_LOCK.release()
 
 
-def trigger_restart(timeout=None):
-    """Trigger a restart by setting a flag an shutting down CP"""
-    # Sometimes we need to wait a bit to send good-bye to the browser
-    if timeout:
-        time.sleep(timeout)
+def trigger_restart():
+    """Trigger a restart by setting a flag and waking up the main loop.
 
-    # Set the flag and wake up the main loop
+    Callers that must let a response reach the browser first arrange the ordering
+    themselves (e.g. the API restart handler defers this to a post-response
+    background task), so no delay is needed here."""
     sabnzbd.TRIGGER_RESTART = True
     notify_shutdown_loop()
 
