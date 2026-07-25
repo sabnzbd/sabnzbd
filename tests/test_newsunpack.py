@@ -41,7 +41,7 @@ import sabnzbd.newsunpack as newsunpack
 from sabnzbd.constants import JOB_ADMIN
 from tests.testhelper import SAB_CACHE_DIR
 from sabnzbd.misc import format_time_string, SABRarFile
-from sabnzbd.filesystem import long_path, create_all_dirs, listdir_full
+from sabnzbd.filesystem import long_path, create_all_dirs, listdir_full, clip_path
 
 
 class TestNewsUnpackFunctions:
@@ -1008,7 +1008,7 @@ class TestExternalProcessingEnv:
         output, ret = newsunpack.external_processing(script_path, nzo, complete_dir, status, newfiles)
 
         sab_env = json.loads(output)
-        return sab_env, complete_dir, ret
+        return sab_env, clip_path(complete_dir), ret
 
     def _run_files(self, filenames):
         """SAB_FILES convenience wrapper: returns (decoded_files, expected, ret).
