@@ -189,10 +189,16 @@ class TestDirectUnpackerResume:
 
         # Post-processing repaired the set and now waits for direct unpack to finish
         unpacker.success_sets["test"] = (["test.part01.rar"], [])
-        with mock.patch.object(DirectUnpacker, "is_alive", side_effect=waiting.is_alive):
+        start = time.time()
+        with (
+            mock.patch.object(DirectUnpacker, "is_alive", side_effect=waiting.is_alive),
+            mock.patch.object(DirectUnpacker, "join", side_effect=waiting.join),
+        ):
             rar_unpack(unpacker.nzo, str(unpacker.nzo.download_path), False, ["test.part01.rar"])
 
         assert not waiting.is_alive(), "rar_unpack() did not resume the parked unpacker"
+        # Picked up the moment it finished, instead of sitting out the poll interval
+        assert time.time() - start < 1
 
 
 class TestDirectUnpackerOutput:

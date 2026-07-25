@@ -552,15 +552,18 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: li
 
         # Is the direct-unpacker still running? We wait for it
         if nzo.direct_unpacker:
+            # Repair is long done by the time we get here, so this only repeats what
+            # post-processing already told the unpacker when it finished parring
+            nzo.direct_unpacker.set_no_more_files()
+
             wait_count = 0
             last_stats = nzo.direct_unpacker.get_formatted_stats()
             while nzo.direct_unpacker.is_alive():
                 logging.debug("DirectUnpacker still alive for %s: %s", nzo.final_name, last_stats)
 
-                # Repair is long done by the time we get here, so this only repeats what
-                # post-processing already told the unpacker when it finished parring
-                nzo.direct_unpacker.set_no_more_files()
-                time.sleep(2)
+                # Returns as soon as it is done, so we only ever wait the full interval
+                # when it still has work to do
+                nzo.direct_unpacker.join(timeout=2)
 
                 # Did something change? Might be stuck
                 if last_stats == nzo.direct_unpacker.get_formatted_stats():
