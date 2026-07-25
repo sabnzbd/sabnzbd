@@ -56,6 +56,8 @@ class DirectUnpacker(threading.Thread):
         self.nzo: NzbObject = nzo
         self.active_instance: Optional[subprocess.Popen] = None
         self.killed: bool = False
+        # Set by post-processing once repair is done and no new files can arrive anymore
+        self.no_more_files: bool = False
         self.lock: threading.RLock = threading.RLock()
         self.next_file_lock = threading.Condition(threading.RLock())
         self.output_queue: queue.Queue[Optional[bytes]] = queue.Queue()
@@ -355,6 +357,11 @@ class DirectUnpacker(threading.Thread):
                 # Wait for the next one..
                 self.wait_for_next_volume()
 
+                # Nothing is coming anymore, so a volume we don't have is missing for good
+                if self.no_more_files and not self.have_next_volume():
+                    logging.info("DirectUnpack failed due to missing files %s", self.cur_setname)
+                    self.abort()
+
                 # Possible that the instance was deleted while locked
                 if not self.killed:
                     # Sometimes the assembler is still working on the file, resulting in "Unexpected end of archive".
@@ -425,12 +432,21 @@ class DirectUnpacker(threading.Thread):
                 return nzf_search
         return False
 
+    def set_no_more_files(self):
+        """Called by post-processing once repair is finished. Whatever is on disk now is
+        all we are going to get, so a volume we do not have by now is never coming.
+        """
+        logging.debug("No more files will arrive for %s", self.nzo.final_name)
+        with self.next_file_lock:
+            self.no_more_files = True
+            self.next_file_lock.notify()
+
     def wait_for_next_volume(self):
-        """Wait for the correct volume to appear but stop if it was killed
-        or the NZB is in post-processing and no new files will be downloaded.
+        """Wait for the correct volume to appear but stop if it was killed or if
+        post-processing told us that no new files will be downloaded.
         """
         with self.next_file_lock:
-            self.next_file_lock.wait_for(lambda: self.have_next_volume() or self.killed or self.nzo.pp_active)
+            self.next_file_lock.wait_for(lambda: self.have_next_volume() or self.killed or self.no_more_files)
 
     @synchronized()
     def create_unrar_instance(self):

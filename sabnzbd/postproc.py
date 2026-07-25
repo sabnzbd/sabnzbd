@@ -459,6 +459,11 @@ def process_job(nzo: NzbObject) -> bool:
                 # Try to get more par files
                 return False
 
+        # Repair is done, so whatever is on disk now is all Direct Unpack is ever going to
+        # get. Only after this it is safe for it to continue with the remaining volumes.
+        if nzo.direct_unpacker:
+            nzo.direct_unpacker.set_no_more_files()
+
         # If we don't need extra par2, we can disconnect
         if not sabnzbd.NzbQueue.actives(grabs=False) and cfg.autodisconnect():
             # This was the last job, close server connections

@@ -20,6 +20,7 @@ tests.test_directunpacker - Testing functions in directunpacker.py
 """
 
 import threading
+import time
 from unittest import mock
 
 import pytest
@@ -29,6 +30,7 @@ import sabnzbd.directunpacker
 from sabnzbd.directunpacker import ACTIVE_UNPACKERS, ACTIVE_UNPACKERS_LOCK, DirectUnpacker
 from sabnzbd.newsunpack import rar_unpack
 from sabnzbd.nzb import NzbFile, NzbObject
+from tests.testhelper import wait_for
 
 
 def make_nzf(filename: str, setname: str, vol: int) -> NzbFile:
@@ -186,7 +188,6 @@ class TestDirectUnpackerResume:
         assert waiting.is_alive()
 
         # Post-processing repaired the set and now waits for direct unpack to finish
-        unpacker.nzo.pp_active = True
         unpacker.success_sets["test"] = (["test.part01.rar"], [])
         with mock.patch.object(DirectUnpacker, "is_alive", side_effect=waiting.is_alive):
             rar_unpack(unpacker.nzo, str(unpacker.nzo.download_path), False, ["test.part01.rar"])
@@ -230,16 +231,13 @@ class TestDirectUnpackerOutput:
         unpacker.fake_unrar.instance.stdin.write.assert_called_once_with(b"C\n")
 
     @pytest.mark.parametrize("later_volume", [False, True], ids=["nothing_left", "later_volume_arrived"])
-    def test_missing_volume_ends_the_unpack(self, startable_unpacker, later_volume):
-        """Volume 2 never arrives. unrar keeps asking for the same one, so the repeating
-        prompt has to end the unpack instead of asking forever.
+    def test_missing_volume_aborts_once_repair_is_done(self, startable_unpacker, later_volume):
+        """Volume 2 never arrives. Once post-processing tells us nothing is coming anymore
+        we have to give up right away, also when a later volume did arrive.
         """
         unpacker = startable_unpacker
         if later_volume:
             unpacker.nzo.finished_files.append(make_nzf("test.part03.rar", "test", 3))
-
-        # Post-processing is running, so we know no more volumes are coming
-        unpacker.nzo.pp_active = True
 
         prompt = b"\nExtracting from test.part01.rar\n\nInsert disk with test.part02.rar [C]ontinue, [Q]uit "
         chars = (prompt[i : i + 1] for _ in iter(int, 1) for i in range(len(prompt)))
@@ -251,17 +249,31 @@ class TestDirectUnpackerOutput:
         unpacker.fake_unrar.instance.stdout.read.side_effect = read_char
 
         unpacker.add(make_nzf("test.part01.rar", "test", 1))
-        unpacker.join(timeout=60)
+        wait_for(
+            lambda: unpacker.cur_volume == 1 and unpacker.active_instance,
+            timeout=10,
+            interval=0.02,
+            err_msg="Timed out waiting for the DirectUnpacker",
+        )
+        assert unpacker.is_alive(), "gave up before post-processing said so"
+
+        unpacker.set_no_more_files()
+        unpacker.join(timeout=30)
 
         assert not unpacker.is_alive(), "kept asking for a volume that is never coming"
         assert unpacker.killed
+        # Straight to the abort, no rounds of repeating output first
+        assert not unpacker.duplicate_lines
+        assert unpacker.fake_unrar.instance.stdin.write.call_args_list == [mock.call(b"Q\n")]
 
-        # A later volume makes have_next_volume() true again once cur_volume moves on,
-        # so the repeat counter is what ends it instead of the missing volume itself
-        if later_volume:
-            assert unpacker.duplicate_lines
-        else:
-            assert not unpacker.duplicate_lines
+    def test_no_more_files_releases_the_wait(self, unpacker):
+        """The wait is only released by a notification, so post-processing has to send one"""
+        waiting = park_in_wait_for_next_volume(unpacker)
+
+        unpacker.set_no_more_files()
+
+        waiting.join(timeout=10)
+        assert not waiting.is_alive(), "set_no_more_files() did not wake the unpacker"
 
     def test_each_instance_reads_its_own_output(self, startable_unpacker):
         """Output that a previous instance left behind may not leak into the next set"""
