@@ -660,8 +660,8 @@ def to_units(val: int | float, postfix="") -> str:
         decimals = 0
 
     # Now we scale our value to the appropriate power of 1024
-    # It is written as 2^10n for symmetry with the
-    # selection above. Round it to the precision we are going to display, so
+    # It is written as 2^10n for symmetry with the selection above.
+    # Round it to the precision we are going to display, so
     # what we check below is what ends up in the output.
     val = round(val / 2 ** (10 * n), decimals)
 
