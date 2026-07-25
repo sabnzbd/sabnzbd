@@ -161,18 +161,18 @@ class TestDirectUnpackerAdd:
         assert not waiting.is_alive(), "wait_for_next_volume() was never woken up by add()"
 
     def test_damaged_download_keeps_unpacker_parked(self, unpacker):
-        """Damaged articles have to be repaired by par2 first, so the unpacker is left
-        waiting instead of being fed a volume unrar would choke on.
+        """Damaged articles have to be repaired by par2 first. A notification is the only
+        thing that gets a running unpacker going, so this one may not send one.
         """
-        waiting = park_in_wait_for_next_volume(unpacker)
         nzf = make_nzf("test.part02.rar", "test", 2)
         unpacker.nzo.finished_files.append(nzf)
         unpacker.nzo.bad_articles = 1
 
-        unpacker.add(nzf)
+        with mock.patch.object(unpacker, "next_file_lock") as next_file_lock:
+            unpacker.add(nzf)
 
-        waiting.join(timeout=2)
-        assert waiting.is_alive(), "unpacker should stay parked until par2 repaired the damage"
+        next_file_lock.notify.assert_not_called()
+        next_file_lock.notify_all.assert_not_called()
 
 
 class TestDirectUnpackerResume:
@@ -363,7 +363,7 @@ class TestDirectUnpackerLock:
             assert spawning.wait(timeout=10), "unrar was never started"
 
             # Nobody else gets to look at the slots while we are claiming one
-            assert not ACTIVE_UNPACKERS_LOCK.acquire(timeout=1), "the slots were readable mid-claim"
+            assert not ACTIVE_UNPACKERS_LOCK.acquire(blocking=False), "the slots were readable mid-claim"
 
             release.set()
             adding.join(timeout=10)
