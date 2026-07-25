@@ -40,9 +40,10 @@ from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.misc import SABRarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 
-# Only ever appended to from add(), which runs on the single Assembler thread, and only
-# removed by the unpacker itself. So the direct_unpack_threads limit needs no extra lock,
-# at worst a slot is freed just after we decided we had to wait for one.
+# Unpackers that have a live unrar instance. Held while checking the direct_unpack_threads
+# limit and claiming a slot, so that two callers of add() can never take the same one.
+# Always taken after the lock of an individual unpacker, never before it.
+ACTIVE_UNPACKERS_LOCK = threading.RLock()
 ACTIVE_UNPACKERS = []
 
 RAR_NR = re.compile(r"(.*?)(\.part(\d*).rar|\.r(\d*))$", re.IGNORECASE)
@@ -154,13 +155,18 @@ class DirectUnpacker(threading.Thread):
             logging.debug("DirectUnpack queued %s for %s", nzf.filename, self.cur_setname)
             # Is this the first one of the first set?
             if not self.active_instance and not self.is_alive() and self.have_next_volume():
-                # Too many runners already?
-                if len(ACTIVE_UNPACKERS) >= cfg.direct_unpack_threads():
-                    logging.info("Too many DirectUnpackers currently to start %s", self.cur_setname)
-                    return
+                # Claim a slot and create the instance in one go, so we can never hand the
+                # same slot to another caller of add()
+                with ACTIVE_UNPACKERS_LOCK:
+                    # Too many runners already?
+                    if len(ACTIVE_UNPACKERS) >= cfg.direct_unpack_threads():
+                        logging.info("Too many DirectUnpackers currently to start %s", self.cur_setname)
+                        return
 
-                # Start the unrar command and the loop
-                self.create_unrar_instance()
+                    # Start the unrar command
+                    self.create_unrar_instance()
+
+                # Start the loop
                 self.start()
         elif not any(test_nzf.setname == nzf.setname for test_nzf in self.next_sets):
             # Need to store this for the future, only once per set!
@@ -272,7 +278,10 @@ class DirectUnpacker(threading.Thread):
                     # Did we reach the end?
                     # Stop timer and finish
                     self.unpack_time += time.time() - start_time
-                    ACTIVE_UNPACKERS.remove(self)
+
+                    # Free the slot, there is no instance running until we start the next set
+                    with ACTIVE_UNPACKERS_LOCK:
+                        ACTIVE_UNPACKERS.remove(self)
 
                     # Take note of the correct password
                     if self.nzo.password and not self.nzo.correct_password:
@@ -397,8 +406,9 @@ class DirectUnpacker(threading.Thread):
             self.killed = True
             # Make more space
             self.reset_active()
-            if self in ACTIVE_UNPACKERS:
-                ACTIVE_UNPACKERS.remove(self)
+            with ACTIVE_UNPACKERS_LOCK:
+                if self in ACTIVE_UNPACKERS:
+                    ACTIVE_UNPACKERS.remove(self)
             logging.debug("Closing DirectUnpack for %s", self.nzo.final_name)
 
     def have_next_volume(self):
@@ -502,7 +512,8 @@ class DirectUnpacker(threading.Thread):
         ).start()
 
         # Add to runners
-        ACTIVE_UNPACKERS.append(self)
+        with ACTIVE_UNPACKERS_LOCK:
+            ACTIVE_UNPACKERS.append(self)
 
         # Doing the first
         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
@@ -603,7 +614,10 @@ def analyze_rar_filename(filename):
 def abort_all():
     """Abort all running DirectUnpackers"""
     logging.info("Aborting all DirectUnpackers")
-    for direct_unpacker in ACTIVE_UNPACKERS:
+    # Abort outside the lock, since abort() needs the lock of the unpacker itself
+    with ACTIVE_UNPACKERS_LOCK:
+        active_unpackers = ACTIVE_UNPACKERS.copy()
+    for direct_unpacker in active_unpackers:
         direct_unpacker.abort()
 
 

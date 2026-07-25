@@ -26,7 +26,7 @@ import pytest
 
 import sabnzbd.cfg as cfg
 import sabnzbd.directunpacker
-from sabnzbd.directunpacker import ACTIVE_UNPACKERS, DirectUnpacker
+from sabnzbd.directunpacker import ACTIVE_UNPACKERS, ACTIVE_UNPACKERS_LOCK, DirectUnpacker
 from sabnzbd.newsunpack import rar_unpack
 from sabnzbd.nzb import NzbFile, NzbObject
 
@@ -263,3 +263,29 @@ class TestDirectUnpackerLock:
             adding.join(timeout=5)
 
             assert not adding.is_alive(), "add() waited for an unrelated job"
+
+    def test_claiming_a_slot_is_atomic(self, startable_unpacker):
+        """Checking the direct_unpack_threads limit and taking one of the slots have to
+        happen together, or two callers of add() could both claim the last one.
+        """
+        unpacker = startable_unpacker
+        spawning = threading.Event()
+        release = threading.Event()
+
+        def slow_spawn(*args, **kwargs):
+            spawning.set()
+            assert release.wait(timeout=60)
+            return unpacker.fake_unrar.instance
+
+        with mock.patch.object(sabnzbd.directunpacker, "build_and_run_command", side_effect=slow_spawn):
+            adding = threading.Thread(target=unpacker.add, args=(make_nzf("test.part01.rar", "test", 1),), daemon=True)
+            adding.start()
+            assert spawning.wait(timeout=10), "unrar was never started"
+
+            # Nobody else gets to look at the slots while we are claiming one
+            assert not ACTIVE_UNPACKERS_LOCK.acquire(timeout=1), "the slots were readable mid-claim"
+
+            release.set()
+            adding.join(timeout=10)
+
+        assert unpacker in ACTIVE_UNPACKERS
