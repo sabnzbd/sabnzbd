@@ -664,6 +664,15 @@ def to_units(val: int | float, postfix="") -> str:
     else:
         decimals = 0
 
+    # Rounding to the displayed precision can carry the value up to the next unit,
+    # for example 1048575 would be shown as "1024 K" instead of "1.0 M". Move it to
+    # the next unit instead, unless we are already at the maximum defined index.
+    if n < 5 and float(f"{val:.{decimals}f}") >= 1024:
+        n += 1
+        val = val / 1024
+        if n > 1:
+            decimals = 1
+
     # We might not have anything at all to append
     if n == 0 and postfix == "":
         units = ""
