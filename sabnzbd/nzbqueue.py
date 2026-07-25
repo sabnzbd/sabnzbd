@@ -236,7 +236,7 @@ class NzbQueue:
             self.__nzo_table[nzo_ids[0]].reuse = None
 
     @NzbQueueLocker
-    def save(self, save_nzo: NzbObject | None | bool = None):
+    def save(self, save_nzo: NzbObject | bool | None = None):
         """Save queue, all nzo's or just the specified one"""
         logging.info("Saving queue")
 

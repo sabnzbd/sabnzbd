@@ -147,7 +147,7 @@ class Server:
         self.bad_cons: int = 0
         self.errormsg: str = ""
         self.warning: str = ""
-        self.addrinfo: AddrInfo | None | bool = None  # Will hold fasted address information
+        self.addrinfo: AddrInfo | bool | None = None  # Will hold fasted address information
         self.ssl_info: str = ""  # Will hold the type and cipher of SSL connection
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
