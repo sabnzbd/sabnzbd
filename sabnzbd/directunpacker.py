@@ -40,10 +40,9 @@ from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.misc import SABRarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 
-# Need a lock to make sure start and stop is handled correctly
-# Otherwise we could stop while the thread was still starting
-START_STOP_LOCK = threading.RLock()
-
+# Only ever appended to from add(), which runs on the single Assembler thread, and only
+# removed by the unpacker itself. So the direct_unpack_threads limit needs no extra lock,
+# at worst a slot is freed just after we decided we had to wait for one.
 ACTIVE_UNPACKERS = []
 
 RAR_NR = re.compile(r"(.*?)(\.part(\d*).rar|\.r(\d*))$", re.IGNORECASE)
@@ -56,6 +55,7 @@ class DirectUnpacker(threading.Thread):
         self.nzo: NzbObject = nzo
         self.active_instance: Optional[subprocess.Popen] = None
         self.killed: bool = False
+        self.lock: threading.RLock = threading.RLock()
         self.next_file_lock = threading.Condition(threading.RLock())
         self.output_queue: queue.Queue[Optional[bytes]] = queue.Queue()
 
@@ -128,7 +128,7 @@ class DirectUnpacker(threading.Thread):
         if none_counter > found_counter:
             self.total_volumes = {}
 
-    @synchronized(START_STOP_LOCK)
+    @synchronized()
     def add(self, nzf: NzbFile):
         """Add jobs and start instance of DirectUnpack"""
         if not cfg.direct_unpack_tested():
@@ -174,7 +174,7 @@ class DirectUnpacker(threading.Thread):
         """Read the output of a single unrar instance and pass it on in chunks that end on
         a space or a newline. This runs in its own thread, so that a silent or stalled
         unrar can never block the callers of add() and abort(), which both need
-        START_STOP_LOCK. Ends by putting None in the queue.
+        self.lock. Ends by putting None in the queue.
         """
         chunk = b""
         try:
@@ -392,7 +392,7 @@ class DirectUnpacker(threading.Thread):
         if unrar_log:
             logging.debug("DirectUnpack Unrar output: \n%s", "\n".join(unrar_log))
 
-        with START_STOP_LOCK:
+        with self.lock:
             # Set the thread to killed so it never gets restarted by accident
             self.killed = True
             # Make more space
@@ -422,7 +422,7 @@ class DirectUnpacker(threading.Thread):
         with self.next_file_lock:
             self.next_file_lock.wait_for(lambda: self.have_next_volume() or self.killed or self.nzo.pp_active)
 
-    @synchronized(START_STOP_LOCK)
+    @synchronized()
     def create_unrar_instance(self):
         """Start the unrar instance using the user's options"""
         # Generate extraction path and save for post-proc
@@ -507,7 +507,7 @@ class DirectUnpacker(threading.Thread):
         # Doing the first
         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
 
-    @synchronized(START_STOP_LOCK)
+    @synchronized()
     def abort(self, abort_input: bytes = b"Q"):
         """Abort running instance and delete generated files"""
         if not self.killed and self.cur_setname:

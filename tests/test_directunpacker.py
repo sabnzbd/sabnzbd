@@ -196,9 +196,9 @@ class TestDirectUnpackerResume:
 
 class TestDirectUnpackerOutput:
     def test_reading_output_does_not_block_add(self, startable_unpacker):
-        """Reading unrar's output may not hold START_STOP_LOCK. add() needs that same
-        lock and is called from the single Assembler thread, so a quiet or stalled unrar
-        would otherwise stop assembly for every job in the queue.
+        """Reading unrar's output may not hold the lock that add() needs. add() is called
+        from the single Assembler thread, so a quiet or stalled unrar would otherwise stop
+        assembly for the whole job.
         """
         unpacker = startable_unpacker
         unpacker.add(make_nzf("test.part01.rar", "test", 1))
@@ -244,3 +244,22 @@ class TestDirectUnpackerOutput:
 
         assert unpacker.output_queue is not first_queue
         assert unpacker.output_queue.empty()
+
+
+class TestDirectUnpackerLock:
+    def test_unpackers_do_not_share_a_lock(self, unpacker, startable_unpacker):
+        """abort() holds the lock while it kills unrar and removes the extracted files,
+        which can take seconds. That may not hold up add() for another job, because all
+        jobs are added from the single Assembler thread.
+        """
+        assert unpacker.lock is not startable_unpacker.lock
+
+        # As held by a slow abort() of another job
+        with unpacker.lock:
+            adding = threading.Thread(
+                target=startable_unpacker.add, args=(make_nzf("test.part01.rar", "test", 1),), daemon=True
+            )
+            adding.start()
+            adding.join(timeout=5)
+
+            assert not adding.is_alive(), "add() waited for an unrelated job"
