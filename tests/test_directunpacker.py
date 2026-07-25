@@ -229,6 +229,40 @@ class TestDirectUnpackerOutput:
         wait_for_next_volume.assert_called_once()
         unpacker.fake_unrar.instance.stdin.write.assert_called_once_with(b"C\n")
 
+    @pytest.mark.parametrize("later_volume", [False, True], ids=["nothing_left", "later_volume_arrived"])
+    def test_missing_volume_ends_the_unpack(self, startable_unpacker, later_volume):
+        """Volume 2 never arrives. unrar keeps asking for the same one, so the repeating
+        prompt has to end the unpack instead of asking forever.
+        """
+        unpacker = startable_unpacker
+        if later_volume:
+            unpacker.nzo.finished_files.append(make_nzf("test.part03.rar", "test", 3))
+
+        # Post-processing is running, so we know no more volumes are coming
+        unpacker.nzo.pp_active = True
+
+        prompt = b"\nExtracting from test.part01.rar\n\nInsert disk with test.part02.rar [C]ontinue, [Q]uit "
+        chars = (prompt[i : i + 1] for _ in iter(int, 1) for i in range(len(prompt)))
+
+        def read_char(_size: int) -> bytes:
+            # Killing the instance closes the pipe
+            return b"" if unpacker.killed else next(chars)
+
+        unpacker.fake_unrar.instance.stdout.read.side_effect = read_char
+
+        unpacker.add(make_nzf("test.part01.rar", "test", 1))
+        unpacker.join(timeout=60)
+
+        assert not unpacker.is_alive(), "kept asking for a volume that is never coming"
+        assert unpacker.killed
+
+        # A later volume makes have_next_volume() true again once cur_volume moves on,
+        # so the repeat counter is what ends it instead of the missing volume itself
+        if later_volume:
+            assert unpacker.duplicate_lines
+        else:
+            assert not unpacker.duplicate_lines
+
     def test_each_instance_reads_its_own_output(self, startable_unpacker):
         """Output that a previous instance left behind may not leak into the next set"""
         unpacker = startable_unpacker
