@@ -42,7 +42,6 @@ from sabnzbd.utils.diskspeed import diskspeedmeasure
 
 if sabnzbd.WINDOWS:
     import msvcrt
-    import pywintypes
     import win32pipe
 
 # Unpackers that have a live unrar instance. Held while checking the direct_unpack_threads
