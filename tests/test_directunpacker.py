@@ -246,6 +246,34 @@ class TestDirectUnpackerOutput:
         assert unpacker.output_queue.empty()
 
 
+class TestDirectUnpackerAbort:
+    def test_aborts_between_sets(self, unpacker):
+        """run() clears cur_setname while it moves on to the next set, and reset_active()
+        can sit there for two seconds waiting for the old instance. An abort landing in
+        that window still has to stop us, or the next set gets unpacked anyway.
+        """
+        unpacker.cur_setname = None
+
+        unpacker.abort()
+
+        assert unpacker.killed
+        assert not unpacker.check_requirements()
+
+    def test_aborts_without_a_rarfile(self, unpacker, tmp_path):
+        """The one-folder cleanup needs the rarfile to know what to remove. Without it the
+        files are left alone, the shared folder may hold files that are not ours.
+        """
+        shared_file = tmp_path / "not-ours.mkv"
+        shared_file.touch()
+        unpacker.rarfile_nzf = None
+        unpacker.unpack_dir_info = (str(tmp_path), str(tmp_path), None, True, None)
+
+        unpacker.abort()
+
+        assert unpacker.killed
+        assert shared_file.exists(), "abort() removed files it did not unpack"
+
+
 class TestDirectUnpackerLock:
     def test_unpackers_do_not_share_a_lock(self, unpacker, startable_unpacker):
         """abort() holds the lock while it kills unrar and removes the extracted files,

@@ -521,8 +521,10 @@ class DirectUnpacker(threading.Thread):
     @synchronized()
     def abort(self, abort_input: bytes = b"Q"):
         """Abort running instance and delete generated files"""
-        if not self.killed and self.cur_setname:
-            logging.info("Aborting DirectUnpack for %s", self.cur_setname)
+        # Also abort when there is no cur_setname, which is the case while run() is between
+        # two sets. Skipping it there would let run() start the set it was preparing.
+        if not self.killed:
+            logging.info("Aborting DirectUnpack for %s", self.cur_setname or self.nzo.final_name)
             self.killed = True
 
             # Save reference to the first rarfile
@@ -558,7 +560,8 @@ class DirectUnpacker(threading.Thread):
                 extraction_path, _, _, one_folder, _ = self.unpack_dir_info
                 # In case of flat-unpack we need to remove the files manually
                 if one_folder:
-                    # RarFile can fail for mysterious reasons
+                    # RarFile can fail for mysterious reasons. Without a rarfile we cannot
+                    # tell which files in the shared folder were ours, so we leave them.
                     try:
                         rar_contents = SABRarFile(
                             os.path.join(self.nzo.download_path, rarfile_nzf.filename), part_only=True
@@ -570,7 +573,9 @@ class DirectUnpacker(threading.Thread):
                     except Exception:
                         # The user will have to remove it themselves
                         logging.info(
-                            "Failed to clean Direct Unpack after aborting %s", rarfile_nzf.filename, exc_info=True
+                            "Failed to clean Direct Unpack after aborting %s",
+                            rarfile_nzf.filename if rarfile_nzf else self.nzo.final_name,
+                            exc_info=True,
                         )
                 else:
                     # We can just remove the whole path
