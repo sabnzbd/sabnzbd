@@ -561,6 +561,10 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: li
             while nzo.direct_unpacker.is_alive():
                 logging.debug("DirectUnpacker still alive for %s: %s", nzo.final_name, last_stats)
 
+                # Bump the file-lock in case it's stuck
+                with nzo.direct_unpacker.next_file_lock:
+                    nzo.direct_unpacker.next_file_lock.notify()
+
                 # Returns as soon as it is done, so we only ever wait the full interval
                 # when it still has work to do
                 nzo.direct_unpacker.join(timeout=2)
