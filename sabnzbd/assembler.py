@@ -510,7 +510,6 @@ class Assembler(Thread):
             while written < len(data):
                 written += Assembler._write(fd, nzf, mv[written:], pos + written)
 
-        nzf.update_crc32(article.crc32, len(data))
         article.on_disk = True
         sabnzbd.Assembler.update_ready_bytes(nzf, -len(data))
         with nzf.lock:

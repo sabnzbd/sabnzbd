@@ -126,6 +126,10 @@ class TestAssembler:
         assert content == expected
         assert nzf.assembler_next_index == len(nzf.decodetable)
         assert nzf.contiguous_offset() == nzf.decodetable[0].file_size
+        # crc32 is finalized in post-processing, not during assembly. Once combined in decodetable
+        # order it must match the file regardless of the order articles were written to disk
+        nzf.finalize_crc32()
+        assert nzf.crc32 == crc32(expected)
 
     def test_assemble_direct_write(self, assembler):
         """Pure direct write mode"""
@@ -319,6 +323,41 @@ class TestAssembler:
         Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
         assert assembler.call_count == 3
         self._assert_expected_content(self.nzf, expected)
+
+    def test_crc32_correct_when_gap_filled_out_of_order(self, assembler):
+        """Pausing flushes the cache non-contiguously, so later articles are written before an earlier gap article.
+        The finalized crc32 must still match the file, which is combined in decodetable order."""
+        _data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world"), decoded=False),
+                self._make_article(self.nzf, offset=10, data=bytearray(b"12345")),
+            ],
+        )
+        # Forced flush writes [0] and [2], skipping the not-yet-decoded gap [1]
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=True, direct_write=True)
+        assert self.nzf.crc32 is None  # not finalized until file_done
+        # Gap article arrives last and the file completes
+        self.nzf.decodetable[1].decoded = True
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
+        self._assert_expected_content(self.nzf, expected)
+
+    def test_finalize_crc32_none_when_article_missing(self, assembler):
+        """A file with a missing article crc cannot be verified, so crc32 is None."""
+        _data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world")),
+            ],
+        )
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
+        self._assert_expected_content(self.nzf, expected)
+        # A missing per-article crc (e.g. article never decoded) makes the whole-file crc unverifiable
+        self.nzf.decodetable[1].crc32 = None
+        self.nzf.finalize_crc32()
+        assert self.nzf.crc32 is None
 
 
 class TestDiskspaceCheck:
