@@ -658,7 +658,6 @@ class TestQueueApi(ApiTestFunctions):
             ("size", "size", "asc"),  # Issue #1666, incorrect (reversed) sort order for avg_age
             ("size", "size", "desc"),
             ("remaining_bytes", "sizeleft", "asc"),
-            ("remaining_bytes", "sizeleft", "desc"),
         ],
     )
     def test_api_queue_sort(self, sort_by, slot_name, sort_order):

@@ -591,7 +591,8 @@ class NzbQueue:
                 logging.debug("Sorting by percentage downloaded...")
             sort_function = lambda nzo: nzo.remaining / nzo.bytes if nzo.bytes else 1
         elif field == "remaining_bytes":
-            logging.info("Sorting by remaining size (reversed: %s)", reverse)
+            if self.__nzo_list:
+                logging.debug("Sorting by remaining size...")
             sort_function = lambda nzo: nzo.remaining
         else:
             logging.debug("Sort: %s not recognized", field)
@@ -604,9 +605,10 @@ class NzbQueue:
     def update_sort_order(self):
         """Resorts the queue if it is useful for the selected sort method"""
         auto_sort = cfg.auto_sort()
-        if auto_sort and auto_sort.startswith("remaining"):
-            field, direction = auto_sort.split()
-            self.sort_queue(field, direction)
+        if auto_sort == "remaining_bytes asc":
+            self.sort_queue("remaining_bytes")
+        elif auto_sort and auto_sort.startswith("remaining"):
+            self.sort_queue("remaining")
 
     @NzbQueueLocker
     def __set_priority(self, nzo_id: str, priority: int | str) -> Optional[int]:
