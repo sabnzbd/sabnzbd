@@ -653,25 +653,26 @@ def to_units(val: int | float, postfix="") -> str:
         # Limit it to 5 as the maximum defined index.
         n = min(5, math.trunc(math.log2(val) / 10))
 
-    # Now we scale our value to the appropriate power of 1024
-    # It is written as 2^10n for symmetry with the
-    # selection above.
-    val = val / 2 ** (10 * n)
-
     # Showing the single decimal per doc string
     if n > 1:
         decimals = 1
     else:
         decimals = 0
 
-    # Rounding to the displayed precision can carry the value up to the next unit,
-    # for example 1048575 would be shown as "1024 K" instead of "1.0 M". Move it to
-    # the next unit instead, unless we are already at the maximum defined index.
-    if n < 5 and float(f"{val:.{decimals}f}") >= 1024:
+    # Now we scale our value to the appropriate power of 1024
+    # It is written as 2^10n for symmetry with the
+    # selection above. Round it to the precision we are going to display, so
+    # what we check below is what ends up in the output.
+    val = round(val / 2 ** (10 * n), decimals)
+
+    # That rounding can carry the value up into the next unit, for example 1048575
+    # would be shown as "1024 K" instead of "1.0 M". Move it up a unit instead,
+    # unless we are already at the maximum defined index.
+    if n < 5 and val >= 1024:
         n += 1
-        val = val / 1024
         if n > 1:
             decimals = 1
+        val = round(val / 1024, decimals)
 
     # We might not have anything at all to append
     if n == 0 and postfix == "":
