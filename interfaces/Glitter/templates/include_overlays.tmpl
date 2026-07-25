@@ -333,7 +333,7 @@
                                 </label>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-6 control-label">$T('Glitter-interfaceRefresh')</label>
+                                <label class="col-sm-6 control-label" for="refreshRate-option">$T('Glitter-interfaceRefresh')</label>
                                 <div class="col-sm-4">
                                     <select id="refreshRate-option" class="form-control" data-bind="value: refreshRate">
                                         <option value="1">1 $T('second')</option>
@@ -351,9 +351,9 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-6 control-label">$T('Glitter-queueItemLimit')</label>
+                                <label class="col-sm-6 control-label" for="queue-pagination-limit">$T('Glitter-queueItemLimit')</label>
                                 <div class="col-sm-4">
-                                    <select name="queue-pagination-limit" class="form-control" data-bind="value: queue.paginationLimit">
+                                    <select name="queue-pagination-limit" id="queue-pagination-limit" class="form-control" data-bind="value: queue.paginationLimit">
                                         <option value="5">5 / $T('Glitter-page')</option>
                                         <option value="10">10 / $T('Glitter-page')</option>
                                         <option value="20">20 / $T('Glitter-page')</option>
@@ -366,9 +366,9 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-6 control-label">$T('Glitter-historyItemLimit')</label>
+                                <label class="col-sm-6 control-label" for="history-pagination-limit">$T('Glitter-historyItemLimit')</label>
                                 <div class="col-sm-4">
-                                    <select name="history-pagination-limit" class="form-control" data-bind="value: history.paginationLimit">
+                                    <select name="history-pagination-limit" id="history-pagination-limit" class="form-control" data-bind="value: history.paginationLimit">
                                         <option value="5">5 / $T('Glitter-page')</option>
                                         <option value="10">10 / $T('Glitter-page')</option>
                                         <option value="20">20 / $T('Glitter-page')</option>
@@ -381,9 +381,9 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-6 control-label">$T('Glitter-dateFormat')</label>
+                                <label class="col-sm-6 control-label" for="general-date-format">$T('Glitter-dateFormat')</label>
                                 <div class="col-sm-4">
-                                    <select name="general-date-format" class="form-control" data-bind="value: dateFormat">
+                                    <select name="general-date-format" id="general-date-format" class="form-control" data-bind="value: dateFormat">
                                         <option value="DD/MM/YYYY HH:mm"></option>
                                         <option value="DD/MM/YYYY h:mma"></option>
                                         <option value="MM/DD/YYYY HH:mm"></option>
@@ -399,12 +399,12 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-6 control-label">
+                                <label class="col-sm-6 control-label" for="general-extra-queue-columns">
                                     $T('Glitter-showExtraQueueColumn')<br />
                                     <span class="label label-warning">&gt; 1200 pixels</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <select name="general-extra-column" class="form-control-multiselect form-control" data-bind="selectedOptions: extraQueueColumns" multiple="true">
+                                    <select name="general-extra-column" id="general-extra-queue-columns" class="form-control-multiselect form-control" data-bind="selectedOptions: extraQueueColumns" multiple="true">
                                         <option value="category">$T('category')</option>
                                         <option value="priority">$T('priority')</option>
                                         <option value="processing">$T('swtag-pp')</option>
@@ -414,12 +414,12 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-6 control-label">
+                                <label class="col-sm-6 control-label" for="general-extra-history-columns">
                                     $T('Glitter-showExtraHistoryColumn')<br />
                                     <span class="label label-warning">&gt; 1200 pixels</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <select name="general-extra-column" class="form-control-multiselect form-control" data-bind="selectedOptions: extraHistoryColumns" multiple="true">
+                                    <select name="general-extra-column" id="general-extra-history-columns" class="form-control-multiselect form-control" data-bind="selectedOptions: extraHistoryColumns" multiple="true">
                                         <option value="category">$T('category')</option>
                                         <option value="size">$T('size')</option>
                                         <option value="speed">$T('Glitter-speed')</option>
