@@ -287,6 +287,10 @@ msgid ""
 "'Articles per request' to a value between 5 and 10 can improve download "
 "speed. See: https://sabnzbd.org/wiki/advanced/nntp-pipelining"
 msgstr ""
+"%s sunucusunun cevap vermesi %d ms sürdü. Yüksek gecikmeli bağlantılarda, "
+"'talep başı makale' değerini 5 ila 10 olarak ayarlamak indirme hızını "
+"iyileştirebilir. Şu sayfaya bakın: https://sabnzbd.org/wiki/advanced/nntp-"
+"pipelining"
 
 #: sabnzbd/api.py
 msgid "Resolving address"
@@ -1847,7 +1851,7 @@ msgstr "%s kaldırması başarısız oldu"
 
 #: sabnzbd/postproc.py
 msgid "Removed %s files with unwanted extensions"
-msgstr ""
+msgstr "İstemeyen uzantılı %s dosya kaldırıldı"
 
 #. Error message
 #: sabnzbd/powersup.py
@@ -4743,7 +4747,7 @@ msgstr "Geçici Dizin"
 
 #: sabnzbd/skintext.py
 msgid "Clear search"
-msgstr ""
+msgstr "Aramayı temizle"
 
 #: sabnzbd/skintext.py
 msgid "Multi-Operations"
@@ -4755,7 +4759,7 @@ msgstr "Bir aralık seçmek için Shift tuşunu basılı tutun"
 
 #: sabnzbd/skintext.py
 msgid "Select job"
-msgstr ""
+msgstr "İş seç"
 
 #: sabnzbd/skintext.py
 msgid "Check all"

@@ -4812,7 +4812,7 @@ msgstr "Dossier temporaire"
 
 #: sabnzbd/skintext.py
 msgid "Clear search"
-msgstr ""
+msgstr "Effacer la recherche"
 
 #: sabnzbd/skintext.py
 msgid "Multi-Operations"
