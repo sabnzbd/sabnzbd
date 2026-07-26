@@ -3423,8 +3423,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr "添加新作业时自动对队列中的作业进行排序。"
 
 #: sabnzbd/skintext.py
-msgid "The queue will resort every 30 seconds if % downloaded is selected."
-msgstr "如果选择了下载百分比，队列将每 30 秒重新排序一次。"
+msgid ""
+"The queue will resort every 30 seconds if % downloaded or Remaining Size is "
+"selected."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Propagation delay"
@@ -4764,6 +4766,10 @@ msgstr "所有用户名、密码和 API 密钥都会自动从日志和包含的�
 #: sabnzbd/skintext.py
 msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
 msgstr "按下载百分比排序 <small>最多&rarr;最少</small>"
+
+#: sabnzbd/skintext.py
+msgid "Sort by Remaining Size <small>Smallest&rarr;Largest</small>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"

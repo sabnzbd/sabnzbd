@@ -3594,9 +3594,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr "Kuyruktaki işleri yeni bir iş eklendiğinde otomatik olarak sırala."
 
 #: sabnzbd/skintext.py
-msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgid ""
+"The queue will resort every 30 seconds if % downloaded or Remaining Size is "
+"selected."
 msgstr ""
-"İndirme %'si seçildiyse, kuyruk her 30 saniyede bir tekrar sıralanacaktır."
 
 #: sabnzbd/skintext.py
 msgid "Propagation delay"
@@ -5007,6 +5008,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
 msgstr "İndirilen % ile sırala <small>Azami&rarr;Asgari</small>"
+
+#: sabnzbd/skintext.py
+msgid "Sort by Remaining Size <small>Smallest&rarr;Largest</small>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
