@@ -28,8 +28,8 @@
         <div class="account-wall">
             <div class="text-center logo-header">
                 <!--#include $webdir + "/staticcfg/images/logo-full.svg"#-->
-                <a href="https://sabnzbd.org/wiki/faq#why-login" target="_blank">
-                    <span class="glyphicon glyphicon-question-sign"></span>
+                <a href="https://sabnzbd.org/wiki/faq#why-login" target="_blank" aria-label="$T('menu-help')">
+                    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
                 </a>
             </div>
             <form class="form-signin" action="./" method="post">
@@ -37,8 +37,10 @@
                 <div class="alert alert-danger" role="alert">$error</div>
                 <!--#end if#-->
 
-                <input type="text" class="form-control" name="username" placeholder="$T('srv-username')" autocomplete="username" required autofocus>
-                <input type="password" class="form-control" name="password" placeholder="$T('srv-password')" autocomplete="current-password" required>
+                <label class="sr-only" for="login-username">$T('srv-username')</label>
+                <input type="text" class="form-control" id="login-username" name="username" placeholder="$T('srv-username')" autocomplete="username" required autofocus>
+                <label class="sr-only" for="login-password">$T('srv-password')</label>
+                <input type="password" class="form-control" id="login-password" name="password" placeholder="$T('srv-password')" autocomplete="current-password" required>
 
                 <button class="btn btn-default"><span class="glyphicon glyphicon-circle-arrow-right"></span> $T('login') </button>
 
