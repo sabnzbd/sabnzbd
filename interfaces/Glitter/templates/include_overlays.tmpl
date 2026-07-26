@@ -274,7 +274,7 @@
                                 </div>
 
                                 <!-- ko if: serverconnections().length > 0 -->
-                                <table class="table table-hover table-server-connections" data-bind="visible: \$root.showActiveConnections()">
+                                <table class="table table-hover table-server-connections" aria-label="$T('connections')" data-bind="visible: \$root.showActiveConnections()">
                                     <thead>
                                         <tr>
                                             <th><strong>$T('article-id')</strong></th>
@@ -304,7 +304,7 @@
                         <a href="#" class="hover-button process-all-orphaned" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a>
                         <a href="#" class="hover-button process-all-orphaned" data-bind="click: addAllOrphaned">$T('Glitter-retryAllOrphaned') <span class="glyphicon glyphicon-plus-sign"></span></a>
                         <div class="clearfix"></div>
-                        <table class="table table-hover table-striped">
+                        <table class="table table-hover table-striped" aria-label="$T('Glitter-orphanedJobs')">
                             <thead>
                                 <tr>
                                     <th style="width: 30px;"></th>
