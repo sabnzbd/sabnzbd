@@ -568,7 +568,7 @@ class NzbQueue:
 
     @NzbQueueLocker
     def sort_queue(self, field: str, direction: Optional[str] = None):
-        """Sort queue by field: "name", "size" or "avg_age" or by percentage remaining
+        """Sort queue by field: "name", "size", "avg_age", "remaining" or "remaining_bytes"
         Direction is specified as "desc" or "asc"
         """
         field = field.lower()
@@ -590,6 +590,10 @@ class NzbQueue:
             if self.__nzo_list:
                 logging.debug("Sorting by percentage downloaded...")
             sort_function = lambda nzo: nzo.remaining / nzo.bytes if nzo.bytes else 1
+        elif field == "remaining_bytes":
+            if self.__nzo_list:
+                logging.debug("Sorting by remaining size...")
+            sort_function = lambda nzo: nzo.remaining
         else:
             logging.debug("Sort: %s not recognized", field)
             return
@@ -601,7 +605,9 @@ class NzbQueue:
     def update_sort_order(self):
         """Resorts the queue if it is useful for the selected sort method"""
         auto_sort = cfg.auto_sort()
-        if auto_sort and auto_sort.startswith("remaining"):
+        if auto_sort == "remaining_bytes asc":
+            self.sort_queue("remaining_bytes")
+        elif auto_sort and auto_sort.startswith("remaining"):
             self.sort_queue("remaining")
 
     @NzbQueueLocker

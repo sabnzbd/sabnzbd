@@ -228,6 +228,10 @@ function QueueListModel(parent) {
                 sort = 'remaining';
                 dir = 'asc';
                 break;
+            case 'sortRemainingBytesAsc':
+                sort = 'remaining_bytes';
+                dir = 'asc';
+                break;
             case 'sortAgeAsc':
                 sort = 'avg_age';
                 dir = 'desc';
