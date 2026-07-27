@@ -19,6 +19,7 @@
 sabnzbd.misc - misc classes
 """
 
+import errno
 import os
 import platform
 import ssl
@@ -743,16 +744,24 @@ def split_host(srv: Optional[str]) -> tuple[Optional[str], Optional[int]]:
     return out[0], port
 
 
-def port_is_free(host: str, port: int) -> bool:
-    """Return True if host:port can be bound.
+class HostNotAvailableError(OSError):
+    """The address is not one of ours, so no port on it can ever be bound"""
 
-    Deliberately mirrors how uvicorn builds its listening socket (see
-    uvicorn.Config.bind_socket) so the answer predicts whether the web server
-    will actually come up, rather than merely whether something answers there.
 
-    Raises PermissionError when the port may not be bound at all, which is a
-    different problem from the port being taken and cannot be worked around by
-    picking a nearby port.
+# "Cannot assign requested address" is errno 99 on Linux but 49 on macOS/BSD,
+# and Winsock reports its own value, so collect whichever names exist here
+ADDRESS_NOT_AVAILABLE = {getattr(errno, name) for name in ("EADDRNOTAVAIL", "WSAEADDRNOTAVAIL") if hasattr(errno, name)}
+
+
+def bind_web_socket(host: str, port: int) -> socket.socket:
+    """Return a listening socket on host:port, ready to be served on.
+
+    Built the way uvicorn would (see uvicorn.Config.bind_socket) so it can be
+    handed straight to the server. Doing that removes the window between finding
+    a port free and actually claiming it.
+
+    Raises PermissionError if the port may not be used and HostNotAvailableError
+    if the address is not ours. Neither is solved by trying a different port.
     """
     # uvicorn derives the family from the shape of the host string, so match it
     family = socket.AF_INET6 if host and ":" in host else socket.AF_INET
@@ -761,29 +770,52 @@ def port_is_free(host: str, port: int) -> bool:
         # uvicorn sets this before binding, so a port held in TIME_WAIT is free
         # to us too. Skipped on Windows, where SO_REUSEADDR instead permits
         # taking over a port another process is actively listening on, which
-        # would make every probe succeed.
+        # would make every bind succeed.
         if not sabnzbd.WINDOWS:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind((host, port))
-        return True
+        # Binding alone does not reserve the port: another SO_REUSEADDR socket
+        # can still bind it until someone listens. asyncio calls listen() again
+        # with its own backlog when it takes the socket over, which is harmless.
+        sock.listen(socket.SOMAXCONN)
     except PermissionError:
         # Where the privileged range starts is configurable on Linux and does
         # not exist on Windows, so react to the error rather than comparing
         # the port against 1024
+        sock.close()
         logging.debug("Not allowed to bind %s:%s", host, port)
+        raise
+    except OSError as err:
+        sock.close()
+        if err.errno in ADDRESS_NOT_AVAILABLE:
+            logging.debug("Address %s is not available", host)
+            raise HostNotAvailableError(err.errno, "Host address not available: %s" % host) from err
+        raise
+    return sock
+
+
+def port_is_free(host: str, port: int) -> bool:
+    """Return True if host:port can be bound.
+
+    Binds and immediately releases, so the answer predicts whether the web
+    server will actually come up rather than merely whether something answers
+    there. Propagates the errors that no other port would avoid.
+    """
+    try:
+        bind_web_socket(host, port).close()
+        return True
+    except (PermissionError, HostNotAvailableError):
         raise
     except OSError as err:
         logging.debug("Cannot bind %s:%s (%s)", host, port, err)
         return False
-    finally:
-        sock.close()
 
 
 def find_free_port(host: str, currentport: int) -> Optional[int]:
     """Return the first bindable port at or above currentport, None if there is none.
 
-    Propagates PermissionError from port_is_free, so a caller can report that a
-    port is barred instead of a fruitless search for a free one.
+    Propagates PermissionError and HostNotAvailableError from port_is_free, so a
+    caller can report those instead of a fruitless search for a free port.
     """
     for _ in range(10):
         # Port 0 would have the OS hand out an arbitrary port, and 49152 and up

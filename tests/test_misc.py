@@ -1217,12 +1217,37 @@ class TestPortIsFree:
         with self._listener("127.0.0.1") as port:
             assert misc.port_is_free("::1", port) is True
 
-    def test_non_local_host_returns_false(self):
-        """An address that is not ours cannot be bound (192.0.2.0/24 is TEST-NET-1)."""
-        assert misc.port_is_free("192.0.2.1", 8080) is False
+    def test_non_local_host_raises(self):
+        """An address that is not ours cannot be bound on any port, so it must not
+        look like an ordinary busy port (192.0.2.0/24 is TEST-NET-1)."""
+        with pytest.raises(misc.HostNotAvailableError):
+            misc.port_is_free("192.0.2.1", 8080)
+
+    def test_find_free_port_propagates_host_not_available(self):
+        with pytest.raises(misc.HostNotAvailableError):
+            misc.find_free_port("192.0.2.1", 8080)
 
     def test_unresolvable_host_returns_false(self):
         assert misc.port_is_free("no-such-host.invalid", 8080) is False
+
+    def test_bind_web_socket_reserves_the_port(self):
+        """The whole point of handing uvicorn a ready-made socket: from here on
+        nothing else can take the port. Binding alone is not enough for that, a
+        socket only reserves a port once it listens."""
+        sock = misc.bind_web_socket("127.0.0.1", 0)
+        try:
+            host, port = sock.getsockname()[:2]
+            assert host == "127.0.0.1"
+            assert port > 0
+            assert misc.port_is_free("127.0.0.1", port) is False
+        finally:
+            sock.close()
+
+    def test_bind_web_socket_closes_socket_on_failure(self):
+        """A failed bind must not leak the file descriptor."""
+        with self._listener() as port:
+            with pytest.raises(OSError):
+                misc.bind_web_socket("127.0.0.1", port)
 
     @staticmethod
     def _barred_socket():

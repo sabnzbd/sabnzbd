@@ -87,6 +87,8 @@ from sabnzbd.misc import (
     split_host,
     port_is_free,
     find_free_port,
+    bind_web_socket,
+    HostNotAvailableError,
     xff_trusted_networks,
     create_https_certificates,
     ip_extract,
@@ -291,36 +293,39 @@ def daemonize():
         os.dup2(f.fileno(), sys.stderr.fileno())
 
 
-def abort_and_show_error(browserhost, web_port, err="", no_permission=False):
+def abort_and_show_error(browserhost, web_port, err="", panic_func=panic_port):
     """Abort program because the web-interface could not be started"""
     logging.error(T("Failed to start web-interface") + " : " + str(err))
     if not sabnzbd.DAEMON:
-        if no_permission:
-            panic_port_permission(browserhost, web_port)
-        elif "49" in err:
-            panic_host(browserhost, web_port)
-        else:
-            panic_port(browserhost, web_port)
+        panic_func(browserhost, web_port)
     sabnzbd.halt()
     exit_sab(2)
 
 
+def abort_for_unusable_address(browserhost, port, err):
+    """Abort with the panic that matches why the address could not be used"""
+    if isinstance(err, PermissionError):
+        abort_and_show_error(browserhost, port, err, panic_func=panic_port_permission)
+    else:
+        abort_and_show_error(browserhost, port, err, panic_func=panic_host)
+
+
 def port_is_free_or_abort(host, port, browserhost):
-    """port_is_free(), but abort when the port may not be bound at all. Reporting
-    that up front beats a search that can only fail, followed by a message
-    claiming some other program holds the port."""
+    """port_is_free(), but abort when the address cannot be used at all. Saying so
+    up front beats a search that can only fail, followed by a message claiming
+    some other program holds the port."""
     try:
         return port_is_free(host, port)
-    except PermissionError as err:
-        abort_and_show_error(browserhost, port, err, no_permission=True)
+    except (PermissionError, HostNotAvailableError) as err:
+        abort_for_unusable_address(browserhost, port, err)
 
 
 def find_free_port_or_abort(host, currentport, browserhost):
-    """find_free_port(), but abort when the ports may not be bound at all"""
+    """find_free_port(), but abort when the address cannot be used at all"""
     try:
         return find_free_port(host, currentport)
-    except PermissionError as err:
-        abort_and_show_error(browserhost, currentport, err, no_permission=True)
+    except (PermissionError, HostNotAvailableError) as err:
+        abort_for_unusable_address(browserhost, currentport, err)
 
 
 def identify_web_template(key, defweb, wdir):
@@ -1249,6 +1254,17 @@ def main():
         }
         uvicorn_logging_config["loggers"]["uvicorn.access"]["handlers"] = ["access_file"]
 
+    # Claim the port here rather than letting uvicorn do it, because this is the
+    # first point where the host and port are final. Everything before this was
+    # only picking a port, and anything could still have taken it since.
+    try:
+        web_socket = bind_web_socket(web_host, web_port)
+    except (PermissionError, HostNotAvailableError) as err:
+        abort_for_unusable_address(browserhost, web_port, err)
+    except OSError as err:
+        logging.error(T("Failed to start web-interface: "), exc_info=True)
+        abort_and_show_error(browserhost, web_port, err)
+
     server_config = uvicorn.Config(
         sabnzbd.interface.create_app(),
         host=web_host,
@@ -1260,13 +1276,13 @@ def main():
         proxy_headers=bool(sabnzbd.cfg.verify_xff_header()),
         forwarded_allow_ips=xff_trusted_networks(),
     )
-    sabnzbd.WEB_SERVER = sabnzbd.interface.ThreadedServer(config=server_config)
+    sabnzbd.WEB_SERVER = sabnzbd.interface.ThreadedServer(config=server_config, sockets=[web_socket])
     try:
         sabnzbd.WEB_SERVER.run_in_thread()
     except Exception:
         # The webserver runs in a separate thread; if it fails to start (bad cert,
-        # port taken between the free-check and bind, bad host) surface the error
-        # and abort instead of hanging. Details are also shown on the console.
+        # unusable TLS material) surface the error and abort instead of hanging.
+        # Details are also shown on the console.
         logging.error(T("Failed to start web-interface: "), exc_info=True)
         abort_and_show_error(browserhost, web_port)
 

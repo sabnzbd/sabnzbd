@@ -2394,9 +2394,12 @@ class ThreadedServer(uvicorn.Server):
     # Give up on a server that has not reached the serving state by then
     STARTUP_TIMEOUT = 30.0
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, sockets: Optional[list[socket.socket]] = None, **kwargs):
         self.thread: Optional[threading.Thread] = None
         self._startup_exc: Optional[BaseException] = None
+        # Pre-bound listening sockets, so the port cannot be taken between the
+        # moment we claim it and the moment uvicorn starts serving on it
+        self._sockets = sockets
         # Set once the server is either serving or done trying
         self._startup_done = threading.Event()
         super().__init__(*args, **kwargs)
@@ -2408,11 +2411,11 @@ class ThreadedServer(uvicorn.Server):
         self._startup_done.set()
 
     def _run(self):
-        # Capture any start-up failure (bad cert, port grabbed after the free
-        # check, bad host, etc.) so run_in_thread() can report it. uvicorn raises
-        # SystemExit on a bind error, so catch BaseException rather than Exception.
+        # Capture any start-up failure (bad cert, bad host, etc.) so
+        # run_in_thread() can report it. uvicorn raises SystemExit on a bind
+        # error, so catch BaseException rather than Exception.
         try:
-            self.run()
+            self.run(sockets=self._sockets)
         except BaseException as exc:
             self._startup_exc = exc
         finally:
