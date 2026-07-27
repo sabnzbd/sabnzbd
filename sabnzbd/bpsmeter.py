@@ -22,6 +22,8 @@ sabnzbd.bpsmeter - bpsmeter
 import time
 import logging
 import re
+from collections import deque
+from itertools import islice, repeat
 from typing import Optional
 
 import sabnzbd
@@ -132,7 +134,7 @@ class BPSMeter:
         self.speed_log_time = t
         self.last_update = t
         self.bps = 0.0
-        self.bps_list: list[int] = []
+        self.bps_list: deque[int] = deque(maxlen=BPS_LIST_MAX)
 
         self.server_bps: dict[str, float] = {}
         self.cached_amount: dict[str, int] = {}
@@ -382,11 +384,8 @@ class BPSMeter:
         # Extra zeros, but never more than the maximum!
         nr_diffs = min(int(time.time() - self.speed_log_time), BPS_LIST_MAX)
         if nr_diffs > 1:
-            self.bps_list.extend([0] * nr_diffs)
-
-        # Always trim the list to the max-length
-        if len(self.bps_list) > BPS_LIST_MAX:
-            self.bps_list = self.bps_list[-BPS_LIST_MAX:]
+            # The deque trims itself to the max-length, dropping the oldest entries
+            self.bps_list.extend(repeat(0, nr_diffs))
 
     def get_sums(self):
         """return tuple of grand, month, week, day totals"""
@@ -432,7 +431,7 @@ class BPSMeter:
         refresh_rate = int(cfg.refresh_rate()) if cfg.refresh_rate() else 1
         self.add_empty_time()
         # We record every second, but display at the user's refresh-rate
-        return self.bps_list[::refresh_rate]
+        return list(islice(self.bps_list, 0, None, refresh_rate))
 
     def check_quota(self):
         """Pause the queue when all quota is spent
