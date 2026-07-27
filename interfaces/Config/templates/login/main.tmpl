@@ -37,10 +37,8 @@
                 <div class="alert alert-danger" role="alert">$error</div>
                 <!--#end if#-->
 
-                <label class="sr-only" for="login-username">$T('srv-username')</label>
-                <input type="text" class="form-control" id="login-username" name="username" placeholder="$T('srv-username')" autocomplete="username" required autofocus>
-                <label class="sr-only" for="login-password">$T('srv-password')</label>
-                <input type="password" class="form-control" id="login-password" name="password" placeholder="$T('srv-password')" autocomplete="current-password" required>
+                <input type="text" class="form-control" name="username" placeholder="$T('srv-username')" aria-label="$T('srv-username')" autocomplete="username" required autofocus>
+                <input type="password" class="form-control" name="password" placeholder="$T('srv-password')" aria-label="$T('srv-password')" autocomplete="current-password" required>
 
                 <button class="btn btn-default"><span class="glyphicon glyphicon-circle-arrow-right"></span> $T('login') </button>
 
