@@ -134,7 +134,7 @@ class BPSMeter:
         self.speed_log_time = t
         self.last_update = t
         self.bps = 0.0
-        self.bps_list: deque[int] = deque(maxlen=BPS_LIST_MAX)
+        self.bps_list: deque[int] = deque(repeat(0, BPS_LIST_MAX), maxlen=BPS_LIST_MAX)
 
         self.server_bps: dict[str, float] = {}
         self.cached_amount: dict[str, int] = {}
