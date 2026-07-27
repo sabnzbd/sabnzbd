@@ -31,6 +31,7 @@ except ImportError:
 
 import sabnzbd
 import sabnzbd.cfg as cfg
+from sabnzbd.constants import DEF_PORT
 from sabnzbd.encoding import utob
 
 PANIC_PORT = 1
@@ -39,6 +40,7 @@ PANIC_QUEUE = 3
 PANIC_OTHER = 5
 PANIC_SQLITE = 7
 PANIC_HOST = 8
+PANIC_PORT_PERMISSION = 9
 
 
 def MSG_BAD_NEWS():
@@ -78,6 +80,24 @@ def MSG_BAD_PORT():
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
     <br>"""
         + T(r"If you get this error message again, please try a different number.<br>")
+    )
+
+
+def MSG_PORT_PERMISSION():
+    return (
+        T(r"""
+    SABnzbd is not allowed to use port %s on %s.<br>
+    Low port numbers are reserved for privileged processes on most systems,
+    so the port itself is available but cannot be claimed.<br>
+    <br>
+    Either run SABnzbd with the privileges needed for that port, or restart it
+    with a port number of 1024 or higher.""")
+        + """<br>
+    <br>
+    %s<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
+    <br>"""
+        + T(r"To keep using the low port, put a reverse proxy in front of SABnzbd instead.<br>")
     )
 
 
@@ -158,6 +178,8 @@ def panic_message(panic_code, a=None, b=None):
         msg = MSG_SQLITE()
     elif panic_code == PANIC_HOST:
         msg = MSG_BAD_HOST() % (os_str, prog_path, "localhost", b)
+    elif panic_code == PANIC_PORT_PERMISSION:
+        msg = MSG_PORT_PERMISSION() % (b, a, os_str, prog_path, a, DEF_PORT)
     else:
         msg = MSG_OTHER() % (a, b)
 
@@ -192,6 +214,17 @@ def panic_port(host, port):
         )
     )
     launch_a_browser(panic_message(PANIC_PORT, host, port))
+
+
+def panic_port_permission(host, port):
+    show_error_dialog(
+        "\n%s:\n  %s"
+        % (
+            T("Fatal error"),
+            T("Not allowed to bind to port %s on %s. Low ports need elevated privileges.") % (port, host),
+        )
+    )
+    launch_a_browser(panic_message(PANIC_PORT_PERMISSION, host, port))
 
 
 def panic_host(host, port):

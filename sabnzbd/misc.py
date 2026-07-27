@@ -743,32 +743,57 @@ def split_host(srv: Optional[str]) -> tuple[Optional[str], Optional[int]]:
     return out[0], port
 
 
-def port_is_free(host: str, port: int, timeout: float = 0.1) -> bool:
-    """Return True if nothing is listening on host:port.
+def port_is_free(host: str, port: int) -> bool:
+    """Return True if host:port can be bound.
 
-    Probes by attempting a TCP connection.  A refused or timed-out connection
-    means the port is free; a successful connection means it is occupied.
-    Bind-all addresses (0.0.0.0 / ::) are remapped to localhost so the probe
-    has a concrete target.
+    Deliberately mirrors how uvicorn builds its listening socket (see
+    uvicorn.Config.bind_socket) so the answer predicts whether the web server
+    will actually come up, rather than merely whether something answers there.
+
+    Raises PermissionError when the port may not be bound at all, which is a
+    different problem from the port being taken and cannot be worked around by
+    picking a nearby port.
     """
-    if host in ("0.0.0.0", "::", ""):
-        host = "127.0.0.1"
+    # uvicorn derives the family from the shape of the host string, so match it
+    family = socket.AF_INET6 if host and ":" in host else socket.AF_INET
+    sock = socket.socket(family, socket.SOCK_STREAM)
     try:
-        with socket.create_connection((host, port), timeout=timeout):
-            return False  # connection succeeded → port is occupied
-    except OSError:
-        return True  # connection refused / timed-out → port is free
+        # uvicorn sets this before binding, so a port held in TIME_WAIT is free
+        # to us too. Skipped on Windows, where SO_REUSEADDR instead permits
+        # taking over a port another process is actively listening on, which
+        # would make every probe succeed.
+        if not sabnzbd.WINDOWS:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.bind((host, port))
+        return True
+    except PermissionError:
+        # Where the privileged range starts is configurable on Linux and does
+        # not exist on Windows, so react to the error rather than comparing
+        # the port against 1024
+        logging.debug("Not allowed to bind %s:%s", host, port)
+        raise
+    except OSError as err:
+        logging.debug("Cannot bind %s:%s (%s)", host, port, err)
+        return False
+    finally:
+        sock.close()
 
 
-def find_free_port(host: str, currentport: int) -> int:
-    """Return the first free port at or above currentport, 0 if none found."""
-    n = 0
-    while n < 10 and currentport <= 49151:
-        if port_is_free(host, currentport, timeout=0.025):
+def find_free_port(host: str, currentport: int) -> Optional[int]:
+    """Return the first bindable port at or above currentport, None if there is none.
+
+    Propagates PermissionError from port_is_free, so a caller can report that a
+    port is barred instead of a fruitless search for a free one.
+    """
+    for _ in range(10):
+        # Port 0 would have the OS hand out an arbitrary port, and 49152 and up
+        # is the dynamic range that outgoing connections draw from
+        if currentport < 1 or currentport > 49151:
+            break
+        if port_is_free(host, currentport):
             return currentport
         currentport += 5
-        n += 1
-    return 0
+    return None
 
 
 def get_cache_limit() -> str:

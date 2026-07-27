@@ -99,7 +99,7 @@ from sabnzbd.misc import (
     set_https_verification,
 )
 from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
-from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
+from sabnzbd.panic import panic_tmpl, panic_port, panic_port_permission, panic_host, panic, launch_a_browser
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.notifier as notifier
@@ -291,16 +291,36 @@ def daemonize():
         os.dup2(f.fileno(), sys.stderr.fileno())
 
 
-def abort_and_show_error(browserhost, web_port, err=""):
-    """Abort program because of CherryPy troubles"""
+def abort_and_show_error(browserhost, web_port, err="", no_permission=False):
+    """Abort program because the web-interface could not be started"""
     logging.error(T("Failed to start web-interface") + " : " + str(err))
     if not sabnzbd.DAEMON:
-        if "49" in err:
+        if no_permission:
+            panic_port_permission(browserhost, web_port)
+        elif "49" in err:
             panic_host(browserhost, web_port)
         else:
             panic_port(browserhost, web_port)
     sabnzbd.halt()
     exit_sab(2)
+
+
+def port_is_free_or_abort(host, port, browserhost):
+    """port_is_free(), but abort when the port may not be bound at all. Reporting
+    that up front beats a search that can only fail, followed by a message
+    claiming some other program holds the port."""
+    try:
+        return port_is_free(host, port)
+    except PermissionError as err:
+        abort_and_show_error(browserhost, port, err, no_permission=True)
+
+
+def find_free_port_or_abort(host, currentport, browserhost):
+    """find_free_port(), but abort when the ports may not be bound at all"""
+    try:
+        return find_free_port(host, currentport)
+    except PermissionError as err:
+        abort_and_show_error(browserhost, currentport, err, no_permission=True)
 
 
 def identify_web_template(key, defweb, wdir):
@@ -976,9 +996,9 @@ def main():
     # When this is a daemon, just check and bail out if port in use
     if sabnzbd.DAEMON:
         if enable_https and https_port:
-            if not port_is_free(web_host, https_port):
+            if not port_is_free_or_abort(web_host, https_port, browserhost):
                 abort_and_show_error(browserhost, web_port)
-        if not port_is_free(web_host, web_port):
+        if not port_is_free_or_abort(web_host, web_port, browserhost):
             abort_and_show_error(browserhost, web_port)
 
     # Windows instance is reachable through registry
@@ -991,7 +1011,7 @@ def main():
     # SSL
     if enable_https:
         port = https_port or web_port
-        if not port_is_free(browserhost, port):
+        if not port_is_free_or_abort(web_host, port, browserhost):
             if not url:
                 url = "https://%s:%s%s/api?" % (browserhost, port, sabnzbd.cfg.url_base())
             if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
@@ -999,8 +1019,8 @@ def main():
                 if sabnzbd.cfg.fixed_ports():
                     abort_and_show_error(browserhost, web_port)
                 # Find free port to bind
-                newport = find_free_port(browserhost, port)
-                if newport > 0:
+                newport = find_free_port_or_abort(web_host, port, browserhost)
+                if newport:
                     # Save the new port
                     if https_port:
                         https_port = newport
@@ -1012,7 +1032,7 @@ def main():
 
     # NonSSL check if there's no HTTPS or we only use 1 port
     if not (enable_https and not https_port):
-        if not port_is_free(browserhost, web_port):
+        if not port_is_free_or_abort(web_host, web_port, browserhost):
             if not url:
                 url = "http://%s:%s%s/api?" % (browserhost, web_port, sabnzbd.cfg.url_base())
             if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
@@ -1020,8 +1040,8 @@ def main():
                 if sabnzbd.cfg.fixed_ports():
                     abort_and_show_error(browserhost, web_port)
                 # Find free port to bind
-                port = find_free_port(browserhost, web_port)
-                if port > 0:
+                port = find_free_port_or_abort(web_host, web_port, browserhost)
+                if port:
                     sabnzbd.cfg.web_port.set(port)
                     web_port = port
 

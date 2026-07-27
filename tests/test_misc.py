@@ -28,7 +28,7 @@ import subprocess
 import sys
 import tempfile
 import wave
-from contextlib import nullcontext
+from contextlib import contextmanager, nullcontext
 from functools import cached_property
 from random import randint, sample
 from unittest import mock
@@ -1091,86 +1091,182 @@ class TestMisc:
         assert misc.subject_name_extractor(subject) == filename
 
 
+def ipv6_loopback_available() -> bool:
+    """Not every CI runner can bind ::1, so check instead of assuming"""
+    if not socket.has_ipv6:
+        return False
+    try:
+        with socket.socket(socket.AF_INET6, socket.SOCK_STREAM) as sock:
+            sock.bind(("::1", 0))
+        return True
+    except OSError:
+        return False
+
+
+skip_without_ipv6 = pytest.mark.skipif(not ipv6_loopback_available(), reason="No usable IPv6 loopback")
+
+
+def low_ports_are_privileged() -> bool:
+    """Whether binding port 80 needs privileges for the user running the tests"""
+    if sys.platform.startswith("win") or not hasattr(os, "geteuid") or os.geteuid() == 0:
+        return False
+    try:
+        # Linux allows the privileged range to be moved, including down to nothing
+        with open("/proc/sys/net/ipv4/ip_unprivileged_port_start") as sysctl:
+            return int(sysctl.read().strip()) > 80
+    except OSError:
+        return True
+
+
+skip_without_privileged_ports = pytest.mark.skipif(
+    not low_ports_are_privileged(), reason="Low ports are not privileged for this user"
+)
+
+
 class TestPortIsFree:
-    """Tests for misc.port_is_free() and misc.find_free_local_port()"""
+    """Tests for misc.port_is_free() and misc.find_free_port()"""
 
     @staticmethod
-    def _listening_socket() -> tuple[socket.socket, int]:
-        """Return a listening socket bound to an OS-assigned port."""
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind(("127.0.0.1", 0))
-        s.listen(1)
-        return s, s.getsockname()[1]
+    @contextmanager
+    def _listener(host: str = "127.0.0.1", family: int = socket.AF_INET):
+        """Listen on an OS-assigned port on host, yielding that port."""
+        sock = socket.socket(family, socket.SOCK_STREAM)
+        # Match port_is_free, so a port left in TIME_WAIT by an earlier test
+        # cannot make this bind fail
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            sock.bind((host, 0))
+            sock.listen(1)
+            yield sock.getsockname()[1]
+        finally:
+            sock.close()
+
+    @staticmethod
+    @contextmanager
+    def _listener_in_scan_range():
+        """Listen on a port low enough for find_free_port() to scan onwards from.
+        OS-assigned ports land in the dynamic range, above its 49151 ceiling."""
+        for port in range(10000, 10500, 5):
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            try:
+                sock.bind(("127.0.0.1", port))
+                sock.listen(1)
+            except OSError:
+                sock.close()
+                continue
+            try:
+                yield port
+            finally:
+                sock.close()
+            return
+        pytest.skip("No free port available in the scan range")
+
+    @staticmethod
+    def _released_port(host: str = "127.0.0.1", family: int = socket.AF_INET) -> int:
+        """Return a port that was bindable a moment ago."""
+        with socket.socket(family, socket.SOCK_STREAM) as sock:
+            sock.bind((host, 0))
+            return sock.getsockname()[1]
 
     def test_free_port_returns_true(self):
-        """A port with no listener is reported as free."""
-        port = misc.find_free_port("127.0.0.1", 10000)
-        assert misc.port_is_free("127.0.0.1", port) is True
+        assert misc.port_is_free("127.0.0.1", self._released_port()) is True
 
     def test_occupied_port_returns_false(self):
-        """A port with an active listener is reported as occupied."""
-        s, port = self._listening_socket()
-        try:
+        with self._listener() as port:
             assert misc.port_is_free("127.0.0.1", port) is False
-        finally:
-            s.close()
 
-    def test_bind_all_ipv4_remapped(self):
-        """0.0.0.0 is remapped to 127.0.0.1 so the probe has a concrete target."""
-        s, port = self._listening_socket()
-        try:
-            assert misc.port_is_free("0.0.0.0", port) is False
-        finally:
-            s.close()
+    @pytest.mark.parametrize(
+        "host, family",
+        [
+            ("0.0.0.0", socket.AF_INET),
+            ("", socket.AF_INET),
+            ("127.0.0.1", socket.AF_INET),
+            ("::", socket.AF_INET6),
+            ("::1", socket.AF_INET6),
+        ],
+    )
+    def test_binds_the_host_it_was_given(self, host, family):
+        """The previous version remapped the bind-all addresses to 127.0.0.1, so
+        it probed the wrong address and, for ::, the wrong family as well.
 
-    def test_bind_all_ipv6_remapped(self):
-        """:: is remapped to 127.0.0.1 for the probe."""
-        s, port = self._listening_socket()
-        try:
-            assert misc.port_is_free("::", port) is False
-        finally:
-            s.close()
+        Asserted against the bind call rather than by watching two sockets fight
+        over a port, because whether a wildcard and a specific address may share
+        one is decided by the kernel and differs on Linux, macOS and Windows."""
+        with mock.patch("sabnzbd.misc.socket.socket") as fake_socket:
+            misc.port_is_free(host, 8080)
+        assert fake_socket.call_args.args[0] == family
+        fake_socket.return_value.bind.assert_called_once_with((host, 8080))
 
-    def test_empty_host_remapped(self):
-        """Empty string host is remapped to 127.0.0.1."""
-        s, port = self._listening_socket()
-        try:
-            assert misc.port_is_free("", port) is False
-        finally:
-            s.close()
-
-    def test_custom_timeout_respected(self):
-        """A very short timeout still works for a local free port."""
-        port = misc.find_free_port("127.0.0.1", 10000)
-        assert misc.port_is_free("127.0.0.1", port, timeout=0.01) is True
-
-    def test_find_free_port_returns_valid_port(self):
-        """find_free_port() returns a port in the valid range."""
-        port = misc.find_free_port("127.0.0.1", 10000)
-        assert 1 <= port <= 65535
-
-    def test_find_free_port_is_actually_free(self):
-        """The port returned by find_free_port() is not occupied."""
-        port = misc.find_free_port("127.0.0.1", 10000)
+    def test_free_port_is_actually_bindable(self):
+        """The property that matters: True has to mean uvicorn can bind it."""
+        port = self._released_port()
         assert misc.port_is_free("127.0.0.1", port) is True
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            sock.bind(("127.0.0.1", port))
+
+    @skip_without_ipv6
+    def test_occupied_ipv6_port_returns_false(self):
+        with self._listener("::1", socket.AF_INET6) as port:
+            assert misc.port_is_free("::1", port) is False
+
+    @skip_without_ipv6
+    def test_ipv4_listener_does_not_block_ipv6(self):
+        """A port held on 127.0.0.1 says nothing about the same port on ::1."""
+        with self._listener("127.0.0.1") as port:
+            assert misc.port_is_free("::1", port) is True
+
+    def test_non_local_host_returns_false(self):
+        """An address that is not ours cannot be bound (192.0.2.0/24 is TEST-NET-1)."""
+        assert misc.port_is_free("192.0.2.1", 8080) is False
+
+    def test_unresolvable_host_returns_false(self):
+        assert misc.port_is_free("no-such-host.invalid", 8080) is False
+
+    @staticmethod
+    def _barred_socket():
+        """Patch the probe's socket so binding is refused for lack of privileges."""
+        sock = mock.MagicMock()
+        sock.bind.side_effect = PermissionError("Permission denied")
+        return mock.patch("sabnzbd.misc.socket.socket", return_value=sock)
+
+    def test_barred_port_raises(self):
+        """A port we may not use is a different problem from an occupied one, so
+        it must not come back as a plain False."""
+        with self._barred_socket(), pytest.raises(PermissionError):
+            misc.port_is_free("0.0.0.0", 80)
+
+    @skip_without_privileged_ports
+    def test_low_port_raises_permission_error(self):
+        """Guards the premise: the platform really does report this as EACCES."""
+        with pytest.raises(PermissionError):
+            misc.port_is_free("127.0.0.1", 80)
+
+    def test_find_free_port_propagates_permission_error(self):
+        """Scanning on past a barred port could only end in a misleading answer."""
+        with self._barred_socket(), pytest.raises(PermissionError):
+            misc.find_free_port("0.0.0.0", 80)
+
+    def test_find_free_port_returns_port_in_scan_range(self):
+        port = misc.find_free_port("127.0.0.1", 10000)
+        assert port is not None
+        assert 10000 <= port <= 10045
 
     def test_find_free_port_skips_occupied(self):
-        """find_free_port() moves past an occupied port."""
-        # Find a port in the scan range, then occupy it
-        start = misc.find_free_port("127.0.0.1", 10000)
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind(("127.0.0.1", start))
-        s.listen(1)
-        try:
-            free = misc.find_free_port("127.0.0.1", start)
-            assert free != start
-            assert free > start
-        finally:
-            s.close()
+        with self._listener_in_scan_range() as port:
+            free = misc.find_free_port("127.0.0.1", port)
+            assert free is not None
+            assert free > port
+            assert misc.port_is_free("127.0.0.1", free) is True
 
-    def test_find_free_port_returns_zero_when_exhausted(self):
-        """find_free_port() returns 0 when starting above the scan ceiling."""
-        assert misc.find_free_port("127.0.0.1", 49200) == 0
+    def test_find_free_port_above_ceiling(self):
+        """49152 and up is the dynamic range, so it is never scanned."""
+        assert misc.find_free_port("127.0.0.1", 49200) is None
+
+    def test_find_free_port_rejects_port_zero(self):
+        """Binding port 0 always succeeds, which would return a misleading 0."""
+        assert misc.find_free_port("127.0.0.1", 0) is None
 
 
 class TestBuildAndRunCommand:
