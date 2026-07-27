@@ -382,10 +382,12 @@ class BPSMeter:
 
     def add_empty_time(self):
         # Extra zeros, but never more than the maximum!
-        nr_diffs = min(int(time.time() - self.speed_log_time), BPS_LIST_MAX)
+        t = time.time()
+        nr_diffs = min(int(t - self.speed_log_time), BPS_LIST_MAX)
         if nr_diffs > 1:
             # The deque trims itself to the max-length, dropping the oldest entries
             self.bps_list.extend(repeat(0, nr_diffs))
+            self.speed_log_time = t
 
     def get_sums(self):
         """return tuple of grand, month, week, day totals"""
