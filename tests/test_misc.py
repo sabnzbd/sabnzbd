@@ -1336,9 +1336,9 @@ class TestCgroupMemoryLimit:
 
     @pytest.mark.platform("linux")
     def test_effective_uses_cgroup_when_physical_unknown(self):
-        """_physical_memory() returns 0 on failure"""
+        """_physical_memory() returns None when it cannot be determined"""
         with self.patched_open({self.V2_MAX: str(self.GIGI)}):
-            with mock.patch("sabnzbd.misc._physical_memory", return_value=0):
+            with mock.patch("sabnzbd.misc._physical_memory", return_value=None):
                 memory = misc.get_memory()
         assert memory.physical is None
         assert memory.effective == self.GIGI
@@ -1346,5 +1346,5 @@ class TestCgroupMemoryLimit:
     @pytest.mark.platform("linux")
     def test_effective_zero_when_nothing_known(self):
         with self.patched_open({}):
-            with mock.patch("sabnzbd.misc._physical_memory", return_value=0):
+            with mock.patch("sabnzbd.misc._physical_memory", return_value=None):
                 assert misc.get_memory().effective == 0

@@ -793,10 +793,11 @@ def get_memory() -> MemoryInfo:
     """Physical memory installed and any cgroup limit applied to us. Callers that
     only need a single number want MemoryInfo.effective, the rest care about the
     distinction because a cgroup limit also has to cover our own page cache."""
-    return MemoryInfo(_physical_memory() or None, _cgroup_memory_limit())
+    return MemoryInfo(_physical_memory(), _cgroup_memory_limit())
 
 
-def _physical_memory() -> int:
+def _physical_memory() -> Optional[int]:
+    """Total memory installed in the machine, or None if it could not be determined"""
     try:
         if sabnzbd.WINDOWS:
             # Use win32api to get total physical memory
@@ -813,10 +814,13 @@ def _physical_memory() -> int:
                             return int(line.split()[1]) * 1024
             except Exception:
                 pass
-            return os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
+            # sysconf reports -1 for values it does not know, which would multiply
+            # out to a plausible looking but negative amount of memory
+            if (memory := os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")) > 0:
+                return memory
     except Exception:
         pass
-    return 0
+    return None
 
 
 def _cgroup_memory_limit() -> Optional[int]:
