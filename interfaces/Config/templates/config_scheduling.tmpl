@@ -94,8 +94,7 @@ else:
                                 <input type="hidden" name="apikey" value="$apikey"/>
                                 <input type="hidden" name="line" value="$line"/>
                                 <div class="field-pair infoTableSeperator <!--#if $odd then "" else " alt"#-->">
-                                    <label class="sr-only" for="schedule-enabled-$schednum">$T('enabled')</label>
-                                    <input type="checkbox" id="schedule-enabled-$schednum" name="schedenabled" value="$line" aria-describedby="schedule-description-$schednum" <!--#if int($taskinfo[$schednum][5]) > 0 then 'checked="checked"' else ""#-->>
+                                    <input type="checkbox" name="schedenabled" value="$line" aria-label="$T('enabled')" aria-describedby="schedule-description-$schednum" <!--#if int($taskinfo[$schednum][5]) > 0 then 'checked="checked"' else ""#-->>
                                     <button class="btn btn-default float-left" type="submit" aria-label="$T('nzo-delete')" aria-describedby="schedule-description-$schednum"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
                                     <div class="scheduleEntry" id="schedule-description-$schednum">
                                         <span class="time">$taskinfo[$schednum][1]:$taskinfo[$schednum][2]</span><span class="frequency">$taskinfo[$schednum][3]</span> <span class="darkred">$taskinfo[$schednum][4]</span>
