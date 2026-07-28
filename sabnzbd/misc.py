@@ -767,7 +767,7 @@ def get_cache_limit() -> str:
         pass
 
     # Always at least minimum on Windows/macOS
-    if sabnzbd.WINDOWS and sabnzbd.MACOS:
+    if sabnzbd.WINDOWS or sabnzbd.MACOS:
         return DEF_ARTICLE_CACHE_DEFAULT
 
     # If failed, leave empty for Linux so user needs to decide
