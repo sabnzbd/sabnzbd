@@ -1315,20 +1315,36 @@ class TestCgroupMemoryLimit:
             assert misc._cgroup_memory_limit() is None
 
     @pytest.mark.platform("linux")
-    def test_get_memory_clamps_to_cgroup(self):
+    def test_get_memory_reports_both_values(self):
         with self.patched_open({self.V2_MAX: str(self.GIGI)}):
             with mock.patch("sabnzbd.misc._physical_memory", return_value=64 * self.GIGI):
-                assert misc.get_memory() == self.GIGI
+                memory = misc.get_memory()
+        assert memory.physical == 64 * self.GIGI
+        assert memory.cgroup_limit == self.GIGI
 
     @pytest.mark.platform("linux")
-    def test_get_memory_keeps_physical_when_lower(self):
+    def test_effective_clamps_to_cgroup(self):
+        with self.patched_open({self.V2_MAX: str(self.GIGI)}):
+            with mock.patch("sabnzbd.misc._physical_memory", return_value=64 * self.GIGI):
+                assert misc.get_memory().effective == self.GIGI
+
+    @pytest.mark.platform("linux")
+    def test_effective_keeps_physical_when_lower(self):
         with self.patched_open({self.V2_MAX: str(64 * self.GIGI)}):
             with mock.patch("sabnzbd.misc._physical_memory", return_value=8 * self.GIGI):
-                assert misc.get_memory() == 8 * self.GIGI
+                assert misc.get_memory().effective == 8 * self.GIGI
 
     @pytest.mark.platform("linux")
-    def test_get_memory_uses_cgroup_when_physical_unknown(self):
+    def test_effective_uses_cgroup_when_physical_unknown(self):
         """_physical_memory() returns 0 on failure"""
         with self.patched_open({self.V2_MAX: str(self.GIGI)}):
             with mock.patch("sabnzbd.misc._physical_memory", return_value=0):
-                assert misc.get_memory() == self.GIGI
+                memory = misc.get_memory()
+        assert memory.physical is None
+        assert memory.effective == self.GIGI
+
+    @pytest.mark.platform("linux")
+    def test_effective_zero_when_nothing_known(self):
+        with self.patched_open({}):
+            with mock.patch("sabnzbd.misc._physical_memory", return_value=0):
+                assert misc.get_memory().effective == 0

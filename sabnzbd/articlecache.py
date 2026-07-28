@@ -21,7 +21,7 @@ sabnzbd.articlecache - Article cache handling
 
 import logging
 import threading
-import struct
+import sys
 import time
 from typing import Collection, Optional
 
@@ -34,7 +34,7 @@ from sabnzbd.constants import (
     ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE,
 )
 from sabnzbd.nzb import Article, NzbFile
-from sabnzbd.misc import to_units
+from sabnzbd.misc import to_units, get_memory
 
 # Operations on the article table are handled via try/except.
 # The counters need to be made atomic to ensure consistency.
@@ -56,11 +56,18 @@ class ArticleCache(threading.Thread):
         self.__last_flush: float = 0
         self.__non_contiguous_trigger: int = 0  # Force flush trigger
 
-        # On 32 bit we only allow the user to set 1GB
-        # For 64 bit we allow up to 4GB, in case somebody wants that
-        self.__cache_upper_limit = GIGI
-        if sabnzbd.MACOS or sabnzbd.WINDOWS or (struct.calcsize("P") * 8) == 64:
-            self.__cache_upper_limit = 4 * GIGI
+        # A 32 bit process runs out of address space long before it runs out of memory,
+        # so it never gets to use more than 1GB no matter how much the machine has
+        self.__cache_upper_limit: int = int(4 * GIGI) if sys.maxsize > 2**32 else int(GIGI)
+
+        # Beyond that, never claim more than a share of the memory we are allowed to use.
+        # Skipped when it could not be determined, we would end up without any cache at all
+        memory = get_memory()
+        if memory.effective:
+            # A cgroup limit also has to cover the page cache our own writes generate,
+            # so leave more headroom there than on a host that can reclaim globally
+            memory_fraction = 4 if memory.cgroup_limit else 2
+            self.__cache_upper_limit = min(self.__cache_upper_limit, memory.effective // memory_fraction)
 
     def change_direct_write(self, direct_write: bool) -> None:
         self.__direct_write = direct_write
@@ -124,7 +131,7 @@ class ArticleCache(threading.Thread):
             self.__cache_limit = self.__cache_upper_limit
         else:
             self.__cache_limit = min(limit, self.__cache_upper_limit)
-        self.__non_contiguous_trigger = self.__cache_limit * ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE
+        self.__non_contiguous_trigger = int(self.__cache_limit * ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE)
         if self.__cache_limit:
             logging.debug("Article cache trigger:%s", to_units(self.__non_contiguous_trigger))
 
