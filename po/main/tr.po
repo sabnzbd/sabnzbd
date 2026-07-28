@@ -3598,6 +3598,8 @@ msgid ""
 "The queue will resort every 30 seconds if % downloaded or Remaining Size is "
 "selected."
 msgstr ""
+"Eğer % indirildiyse veya Kalan Boyut seçildiyse kuyruk her 30 saniyede bir "
+"tekrar sıralanacaktır."
 
 #: sabnzbd/skintext.py
 msgid "Propagation delay"
@@ -5011,7 +5013,7 @@ msgstr "İndirilen % ile sırala <small>Azami&rarr;Asgari</small>"
 
 #: sabnzbd/skintext.py
 msgid "Sort by Remaining Size <small>Smallest&rarr;Largest</small>"
-msgstr ""
+msgstr "Kalan Boyuta Göre Sırala <small>Asgari&rarr;Azami</small>"
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"

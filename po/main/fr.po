@@ -3651,6 +3651,8 @@ msgid ""
 "The queue will resort every 30 seconds if % downloaded or Remaining Size is "
 "selected."
 msgstr ""
+"La file d'attente sera retriée toutes les 30 secondes si % téléchargé ou "
+"Taille restante est sélectionné."
 
 #: sabnzbd/skintext.py
 msgid "Propagation delay"
@@ -5076,7 +5078,7 @@ msgstr "Trier par % téléchargé <small>Most&rarr;Least</small>"
 
 #: sabnzbd/skintext.py
 msgid "Sort by Remaining Size <small>Smallest&rarr;Largest</small>"
-msgstr ""
+msgstr "Trier par Taille restante <small>Plus petit&rarr;Plus grand</small>"
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
