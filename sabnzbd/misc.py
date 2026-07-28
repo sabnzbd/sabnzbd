@@ -774,6 +774,16 @@ def get_cache_limit() -> str:
 
 
 def get_memory() -> int:
+    """Memory available to this process: physical total, clamped by any
+    cgroup limit so containers size against their own budget."""
+    total = _physical_memory()
+    limit = _cgroup_memory_limit()
+    if total and limit:
+        return min(total, limit)
+    return total or limit or 0
+
+
+def _physical_memory() -> int:
     try:
         if sabnzbd.WINDOWS:
             # Use win32api to get total physical memory
@@ -794,6 +804,44 @@ def get_memory() -> int:
     except Exception:
         pass
     return 0
+
+
+def _cgroup_memory_limit() -> Optional[int]:
+    """Memory limit applied to this container, or None if unlimited/absent"""
+    if sabnzbd.WINDOWS or sabnzbd.MACOS:
+        return None
+
+    # Exceeding memory.high throttles us under heavy reclaim, exceeding memory.max
+    # invokes the OOM killer. Take the lowest limit that is set, so we size against
+    # the budget we are meant to stay within rather than the one that gets us killed.
+    limit = None
+    for path in (
+        # cgroup v2
+        "/sys/fs/cgroup/memory.high",
+        "/sys/fs/cgroup/memory.max",
+        # cgroup v1, no equivalent of memory.high
+        "/sys/fs/cgroup/memory/memory.limit_in_bytes",
+    ):
+        value = _read_cgroup_limit(path)
+        if value and (limit is None or value < limit):
+            limit = value
+    return limit
+
+
+def _read_cgroup_limit(path: str) -> Optional[int]:
+    """Read a single cgroup limit file, returning None if absent or unlimited"""
+    try:
+        with open(path) as f:
+            raw = f.read().strip()
+        # cgroup v2 spells unlimited as "max", v1 uses a huge sentinel
+        if raw == "max":
+            return None
+        value = int(raw)
+        if value <= 0 or value >= (1 << 62):
+            return None
+        return value
+    except (OSError, ValueError):
+        return None
 
 
 @conditional_cache(cache_time=3600)
