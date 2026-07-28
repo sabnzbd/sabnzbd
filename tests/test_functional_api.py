@@ -707,8 +707,14 @@ class TestQueueApi(ApiTestFunctions):
         new_order = list(filter((geriatric_entry).__ne__, new_order))
         original_order = list(filter((geriatric_entry).__ne__, original_order))
 
-        # Verify the result
-        assert new_order == original_order
+        # Verify the result. The api sorts on the exact values, while the slots only
+        # report them rounded to the nearest display unit ("1024 KB" and "1.0 MB" both
+        # mean 1MiB). Comparing at that lower resolution avoids failing on entries that
+        # are indistinguishable in the api output but not to the actual sort.
+        if key:
+            assert [key(entry) for entry in new_order] == [key(entry) for entry in original_order]
+        else:
+            assert new_order == original_order
 
     @pytest.mark.parametrize(
         "queue_size, index_from, index_to, value2_is_nzo_id",

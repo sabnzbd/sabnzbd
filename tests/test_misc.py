@@ -185,6 +185,16 @@ class TestMisc:
         assert "9.8 G" == misc.to_units(1024 * 1024 * 10000)
         assert "1024.0 P" == misc.to_units(1024**6)
 
+        # Values that round up to the next unit should be shown in that unit
+        assert "1023 K" == misc.to_units(1024**2 - 1024)
+        assert "1.0 M" == misc.to_units(1024**2 - 1)
+        assert "-1.0 M" == misc.to_units(-(1024**2 - 1))
+        assert "1.0 MBla" == misc.to_units(1024**2 - 1, postfix="Bla")
+        assert "1023.9 M" == misc.to_units(1024**3 - 1024**2 // 8)
+        assert "1.0 G" == misc.to_units(1024**3 - 1)
+        assert "1.0 T" == misc.to_units(1024**4 - 1)
+        assert "1.0 P" == misc.to_units(1024**5 - 1)
+
     def test_unit_back_and_forth(self):
         assert 100 == misc.from_units(misc.to_units(100))
         assert 1024 == misc.from_units(misc.to_units(1024))
