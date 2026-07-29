@@ -778,7 +778,7 @@ def get_memory() -> int:
     any cgroup limit so containers size against their own budget rather than the
     host's. Returns 0 when neither could be determined."""
     physical = _physical_memory()
-    limit = cgroup_memory_limit()
+    limit = _cgroup_memory_limit()
     if physical and limit:
         return min(physical, limit)
     return physical or limit or 0
@@ -811,7 +811,7 @@ def _physical_memory() -> Optional[int]:
     return None
 
 
-def cgroup_memory_limit() -> Optional[int]:
+def _cgroup_memory_limit() -> Optional[int]:
     """Memory limit applied to this container, or None if unlimited/absent"""
     if sabnzbd.WINDOWS or sabnzbd.MACOS:
         return None

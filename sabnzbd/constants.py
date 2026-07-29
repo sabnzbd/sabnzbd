@@ -114,6 +114,8 @@ NTTP_MAX_BUFFER_SIZE = int(10 * MEBI)
 DEF_PIPELINING_REQUESTS = 2
 # Article cache capacity factor to force a non-contiguous flush to disk
 ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE = 0.9
+# Memory left to the rest of the system when capping the article cache
+ARTICLE_CACHE_RESERVED_MEMORY = int(500 * MEBI)
 
 REPAIR_PRIORITY = 3
 FORCE_PRIORITY = 2

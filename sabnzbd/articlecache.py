@@ -32,9 +32,10 @@ from sabnzbd.constants import (
     GIGI,
     ANFO,
     ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE,
+    ARTICLE_CACHE_RESERVED_MEMORY,
 )
 from sabnzbd.nzb import Article, NzbFile
-from sabnzbd.misc import to_units, get_memory, cgroup_memory_limit
+from sabnzbd.misc import to_units, get_memory
 
 # Operations on the article table are handled via try/except.
 # The counters need to be made atomic to ensure consistency.
@@ -60,13 +61,12 @@ class ArticleCache(threading.Thread):
         # so it never gets to use more than 1GB no matter how much the machine has
         self.__cache_upper_limit: int = int(4 * GIGI) if sys.maxsize > 2**32 else int(GIGI)
 
-        # Beyond that, never claim more than a share of the memory we are allowed to use.
-        # Skipped when it could not be determined, we would end up without any cache at all
+        # Whatever is configured also has to fit in the memory we are allowed to use,
+        # leaving room for the rest of SABnzbd and anything else sharing the limit.
+        # Skipped when memory could not be determined, we would end up without any cache
         if memory := get_memory():
-            # A cgroup limit also has to cover the page cache our own writes generate,
-            # so leave more headroom there than on a host that can reclaim globally
-            memory_fraction = 4 if cgroup_memory_limit() else 2
-            self.__cache_upper_limit = min(self.__cache_upper_limit, memory // memory_fraction)
+            available = max(0, memory - ARTICLE_CACHE_RESERVED_MEMORY)
+            self.__cache_upper_limit = min(self.__cache_upper_limit, available)
 
     def change_direct_write(self, direct_write: bool) -> None:
         self.__direct_write = direct_write

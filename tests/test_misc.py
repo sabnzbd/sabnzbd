@@ -1254,7 +1254,7 @@ class TestSABRarFile:
 
 @pytest.mark.platform("linux")
 class TestCgroupMemoryLimit:
-    """Container memory detection, see cgroup_memory_limit()"""
+    """Container memory detection, see _cgroup_memory_limit()"""
 
     GIGI = 1024**3
     V2_HIGH = "/sys/fs/cgroup/memory.high"
@@ -1275,37 +1275,37 @@ class TestCgroupMemoryLimit:
 
     def test_no_cgroup_files(self):
         with self.patched_open({}):
-            assert misc.cgroup_memory_limit() is None
+            assert misc._cgroup_memory_limit() is None
 
     def test_v2_max_only(self):
         with self.patched_open({self.V2_MAX: str(2 * self.GIGI)}):
-            assert misc.cgroup_memory_limit() == 2 * self.GIGI
+            assert misc._cgroup_memory_limit() == 2 * self.GIGI
 
     def test_v2_unlimited(self):
         with self.patched_open({self.V2_MAX: "max", self.V2_HIGH: "max"}):
-            assert misc.cgroup_memory_limit() is None
+            assert misc._cgroup_memory_limit() is None
 
     def test_v2_high_below_max_wins(self):
         """memory.high throttles, so it is the budget we should size against"""
         with self.patched_open({self.V2_HIGH: str(self.GIGI), self.V2_MAX: str(4 * self.GIGI)}):
-            assert misc.cgroup_memory_limit() == self.GIGI
+            assert misc._cgroup_memory_limit() == self.GIGI
 
     def test_v2_high_unset_falls_back_to_max(self):
         with self.patched_open({self.V2_HIGH: "max", self.V2_MAX: str(2 * self.GIGI)}):
-            assert misc.cgroup_memory_limit() == 2 * self.GIGI
+            assert misc._cgroup_memory_limit() == 2 * self.GIGI
 
     def test_v1_limit(self):
         with self.patched_open({self.V1_MAX: str(512 * 1024 * 1024)}):
-            assert misc.cgroup_memory_limit() == 512 * 1024 * 1024
+            assert misc._cgroup_memory_limit() == 512 * 1024 * 1024
 
     def test_v1_unlimited_sentinel(self):
         """v1 reports a huge sentinel rather than a keyword when unlimited"""
         with self.patched_open({self.V1_MAX: "9223372036854771712"}):
-            assert misc.cgroup_memory_limit() is None
+            assert misc._cgroup_memory_limit() is None
 
     def test_garbage_is_ignored(self):
         with self.patched_open({self.V2_MAX: "not-a-number"}):
-            assert misc.cgroup_memory_limit() is None
+            assert misc._cgroup_memory_limit() is None
 
     def test_get_memory_clamps_to_cgroup(self):
         with self.patched_open({self.V2_MAX: str(self.GIGI)}):
