@@ -34,7 +34,7 @@ from sabnzbd.constants import (
     ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE,
 )
 from sabnzbd.nzb import Article, NzbFile
-from sabnzbd.misc import to_units, get_memory
+from sabnzbd.misc import to_units, get_memory, cgroup_memory_limit
 
 # Operations on the article table are handled via try/except.
 # The counters need to be made atomic to ensure consistency.
@@ -62,12 +62,11 @@ class ArticleCache(threading.Thread):
 
         # Beyond that, never claim more than a share of the memory we are allowed to use.
         # Skipped when it could not be determined, we would end up without any cache at all
-        memory = get_memory()
-        if memory.effective:
+        if memory := get_memory():
             # A cgroup limit also has to cover the page cache our own writes generate,
             # so leave more headroom there than on a host that can reclaim globally
-            memory_fraction = 4 if memory.cgroup_limit else 2
-            self.__cache_upper_limit = min(self.__cache_upper_limit, memory.effective // memory_fraction)
+            memory_fraction = 4 if cgroup_memory_limit() else 2
+            self.__cache_upper_limit = min(self.__cache_upper_limit, memory // memory_fraction)
 
     def change_direct_write(self, direct_write: bool) -> None:
         self.__direct_write = direct_write

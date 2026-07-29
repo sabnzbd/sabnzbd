@@ -42,7 +42,6 @@ import rarfile
 import hashlib
 from threading import Thread, RLock
 from collections.abc import Iterable
-from dataclasses import dataclass
 from typing import Any, AnyStr, Optional, Collection
 from functools import lru_cache
 
@@ -751,7 +750,7 @@ def get_cache_limit() -> str:
     """
     # Calculate, if possible
     try:
-        mem_bytes = get_memory().effective
+        mem_bytes = get_memory()
 
         # Use 1/4th of available memory
         mem_bytes = mem_bytes / 4
@@ -774,26 +773,15 @@ def get_cache_limit() -> str:
     return ""
 
 
-@dataclass(frozen=True, slots=True)
-class MemoryInfo:
-    """Memory available to us, either value is None when it could not be determined"""
-
-    physical: Optional[int] = None
-    cgroup_limit: Optional[int] = None
-
-    @property
-    def effective(self) -> int:
-        """Lowest known bound on the memory we can use, 0 when nothing could be determined"""
-        if self.physical and self.cgroup_limit:
-            return min(self.physical, self.cgroup_limit)
-        return self.physical or self.cgroup_limit or 0
-
-
-def get_memory() -> MemoryInfo:
-    """Physical memory installed and any cgroup limit applied to us. Callers that
-    only need a single number want MemoryInfo.effective, the rest care about the
-    distinction because a cgroup limit also has to cover our own page cache."""
-    return MemoryInfo(_physical_memory(), _cgroup_memory_limit())
+def get_memory() -> int:
+    """Memory we are allowed to use: the memory installed in the machine, clamped by
+    any cgroup limit so containers size against their own budget rather than the
+    host's. Returns 0 when neither could be determined."""
+    physical = _physical_memory()
+    limit = cgroup_memory_limit()
+    if physical and limit:
+        return min(physical, limit)
+    return physical or limit or 0
 
 
 def _physical_memory() -> Optional[int]:
@@ -823,7 +811,7 @@ def _physical_memory() -> Optional[int]:
     return None
 
 
-def _cgroup_memory_limit() -> Optional[int]:
+def cgroup_memory_limit() -> Optional[int]:
     """Memory limit applied to this container, or None if unlimited/absent"""
     if sabnzbd.WINDOWS or sabnzbd.MACOS:
         return None
