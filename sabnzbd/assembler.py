@@ -544,8 +544,6 @@ class Assembler(Thread):
         :returns (file_descriptor, current_offset, can_direct_write)
         """
         with nzf.file_lock:
-            # Get the current umask without changing it, to create a file with the same permissions as `with open(...)`
-            os.umask(os.umask(0))
             fd = os.open(nzf.filepath, os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0), 0o666)
             offset = nzf.contiguous_offset()
             os.lseek(fd, offset, os.SEEK_SET)
