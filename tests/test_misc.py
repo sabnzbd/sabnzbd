@@ -1252,6 +1252,7 @@ class TestSABRarFile:
                 assert zf.namelist() == expected_files
 
 
+@pytest.mark.platform("linux")
 class TestCgroupMemoryLimit:
     """Container memory detection, see _cgroup_memory_limit()"""
 
@@ -1260,7 +1261,7 @@ class TestCgroupMemoryLimit:
     V2_MAX = "/sys/fs/cgroup/memory.max"
     V1_MAX = "/sys/fs/cgroup/memory/memory.limit_in_bytes"
 
-    def patched_open(self, files):
+    def patched_open(self, files: dict[str, str]):
         real_open = open
 
         def _open(path, *args, **kwargs):
@@ -1272,49 +1273,40 @@ class TestCgroupMemoryLimit:
 
         return mock.patch("builtins.open", _open)
 
-    @pytest.mark.platform("linux")
     def test_no_cgroup_files(self):
         with self.patched_open({}):
             assert misc._cgroup_memory_limit() is None
 
-    @pytest.mark.platform("linux")
     def test_v2_max_only(self):
         with self.patched_open({self.V2_MAX: str(2 * self.GIGI)}):
             assert misc._cgroup_memory_limit() == 2 * self.GIGI
 
-    @pytest.mark.platform("linux")
     def test_v2_unlimited(self):
         with self.patched_open({self.V2_MAX: "max", self.V2_HIGH: "max"}):
             assert misc._cgroup_memory_limit() is None
 
-    @pytest.mark.platform("linux")
     def test_v2_high_below_max_wins(self):
         """memory.high throttles, so it is the budget we should size against"""
         with self.patched_open({self.V2_HIGH: str(self.GIGI), self.V2_MAX: str(4 * self.GIGI)}):
             assert misc._cgroup_memory_limit() == self.GIGI
 
-    @pytest.mark.platform("linux")
     def test_v2_high_unset_falls_back_to_max(self):
         with self.patched_open({self.V2_HIGH: "max", self.V2_MAX: str(2 * self.GIGI)}):
             assert misc._cgroup_memory_limit() == 2 * self.GIGI
 
-    @pytest.mark.platform("linux")
     def test_v1_limit(self):
         with self.patched_open({self.V1_MAX: str(512 * 1024 * 1024)}):
             assert misc._cgroup_memory_limit() == 512 * 1024 * 1024
 
-    @pytest.mark.platform("linux")
     def test_v1_unlimited_sentinel(self):
         """v1 reports a huge sentinel rather than a keyword when unlimited"""
         with self.patched_open({self.V1_MAX: "9223372036854771712"}):
             assert misc._cgroup_memory_limit() is None
 
-    @pytest.mark.platform("linux")
     def test_garbage_is_ignored(self):
         with self.patched_open({self.V2_MAX: "not-a-number"}):
             assert misc._cgroup_memory_limit() is None
 
-    @pytest.mark.platform("linux")
     def test_get_memory_reports_both_values(self):
         with self.patched_open({self.V2_MAX: str(self.GIGI)}):
             with mock.patch("sabnzbd.misc._physical_memory", return_value=64 * self.GIGI):
@@ -1322,19 +1314,16 @@ class TestCgroupMemoryLimit:
         assert memory.physical == 64 * self.GIGI
         assert memory.cgroup_limit == self.GIGI
 
-    @pytest.mark.platform("linux")
     def test_effective_clamps_to_cgroup(self):
         with self.patched_open({self.V2_MAX: str(self.GIGI)}):
             with mock.patch("sabnzbd.misc._physical_memory", return_value=64 * self.GIGI):
                 assert misc.get_memory().effective == self.GIGI
 
-    @pytest.mark.platform("linux")
     def test_effective_keeps_physical_when_lower(self):
         with self.patched_open({self.V2_MAX: str(64 * self.GIGI)}):
             with mock.patch("sabnzbd.misc._physical_memory", return_value=8 * self.GIGI):
                 assert misc.get_memory().effective == 8 * self.GIGI
 
-    @pytest.mark.platform("linux")
     def test_effective_uses_cgroup_when_physical_unknown(self):
         """_physical_memory() returns None when it cannot be determined"""
         with self.patched_open({self.V2_MAX: str(self.GIGI)}):
@@ -1343,7 +1332,6 @@ class TestCgroupMemoryLimit:
         assert memory.physical is None
         assert memory.effective == self.GIGI
 
-    @pytest.mark.platform("linux")
     def test_effective_zero_when_nothing_known(self):
         with self.patched_open({}):
             with mock.patch("sabnzbd.misc._physical_memory", return_value=None):
