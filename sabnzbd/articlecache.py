@@ -21,7 +21,7 @@ sabnzbd.articlecache - Article cache handling
 
 import logging
 import threading
-import sys
+import struct
 import time
 from typing import Collection, Optional
 
@@ -57,9 +57,11 @@ class ArticleCache(threading.Thread):
         self.__last_flush: float = 0
         self.__non_contiguous_trigger: int = 0  # Force flush trigger
 
-        # A 32 bit process runs out of address space long before it runs out of memory,
-        # so it never gets to use more than 1GB no matter how much the machine has
-        self.__cache_upper_limit: int = int(4 * GIGI) if sys.maxsize > 2**32 else int(GIGI)
+        # On 32 bit we only allow the user to set 1GB
+        # For 64 bit we allow up to 4GB, in case somebody wants that
+        self.__cache_upper_limit = GIGI
+        if sabnzbd.MACOS or sabnzbd.WINDOWS or (struct.calcsize("P") * 8) == 64:
+            self.__cache_upper_limit = 4 * GIGI
 
         # Whatever is configured also has to fit in the memory we are allowed to use,
         # leaving room for the rest of SABnzbd and anything else sharing the limit.
