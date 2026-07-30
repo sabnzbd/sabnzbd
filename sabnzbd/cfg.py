@@ -32,6 +32,7 @@ from sabnzbd.config import (
     OptionBool,
     OptionNumber,
     OptionPassword,
+    OptionPasswordHash,
     OptionDir,
     OptionStr,
     OptionList,
@@ -372,7 +373,10 @@ web_host = OptionStr("misc", "host", DEF_HOST, validation=validate_host)
 web_port = OptionStr("misc", "port", DEF_PORT)
 https_port = OptionStr("misc", "https_port")
 username = OptionStr("misc", "username")
+# password is retained only as a read-once migration source for existing web credentials.
+# New web passwords are persisted as one-way PBKDF2 hashes in password_hash.
 password = OptionPassword("misc", "password")
+password_hash = OptionPasswordHash("misc", "password_hash")
 bandwidth_max = OptionStr("misc", "bandwidth_max")
 cache_limit = OptionStr("misc", "cache_limit")
 web_dir = OptionStr("misc", "web_dir", DEF_STD_WEB_DIR)

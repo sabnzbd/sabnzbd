@@ -19,10 +19,14 @@
 sabnzbd.config - Configuration Support
 """
 
+import base64
+import hashlib
+import hmac
 import logging
 import os
 import re
 import shutil
+import tempfile
 import threading
 import time
 import uuid
@@ -425,6 +429,55 @@ class OptionPassword(Option):
     def __call__(self) -> str:
         """get() replacement"""
         return self.get()
+
+
+class OptionPasswordHash(Option):
+    """One-way password hash for credentials that never need recovery."""
+
+    prefix = "pbkdf2_sha256"
+    iterations = 600000
+
+    def __init__(self, section: str, keyword: str, default_val: str = "", add: bool = True):
+        self.get_string = self.get_stars
+        super().__init__(section, keyword, default_val, add=add)
+
+    def get_stars(self) -> str:
+        return "*" * 10 if self.get() else ""
+
+    def get_dict(self, for_public_api: bool = False) -> dict[str, str]:
+        return {self.keyword: self.get_stars()}
+
+    def set(self, value: str):
+        """Set a persisted hash, or hash a newly supplied plaintext password."""
+        if value is None or (value and not value.strip("*")):
+            return
+        if value == "":
+            super().set("")
+        elif value.startswith(self.prefix + "$"):
+            super().set(value)
+        else:
+            super().set(self.hash_password(value))
+
+    @classmethod
+    def hash_password(cls, password: str) -> str:
+        salt = base64.b64encode(os.urandom(16)).decode("ascii")
+        digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("ascii"), cls.iterations)
+        encoded_digest = base64.b64encode(digest).decode("ascii")
+        return "%s$%s$%s$%s" % (cls.prefix, cls.iterations, salt, encoded_digest)
+
+    def verify(self, password: str) -> bool:
+        """Verify a plaintext password using a timing-safe comparison."""
+        try:
+            algorithm, iterations, salt, expected_digest = self.get().split("$", 3)
+            if algorithm != self.prefix:
+                return False
+            digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("ascii"), int(iterations))
+            return hmac.compare_digest(base64.b64encode(digest).decode("ascii"), expected_digest)
+        except (AttributeError, TypeError, ValueError):
+            return False
+
+    def __call__(self) -> str:
+        return self.get() or ""
 
 
 class ConfigServer:
@@ -834,7 +887,13 @@ def get_config(section: str, keyword: str) -> Optional[AllConfigTypes]:
 
 @synchronized(CONFIG_LOCK)
 def set_config(kwargs):
-    """Set a config item, using values in dictionary"""
+    """Set a config item, using values in dictionary."""
+    # Keep the historical API password setting functional without allowing it
+    # to repopulate the legacy reversible web-password field.
+    if kwargs.get("section") == "misc" and kwargs.get("keyword") == "password":
+        sabnzbd.cfg.password_hash.set(kwargs.get("value", ""))
+        sabnzbd.cfg.password.set("")
+        return True
     try:
         item = CFG_DATABASE[kwargs.get("section")][kwargs.get("keyword")]
     except KeyError:
@@ -949,6 +1008,66 @@ def save_config(force=False):
     global CFG_OBJ, CFG_DATABASE, CFG_MODIFIED
 
     if not (CFG_MODIFIED or force):
+        return True
+
+    # Migrate only the historical web-interface password. Server and other
+    # outbound passwords must remain recoverable OptionPassword values.
+    migrated_web_password = bool(sabnzbd.cfg.password() and not sabnzbd.cfg.password_hash())
+    if migrated_web_password and sabnzbd.cfg.configlock():
+        logging.warning("Cannot migrate the web interface password while configuration is locked")
+        return False
+    if migrated_web_password:
+        # Render the complete migrated configuration before touching either
+        # persistent file, then atomically replace both copies. This prevents a
+        # failed backup cleanup from leaving a plaintext credential behind.
+        sabnzbd.cfg.password_hash.set(sabnzbd.cfg.password())
+        sabnzbd.cfg.password.set("")
+        logging.info("Migrated the web interface password to a one-way hash")
+
+        for section in CFG_DATABASE:
+            if section in ("sorters", "servers", "categories", "rss"):
+                if section not in CFG_OBJ:
+                    CFG_OBJ[section] = {}
+                for subsection in CFG_DATABASE[section]:
+                    if subsection not in CFG_OBJ[section]:
+                        CFG_OBJ[section][subsection] = {}
+                    CFG_OBJ[section][subsection] = CFG_DATABASE[section][subsection].get_dict()
+            else:
+                for option in CFG_DATABASE[section]:
+                    config_option = CFG_DATABASE[section][option]
+                    if config_option.section not in CFG_OBJ:
+                        CFG_OBJ[config_option.section] = {}
+                    CFG_OBJ[config_option.section][config_option.keyword] = CFG_DATABASE[section][option]()
+
+        backup_directory = os.path.dirname(CFG_OBJ.filename) or "."
+        sanitized_config = ""
+        sanitized_backup = ""
+        try:
+            config_fd, sanitized_config = tempfile.mkstemp(prefix=".sabnzbd-", dir=backup_directory)
+            with os.fdopen(config_fd, "wb") as fp:
+                CFG_OBJ.write(fp)
+                fp.flush()
+                os.fsync(fp.fileno())
+            shutil.copymode(CFG_OBJ.filename, sanitized_config)
+
+            backup_fd, sanitized_backup = tempfile.mkstemp(prefix=".sabnzbd-", dir=backup_directory)
+            with os.fdopen(backup_fd, "wb") as fp, open(sanitized_config, "rb") as source:
+                shutil.copyfileobj(source, fp)
+                fp.flush()
+                os.fsync(fp.fileno())
+            shutil.copymode(CFG_OBJ.filename, sanitized_backup)
+
+            os.replace(sanitized_backup, CFG_OBJ.filename + ".bak")
+            os.replace(sanitized_config, CFG_OBJ.filename)
+            CFG_MODIFIED = False
+        except IOError:
+            for temporary_file in (sanitized_config, sanitized_backup):
+                if temporary_file and os.path.exists(temporary_file):
+                    try:
+                        os.unlink(temporary_file)
+                    except OSError:
+                        pass
+            return False
         return True
 
     if sabnzbd.cfg.configlock():

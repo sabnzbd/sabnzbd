@@ -232,7 +232,7 @@ def check_hostname():
     if only allowed to be accessed via localhost.
     """
     # If login is enabled, no API-key can be deducted
-    if cfg.username() and cfg.password():
+    if cfg.username() and (cfg.password_hash() or cfg.password()):
         return True
 
     # Don't allow requests without Host
@@ -333,7 +333,7 @@ def check_login_cookie():
 
 def check_login():
     # Not when no authentication required or basic-auth is on
-    if not cfg.html_login() or not cfg.username() or not cfg.password():
+    if not cfg.html_login() or not cfg.username() or not (cfg.password_hash() or cfg.password()):
         return True
 
     # If we show login for external IP, by using access_type=6 we can check if IP match
@@ -346,12 +346,14 @@ def check_login():
 
 def check_basic_auth(_, username, password):
     """CherryPy basic authentication validation"""
+    if cfg.password_hash():
+        return username == cfg.username() and cfg.password_hash.verify(password)
     return username == cfg.username() and password == cfg.password()
 
 
 def set_auth(conf):
     """Set the authentication for CherryPy"""
-    if cfg.username() and cfg.password() and not cfg.html_login():
+    if cfg.username() and (cfg.password_hash() or cfg.password()) and not cfg.html_login():
         conf.update(
             {
                 "tools.auth_basic.on": True,
@@ -467,7 +469,7 @@ class MainPage:
             # Have logout only with HTML and if inet=5, only when we are external
             info["have_logout"] = (
                 cfg.username()
-                and cfg.password()
+                and (cfg.password_hash() or cfg.password())
                 and (
                     cfg.html_login()
                     and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(access_type=6)))
@@ -675,7 +677,11 @@ class LoginPage:
             raise Raiser("/")
 
         # Check login info
-        if kwargs.get("username") == cfg.username() and kwargs.get("password") == cfg.password():
+        if cfg.password_hash():
+            password_ok = cfg.password_hash.verify(kwargs.get("password", ""))
+        else:
+            password_ok = kwargs.get("password") == cfg.password()
+        if kwargs.get("username") == cfg.username() and password_ok:
             # Save login cookie
             set_login_cookie(remember_me=kwargs.get("remember_me", False))
             # Log the success
@@ -1005,7 +1011,7 @@ class ConfigGeneral:
 
         conf["web_list"] = web_list
         conf["web_dir"] = "%s - %s" % (cfg.web_dir(), cfg.web_color())
-        conf["password"] = cfg.password.get_stars()
+        conf["password"] = cfg.password_hash.get_stars()
 
         conf["language"] = cfg.language()
         conf["lang_list"] = list_languages()
@@ -1030,7 +1036,7 @@ class ConfigGeneral:
                 return badParameterResponse(msg, ajax=kwargs.get("ajax"))
 
         # Handle special options
-        cfg.password.set(kwargs.get("password"))
+        cfg.password_hash.set(kwargs.get("password", ""))
 
         web_dir = kwargs.get("web_dir")
         change_web_dir(web_dir)
