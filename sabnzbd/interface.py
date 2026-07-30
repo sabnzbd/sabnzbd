@@ -510,7 +510,7 @@ class SecurityMiddleware:
 
         # Verify login status, only for non-key pages
         if self.check_for_login and not self.check_api_key and not check_login(request):
-            return BaseRedirectResponse("/login")
+            return base_redirect_response("/login")
 
         # Some pages need the correct API key
         if self.check_api_key and (msg := check_apikey(request)):
@@ -531,7 +531,9 @@ logging.getLogger("python_multipart.multipart").setLevel(logging.WARNING)
 ##############################################################################
 # Helper redirect functions
 ##############################################################################
-def BaseRedirectResponse(root: str = "", **kwargs) -> RedirectResponse:
+
+
+def base_redirect_response(root: str = "", **kwargs) -> RedirectResponse:
     """Create a Starlette RedirectResponse with SABnzbd URL base and query parameters"""
     # Shares url_for with the templates so redirect targets and links stay in step.
     # Root-relative on purpose: a Location header should send the client back to the
@@ -575,7 +577,7 @@ def main_index(request: Request):
         return template_filtered_response(file=os.path.join(sabnzbd.WEB_DIR, "main.tmpl"), search_list=info)
     else:
         # Redirect to the setup wizard
-        return BaseRedirectResponse("/wizard")
+        return base_redirect_response("/wizard")
 
 
 @secured_expose(route="/shutdown", check_api_key=True)
@@ -769,7 +771,7 @@ def get_access_info(request: Optional[Request] = None) -> set[str]:
 async def login_index(request: Request):
     # Already logged in, or no username/password set at all
     if check_login(request):
-        return BaseRedirectResponse("/")
+        return base_redirect_response("/")
 
     error = None
     if request.method == "POST":
@@ -779,7 +781,7 @@ async def login_index(request: Request):
 
         if username == cfg.username() and password == cfg.password():
             # Create redirect response
-            response = BaseRedirectResponse("/")
+            response = base_redirect_response("/")
             # Save login cookie
             set_login_cookie(request, response, remember_me=remember_me)
             # Log the success
@@ -811,7 +813,7 @@ async def login_index(request: Request):
 
 @secured_expose(route="/logout", check_for_login=False, methods=["GET"])
 def logout_index(request: Request):
-    response = BaseRedirectResponse("/")
+    response = base_redirect_response("/")
     set_login_cookie(request, response, remove=True)
     return response
 
@@ -1221,7 +1223,7 @@ def config_server_save(request: Request):
 def config_server_del(request: Request):
     kw = {"section": "servers", "keyword": request_params(request).get("server")}
     del_from_section(kw)
-    return BaseRedirectResponse("/config/server")
+    return base_redirect_response("/config/server")
 
 
 @secured_expose(route="/config/server/clear_server", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1229,7 +1231,7 @@ def config_server_clr(request: Request):
     server = request_params(request).get("server")
     if server:
         sabnzbd.BPSMeter.clear_server(server)
-    return BaseRedirectResponse("/config/server")
+    return base_redirect_response("/config/server")
 
 
 @secured_expose(route="/config/server/toggle_server", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1241,7 +1243,7 @@ def config_server_toggle(request: Request):
             svr.enable.set(not svr.enable())
             config.save_config()
             sabnzbd.Downloader.update_server(server, server)
-    return BaseRedirectResponse("/config/server")
+    return base_redirect_response("/config/server")
 
 
 def unique_svr_name(server):
@@ -1380,8 +1382,8 @@ _RSS_ROOT = "/config/rss"
 def _rss_redirect(feed: str = "") -> RedirectResponse:
     """Redirect back to the RSS page, optionally selecting a feed."""
     if feed:
-        return BaseRedirectResponse(_RSS_ROOT, feed=feed)
-    return BaseRedirectResponse(_RSS_ROOT)
+        return base_redirect_response(_RSS_ROOT, feed=feed)
+    return base_redirect_response(_RSS_ROOT)
 
 
 def _rss_flash_redirect(request: Request, feed: str, msg: str = "") -> RedirectResponse:
@@ -1452,7 +1454,7 @@ def config_rss_save_rss_rate(request: Request):
     cfg.rss_rate.set(request_params(request).get("rss_rate"))
     config.save_config()
     sabnzbd.Scheduler.restart()
-    return BaseRedirectResponse(_RSS_ROOT)
+    return base_redirect_response(_RSS_ROOT)
 
 
 @secured_expose(route="/config/rss/upd_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1501,7 +1503,7 @@ def config_rss_save_rss_feed(request: Request):
 
         config.save_config()
 
-    return BaseRedirectResponse(_RSS_ROOT, feed=feed_name) if feed_name else BaseRedirectResponse(_RSS_ROOT)
+    return base_redirect_response(_RSS_ROOT, feed=feed_name) if feed_name else base_redirect_response(_RSS_ROOT)
 
 
 @secured_expose(route="/config/rss/toggle_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1516,10 +1518,10 @@ def config_rss_toggle_rss_feed(request: Request):
         item.enable.set(not item.enable())
         config.save_config()
     if params.get("table"):
-        return BaseRedirectResponse(_RSS_ROOT)
+        return base_redirect_response(_RSS_ROOT)
     else:
         feed = params.get("feed")
-        return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
+        return base_redirect_response(_RSS_ROOT, feed=feed) if feed else base_redirect_response(_RSS_ROOT)
 
 
 @secured_expose(route="/config/rss/add_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1548,9 +1550,9 @@ def config_rss_add_rss_feed(request: Request):
             msg = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
             return _rss_flash_redirect(request, feed, msg)
         else:
-            return BaseRedirectResponse(_RSS_ROOT)
+            return base_redirect_response(_RSS_ROOT)
     else:
-        return BaseRedirectResponse(_RSS_ROOT)
+        return base_redirect_response(_RSS_ROOT)
 
 
 @secured_expose(route="/config/rss/upd_rss_filter", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1568,7 +1570,7 @@ def config_rss_del_rss_feed(request: Request):
     del_from_section(kw)
     with sabnzbd.rss.rss_repository() as repo:
         repo.clear_feed(feed)
-    return BaseRedirectResponse(_RSS_ROOT)
+    return base_redirect_response(_RSS_ROOT)
 
 
 @secured_expose(route="/config/rss/del_rss_filter", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1661,7 +1663,7 @@ def config_rss_download(request: Request):
 def config_rss_rss_now(request: Request):
     """Run an automatic RSS run now"""
     sabnzbd.Scheduler.force_rss()
-    return BaseRedirectResponse(_RSS_ROOT)
+    return base_redirect_response(_RSS_ROOT)
 
 
 def ConvertSpecials(p):
@@ -1850,7 +1852,7 @@ def config_scheduling_add(request: Request):
 
     config.save_config()
     sabnzbd.Scheduler.restart()
-    return BaseRedirectResponse(_SCHED_ROOT)
+    return base_redirect_response(_SCHED_ROOT)
 
 
 @secured_expose(route="/config/scheduling/del_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1862,7 +1864,7 @@ def config_scheduling_del(request: Request):
         cfg.schedules.set(schedules)
         config.save_config()
         sabnzbd.Scheduler.restart()
-    return BaseRedirectResponse(_SCHED_ROOT)
+    return base_redirect_response(_SCHED_ROOT)
 
 
 @secured_expose(route="/config/scheduling/toggle_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1880,7 +1882,7 @@ def config_scheduling_toggle(request: Request):
         cfg.schedules.set(schedules)
         config.save_config()
         sabnzbd.Scheduler.restart()
-    return BaseRedirectResponse(_SCHED_ROOT)
+    return base_redirect_response(_SCHED_ROOT)
 
 
 ##############################################################################
@@ -1924,7 +1926,7 @@ def config_categories_delete(request: Request):
         "keyword": request_params(request).get("name"),
     }
     del_from_section(kw)
-    return BaseRedirectResponse("/config/categories")
+    return base_redirect_response("/config/categories")
 
 
 @secured_expose(route="/config/categories/save", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1952,7 +1954,7 @@ def config_categories_save(request: Request):
         config.ConfigCat(newname.lower(), cat_params)
 
     config.save_config()
-    return BaseRedirectResponse("/config/categories")
+    return base_redirect_response("/config/categories")
 
 
 ##############################################################################
@@ -1996,7 +1998,7 @@ def config_sorting_index(request: Request):
 def config_sorting_delete(request: Request):
     kw = {"section": "sorters", "keyword": request_params(request).get("name")}
     del_from_section(kw)
-    return BaseRedirectResponse(_SORTING_ROOT)
+    return base_redirect_response(_SORTING_ROOT)
 
 
 @secured_expose(route="/config/sorting/save_sorter", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -2016,7 +2018,7 @@ def config_sorting_save_sorter(request: Request):
         config.ConfigSorter(newname, kwargs)
 
     config.save_config()
-    return BaseRedirectResponse(_SORTING_ROOT)
+    return base_redirect_response(_SORTING_ROOT)
 
 
 @secured_expose(route="/config/sorting/toggle_sorter", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -2029,7 +2031,7 @@ def config_sorting_toggle_sorter(request: Request):
     except Exception:
         pass
 
-    return BaseRedirectResponse(_SORTING_ROOT)
+    return base_redirect_response(_SORTING_ROOT)
 
 
 def GetRssLog(feed):
@@ -2461,7 +2463,7 @@ class ThreadedServer(uvicorn.Server):
 
 async def not_found_redirect(request: Request, exc):
     """Catch-all for unknown URLs: redirect to the UI root"""
-    return BaseRedirectResponse("/")
+    return base_redirect_response("/")
 
 
 def create_app() -> Starlette:
