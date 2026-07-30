@@ -28,6 +28,64 @@ from sabnzbd.misc import is_local_addr, is_loopback_addr
 
 class TestInterfaceFunctions:
     @pytest.mark.parametrize(
+        "remote_ip, authentik_username, expected",
+        [
+            ("10.4.1.20", "harry", True),  # from trusted proxy + header → authenticated
+            ("10.4.1.20", "harry", True),  # with XFF → still authenticated
+            ("10.4.1.21", "harry", None),  # not from proxy → fall through
+            ("10.4.1.21", "someuser", None),  # not from proxy → fall through
+            ("10.4.1.20", None, False),  # from proxy, no header → reject
+            ("10.4.1.20", "   ", False),  # from proxy, blank header → reject
+        ],
+    )
+    @pytest.mark.config({"authentik_proxy_trusted_proxies": ["10.4.1.20"]})
+    def test_authentik_proxy_sso(self, remote_ip, authentik_username, expected):
+        cherrypy.request.remote.ip = remote_ip
+        if authentik_username is not None:
+            cherrypy.request.headers["X-Authentik-Username"] = authentik_username
+        else:
+            cherrypy.request.headers.pop("X-Authentik-Username", None)
+        assert interface.check_authentik_proxy_sso() is expected
+
+    @pytest.mark.config(
+        {
+            "authentik_proxy_trusted_proxies": ["10.4.1.20"],
+            "html_login": True,
+            "username": "testuser",
+            "password_hash": "pbkdf2_sha256$600000$c2FsdHlzYWx0$fakesignature",
+        }
+    )
+    def test_authentik_proxy_sso_check_login_hybrid(self):
+        """SSO users authenticate; direct users fall through to cookie/password auth."""
+        # Request from trusted proxy with valid header → authenticated
+        cherrypy.request.remote.ip = "10.4.1.20"
+        cherrypy.request.headers["X-Authentik-Username"] = "harry"
+        assert interface.check_login() is True
+
+        # Request from trusted proxy without header → rejected
+        cherrypy.request.headers.pop("X-Authentik-Username", None)
+        assert interface.check_login() is False
+
+        # Request from non-proxy → falls through to cookie check
+        cherrypy.request.remote.ip = "192.168.1.50"
+        # No cookie set → not authenticated
+        assert interface.check_login() is False
+
+    @pytest.mark.config(
+        {
+            "authentik_proxy_trusted_proxies": ["10.4.1.20"],
+            "html_login": False,
+            "username": "testuser",
+            "password_hash": "pbkdf2_sha256$600000$c2FsdHlzYWx0$fakesignature",
+        }
+    )
+    def test_authentik_proxy_sso_basic_auth_hybrid(self):
+        """Basic auth is available when SSO is configured and local creds exist."""
+        conf = {}
+        interface.set_auth(conf)
+        assert conf.get("tools.auth_basic.on") is True
+
+    @pytest.mark.parametrize(
         "remote_ip, local_ranges, xff_header, result_with_xff",
         [
             ("10.11.12.13", None, None, True),
