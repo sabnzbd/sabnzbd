@@ -1157,15 +1157,17 @@ async def config_upload_backup(request: Request):
     return report(request_params(request), error=T("Invalid backup archive"))
 
 
-def change_web_dir(web_dir):
+def change_web_dir(web_dir: str) -> Optional[str]:
     web_dir, web_color = web_dir.split(" - ")
     web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
 
     if not os.path.exists(web_dir_path):
         logging.info("Cannot find web template: %s", web_dir_path)
+        return "Cannot find web template: %s" % web_dir_path
     else:
         cfg.web_dir.set(web_dir)
         cfg.web_color.set(web_color)
+        return None
 
 
 ##############################################################################
