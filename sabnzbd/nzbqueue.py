@@ -25,6 +25,8 @@ import time
 import uuid
 from typing import Optional
 
+from starlette.datastructures import UploadFile
+
 import sabnzbd
 from sabnzbd.nzb import Article, NzbObject
 from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, safe_lower, duplicate_warning
@@ -167,7 +169,9 @@ class NzbQueue:
                     logging.info("Skipping repair for job %s", folder)
         return result
 
-    def repair_job(self, repair_folder: str, new_nzb=None, password: Optional[str] = None) -> Optional[str]:
+    def repair_job(
+        self, repair_folder: str, new_nzb: Optional[UploadFile] = None, password: Optional[str] = None
+    ) -> Optional[str]:
         """Reconstruct admin for a single job folder, optionally with new NZB"""
         # Check if folder exists
         if not repair_folder or not os.path.exists(repair_folder):

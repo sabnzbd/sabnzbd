@@ -34,7 +34,7 @@ from typing import Any, Callable, NamedTuple, Optional, TypeAlias, Awaitable, Ty
 
 from starlette.background import BackgroundTask
 from starlette.concurrency import run_in_threadpool
-from starlette.datastructures import QueryParams
+from starlette.datastructures import QueryParams, UploadFile
 from starlette.requests import Request
 from starlette.responses import Response, StreamingResponse
 
@@ -1861,7 +1861,7 @@ def build_file_list(nzo_id: str) -> list[dict[str, Any]]:
 
 def retry_job(
     job: str,
-    new_nzb=None,
+    new_nzb: Optional[UploadFile] = None,
     password: Optional[str] = None,
 ) -> Optional[str]:
     """Re enter failed job in the download queue"""
@@ -1948,11 +1948,14 @@ def url_for(path: str = "", request: Optional[Request] = None, absolute: bool = 
     return url
 
 
-def url_netloc(host: str, scheme: str, port: Optional[int]) -> str:
+def url_netloc(host: Optional[str], scheme: str, port: Optional[int]) -> str:
     """Join a host and port, leaving the port off when it is the default for the scheme.
 
     An explicit :80 on http or :443 on https is redundant, and carrying it around makes
     otherwise identical URLs compare as different."""
+    if host is None:
+        host = ""
+
     # Bare IPv6 addresses need bracketing before a port can be appended
     if ":" in host and not host.startswith("["):
         host = "[%s]" % host
@@ -2219,7 +2222,7 @@ def plural_to_single(kw, def_kw=""):
         return def_kw
 
 
-def del_from_section(kwargs: dict[str, str | list[str]]) -> bool:
+def del_from_section(kwargs: QueryParams) -> bool:
     """Remove keyword in section"""
     section = kwargs.get("section", "")
     if section in ("sorters", "servers", "rss", "categories"):
