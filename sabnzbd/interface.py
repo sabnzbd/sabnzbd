@@ -53,6 +53,7 @@ from sabnzbd.misc import (
     is_none,
     get_cpu_name,
     clean_comma_separated_list,
+    strip_ipv4_mapped_notation,
 )
 from sabnzbd.get_addrinfo import get_fastest_addrinfo
 from sabnzbd.filesystem import (
@@ -331,7 +332,31 @@ def check_login_cookie():
     return cherrypy.request.cookie["login_cookie"].value == hashlib.sha1(cookie_str).hexdigest()
 
 
+def authentik_proxy_sso_enabled() -> bool:
+    """Return whether strict Authentik proxy-header SSO is enabled."""
+    return bool(cfg.authentik_proxy_trusted_proxies())
+
+
+def check_authentik_proxy_sso() -> bool:
+    """Trust Authentik's identity header only from an explicit TCP peer.
+
+    The direct CherryPy peer address is deliberately used instead of
+    X-Forwarded-For, which must never determine whether an identity header is
+    trusted.
+    """
+    peer_ip = strip_ipv4_mapped_notation(cherrypy.request.remote.ip)
+    if peer_ip not in cfg.authentik_proxy_trusted_proxies():
+        return False
+    username = cherrypy.request.headers.get("X-authentik-username")
+    return bool(username and username.strip())
+
+
 def check_login():
+    # A configured trusted-proxy list selects strict SSO. Never fall back to
+    # cookies or local credentials, otherwise a direct client could bypass it.
+    if authentik_proxy_sso_enabled():
+        return check_authentik_proxy_sso()
+
     # Not when no authentication required or basic-auth is on
     if not cfg.html_login() or not cfg.username() or not (cfg.password_hash() or cfg.password()):
         return True
@@ -346,6 +371,8 @@ def check_login():
 
 def check_basic_auth(_, username, password):
     """CherryPy basic authentication validation"""
+    if authentik_proxy_sso_enabled():
+        return False
     if cfg.password_hash():
         return username == cfg.username() and cfg.password_hash.verify(password)
     return username == cfg.username() and password == cfg.password()
@@ -353,7 +380,9 @@ def check_basic_auth(_, username, password):
 
 def set_auth(conf):
     """Set the authentication for CherryPy"""
-    if cfg.username() and (cfg.password_hash() or cfg.password()) and not cfg.html_login():
+    if authentik_proxy_sso_enabled():
+        conf.update({"tools.auth_basic.on": False})
+    elif cfg.username() and (cfg.password_hash() or cfg.password()) and not cfg.html_login():
         conf.update(
             {
                 "tools.auth_basic.on": True,
@@ -468,7 +497,8 @@ class MainPage:
 
             # Have logout only with HTML and if inet=5, only when we are external
             info["have_logout"] = (
-                cfg.username()
+                not authentik_proxy_sso_enabled()
+                and cfg.username()
                 and (cfg.password_hash() or cfg.password())
                 and (
                     cfg.html_login()
@@ -663,6 +693,12 @@ def get_access_info():
 class LoginPage:
     @secured_expose(check_for_login=False)
     def index(self, **kwargs):
+        # Authentik SSO is strictly proxy-header based; SAB's local login
+        # cookie cannot log an Authentik session in or out.
+        if authentik_proxy_sso_enabled():
+            cherrypy.response.status = 401
+            return _MSG_MISSING_AUTH
+
         # Base output var
         info = build_header(sabnzbd.WEB_DIR_CONFIG)
         info["error"] = ""

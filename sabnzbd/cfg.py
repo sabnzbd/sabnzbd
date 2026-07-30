@@ -160,6 +160,18 @@ def cleanup_list_validator(value: str | list) -> tuple[None, str | list]:
     return None, validate_entry(value)
 
 
+def validate_trusted_proxy_addresses(value: list[str]) -> tuple[None, list[str]]:
+    """Accept only exact IP addresses for trusted Authentik proxy peers."""
+    normalized = []
+    for entry in value:
+        try:
+            address = ipaddress.ip_address(entry.strip())
+        except ValueError:
+            return "Invalid trusted proxy address: %s" % entry, None
+        normalized.append(str(address))
+    return None, normalized
+
+
 def validate_single_tag(value: list[str]) -> tuple[None, list[str]]:
     """Don't split single indexer tags like "TV > HD"
     into ['TV', '>', 'HD']
@@ -552,6 +564,9 @@ ipv6_servers = OptionBool("misc", "ipv6_servers", True)
 url_base = OptionStr("misc", "url_base", "", validation=validate_url_base)
 host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
 local_ranges = OptionList("misc", "local_ranges", protect=True)
+authentik_proxy_trusted_proxies = OptionList(
+    "misc", "authentik_proxy_trusted_proxies", validation=validate_trusted_proxy_addresses, protect=True, public=False
+)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, minval=1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, minval=0)
 receive_threads = OptionNumber("misc", "receive_threads", 2, minval=1)
