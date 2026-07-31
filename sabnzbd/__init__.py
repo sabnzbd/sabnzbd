@@ -212,6 +212,7 @@ def sig_handler(signum=None, frame=None):
 # Initializing
 ##############################################################################
 INIT_LOCK = Lock()
+SHUTDOWN_LOCK = Lock()
 
 
 def get_db_connection(thread_index=0):
@@ -432,7 +433,11 @@ def notify_shutdown_loop():
 
 def shutdown_program():
     """Stop program after halting and saving"""
-    if not sabnzbd.SABSTOP:
+    # The signal handler can re-enter this function on the main thread while halt()
+    # is still running, for example when systemd delivers a second SIGTERM during
+    # shutdown. The nested call would then deadlock on the non-reentrant INIT_LOCK
+    # already held by halt(), so only the first caller gets to perform the shutdown.
+    if not sabnzbd.SABSTOP and SHUTDOWN_LOCK.acquire(blocking=False):
         logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
         sabnzbd.halt()
         cherrypy.engine.exit()
