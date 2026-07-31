@@ -41,6 +41,7 @@ from sabnzbd.filesystem import (
     get_filename,
     has_unwanted_extension,
     get_basename,
+    same_device,
 )
 from sabnzbd.constants import (
     Status,
@@ -335,14 +336,19 @@ class Assembler(Thread):
         if not full_dir:
             complete_free = cfg.complete_free.get_float()
             required_space = 0
-            if cfg.direct_unpack():
+            if cfg.direct_unpack() and nzo.unpack:
                 # We unpack while we download, so we should check every time
                 # if the unpack maybe already filled up the drive
                 required_space = complete_free / GIGI
             elif nzo.bytes_tried > (nzo.bytes - nzo.bytes_par2) * 0.90:
                 # Since only at 100% unpack is started, continue
                 # downloading until 90% complete before checking
-                required_space = (complete_free + nzo.bytes) / GIGI
+                required_space = complete_free / GIGI
+                if nzo.unpack or not same_device(download_dir.path, complete_dir.path):
+                    # Unpacking writes a second copy of the data before the archives are removed
+                    # and moving to another device copies it, so both need room for the whole job.
+                    # Without unpacking on the same device the move is only a rename.
+                    required_space += nzo.bytes / GIGI
 
             if required_space and complete_dir.free < required_space:
                 full_dir = complete_dir.path

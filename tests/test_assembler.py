@@ -371,6 +371,7 @@ class TestDiskspaceCheck:
         self.nzo.bytes = int(2 * GIGI)
         self.nzo.bytes_tried = 0
         self.nzo.bytes_par2 = 0
+        self.nzo.unpack = True
 
         self.nzf = mock.Mock()
         self.nzf.bytes = int(0.5 * GIGI)
@@ -389,9 +390,10 @@ class TestDiskspaceCheck:
             with (
                 mock.patch("sabnzbd.assembler.diskspace") as self.mock_diskspace,
                 mock.patch("sabnzbd.assembler.get_complete_directory") as self.mock_get_complete_dir,
+                mock.patch("sabnzbd.assembler.same_device", return_value=False) as self.mock_same_device,
                 mock.patch("sabnzbd.assembler.cfg") as self.mock_cfg,
             ):
-                # Defaults: plenty of space, no direct_unpack, autoresume on
+                # Defaults: plenty of space, no direct_unpack, autoresume on, separate devices
                 self.mock_get_complete_dir.return_value = ("/complete", None, True)
                 self.mock_cfg.download_free.get_float.return_value = 1 * GIGI
                 self.mock_cfg.complete_free.get_float.return_value = 2 * GIGI
@@ -520,6 +522,7 @@ class TestDiskspaceCheckScenarios:
             with (
                 mock.patch("sabnzbd.assembler.diskspace") as self.mock_diskspace,
                 mock.patch("sabnzbd.assembler.get_complete_directory") as self.mock_get_complete_dir,
+                mock.patch("sabnzbd.assembler.same_device") as self.mock_same_device,
                 mock.patch("sabnzbd.assembler.cfg") as self.mock_cfg,
             ):
                 self.mock_get_complete_dir.return_value = ("/complete", None, True)
@@ -568,8 +571,9 @@ class TestDiskspaceCheckScenarios:
 
         self.mock_diskspace.return_value = (
             Diskspace(path="/download", free=download_dir_free),
-            Diskspace(path="/complete" if not same_device else "/download", free=complete_dir_free),
+            Diskspace(path="/download" if same_device else "/complete", free=complete_dir_free),
         )
+        self.mock_same_device.return_value = same_device
         self.mock_cfg.download_free.get_float.return_value = download_free_gb * GIGI
         self.mock_cfg.complete_free.get_float.return_value = complete_free_gb * GIGI
         self.mock_cfg.direct_unpack.return_value = direct_unpack
@@ -586,9 +590,9 @@ class TestDiskspaceCheckScenarios:
 
     @pytest.mark.parametrize("pp", [0, 1, 2, 3])
     @pytest.mark.parametrize("same_device", [True, False])
-    def test_pp_does_not_change_requirement(self, pp, same_device):
-        """The complete_dir requirement is the full job size for every pp, including Download-only
-        (pp=0) where nothing is ever unpacked. This is the complaint in #3531."""
+    def test_job_size_required_only_when_unpacking_or_crossing_devices(self, pp, same_device):
+        """Room for the whole job is needed when it gets unpacked (pp 2 and 3) or when the move to
+        complete_dir crosses devices. A Download-only or Repair-only job on one device does not."""
         result = self._run_check(
             job_gb=61.0,
             progress=0.95,
@@ -598,42 +602,44 @@ class TestDiskspaceCheckScenarios:
             complete_disk_free_gb=60.0,
         )
 
-        assert result.paused is True
-        assert result.required_space == pytest.approx(5.0 + 61.0)
+        if pp >= 2 or not same_device:
+            assert result.paused is True
+            assert result.required_space == pytest.approx(5.0 + 61.0)
+        else:
+            assert result.paused is False
 
-    def test_single_device_pauses_despite_ample_space(self):
-        """The crux of #3531: on one device the bytes already downloaded are deducted from
-        complete_dir.free, yet the requirement asks for the full job size on top of them, so the
-        check gets harder to satisfy the closer the job is to finishing."""
+    def test_reported_issue_scenario(self):
+        """#3531: 61GB job, 118GB free at the start, 5GB complete_free and all unpacking off.
+        Used to pause at ~90% because the bytes already downloaded were deducted from
+        complete_dir.free while the requirement still asked for the whole job on top of them."""
         result = self._run_check(job_gb=61.0, progress=0.91, pp=0, same_device=True, disk_free_gb=118.0)
 
-        assert result.paused is True
-        # Free space still covers the rest of the download plus the threshold, and the move to
-        # complete_dir is a rename on one device, so it consumes nothing extra
-        assert self.mock_diskspace.return_value[1].free > 61.0 * (1 - 0.91) + 5.0
+        assert result.paused is False
+        # Free space is below the old requirement, but well above the reserve it now has to meet
+        assert 5.0 < self.mock_diskspace.return_value[1].free < 5.0 + 61.0
 
     @pytest.mark.parametrize(
         "scenario, expect_full_dir, expect_required",
         [
             pytest.param(
-                {"job_gb": 61.0, "progress": 0.91, "pp": 0, "same_device": True, "disk_free_gb": 118.0},
-                "/download",
-                66.0,
-                id="reported_issue_single_device",
-            ),
-            pytest.param(
-                # Same job with complete_dir on its own device, where the move really does copy
-                # the whole job, so the identical requirement is justified
+                # Moving to another device really does copy the whole job, so it is still required
                 {"job_gb": 61.0, "progress": 0.91, "pp": 0, "same_device": False, "complete_disk_free_gb": 60.0},
                 "/complete",
                 66.0,
-                id="reported_issue_separate_devices",
+                id="download_only_separate_devices",
+            ),
+            pytest.param(
+                # Unpacking writes a second copy alongside the archives, also on one device
+                {"job_gb": 61.0, "progress": 0.95, "pp": 2, "same_device": True, "disk_free_gb": 118.0},
+                "/download",
+                66.0,
+                id="unpack_single_device",
             ),
             pytest.param(
                 {"job_gb": 40.0, "progress": 1.0, "pp": 0, "same_device": True, "disk_free_gb": 80.0},
-                "/download",
-                45.0,
-                id="single_device_fully_downloaded",
+                None,
+                None,
+                id="download_only_single_device_fully_downloaded",
             ),
             pytest.param(
                 {"job_gb": 61.0, "progress": 0.99, "pp": 2, "same_device": False, "complete_disk_free_gb": 70.0},
@@ -644,28 +650,47 @@ class TestDiskspaceCheckScenarios:
             pytest.param(
                 # 40GB of articles plus the 5GB threshold would fit in the 52GB available, but the
                 # par2 blocks are counted too even though they are usually never downloaded
-                {"job_gb": 50.0, "par2_gb": 10.0, "progress": 0.95, "pp": 1, "same_device": False, "complete_disk_free_gb": 52.0},
+                {
+                    "job_gb": 50.0,
+                    "par2_gb": 10.0,
+                    "progress": 0.95,
+                    "pp": 1,
+                    "same_device": False,
+                    "complete_disk_free_gb": 52.0,
+                },
                 "/complete",
                 55.0,
                 id="par2_bytes_included_in_requirement",
             ),
             pytest.param(
                 # cfg.direct_unpack is global, but DirectUnpacker also requires nzo.unpack, so a
-                # pp=0 job never direct unpacks and yet still takes the lenient branch
+                # pp=0 job never direct unpacks and must not take the direct_unpack branch
                 {
-                    "job_gb": 61.0, "progress": 0.95, "pp": 0, "same_device": False, "complete_disk_free_gb": 8.0, "direct_unpack": True
-                },
-                None,
-                None,
-                id="direct_unpack_relaxes_check",
-            ),
-            pytest.param(
-                {
-                    "job_gb": 61.0, "progress": 0.95, "pp": 0, "same_device": False, "complete_disk_free_gb": 8.0, "direct_unpack": False
+                    "job_gb": 61.0,
+                    "progress": 0.95,
+                    "pp": 0,
+                    "same_device": False,
+                    "complete_disk_free_gb": 8.0,
+                    "direct_unpack": True,
                 },
                 "/complete",
                 66.0,
-                id="direct_unpack_off_same_job_pauses",
+                id="direct_unpack_ignored_for_download_only_job",
+            ),
+            pytest.param(
+                # A job that does direct unpack is checked against the reserve alone, from the
+                # start of the download rather than at 90%
+                {
+                    "job_gb": 61.0,
+                    "progress": 0.10,
+                    "pp": 2,
+                    "same_device": False,
+                    "complete_disk_free_gb": 4.0,
+                    "direct_unpack": True,
+                },
+                "/complete",
+                5.0,
+                id="direct_unpack_checks_reserve_only",
             ),
             pytest.param(
                 # complete_free defaults to empty (0), but the check still applies because the job
@@ -680,7 +705,21 @@ class TestDiskspaceCheckScenarios:
                 },
                 "/complete",
                 61.0,
-                id="complete_free_unset",
+                id="complete_free_unset_separate_devices",
+            ),
+            pytest.param(
+                # Nothing left to require, so the complete_dir check is skipped entirely
+                {
+                    "job_gb": 61.0,
+                    "progress": 0.95,
+                    "pp": 0,
+                    "same_device": True,
+                    "complete_free_gb": 0.0,
+                    "disk_free_gb": 60.0,
+                },
+                None,
+                None,
+                id="complete_free_unset_single_device",
             ),
             pytest.param(
                 # Both dirs are short: download_dir wins and the required_space handed to the
