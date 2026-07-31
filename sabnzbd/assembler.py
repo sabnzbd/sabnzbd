@@ -341,7 +341,7 @@ class Assembler(Thread):
                 required_space = complete_free / GIGI
             elif nzo.bytes_tried > (nzo.bytes - nzo.bytes_par2) * 0.90:
                 # Since only at 100% unpack is started, continue
-                # downloading until 95% complete before checking
+                # downloading until 90% complete before checking
                 required_space = (complete_free + nzo.bytes) / GIGI
 
             if required_space and complete_dir.free < required_space:
