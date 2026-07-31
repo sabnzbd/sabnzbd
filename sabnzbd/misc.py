@@ -766,7 +766,7 @@ def get_cache_limit() -> str:
         pass
 
     # Always at least minimum on Windows/macOS
-    if sabnzbd.WINDOWS and sabnzbd.MACOS:
+    if sabnzbd.WINDOWS or sabnzbd.MACOS:
         return DEF_ARTICLE_CACHE_DEFAULT
 
     # If failed, leave empty for Linux so user needs to decide
@@ -774,6 +774,18 @@ def get_cache_limit() -> str:
 
 
 def get_memory() -> int:
+    """Memory we are allowed to use: the memory installed in the machine, clamped by
+    any cgroup limit so containers size against their own budget rather than the
+    host's. Returns 0 when neither could be determined."""
+    physical = _physical_memory()
+    limit = _cgroup_memory_limit()
+    if physical and limit:
+        return min(physical, limit)
+    return physical or limit or 0
+
+
+def _physical_memory() -> Optional[int]:
+    """Total memory installed in the machine, or None if it could not be determined"""
     try:
         if sabnzbd.WINDOWS:
             # Use win32api to get total physical memory
@@ -790,10 +802,51 @@ def get_memory() -> int:
                             return int(line.split()[1]) * 1024
             except Exception:
                 pass
-            return os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
+            # sysconf reports -1 for values it does not know, which would multiply
+            # out to a plausible looking but negative amount of memory
+            if (memory := os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")) > 0:
+                return memory
     except Exception:
         pass
-    return 0
+    return None
+
+
+def _cgroup_memory_limit() -> Optional[int]:
+    """Memory limit applied to this container, or None if unlimited/absent"""
+    if sabnzbd.WINDOWS or sabnzbd.MACOS:
+        return None
+
+    # Exceeding memory.high throttles us under heavy reclaim, exceeding memory.max
+    # invokes the OOM killer. Take the lowest limit that is set, so we size against
+    # the budget we are meant to stay within rather than the one that gets us killed.
+    limit = None
+    for path in (
+        # cgroup v2
+        "/sys/fs/cgroup/memory.high",
+        "/sys/fs/cgroup/memory.max",
+        # cgroup v1, no equivalent of memory.high
+        "/sys/fs/cgroup/memory/memory.limit_in_bytes",
+    ):
+        value = _read_cgroup_limit(path)
+        if value and (limit is None or value < limit):
+            limit = value
+    return limit
+
+
+def _read_cgroup_limit(path: str) -> Optional[int]:
+    """Read a single cgroup limit file, returning None if absent or unlimited"""
+    try:
+        with open(path) as f:
+            raw = f.read().strip()
+        # cgroup v2 spells unlimited as "max", v1 uses a huge sentinel
+        if raw == "max":
+            return None
+        value = int(raw)
+        if value <= 0 or value >= (1 << 62):
+            return None
+        return value
+    except (OSError, ValueError):
+        return None
 
 
 @conditional_cache(cache_time=3600)
