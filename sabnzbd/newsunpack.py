@@ -560,7 +560,9 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: li
                 # Bump the file-lock in case it's stuck
                 with nzo.direct_unpacker.next_file_lock:
                     nzo.direct_unpacker.next_file_lock.notify()
-                time.sleep(2)
+
+                # Returns as soon as it is done
+                nzo.direct_unpacker.join(timeout=2)
 
                 # Did something change? Might be stuck
                 if last_stats == nzo.direct_unpacker.get_formatted_stats():
