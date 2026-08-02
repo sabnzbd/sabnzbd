@@ -110,6 +110,7 @@ SKIN_TEXT = {
     "or": TT("or"),
     "host": TT("Host"),
     "cancel": TT("Cancel"),
+    "close": TT("Close"),
     "login": TT("Log in"),
     "logout": TT("Log out"),
     "rememberme": TT("Remember me"),
