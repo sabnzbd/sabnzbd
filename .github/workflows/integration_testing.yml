@@ -68,4 +68,4 @@ jobs:
         pip install -r requirements.txt --no-dependencies
         pip install --upgrade -r tests/requirements.txt
     - name: Test SABnzbd
-      run: pytest -s -n auto --dist loadscope
+      run: pytest -s -n auto
