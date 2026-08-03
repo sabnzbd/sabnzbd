@@ -1,9 +1,7 @@
-Release Notes - SABnzbd 5.1.0 Release Candidate 1
+Release Notes - SABnzbd 5.1.0 Release Candidate 2
 =========================================================
 
-This is the first release candidate of version 5.1.
-Like many other projects out there, we were able to use the
-shiny new AI tools to add quite a lot of long-requested features!
+This is the second release candidate of version 5.1.
 
 ## New features in 5.1.0
 
@@ -22,8 +20,10 @@ shiny new AI tools to add quite a lot of long-requested features!
   listing all files that resulted from the job.
 * New Servers will default to 16 connections instead of 8.
 * Use media duration as part of `Ignore Samples` detection.
+* Added option to (auto) sort the queue by Remaining Percentage.
 * Improved support for screen readers.
 * Parsing of header-encrypted RARs will use significantly fewer resources.
+* Add Ayatana AppIndicator tray support on GNOME.
 * Removed redundant `INSTALL.txt` file.
 * Dropped support for Python 3.9.
 * Windows and macOS: Updated Python to 3.14.6, Unrar to 7.23 and 7zip to 26.02.
@@ -35,6 +35,10 @@ shiny new AI tools to add quite a lot of long-requested features!
 * Prevent path traversal in orphaned job APIs.
 * `Disk Full` errors from unrar were not handled gracefully during unpacking.
 * Memory leak could occur during article decoding.
+* In containers (like Docker), the Article Cache could exceed the memory limit.
+* Diskspace checks would be too strict when unpacking to different disk.
+* Prevent deadlock when a second signal arrives during shutdown procedure.
+* Verification using SFV-checks could fail, even though files were correct.
 * Windows: Uninstall would not remove Settings or Windows Service.
 * Windows: Warn for OS-limit if more than 1024 connections are configured.
 * macOS: AppleDouble files could result in failures in `Moving` stage.
