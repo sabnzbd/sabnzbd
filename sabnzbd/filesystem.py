@@ -35,6 +35,7 @@ import stat
 import ctypes
 import random
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Any, Optional, BinaryIO
 
 try:
@@ -1033,12 +1034,18 @@ class Diskspace:
     free: float = 0.0
 
 
+def first_existing_path(path: str) -> str:
+    """Return the first folder level of the path that exists"""
+    x = "x"
+    while x and not os.path.exists(path):
+        path, x = os.path.split(path)
+    return path
+
+
 def diskspace_base(dir_to_check: str) -> Diskspace:
     """Return amount of free and used diskspace in GBytes"""
     # Find first folder level that exists in the path
-    x = "x"
-    while x and not os.path.exists(dir_to_check):
-        dir_to_check, x = os.path.split(dir_to_check)
+    dir_to_check = first_existing_path(dir_to_check)
 
     if sabnzbd.WINDOWS:
         # windows diskfree
@@ -1073,6 +1080,27 @@ def diskspace(force: bool = False, complete_dir: Optional[str] = None) -> tuple[
     if not complete_dir:
         complete_dir = sabnzbd.cfg.complete_dir.get_path()
     return diskspace_base(sabnzbd.cfg.download_dir.get_path()), diskspace_base(complete_dir)
+
+
+@lru_cache(maxsize=16)
+def same_device(path_a: str, path_b: str) -> bool:
+    """Determine if both paths are located on the same device, meaning a file can be moved
+    between them by renaming it, without requiring any additional free space.
+    The paths do not have to exist, the first existing folder level is used."""
+    path_a = first_existing_path(path_a)
+    path_b = first_existing_path(path_b)
+
+    # Different drive letters or UNC shares are never the same device. Checked separately
+    # because st_dev is not reliable for network locations on Windows
+    if os.path.splitdrive(path_a)[0].lower() != os.path.splitdrive(path_b)[0].lower():
+        return False
+
+    try:
+        return os.stat(path_a).st_dev == os.stat(path_b).st_dev
+    except OSError:
+        # Assume separate devices, so callers keep reserving space for a copy
+        logging.debug("Could not determine if %s and %s are on the same device", path_a, path_b)
+        return False
 
 
 def get_new_id(prefix: str, folder: str, check_list: Optional[list] = None) -> str:
