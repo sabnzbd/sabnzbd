@@ -176,6 +176,7 @@ RESTORE_DATA = None
 
 # Condition used to handle the main loop in SABnzbd.py
 SABSTOP_CONDITION = Condition(Lock())
+SHUTDOWN_LOCK = Lock()
 
 # General threadpool
 THREAD_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=2)
@@ -432,12 +433,20 @@ def notify_shutdown_loop():
 
 def shutdown_program():
     """Stop program after halting and saving"""
-    if not sabnzbd.SABSTOP:
+    # Non-blocking acquire so a concurrent caller returns instead of running the teardown twice.
+    # Releasing it again keeps a failed shutdown retryable, SABSTOP blocks the successful case
+    if sabnzbd.SABSTOP or not SHUTDOWN_LOCK.acquire(blocking=False):
+        logging.debug("[%s] Shutdown already in progress", misc.caller_name())
+        return
+
+    try:
         logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
         sabnzbd.halt()
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True
         notify_shutdown_loop()
+    finally:
+        SHUTDOWN_LOCK.release()
 
 
 def trigger_restart(timeout=None):
