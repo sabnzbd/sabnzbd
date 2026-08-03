@@ -95,7 +95,6 @@
                                     <div class="col-sm-2">$T('status')</div>
                                     <div class="col-sm-10">
                                         <span data-bind="text: glitterTranslate.status[historyStatus.status()] ? glitterTranslate.status[historyStatus.status()] : statusText()"></span>
-                                        <a href="#" class="mark-completed-link" data-bind="visible: failed(), click: markAsCompleted" title="$T('button-mark-completed')"><span class="glyphicon glyphicon-ok"></span> $T('post-Completed')</a>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -120,6 +119,9 @@
                                     <div class="col-sm-10 history-status-modallink" data-bind="longText: actions, longTextType: name()"></div>
                                 </div>
                                 <!-- /ko -->
+                                <div class="col-sm-12 text-right" data-bind="visible: failed()">
+                                    <a href="#" class="btn btn-default mark-completed-btn" data-bind="click: markAsCompleted"><span class="glyphicon glyphicon-ok"></span> $T('button-mark-completed')</a>
+                                </div>
                             </div>
                         </div>
                         <!-- /ko -->
