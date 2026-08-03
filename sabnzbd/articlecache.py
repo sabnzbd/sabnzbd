@@ -167,6 +167,10 @@ class ArticleCache(threading.Thread):
                 return
             nzo.saved_articles.add(article)
 
+        # Count the decoded bytes before they can be written, so the assembler always
+        # removes bytes that were added, even when we write straight to disk below
+        sabnzbd.Assembler.add_ready_bytes(article)
+
         if article.lowest_partnum and not (article.nzf.import_finished or article.nzf.filename_checked):
             # Write the first-fetched articles to temporary file unless downloading
             # of the rest of the parts has started or filename is verified.
