@@ -121,7 +121,6 @@ msgstr "SABnzbd %s pornit"
 msgid "SABnzbd shutdown finished"
 msgstr "Închidere SABnzbd terminată"
 
-#. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Semnal %s  prins, salvez şi ies..."

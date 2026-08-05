@@ -114,7 +114,6 @@ msgstr "Uruchomiono SABnzbd %s"
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd został wyłączony"
 
-#. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Odebrano sygnał %s, zapisywanie i zamykanie programu..."

@@ -116,7 +116,6 @@ msgstr "SABnzbd %s покренут"
 msgid "SABnzbd shutdown finished"
 msgstr "Гашење SABnzbd је завршено"
 
-#. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Signal %s primljen, snimanje i napuštanje..."

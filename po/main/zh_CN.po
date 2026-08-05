@@ -116,7 +116,6 @@ msgstr "SABnzbd %s 已启动"
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd 关闭完成"
 
-#. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "捕捉到 %s 信号，正在保存并退出..."

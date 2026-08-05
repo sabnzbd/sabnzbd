@@ -122,7 +122,6 @@ msgstr "SABnzbd %s avviato"
 msgid "SABnzbd shutdown finished"
 msgstr "Arresto di SABnzbd terminato"
 
-#. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Segnale %s ricevuto, salvataggio e uscita in corso..."

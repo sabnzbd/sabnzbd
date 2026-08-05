@@ -122,7 +122,6 @@ msgstr "SABnzbd %s spustěno"
 msgid "SABnzbd shutdown finished"
 msgstr "Ukončení činnosti programu SABnzbd bylo dokončeno"
 
-#. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Zaznamenán signál %s, ukládání a ukončení..."
