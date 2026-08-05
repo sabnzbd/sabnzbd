@@ -205,7 +205,7 @@ def sig_handler(signum=None, frame=None):
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
     if signum is not None:
-        logging.warning(T("Signal %s caught, saving and exiting..."), signum)
+        logging.info(T("Signal %s caught, saving and exiting..."), signum)
         sabnzbd.shutdown_program()
 
 
