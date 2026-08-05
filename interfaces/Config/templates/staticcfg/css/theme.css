@@ -1,0 +1,172 @@
+/* Shared semantic theme tokens and selector styling. */
+:root,
+html[data-sab-theme="light"] {
+    color-scheme: light;
+    --sab-canvas: #e7e9ec;
+    --sab-surface: #ffffff;
+    --sab-surface-raised: #ffffff;
+    --sab-surface-muted: #f3f5f7;
+    --sab-surface-strong: #e2e7ec;
+    --sab-text: #1f252b;
+    --sab-text-muted: #5a6570;
+    --sab-border: #cbd1d7;
+    --sab-border-strong: #9da6af;
+    --sab-accent: #b66f00;
+    --sab-accent-strong: #7a4b00;
+    --sab-link: #075fa8;
+    --sab-focus: #006fc9;
+    --sab-nav: #30353b;
+    --sab-nav-text: #ffffff;
+    --sab-nav-bg: var(--sab-nav);
+    --sab-nav-border: var(--sab-border);
+    --sab-input: #ffffff;
+    --sab-hover: #edf2f6;
+    --sab-selected: #e1edf8;
+    --sab-overlay: rgba(20, 25, 30, 0.58);
+    --sab-success: #247a3d;
+    --sab-warning: #925600;
+    --sab-danger: #b3261e;
+    --sab-shadow: 0 10px 30px rgba(24, 31, 38, 0.16);
+    --sab-shadow-lg: 0 18px 46px rgba(24, 31, 38, 0.24);
+    --sab-radius-sm: 3px;
+    --sab-radius-md: 6px;
+    --sab-radius-lg: 10px;
+}
+
+html[data-sab-theme="dark"] {
+    color-scheme: dark;
+    --sab-canvas: #1d2024;
+    --sab-surface: #272b30;
+    --sab-surface-raised: #30353b;
+    --sab-surface-muted: #22262b;
+    --sab-surface-strong: #3a4148;
+    --sab-text: #f2f4f6;
+    --sab-text-muted: #b8c0c8;
+    --sab-border: #4b535c;
+    --sab-border-strong: #6a747e;
+    --sab-accent: #ffc24a;
+    --sab-accent-strong: #ffd77f;
+    --sab-link: #72b9f2;
+    --sab-focus: #75c3ff;
+    --sab-nav: #15181b;
+    --sab-nav-text: #ffffff;
+    --sab-nav-bg: var(--sab-nav);
+    --sab-nav-border: var(--sab-border);
+    --sab-input: #1e2226;
+    --sab-hover: #343a40;
+    --sab-selected: #243d51;
+    --sab-overlay: rgba(0, 0, 0, 0.72);
+    --sab-success: #77d28d;
+    --sab-warning: #ffbe5c;
+    --sab-danger: #ff8c86;
+    --sab-shadow: 0 12px 34px rgba(0, 0, 0, 0.42);
+    --sab-shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.58);
+}
+
+html[data-sab-theme="oled"] {
+    color-scheme: dark;
+    --sab-canvas: #000000;
+    --sab-surface: #000000;
+    --sab-surface-raised: #0b0b0b;
+    --sab-surface-muted: #101010;
+    --sab-surface-strong: #181818;
+    --sab-text: #f8f8f8;
+    --sab-text-muted: #bdbdbd;
+    --sab-border: #303030;
+    --sab-border-strong: #555555;
+    --sab-accent: #ffc44d;
+    --sab-accent-strong: #ffe09a;
+    --sab-link: #7cc7ff;
+    --sab-focus: #8bd0ff;
+    --sab-nav: #050505;
+    --sab-nav-text: #ffffff;
+    --sab-nav-bg: var(--sab-nav);
+    --sab-nav-border: var(--sab-border);
+    --sab-input: #080808;
+    --sab-hover: #151515;
+    --sab-selected: #10283a;
+    --sab-overlay: rgba(0, 0, 0, 0.86);
+    --sab-success: #83e39b;
+    --sab-warning: #ffc76d;
+    --sab-danger: #ff938e;
+    --sab-shadow: 0 14px 38px rgba(0, 0, 0, 0.82);
+    --sab-shadow-lg: 0 22px 54px rgba(0, 0, 0, 0.94);
+}
+
+html[data-sab-theme] body {
+    background-color: var(--sab-canvas);
+    color: var(--sab-text);
+}
+
+html[data-sab-theme] a { color: var(--sab-link); }
+html[data-sab-theme] small,
+html[data-sab-theme] .text-muted,
+html[data-sab-theme] .help-block { color: var(--sab-text-muted); }
+
+html[data-sab-theme] ::selection {
+    background: var(--sab-accent);
+    color: #111111;
+}
+
+html[data-sab-theme] :focus-visible {
+    outline: 3px solid var(--sab-focus) !important;
+    outline-offset: 2px !important;
+}
+
+.sab-theme-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--sab-text);
+}
+
+.sab-theme-control label {
+    margin: 0;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.sab-theme-control select {
+    min-height: 38px;
+    min-width: 112px;
+    padding: 7px 30px 7px 10px;
+    border: 1px solid var(--sab-border-strong);
+    background-color: var(--sab-input);
+    color: var(--sab-text);
+}
+
+.sab-theme-control--menu {
+    padding: 8px 15px 10px;
+    justify-content: space-between;
+}
+
+.sab-theme-control--nav {
+    height: 50px;
+    padding: 6px 8px;
+}
+
+.sab-theme-control--floating {
+    position: fixed;
+    z-index: 1100;
+    top: max(10px, env(safe-area-inset-top));
+    right: max(10px, env(safe-area-inset-right));
+    padding: 6px;
+    background: var(--sab-surface-raised);
+    border: 1px solid var(--sab-border);
+    box-shadow: var(--sab-shadow);
+}
+
+@media (max-width: 767px) {
+    .sab-theme-control select { min-height: 44px; font-size: 16px; }
+    .sab-theme-control--nav { height: auto; min-height: 52px; padding: 6px 15px; justify-content: space-between; }
+    .sab-theme-control--floating { position: static; margin: 10px auto 0; width: max-content; max-width: calc(100% - 24px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+}

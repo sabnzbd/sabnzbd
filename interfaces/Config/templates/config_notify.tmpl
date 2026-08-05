@@ -35,7 +35,7 @@
     <input type="hidden" id="ajax" name="ajax" value="1" />
     <div class="section" id="email">
         <div class="col2">
-            <h3>$T('cmenu-email') <a href="$help_uri#toc0" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            <h3>$T('cmenu-email') <a href="$help_uri#toc0" target="_blank" rel="noopener noreferrer" aria-label="$T('menu-help')"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3>
             <div class="col2-cats" <!--#if int($email_endjob) > 0 then '' else 'style="display:none"'#-->>
                 <b>$T('affectedCat')</b><br/>
                 <select name="email_cats" multiple="multiple" class="multiple_cats" size="$len($categories)">
@@ -155,7 +155,7 @@
     <!--#if $have_ntfosd#-->
     <div class="section">
         <div class="col2">
-            <h3>$T('section-OSD') <a href="$help_uri#toc4" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            <h3>$T('section-OSD') <a href="$help_uri#toc4" target="_blank" rel="noopener noreferrer" aria-label="$T('menu-help')"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3>
             <table>
                 <tr>
                     <td><input type="checkbox" name="ntfosd_enable" id="ntfosd_enable" value="1" <!--#if $ntfosd_enable then 'checked="checked"' else ""#--> /></td>
@@ -180,7 +180,7 @@
     <!--#end if#-->
     <div class="section" id="apprise">
         <div class="col2">
-            <h3>Apprise <a href="$help_uri#apprise" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            <h3>Apprise <a href="$help_uri#apprise" target="_blank" rel="noopener noreferrer" aria-label="$T('menu-help')"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3>
             <table>
                 <tr>
                     <td><input type="checkbox" name="apprise_enable" id="apprise_enable" value="1" <!--#if $apprise_enable then 'checked="checked"' else ""#--> /></td>
@@ -188,7 +188,7 @@
                 </tr>
             </table>
             <p>$T('explain-apprise_enable')</p>
-            <p><a href="https://appriseit.com/" target="_blank">Apprise documentation</a></p>
+            <p><a href="https://appriseit.com/" target="_blank" rel="noopener noreferrer">Apprise documentation</a></p>
             <p>$T('version'): ${apprise.__version__}</p>
 
             $show_cat_box('apprise')
@@ -226,14 +226,14 @@
     </div>
     <div class="section" id="nscript">
         <div class="col2">
-            <h3>$T('section-NScript') <a href="$help_uri#nscript" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            <h3>$T('section-NScript') <a href="$help_uri#nscript" target="_blank" rel="noopener noreferrer" aria-label="$T('menu-help')"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3>
             <table>
                 <tr>
                     <td><input type="checkbox" name="nscript_enable" id="nscript_enable" value="1" <!--#if $nscript_enable then 'checked="checked"' else ""#--> /></td>
                     <td><label for="nscript_enable"> $T('opt-nscript_enable')</label></td>
                 </tr>
             </table>
-            <em>$T('explain-nscript_enable')</em><br><a href="$help_uri#nscript" target="_blank">$T('readwiki')</a>
+            <em>$T('explain-nscript_enable')</em><br><a href="$help_uri#nscript" target="_blank" rel="noopener noreferrer">$T('readwiki')</a>
             $show_cat_box('nscript')
         </div>
         <div class="col1" <!--#if $nscript_enable then '' else 'style="display:none"'#-->>

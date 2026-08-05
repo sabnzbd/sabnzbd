@@ -37,7 +37,7 @@
     </div>
     <div class="section" id="addServerContent" style="display: none;">
         <div class="col2">
-            <h3>$T('addServer') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            <h3>$T('addServer') <a href="$help_uri" target="_blank" rel="noopener noreferrer" aria-label="$T('menu-help')"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3>
         </div>
         <div class="col1">
             <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();">
@@ -105,7 +105,7 @@
                         <label class="config" for="ssl_ciphers">$T('opt-ssl_ciphers')</label>
                         <input type="text" name="ssl_ciphers" id="ssl_ciphers" />
                         <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
-                        <a href="https://sabnzbd.org/wiki/advanced/ssl-ciphers" target="_blank">https://sabnzbd.org/wiki/advanced/ssl-ciphers</a></span>
+                        <a href="https://sabnzbd.org/wiki/advanced/ssl-ciphers" target="_blank" rel="noopener noreferrer">https://sabnzbd.org/wiki/advanced/ssl-ciphers</a></span>
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="required">$T('srv-required')</label>
@@ -121,7 +121,7 @@
                         <label class="config" for="pipelining_requests">$T('srv-pipelining_requests')</label>
                         <input type="number" name="pipelining_requests" id="pipelining_requests" min="1" max="20" value="2" />
                         <span class="desc">$T('explain-pipelining_requests')<br>$T('readwiki')
-                        <a href="https://sabnzbd.org/wiki/advanced/nntp-pipelining" target="_blank">https://sabnzbd.org/wiki/advanced/nntp-pipelining</a></span>
+                        <a href="https://sabnzbd.org/wiki/advanced/nntp-pipelining" target="_blank" rel="noopener noreferrer">https://sabnzbd.org/wiki/advanced/nntp-pipelining</a></span>
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="expire_date">$T('srv-expire_date')</label>
@@ -161,7 +161,7 @@
 
             <div class="section <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
                 <div class="col2 <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
-                    <h3 title="$server['displayname']">$server['displayname'] <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                    <h3 title="$server['displayname']">$server['displayname'] <a href="$help_uri" target="_blank" rel="noopener noreferrer" aria-label="$T('menu-help')"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3>
                     <!--#if int($server['enable']) != 0 #-->
                         <!--#if $last_prio != $server['priority'] and $cur_prio_color+1 < len($prio_colors) #-->
                             <!--#set $cur_prio_color = $cur_prio_color+1 #-->
@@ -242,7 +242,7 @@
                             <label class="config" for="ssl_ciphers$cur">$T('opt-ssl_ciphers')</label>
                             <input type="text" name="ssl_ciphers" id="ssl_ciphers$cur" value="$server['ssl_ciphers']" />
                             <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
-                            <a href="https://sabnzbd.org/wiki/advanced/ssl-ciphers" target="_blank">https://sabnzbd.org/wiki/advanced/ssl-ciphers</a></span>
+                            <a href="https://sabnzbd.org/wiki/advanced/ssl-ciphers" target="_blank" rel="noopener noreferrer">https://sabnzbd.org/wiki/advanced/ssl-ciphers</a></span>
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="required$cur">$T('srv-required')</label>
@@ -258,7 +258,7 @@
                             <label class="config" for="pipelining_requests$cur">$T('srv-pipelining_requests')</label>
                             <input type="number" name="pipelining_requests" id="pipelining_requests$cur" value="$server['pipelining_requests']" min="1" max="20" required />
                             <span class="desc">$T('explain-pipelining_requests')<br>$T('readwiki')
-                            <a href="https://sabnzbd.org/wiki/advanced/nntp-pipelining" target="_blank">https://sabnzbd.org/wiki/advanced/nntp-pipelining</a></span>
+                            <a href="https://sabnzbd.org/wiki/advanced/nntp-pipelining" target="_blank" rel="noopener noreferrer">https://sabnzbd.org/wiki/advanced/nntp-pipelining</a></span>
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="expire_date$cur">$T('srv-expire_date')</label>
@@ -299,7 +299,7 @@
                             <p title="$T('readwiki')">
                                 <b>$T('srv-article-availability'):</b><br/>
                                 $T('selectedDates'): <span id="server-article-value-${cur}"></span><br/>
-                                <a href="https://sabnzbd.org/not-complete" id="server-article-not-complete-${cur}" target="_blank">https://sabnzbd.org/not-complete</a>
+                                <a href="https://sabnzbd.org/not-complete" id="server-article-not-complete-${cur}" target="_blank" rel="noopener noreferrer">https://sabnzbd.org/not-complete</a>
                             </p>
                             <!--#if $server['expire_date']#-->
                             <p><b>$T('srv-expire_date'):</b> $(server['expire_date'])</p>
@@ -559,7 +559,7 @@
                 data: "mode=config&name=test_server&" + jQuery(this).parents('form:first').serialize()
             }).then(function(data) {
                 // Let's replace the link
-                msg = data.value.message.replace('https://sabnzbd.org/certificate-errors', '<a href="https://sabnzbd.org/certificate-errors" class="alert-link" target="_blank">https://sabnzbd.org/certificate-errors</a>')
+                msg = data.value.message.replace('https://sabnzbd.org/certificate-errors', '<a href="https://sabnzbd.org/certificate-errors" class="alert-link" target="_blank" rel="noopener noreferrer">https://sabnzbd.org/certificate-errors</a>')
                 msg = msg.replace('-', '<br>')
                 // Fill the box and enable the button
                 resultBox.removeClass('alert-success alert-danger').show()

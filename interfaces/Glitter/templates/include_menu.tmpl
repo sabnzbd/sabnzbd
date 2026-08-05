@@ -1,20 +1,20 @@
 <nav class="navbar navbar-inverse main-navbar">
     <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-logo" href="./">
+        <a class="navbar-logo" href="./" aria-label="$T('Home')">
             #include $webdir + "/../../Config/templates/staticcfg/images/logo-small.svg"#
         </a>
         <div class="btn-group">
             <div class="btn-group">
-                <button type="button" class="btn btn-default navbar-btn" data-bind="click: pauseToggle, attr: { 'title': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')' }">
+                <button type="button" class="btn btn-default navbar-btn" data-bind="click: pauseToggle, attr: { 'title': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')', 'aria-label': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')' }">
                     <span class="glyphicon" data-bind="css: { 'glyphicon-play' : downloadsPaused(), 'glyphicon-pause' : !downloadsPaused() }"></span>
                 </button>
-                <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown">
-                    <span class="caret"></span>
+                <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" aria-label="$T('pauseFor')" aria-haspopup="true">
+                    <span class="caret" aria-hidden="true"></span>
                 </button>
                 <ul class="dropdown-menu">
                     <li><a href="#" data-time="5" data-bind="click: pauseTime">$T('Glitter-pause5m')</a></li>
@@ -61,35 +61,47 @@
                 </div>
             </li>
             <li data-tooltip="true" data-placement="bottom" title="$T('Glitter-addNZB')">
-                <a href="#modal-add-nzb" data-toggle="modal"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                <a href="#modal-add-nzb" data-toggle="modal" aria-label="$T('Glitter-addNZB')"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span><span class="mobile-nav-label">$T('Glitter-addNZB')</span></a>
             </li>
             <li data-tooltip="true" data-placement="bottom" title="$T('Glitter-statusInterfaceOptions')" data-bind="click: loadStatusInfo">
-                <a href="#modal-options" data-toggle="modal"><span class="glyphicon glyphicon-wrench"></span></a>
+                <a href="#modal-options" data-toggle="modal" aria-label="$T('Glitter-statusInterfaceOptions')"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span><span class="mobile-nav-label">$T('Glitter-statusInterfaceOptions')</span></a>
             </li>
             <!--#if $have_rss_defined#-->
             <li data-tooltip="true" data-placement="bottom" title="$T('cmenu-rss')">
-                <a href="./config/rss/">
-                    <svg class="rss-icon-svg" viewBox="0 0 8 8">
+                <a href="./config/rss/" aria-label="$T('cmenu-rss')">
+                    <svg class="rss-icon-svg" aria-hidden="true" viewBox="0 0 8 8">
                         <rect class="rss-button" width="8" height="8" />
                         <circle class="rss-symbol" cx="2" cy="6" r="1" />
                         <path class="rss-symbol" d="m 1,4 a 3,3 0 0 1 3,3 h 1 a 4,4 0 0 0 -4,-4 z" />
                         <path class="rss-symbol" d="m 1,2 a 5,5 0 0 1 5,5 h 1 a 6,6 0 0 0 -6,-6 z" />
-                    </svg>
+                    </svg><span class="mobile-nav-label">$T('cmenu-rss')</span>
                 </a>
             </li>
             <!--#end if#-->
             <li data-tooltip="true" data-placement="bottom" title="SABnzbd $T('menu-config')">
-                <a href="./config/"><span class="glyphicon glyphicon-cog"></span></a>
+                <a href="./config/" aria-label="SABnzbd $T('menu-config')"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span><span class="mobile-nav-label">$T('menu-config')</span></a>
             </li>
             <li class="dropdown main-menu-link" data-bind="css: { 'active-on-queue-finish-menu': finishaction()}">
-                <a href="#" data-toggle="dropdown"  onclick="keepOpen(this)">
+                <a href="#" data-toggle="dropdown" onclick="keepOpen(this)" aria-label="$T('Glitter-more')" aria-haspopup="true">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
+                    <span class="mobile-nav-label">$T('Glitter-more')</span>
                 </a>
                 <ul class="dropdown-menu menu-options">
                     <li><a href="#modal-help" data-toggle="modal"><span class="glyphicon glyphicon-question-sign"></span> $T('menu-help')</a></li>
-                    <li><a href="https://sabnzbd.org/donate" target="_blank"><span class="glyphicon glyphicon-heart"></span> $T('menu-donate')</a></li>
+                    <li><a href="https://sabnzbd.org/donate" target="_blank" rel="noopener noreferrer"><span class="glyphicon glyphicon-heart"></span> $T('menu-donate')</a></li>
+                    <li class="divider" role="separator"></li>
+                    <li class="sab-theme-menu" onclick="event.stopPropagation()">
+                        <div class="sab-theme-control sab-theme-control--menu">
+                            <label for="sab-theme-select-main"><span class="glyphicon glyphicon-adjust" aria-hidden="true"></span> $T('opt-web_dir')</label>
+                            <select id="sab-theme-select-main" data-sab-theme-select aria-label="$T('opt-web_dir')">
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                                <option value="oled">OLED</option>
+                            </select>
+                        </div>
+                    </li>
                     <!--#if $have_logout or $have_quota or $have_rss_defined or $have_watched_dir or $pp_pause_event#--><li class="divider"></li><!--#end if#-->
                     <!--#if $have_logout#--><li><a href="./login/?logout=1"><span class="glyphicon glyphicon-log-out"></span> $T('logout')</a></li><!--#end if#-->
                     <!--#if $have_quota#--><li><a href="#" data-bind="click: doQueueAction" data-mode="reset_quota">$T('link-resetQuota')</a></li><!--#end if#-->

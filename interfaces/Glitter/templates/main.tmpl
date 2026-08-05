@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--#set $active_lang=$active_lang.replace('_', '-').lower()#-->
-<html lang="$active_lang" <!--#if $rtl#-->dir="rtl"<!--#end if#--> id="sabnzbd" data-bind="filedrop: { overlaySelector: '.main-filedrop', onFileDrop: addNZBFromFile }">
+<html lang="$active_lang" <!--#if $rtl#-->dir="rtl"<!--#end if#--> id="sabnzbd" data-server-theme="$color_scheme" data-bind="filedrop: { overlaySelector: '.main-filedrop', onFileDrop: addNZBFromFile }">
     <head>
         <!--
                 Glitter V2
@@ -16,14 +16,38 @@
         <title data-bind="text: title">SABnzbd</title>
 
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="application-name" content="SABnzbd">
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="SABnzbd" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
         <meta name="msapplication-navbutton-color" content="#000000" />
-        <meta name="theme-color" content="#000000" />
+        <meta name="theme-color" content="#e7e9ec" />
+
+        <script type="text/javascript">
+            (function(document, window) {
+                var root = document.documentElement;
+                var storageKey = 'sabnzbd-ui-theme-v1';
+                var serverTheme = (root.getAttribute('data-server-theme') || 'Auto').toLowerCase();
+                var selected = '';
+                try { selected = window.localStorage.getItem(storageKey) || ''; } catch (error) { selected = ''; }
+                var explicit = selected === 'light' || selected === 'dark' || selected === 'oled';
+                var followsSystem = !explicit && serverTheme !== 'oled' && serverTheme !== 'night' && serverTheme !== 'dark' && serverTheme !== 'light';
+                if (!explicit) {
+                    if (serverTheme === 'oled') selected = 'oled';
+                    else if (serverTheme === 'night' || serverTheme === 'dark') selected = 'dark';
+                    else if (serverTheme === 'light') selected = 'light';
+                    else selected = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+                root.setAttribute('data-sab-theme', selected);
+                root.setAttribute('data-sab-theme-explicit', explicit ? 'true' : 'false');
+                root.setAttribute('data-sab-theme-follows-system', followsSystem ? 'true' : 'false');
+                root.style.colorScheme = selected === 'light' ? 'light' : 'dark';
+                var themeColor = document.querySelector('meta[name="theme-color"]');
+                if (themeColor) themeColor.setAttribute('content', selected === 'oled' ? '#000000' : selected === 'dark' ? '#1d2024' : '#e7e9ec');
+            }(document, window));
+        </script>
 
         <link rel="apple-touch-icon" sizes="76x76" href="./staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
         <link rel="apple-touch-icon" sizes="120x120" href="./staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
@@ -36,9 +60,14 @@
         <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css?v=$version" />
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css?v=$version" />
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css?v=$version" media="all and (max-width: 768px)" />
+        <noscript>
         <!--#if $color_scheme not in ('Light', '') #-->
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/colorschemes/${color_scheme}.css?v=$version"/>
         <!--#end if#-->
+        </noscript>
+        <link rel="stylesheet" type="text/css" href="./staticcfg/css/theme.css?v=$version" />
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.modern.css?v=$version" />
+        <script type="text/javascript" defer src="./staticcfg/js/theme.js?v=$version"></script>
 
         <!-- Make translations available in scripts -->
         <script type="text/javascript">
@@ -141,15 +170,15 @@
 
         <div class="container main-content">
             <div class="history-queue-swicher">
-                <ul class="nav nav-tabs">
-                    <li class="active">
-                        <a href="#queue-tab" data-toggle="tab">$T('menu-queue') <span class="badge" data-bind="text: queue.totalItems"></span></a>
+                <ul class="nav nav-tabs" role="tablist" aria-label="Download views">
+                    <li class="active" role="presentation">
+                        <a id="queue-tab-label" href="#queue-tab" data-toggle="tab" role="tab" aria-controls="queue-tab" aria-selected="true">$T('menu-queue') <span class="badge" data-bind="text: queue.totalItems"></span></a>
                     </li>
-                    <li>
-                        <a href="#history-tab" data-toggle="tab">$T('menu-history') <span class="badge badge-info" data-bind="text: history.ppItems, visible: history.ppItems"></span><span class="badge" data-bind="text: history.totalItems"></span></a>
+                    <li role="presentation">
+                        <a id="history-tab-label" href="#history-tab" data-toggle="tab" role="tab" aria-controls="history-tab" aria-selected="false">$T('menu-history') <span class="badge badge-info" data-bind="text: history.ppItems, visible: history.ppItems"></span><span class="badge" data-bind="text: history.totalItems"></span></a>
                     </li>
-                    <li>
-                        <a href="#queue-messages" data-toggle="tab">$T('warnings') <span class="badge" data-bind="text: hasMessages, css: { 'badge-warning':  hasMessages() }"></span></a>
+                    <li role="presentation">
+                        <a id="messages-tab-label" href="#queue-messages" data-toggle="tab" role="tab" aria-controls="queue-messages" aria-selected="false">$T('warnings') <span class="badge" data-bind="text: hasMessages, css: { 'badge-warning':  hasMessages() }"></span></a>
                     </li>
                 </ul>
             </div>

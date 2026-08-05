@@ -4,7 +4,7 @@
 <div class="colmask">
     <div class="section">
         <div class="padTable">
-            <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+            <a class="main-helplink" href="$help_uri" target="_blank" rel="noopener noreferrer" aria-label="$T('menu-help')"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>
             <p>$T('explain-catTags2')<br/>$T('explain-catTags')</p>
             <hr>
             <h5 class="darkred"><strong>$T('explain-relFolder'):</strong> <span class="path">$defdir</span></h5>
@@ -90,7 +90,7 @@
                                     <!--#end if#-->
                                 </button>
                                 <!--#if $cansort#-->
-                                <button class="btn btn-default delCat" type="button"><span class="glyphicon glyphicon-trash"></span></button>
+                                <button class="btn btn-default delCat" type="button" aria-label="$T('nzo-delete')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
                                 <!--#end if#-->
                             </td>
                         </tr>

@@ -1,8 +1,8 @@
-<div class="history" id="history-tab">
+<div class="history" id="history-tab" role="tabpanel" aria-labelledby="history-tab-label">
     <div class="history-header">
         <h2>$T('menu-history') <small data-bind="visible: history.showArchive()">($T('archive'))</small></h2>
-        <a href="#" data-bind="click: history.showMultiEdit, visible: hasHistory()">
-            <span class="glyphicon glyphicon-tasks" data-tooltip="true" data-placement="left" title="$T('Glitter-multiOperations')"></span>
+        <a href="#" data-bind="click: history.showMultiEdit, visible: hasHistory()" aria-label="$T('Glitter-multiOperations')">
+            <span class="glyphicon glyphicon-tasks" aria-hidden="true" data-tooltip="true" data-placement="left" title="$T('Glitter-multiOperations')"></span>
         </a>
     </div>
     <table class="table table-hover history-table paginated">
@@ -45,8 +45,8 @@
                         <span class="glyphicon glyphicon-ok"></span>
                     </div>
                     <div data-bind="visible: failed() && canRetry()">
-                        <a class="retry-button" href="#" data-bind="click: retry">
-                            <span class="glyphicon glyphicon-exclamation-sign"></span>
+                        <a class="retry-button" href="#" data-bind="click: retry" aria-label="$T('button-retry')">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                         </a>
                     </div>
                     <div data-bind="visible: failed() && !canRetry()">
@@ -124,8 +124,8 @@
                         </div>
                         <!-- /ko -->
                     </div>
-                    <a href="#" data-bind="click: parent.triggerRemoveDownload">
-                        <span class="hover-button glyphicon glyphicon-trash" data-bind="css: { 'glyphicon-stop' : processingDownload() == 2, disabled : processingDownload() == 1 }, attr: { title: processingDownload() == 2 ? '$T('abort')' : '$T('nzo-delete')' }"></span>
+                    <a href="#" data-bind="click: parent.triggerRemoveDownload, attr: { 'aria-label': processingDownload() == 2 ? '$T('abort')' : '$T('nzo-delete')' }">
+                        <span class="hover-button glyphicon glyphicon-trash" aria-hidden="true" data-bind="css: { 'glyphicon-stop' : processingDownload() == 2, disabled : processingDownload() == 1 }, attr: { title: processingDownload() == 2 ? '$T('abort')' : '$T('nzo-delete')' }"></span>
                     </a>
                 </td>
             </tr>
@@ -134,8 +134,8 @@
 
     <div class="input-group search-box">
         <input type="text" class="form-control" placeholder="$T('Glitter-search')" required data-bind="textInput: history.searchTerm, event: { keydown: history.clearSearchTerm }" />
-        <a data-bind="event: { mousedown: history.clearSearchTerm }">
-            <span class="glyphicon" data-bind="css: { 'glyphicon-search' : !history.searchTerm(), 'glyphicon-remove' : history.searchTerm() }"></span>
+        <a data-bind="event: { mousedown: history.clearSearchTerm }, attr: { 'aria-label': history.searchTerm() ? '$T('button-clear')' : '$T('Glitter-search')' }">
+            <span class="glyphicon" aria-hidden="true" data-bind="css: { 'glyphicon-search' : !history.searchTerm(), 'glyphicon-remove' : history.searchTerm() }"></span>
         </a>
     </div>
 
@@ -147,9 +147,9 @@
 
     <div class="multioperations-selector" id="history-options">
         <a href="#" class="hover-button history-archive" title="$T('showArchive') / $T('showAllHis')" data-tooltip="true" data-placement="top" data-bind="click: history.toggleShowArchive, css: { 'history-options-show-failed': history.showArchive }"><svg viewBox="6 6 36 36" height="14" width="14" class="archive-icon"><path d="M41.09 10.45l-2.77-3.36c-.56-.66-1.39-1.09-2.32-1.09h-24c-.93 0-1.76.43-2.31 1.09l-2.77 3.36c-.58.7-.92 1.58-.92 2.55v25c0 2.21 1.79 4 4 4h28c2.21 0 4-1.79 4-4v-25c0-.97-.34-1.85-.91-2.55zm-17.09 24.55l-11-11h7v-4h8v4h7l-11 11zm-13.75-25l1.63-2h24l1.87 2h-27.5z"/></svg></a>
-        <a href="#" class="hover-button" title="$T('showFailedHis') / $T('showAllHis')" data-tooltip="true" data-placement="top" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
-        <a href="#" class="hover-button" title="$T('link-retryAll')" data-tooltip="true" data-placement="top" data-bind="click: history.retryAllFailed"><span class="glyphicon glyphicon-repeat"></span></a>
-        <a href="#" class="hover-button" title="$T('button-mark-completed')" data-bind="visible: (history.isMultiEditing() && hasHistory()), click: history.doMultiMarkCompleted" data-tooltip="true" data-placement="top"><span class="glyphicon glyphicon-ok"></span></a>
+        <a href="#" class="hover-button" title="$T('showFailedHis') / $T('showAllHis')" aria-label="$T('showFailedHis') / $T('showAllHis')" data-tooltip="true" data-placement="top" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span></a>
+        <a href="#" class="hover-button" title="$T('link-retryAll')" aria-label="$T('link-retryAll')" data-tooltip="true" data-placement="top" data-bind="click: history.retryAllFailed"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></a>
+        <a href="#" class="hover-button" title="$T('button-mark-completed')" aria-label="$T('button-mark-completed')" data-bind="visible: (history.isMultiEditing() && hasHistory()), click: history.doMultiMarkCompleted" data-tooltip="true" data-placement="top"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
 
         <div data-bind="visible: (history.isMultiEditing() && hasHistory())">
             <span class="label label-default" data-bind="text: history.multiEditItems().length">0</span>

@@ -15,7 +15,7 @@ else:
 <div class="colmask">
     <div class="section">
         <div class="col2">
-            <h3>$T('addSchedule') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            <h3>$T('addSchedule') <a href="$help_uri" target="_blank" rel="noopener noreferrer" aria-label="$T('menu-help')"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3>
         </div><!-- /col2 -->
         <form action="addSchedule" method="post" autocomplete="off">
         <input type="hidden" id="apikey" name="apikey" value="$apikey" />
@@ -95,7 +95,7 @@ else:
                                 <input type="hidden" name="line" id="line" value="$line"/>
                                 <div class="field-pair infoTableSeperator <!--#if $odd then "" else " alt"#-->">
                                     <input type="checkbox" name="schedenabled" value="$line" <!--#if int($taskinfo[$schednum][5]) > 0 then 'checked="checked"' else ""#-->>
-                                    <button class="btn btn-default float-left"><span class="glyphicon glyphicon-trash"></span></button>
+                                    <button class="btn btn-default float-left" aria-label="$T('nzo-delete')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
                                     <div class="scheduleEntry">
                                         <span class="time">$taskinfo[$schednum][1]:$taskinfo[$schednum][2]</span><span class="frequency">$taskinfo[$schednum][3]</span> <span class="darkred">$taskinfo[$schednum][4]</span>
                                     </div>

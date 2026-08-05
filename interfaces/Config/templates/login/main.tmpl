@@ -1,10 +1,35 @@
 <!DOCTYPE HTML>
-<html lang="$active_lang">
+<html lang="$active_lang" data-server-theme="$color_scheme">
 <head>
     <title>SABnzbd - $T('login')</title>
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#e7e9ec" />
+
+        <script type="text/javascript">
+            (function(document, window) {
+                var root = document.documentElement;
+                var storageKey = 'sabnzbd-ui-theme-v1';
+                var serverTheme = (root.getAttribute('data-server-theme') || 'Auto').toLowerCase();
+                var selected = '';
+                try { selected = window.localStorage.getItem(storageKey) || ''; } catch (error) { selected = ''; }
+                var explicit = selected === 'light' || selected === 'dark' || selected === 'oled';
+                var followsSystem = !explicit && serverTheme !== 'oled' && serverTheme !== 'night' && serverTheme !== 'dark' && serverTheme !== 'light';
+                if (!explicit) {
+                    if (serverTheme === 'oled') selected = 'oled';
+                    else if (serverTheme === 'night' || serverTheme === 'dark') selected = 'dark';
+                    else if (serverTheme === 'light') selected = 'light';
+                    else selected = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+                root.setAttribute('data-sab-theme', selected);
+                root.setAttribute('data-sab-theme-explicit', explicit ? 'true' : 'false');
+                root.setAttribute('data-sab-theme-follows-system', followsSystem ? 'true' : 'false');
+                root.style.colorScheme = selected === 'light' ? 'light' : 'dark';
+                var themeColor = document.querySelector('meta[name="theme-color"]');
+                if (themeColor) themeColor.setAttribute('content', selected === 'oled' ? '#000000' : selected === 'dark' ? '#1d2024' : '#e7e9ec');
+            }(document, window));
+        </script>
     <meta name="apple-mobile-web-app-title" content="SABnzbd" />
 
     <link rel="apple-touch-icon" sizes="76x76" href="../staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
@@ -16,19 +41,31 @@
 
     <link rel="stylesheet" type="text/css" href="../staticcfg/bootstrap/css/bootstrap.min.css?v=$version" />
     <link rel="stylesheet" type="text/css" href="../staticcfg/css/login.css?v=$version" />
+    <noscript>
     <!--#if $color_scheme not in ('Light', '') #-->
     <link rel="stylesheet" type="text/css" href="../staticcfg/css/${color_scheme}.css?v=$version"/>
     <!--#end if#-->
+    </noscript>
+    <link rel="stylesheet" type="text/css" href="../staticcfg/css/theme.css?v=$version" />
+    <link rel="stylesheet" type="text/css" href="../staticcfg/css/config.modern.css?v=$version" />
 
     <script type="text/javascript" src="../staticcfg/js/jquery-3.5.1.min.js?v=$version"></script>
     <script type="text/javascript" src="../staticcfg/bootstrap/js/bootstrap.min.js?v=$version"></script>
+    <script type="text/javascript" defer src="../staticcfg/js/theme.js?v=$version"></script>
 </head>
-<html>
-    <body>
+    <body class="login">
+        <div class="sab-theme-control sab-theme-control--floating">
+            <label for="sab-theme-select-login">$T('opt-web_dir')</label>
+            <select id="sab-theme-select-login" data-sab-theme-select aria-label="$T('opt-web_dir')">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="oled">OLED</option>
+            </select>
+        </div>
         <div class="account-wall">
             <div class="text-center logo-header">
                 <!--#include $webdir + "/staticcfg/images/logo-full.svg"#-->
-                <a href="https://sabnzbd.org/wiki/faq#why-login" target="_blank">
+                <a href="https://sabnzbd.org/wiki/faq#why-login" target="_blank" rel="noopener noreferrer" aria-label="$T('menu-help')">
                     <span class="glyphicon glyphicon-question-sign"></span>
                 </a>
             </div>
@@ -37,10 +74,12 @@
                 <div class="alert alert-danger" role="alert">$error</div>
                 <!--#end if#-->
 
-                <input type="text" class="form-control" name="username" placeholder="$T('srv-username')" autocomplete="username" required autofocus>
-                <input type="password" class="form-control" name="password" placeholder="$T('srv-password')" autocomplete="current-password" required>
+                <label class="sr-only" for="login-username">$T('srv-username')</label>
+                <input id="login-username" type="text" class="form-control" name="username" placeholder="$T('srv-username')" autocomplete="username" required autofocus>
+                <label class="sr-only" for="login-password">$T('srv-password')</label>
+                <input id="login-password" type="password" class="form-control" name="password" placeholder="$T('srv-password')" autocomplete="current-password" required>
 
-                <button class="btn btn-default"><span class="glyphicon glyphicon-circle-arrow-right"></span> $T('login') </button>
+                <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-circle-arrow-right"></span> $T('login') </button>
 
                 <div class="checkbox text-center" data-toggle="tooltip" data-placement="bottom" title="$T('explain-sessionExpire')">
                     <label>

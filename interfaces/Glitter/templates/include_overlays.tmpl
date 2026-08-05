@@ -65,9 +65,9 @@
     <div id="feedback-slider-inner">
         <p><strong>If anything is not working as expected, or could be improved, let us know!</strong></p>
         <p><strong>If you encounter an error, please include the log file (click on <span class="glyphicon glyphicon-wrench"></span> ) when contacting us.</strong></p>
-        <span class="glyphicon glyphicon-home"></span> <a href="https://forums.sabnzbd.org/viewforum.php?f=11" target="_blank">SABnzbd Forum</a><br />
-        <span class="glyphicon glyphicon-plane"></span> <a href="https://github.com/sabnzbd/sabnzbd/" target="_blank">SABnzbd on Github</a><br />
-        <span class="glyphicon glyphicon-globe"></span> <a href="https://sabnzbd.org/wiki/translate" target="_blank">Translations of SABnzbd</a><br />
+        <span class="glyphicon glyphicon-home"></span> <a href="https://forums.sabnzbd.org/viewforum.php?f=11" target="_blank" rel="noopener noreferrer">SABnzbd Forum</a><br />
+        <span class="glyphicon glyphicon-plane"></span> <a href="https://github.com/sabnzbd/sabnzbd/" target="_blank" rel="noopener noreferrer">SABnzbd on Github</a><br />
+        <span class="glyphicon glyphicon-globe"></span> <a href="https://sabnzbd.org/wiki/translate" target="_blank" rel="noopener noreferrer">Translations of SABnzbd</a><br />
     </div>
 </div>
 
@@ -77,7 +77,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <a href="#" data-bind="click: loadStatusInfo, css: { 'rotate-refresh': !hasStatusInfo() }" title="$T('Glitter-interfaceRefresh')"><span class="glyphicon glyphicon-repeat"></span></a>
+                <a href="#" data-bind="click: loadStatusInfo, css: { 'rotate-refresh': !hasStatusInfo() }" title="$T('Glitter-interfaceRefresh')" aria-label="$T('Glitter-interfaceRefresh')"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></a>
                 <h4 class="modal-title">$T('Glitter-statusInterfaceOptions')</h4>
             </div>
             <div class="modal-body">
@@ -138,7 +138,7 @@
                             <div class="col-sm-6">$T('dashboard-systemPerformance') &nbsp; </div>
                             <div class="col-sm-6 col-dot-overflow" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.pystone"></span>
-                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))" aria-label="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></a>
                                 <small title="$cpumodel $cpusimd" data-tooltip="true">$cpumodel $cpusimd</small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -147,7 +147,7 @@
                             <div class="col-sm-6">$T('dashboard-downloadDirSpeed') &nbsp; </div>
                             <div class="col-sm-6 col-dot-overflow" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.downloaddirspeed()"></span> MB/s
-                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))" aria-label="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></a>
                                 <small data-bind="text: statusInfo.downloaddir, attr: { 'data-original-title': statusInfo.downloaddir }" data-tooltip="true"></small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -156,7 +156,7 @@
                             <div class="col-sm-6">$T('dashboard-completeDirSpeed') &nbsp; </div>
                             <div class="col-sm-6 col-dot-overflow" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.completedirspeed()"></span> MB/s
-                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))" aria-label="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></a>
                                 <small data-bind="text: statusInfo.completedir, attr: { 'data-original-title': statusInfo.completedir }" data-tooltip="true"></small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -165,7 +165,7 @@
                             <div class="col-sm-6">$T('dashboard-internetBandwidth') &nbsp; </div>
                             <div class="col-sm-6" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.internetbandwidth()"></span> MB/s
-                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))" aria-label="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></a>
                                 <small><span data-bind="text: statusInfo.internetbandwidth()*8"></span> Mbps</small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -197,7 +197,7 @@
                         </div>
                         <div class="row options-function-box">
                             <div class="col-sm-6">
-                                <a href="./api?mode=showlog&apikey=$apikey" target="_blank" class="btn btn-default" data-tooltip="true" data-placement="top" title="$T('Glitter-logText')">
+                                <a href="./api?mode=showlog&apikey=$apikey" target="_blank" class="btn btn-default" data-tooltip="true" data-placement="top" title="$T('Glitter-logText')" rel="noopener noreferrer">
                                     <span class="glyphicon glyphicon-file"></span> $T('link-showLog')
                                 </a>
                             </div>
@@ -317,8 +317,8 @@
                                 <tr>
                                     <td><span class="glyphicon glyphicon-folder-open"></span></td>
                                     <td class="row-wrap-text"><strong data-bind="html: \$data"></strong></td>
-                                    <td><a href="#" data-bind="click: \$root.folderProcess" data-action="add_orphan" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-backToQueue')"><span class="glyphicon glyphicon-plus-sign"></span></a></td>
-                                    <td><a href="#" data-bind="click: \$root.folderProcess" data-action="delete_orphan" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-deleteJobAndFolders')"><span class="glyphicon glyphicon-trash"></span></a></td>
+                                    <td><a href="#" data-bind="click: \$root.folderProcess" data-action="add_orphan" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-backToQueue')" aria-label="$T('Glitter-backToQueue')"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a></td>
+                                    <td><a href="#" data-bind="click: \$root.folderProcess" data-action="delete_orphan" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-deleteJobAndFolders')" aria-label="$T('Glitter-deleteJobAndFolders')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -618,8 +618,8 @@
                                                 <div class="fileDetails">
                                                     <span data-bind="truncatedTextCenter: filename"></span>
                                                     <div class="fileControls">
-                                                        <a href="#" data-bind="click: \$parent.filelist.moveButton" class="hover-button buttonMoveToTop" title="$T('Glitter-top')"><span class="glyphicon glyphicon-chevron-up"></span></a>
-                                                        <a href="#" data-bind="click: \$parent.filelist.moveButton" class="hover-button buttonMoveToBottom" title="$T('Glitter-bottom')"><span class="glyphicon glyphicon-chevron-down"></span></a>
+                                                        <a href="#" data-bind="click: \$parent.filelist.moveButton" class="hover-button buttonMoveToTop" title="$T('Glitter-top')" aria-label="$T('Glitter-top')"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></a>
+                                                        <a href="#" data-bind="click: \$parent.filelist.moveButton" class="hover-button buttonMoveToBottom" title="$T('Glitter-bottom')" aria-label="$T('Glitter-bottom')"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></a>
                                                     </div>
                                                     <small>(<span data-bind="text: file_age"></span> - <span data-bind="text: mb"></span> MB)</small>
                                                 </div>
@@ -767,24 +767,24 @@
                     <tbody>
                         <tr>
                             <td><strong>$T('menu-wiki'):</strong></td>
-                            <td><a href="https://sabnzbd.org/wiki/" target="_blank">https://sabnzbd.org/wiki/</a></td>
+                            <td><a href="https://sabnzbd.org/wiki/" target="_blank" rel="noopener noreferrer">https://sabnzbd.org/wiki/</a></td>
                         </tr>
                         <tr>
                             <td><strong>$T('menu-forums'):</strong></td>
-                            <td><a href="https://forums.sabnzbd.org/" target="_blank">https://forums.sabnzbd.org/</a></td>
+                            <td><a href="https://forums.sabnzbd.org/" target="_blank" rel="noopener noreferrer">https://forums.sabnzbd.org/</a></td>
                         </tr>
                         <tr>
                             <td><strong>GitHub:</strong></td>
-                            <td><a href="https://github.com/sabnzbd/sabnzbd" target="_blank">https://github.com/sabnzbd/sabnzbd/</a></td>
+                            <td><a href="https://github.com/sabnzbd/sabnzbd" target="_blank" rel="noopener noreferrer">https://github.com/sabnzbd/sabnzbd/</a></td>
                         </tr>
                         <tr>
                             <td><strong>$T('menu-live-chat'):</strong></td>
-                            <td><a href="https://sabnzbd.org/live-chat" target="_blank">https://sabnzbd.org/live-chat</a></td>
+                            <td><a href="https://sabnzbd.org/live-chat" target="_blank" rel="noopener noreferrer">https://sabnzbd.org/live-chat</a></td>
                         </tr>
                     </tbody>
                 </table>
                 <hr/>
-                <p><small>Copyright &copy; 2007-2026 by The SABnzbd-Team (<a href="https://sabnzbd.org/" target="_blank">sabnzbd.org</a>)<br/>$T('yourRights') </small></p>
+                <p><small>Copyright &copy; 2007-2026 by The SABnzbd-Team (<a href="https://sabnzbd.org/" target="_blank" rel="noopener noreferrer">sabnzbd.org</a>)<br/>$T('yourRights') </small></p>
             </div>
         </div>
     </div>

@@ -8,20 +8,7 @@ var hasLocalStorage = true;
 function localStorageSetItem(varToSet, valueToSet) { try { return localStorage.setItem(varToSet, valueToSet); } catch(e) { hasLocalStorage = false; } }
 function localStorageGetItem(varToGet) { try { return localStorage.getItem(varToGet); } catch(e) {  hasLocalStorage = false; } }
 
-// For mobile we disable zoom while a modal is being opened
-// so it will not zoom unnecessarily on the modal
-if(isMobile) {
-    $('.modal').on('show.bs.modal', function() {
-        $('meta[name="viewport"]').attr('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
-    });
-
-    // Restore on modal-close. Need timeout, otherwise it doesn't work
-    $('.modal').on('hidden.bs.modal', function() {
-        setTimeout(function() {
-            $('meta[name="viewport"]').attr('content', 'width=device-width, initial-scale=1');
-        },500);
-    });
-}
+// Keep browser zoom available on mobile. Responsive modal sizing is handled in CSS.
 
 // Basic API-call
 function callAPI(data, timeout = 10000) {

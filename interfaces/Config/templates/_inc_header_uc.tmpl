@@ -4,7 +4,7 @@
     #set global $root = '../../'#
 #end if#
 <!DOCTYPE HTML>
-<html lang="$active_lang" #if $rtl#dir="rtl"#end if#>
+<html lang="$active_lang" #if $rtl#dir="rtl"#end if# data-server-theme="$color_scheme">
 <head>
     <title>
         SABnzbd $T('menu-config')
@@ -22,7 +22,32 @@
     </title>
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#e7e9ec" />
+
+        <script type="text/javascript">
+            (function(document, window) {
+                var root = document.documentElement;
+                var storageKey = 'sabnzbd-ui-theme-v1';
+                var serverTheme = (root.getAttribute('data-server-theme') || 'Auto').toLowerCase();
+                var selected = '';
+                try { selected = window.localStorage.getItem(storageKey) || ''; } catch (error) { selected = ''; }
+                var explicit = selected === 'light' || selected === 'dark' || selected === 'oled';
+                var followsSystem = !explicit && serverTheme !== 'oled' && serverTheme !== 'night' && serverTheme !== 'dark' && serverTheme !== 'light';
+                if (!explicit) {
+                    if (serverTheme === 'oled') selected = 'oled';
+                    else if (serverTheme === 'night' || serverTheme === 'dark') selected = 'dark';
+                    else if (serverTheme === 'light') selected = 'light';
+                    else selected = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+                root.setAttribute('data-sab-theme', selected);
+                root.setAttribute('data-sab-theme-explicit', explicit ? 'true' : 'false');
+                root.setAttribute('data-sab-theme-follows-system', followsSystem ? 'true' : 'false');
+                root.style.colorScheme = selected === 'light' ? 'light' : 'dark';
+                var themeColor = document.querySelector('meta[name="theme-color"]');
+                if (themeColor) themeColor.setAttribute('content', selected === 'oled' ? '#000000' : selected === 'dark' ? '#1d2024' : '#e7e9ec');
+            }(document, window));
+        </script>
     <meta name="apple-mobile-web-app-title" content="SABnzbd" />
 
     <link rel="apple-touch-icon" sizes="76x76" href="${root}staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
@@ -34,9 +59,13 @@
     <link rel="stylesheet" type="text/css" href="${root}staticcfg/bootstrap/css/bootstrap.min.css?v=$version" />
     <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/chartist.min.css" />
     <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/style.css?v=$version" />
+    <noscript>
     <!--#if $color_scheme not in ('Light', '') #-->
     <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/${color_scheme}.css?v=$version"/>
     <!--#end if#-->
+    </noscript>
+    <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/theme.css?v=$version" />
+    <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/config.modern.css?v=$version" />
 
     <link rel="shortcut icon" href="${root}staticcfg/ico/favicon.ico?v=$version" />
 
@@ -68,6 +97,7 @@
     <script type="text/javascript" src="${root}staticcfg/js/jquery-3.5.1.min.js?v=$version"></script>
     <script type="text/javascript" src="${root}staticcfg/bootstrap/js/bootstrap.min.js?v=$version"></script>
     <script type="text/javascript" src="${root}staticcfg/js/script.js?v=$version"></script>
+    <script type="text/javascript" defer src="${root}staticcfg/js/theme.js?v=$version"></script>
     <script type="text/javascript">
         // Set default functions for the autocomplete everywhere
 
@@ -85,7 +115,7 @@
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -164,19 +194,31 @@
                     </a>
                 </li>
                 <li>
-                    <a href="$help_uri" target="_blank">
+                    <a href="$help_uri" target="_blank" rel="noopener noreferrer">
                         <span class="glyphicon glyphicon-question-sign"></span>
                         <strong>$T('menu-help')</strong>
                     </a>
                 </li>
+                <li class="sab-theme-nav-item">
+                    <div class="sab-theme-control sab-theme-control--nav">
+                        <label class="sr-only" for="sab-theme-select-config">$T('opt-web_dir')</label>
+                        <span class="glyphicon glyphicon-adjust" aria-hidden="true"></span>
+                        <select id="sab-theme-select-config" data-sab-theme-select aria-label="$T('opt-web_dir')">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="oled">OLED</option>
+                        </select>
+                    </div>
+                </li>
                 <li class="dropdown" id="search-menu">
-                    <a data-toggle="dropdown" href="#">
+                    <a data-toggle="dropdown" href="#" aria-label="$T('cmenu-search')" aria-haspopup="true">
                         <span class="glyphicon glyphicon-search"></span>
                         <strong><span class="glyphicon glyphicon-search"></span></strong>
                     </a>
                     <ul class="dropdown-menu" id="search-dropdown">
                         <li>
                             <form onsubmit="return false">
+                                <label class="sr-only" for="search-box">$T('cmenu-search')</label>
                                 <input type="text" name="config-search" id="search-box" placeholder="$T('cmenu-search')" onkeyup="doConfigSearch(this)">
                             </form>
                         </li>

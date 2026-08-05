@@ -1,0 +1,8 @@
+/* OLED color scheme fallback for no-JavaScript clients. */
+html, body { background: #000000; color: #f8f8f8; color-scheme: dark; }
+.navbar-default, .colmask, #inner, body > .container, .account-wall { background: #000000; color: #f8f8f8; border-color: #303030; }
+.col2 h3, .modal-header { background: #050505; color: #ffffff; }
+.field-pair:nth-child(odd), .quoteBlock, .example { background: #101010; }
+.dropdown-menu, .modal-content { background: #0b0b0b; color: #f8f8f8; border-color: #303030; }
+.form-control, select, input, textarea { background: #080808; color: #f8f8f8; border-color: #555555; }
+label, small, .desc, .col2 p { color: #d0d0d0; }
