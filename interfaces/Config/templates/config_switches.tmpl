@@ -262,7 +262,7 @@
                     <div class="field-pair">
                         <label class="config" for="history_retention_option">$T('opt-history_retention')</label>
                         <select name="history_retention_option" id="history_retention_option">
-                            <option value="all" <!--#if $auto_sort == "all" then 'selected="selected"' else ""#-->>$T('history_retention-all')</option>
+                            <option value="all" <!--#if $history_retention_option == "all" then 'selected="selected"' else ""#-->>$T('history_retention-all')</option>
                             <option value="number-archive" <!--#if $history_retention_option == "number-archive" then 'selected="selected"' else ""#-->>$T('history_retention-number-archive')</option>
                             <option value="number-delete" <!--#if $history_retention_option == "number-delete" then 'selected="selected"' else ""#-->>$T('history_retention-number-delete')</option>
                             <option value="days-archive" <!--#if $history_retention_option == "days-archive" then 'selected="selected"' else ""#-->>$T('history_retention-days-archive')</option>
