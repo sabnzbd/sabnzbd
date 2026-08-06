@@ -1172,7 +1172,7 @@ def main():
     if sabnzbd.cfg.tray_icon() and not sabnzbd.DAEMON and not sabnzbd.WIN_SERVICE:
         if sabnzbd.WINDOWS:
             sabnzbd.WINTRAY = sabnzbd.sabtraywin.SABTrayThread()
-        elif sabnzbd.LINUX_POWER and os.environ.get("DISPLAY"):
+        elif sabnzbd.LINUX_POWER and (os.environ.get("DISPLAY") or os.environ.get("XDG_CURRENT_DESKTOP")):
             try:
                 import gi
 
