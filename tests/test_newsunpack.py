@@ -30,6 +30,7 @@ import shutil
 import stat
 import sys
 import tarfile
+import threading
 from typing import Optional
 from unittest import mock
 from unittest.mock import call
@@ -41,7 +42,7 @@ import sabnzbd.newsunpack as newsunpack
 from sabnzbd.constants import JOB_ADMIN
 from tests.testhelper import SAB_CACHE_DIR
 from sabnzbd.misc import format_time_string, SABRarFile
-from sabnzbd.filesystem import long_path, create_all_dirs, listdir_full, clip_path
+from sabnzbd.filesystem import long_path, build_filelists, create_all_dirs, listdir_full, clip_path
 
 
 @pytest.fixture(autouse=True)
@@ -928,6 +929,109 @@ class TestTarUnpack:
             should_delete_original=True,
             original_files=tar_files,
         )
+
+
+@pytest.mark.usefixtures("clean_cache_dir")
+@pytest.mark.config(
+    {
+        "enable_unrar": True,
+        "enable_filejoin": False,
+        "enable_tsjoin": False,
+        "enable_tar": False,
+        "enable_7zip": False,
+        "enable_recursive": False,
+    }
+)
+class TestUnpackNestedRarSets:
+    """A rar set can live in a subfolder of the download path: quick-check moves the volumes
+    into a folder of their own when the par2 set stores them that way.
+
+    Everything hangs off build_filelists() finding them. It is what makes unpacker() call
+    rar_unpack(), which both unpacks the set and is the only place SABnzbd waits for a
+    running DirectUnpacker. Miss the volumes and post-processing unpacks nothing and moves
+    the raw rars to the complete folder, while unrar is still reading them.
+    """
+
+    SUBDIR = "Foo.Bar.S05E03.1080p"
+
+    @staticmethod
+    def _create_job(tmp_path, subdir: str = "") -> tuple[mock.Mock, str]:
+        """Job with one rar set in <download_path>/<subdir>, returns the nzo and complete path"""
+        download_path = os.path.join(str(tmp_path), "incomplete")
+        complete_path = os.path.join(str(tmp_path), "complete")
+        assert create_all_dirs(os.path.join(download_path, subdir))
+        assert create_all_dirs(complete_path)
+        shutil.copy(os.path.join("tests", "data", "basic_rar3", "testfile.rar"), os.path.join(download_path, subdir))
+
+        newsunpack.find_programs(".")
+        sabnzbd.PostProcessor = mock.Mock()
+
+        nzo = mock.Mock(
+            download_path=download_path,
+            admin_path=os.path.join(download_path, JOB_ADMIN),
+            final_name="Foo.Bar.S05.1080p",
+            fail_msg="",
+            delete=True,
+            reuse=False,
+            password=None,
+            correct_password=None,
+            nzo_info={},
+            meta={},
+            direct_unpacker=None,
+        )
+        return nzo, complete_path
+
+    @staticmethod
+    def _create_direct_unpacker() -> mock.Mock:
+        """Stub that reports itself as running until it is joined or aborted"""
+        finished = threading.Event()
+        return mock.Mock(
+            success_sets={},
+            next_file_lock=threading.Condition(),
+            get_formatted_stats=mock.Mock(return_value="01/10"),
+            is_alive=mock.Mock(side_effect=lambda: not finished.is_set()),
+            join=mock.Mock(side_effect=lambda timeout=None: finished.set()),
+            abort=mock.Mock(side_effect=finished.set),
+        )
+
+    def test_build_filelists_finds_rars_in_subfolder(self, tmp_path):
+        """Root cause: the download path used to be scanned non-recursively"""
+        rar_dir = os.path.join(str(tmp_path), self.SUBDIR)
+        assert create_all_dirs(rar_dir)
+        rar_path = os.path.join(rar_dir, "testfile.rar")
+        shutil.copy(os.path.join("tests", "data", "basic_rar3", "testfile.rar"), rar_path)
+
+        _joinables, rars, _sevens, _ts, _tars = build_filelists(str(tmp_path))
+        assert rars == [rar_path]
+
+    def test_unpacker_unpacks_rars_in_subfolder(self, tmp_path):
+        """Without a DirectUnpacker in play the set still has to be unpacked, not moved as-is"""
+        nzo, complete_path = self._create_job(tmp_path, self.SUBDIR)
+
+        error, newfiles = newsunpack.unpacker(nzo, complete_path, False)
+
+        assert not error
+        assert newfiles, "the rar set in the subfolder was never found, so nothing was unpacked"
+        assert os.path.exists(os.path.join(complete_path, "testfile.bin"))
+
+    @pytest.mark.parametrize(
+        "subdir",
+        [
+            pytest.param("", id="rars_in_download_path"),
+            pytest.param(SUBDIR, id="rars_in_subfolder_of_download_path"),
+        ],
+    )
+    def test_unpacker_waits_for_active_direct_unpacker(self, subdir, tmp_path):
+        nzo, complete_path = self._create_job(tmp_path, subdir)
+        nzo.direct_unpacker = self._create_direct_unpacker()
+
+        newsunpack.unpacker(nzo, complete_path, False)
+
+        assert nzo.direct_unpacker.join.called or nzo.direct_unpacker.abort.called, (
+            "unpacker() returned while the DirectUnpacker was still running; post-processing "
+            "will move and purge the job's files from under unrar"
+        )
+        assert not nzo.direct_unpacker.is_alive(), "DirectUnpacker should no longer be running"
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
