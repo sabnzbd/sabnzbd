@@ -88,7 +88,6 @@ PAR2_FILENAME_RE = re.compile(r'"([^"]+)"')
 # Constants
 SEVENZIP_ID = b"7z\xbc\xaf'\x1c"
 PAR2_COMMAND = None
-MULTIPAR_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
 SEVENZIP_COMMAND = None
