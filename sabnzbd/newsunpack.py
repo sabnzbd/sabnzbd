@@ -1716,6 +1716,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                     )
                     renames[file] = nzf.filename
                     nzf.filename = file
+                    nzf.setname, nzf.vol = sabnzbd.directunpacker.analyze_rar_filename(nzf.filename)
                     result &= True
                     found = True
                     found_paths.add(nzf.filepath)
@@ -1889,6 +1890,7 @@ def sfv_check(sfvs: list[str], nzo: NzbObject) -> bool:
                     renamer(os.path.join(nzo.download_path, nzf.filename), os.path.join(nzo.download_path, file))
                     renames[file] = nzf.filename
                     nzf.filename = file
+                    nzf.setname, nzf.vol = sabnzbd.directunpacker.analyze_rar_filename(nzf.filename)
                     result &= True
                     found = True
                     break
