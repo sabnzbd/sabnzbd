@@ -292,10 +292,10 @@ def unpacker(
 
     if depth == 1:
         # First time, ignore anything in workdir_complete
-        xjoinables, xrars, xsevens, xts, xtars = build_filelists(nzo.download_path)
+        xjoinables, xrars, xsevens, xts, xtars = build_filelists(nzo.download_path, extra_dirs=nzo.sub_directories())
     else:
         xjoinables, xrars, xsevens, xts, xtars = build_filelists(
-            nzo.download_path, workdir_complete, check_both=nzo.delete
+            nzo.download_path, workdir_complete, check_both=nzo.delete, extra_dirs=nzo.sub_directories()
         )
 
     force_rerun = False
@@ -366,7 +366,12 @@ def unpacker(
 
     # Double-check that we didn't miss any files in workdir
     # But only if dele=True, otherwise of course there will be files left
-    if rerun and nzo.delete and depth == 1 and any(build_filelists(nzo.download_path)):
+    if (
+        rerun
+        and nzo.delete
+        and depth == 1
+        and any(build_filelists(nzo.download_path, extra_dirs=nzo.sub_directories()))
+    ):
         force_rerun = True
         # Clear lists to force re-scan of files
         xjoinables, xrars, xsevens, xts, xtars = ([], [], [], [], [])

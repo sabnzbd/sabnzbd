@@ -946,10 +946,10 @@ class TestUnpackNestedRarSets:
     """A rar set can live in a subfolder of the download path: quick-check moves the volumes
     into a folder of their own when the par2 set stores them that way.
 
-    Everything hangs off build_filelists() finding them. It is what makes unpacker() call
-    rar_unpack(), which both unpacks the set and is the only place SABnzbd waits for a
-    running DirectUnpacker. Miss the volumes and post-processing unpacks nothing and moves
-    the raw rars to the complete folder, while unrar is still reading them.
+    Everything hangs off build_filelists() being told about that folder. It is what makes
+    unpacker() call rar_unpack(), which both unpacks the set and is the only place SABnzbd
+    waits for a running DirectUnpacker. Miss the volumes and post-processing unpacks nothing
+    and moves the raw rars to the complete folder, while unrar is still reading them.
     """
 
     SUBDIR = "Foo.Bar.S05E03.1080p"
@@ -978,6 +978,8 @@ class TestUnpackNestedRarSets:
             nzo_info={},
             meta={},
             direct_unpacker=None,
+            # As NzbObject.sub_directories() would report it for a job assembled into it
+            sub_directories=mock.Mock(return_value={os.path.join(download_path, subdir)} if subdir else set()),
         )
         return nzo, complete_path
 
@@ -994,15 +996,39 @@ class TestUnpackNestedRarSets:
             abort=mock.Mock(side_effect=finished.set),
         )
 
-    def test_build_filelists_finds_rars_in_subfolder(self, tmp_path):
-        """Root cause: the download path used to be scanned non-recursively"""
+    def test_build_filelists_only_scans_known_subfolders(self, tmp_path):
+        """The download path stays non-recursive, only folders we were told about are added"""
         rar_dir = os.path.join(str(tmp_path), self.SUBDIR)
         assert create_all_dirs(rar_dir)
         rar_path = os.path.join(rar_dir, "testfile.rar")
         shutil.copy(os.path.join("tests", "data", "basic_rar3", "testfile.rar"), rar_path)
 
         _joinables, rars, _sevens, _ts, _tars = build_filelists(str(tmp_path))
+        assert rars == []
+
+        _joinables, rars, _sevens, _ts, _tars = build_filelists(str(tmp_path), extra_dirs=[rar_dir])
         assert rars == [rar_path]
+
+    def test_sub_directories_reports_only_local_subfolders(self, tmp_path):
+        """Where the job assembled its files (nzf.filename) plus anything par2cmdline
+        restored into a folder during repair (nzo.renames)"""
+        download_path = str(tmp_path)
+        nzo = mock.Mock(
+            download_path=download_path,
+            finished_files=[
+                mock.Mock(filename=os.path.join(self.SUBDIR, "testfile.rar")),
+                mock.Mock(filename="testfile.r00"),
+            ],
+            renames={
+                os.path.join("Sample", "sample.mkv"): "obfuscated",
+                os.path.join(os.pardir, "escaped.rar"): "obfuscated.2",
+            },
+        )
+
+        assert sabnzbd.nzb.NzbObject.sub_directories(nzo) == {
+            os.path.join(download_path, self.SUBDIR),
+            os.path.join(download_path, "Sample"),
+        }
 
     def test_unpacker_unpacks_rars_in_subfolder(self, tmp_path):
         """Without a DirectUnpacker in play the set still has to be unpacked, not moved as-is"""

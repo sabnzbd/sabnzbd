@@ -90,6 +90,7 @@ from sabnzbd.filesystem import (
     remove_data,
     get_ext,
     create_work_name,
+    same_directory,
     RAR_RE,
 )
 from sabnzbd.par2file import FilePar2Info, has_par2_in_filename, analyse_par2, parse_par2_file, is_par2_file
@@ -1444,6 +1445,21 @@ class NzbObject(TryList):
                     self.renames[os.path.normpath(name)] = self.renames.pop(old_name, old_name)
         elif old_name is not None:
             self.renames[os.path.normpath(renames_or_name)] = self.renames.pop(old_name, old_name)
+
+    def sub_directories(self) -> set[str]:
+        """Sub-folders of the download folder that this job put files in.
+        Par2 sets can store their files in a folder of their own, we assemble straight into
+        it, and par2cmdline can restore a file into one during repair. These are the only
+        sub-folders we know about, so the rest of the download folder is left alone, see #1304.
+        """
+        sub_dirs = set()
+        # nzf.filename is sanitized and cannot escape, names reported by par2cmdline are not
+        for name in [nzf.filename for nzf in self.finished_files] + list(self.renames):
+            if subdir := os.path.dirname(name):
+                path = os.path.join(self.download_path, subdir)
+                if same_directory(self.download_path, path) == 2:
+                    sub_dirs.add(path)
+        return sub_dirs
 
     @synchronized()
     def get_unique_filepath(self, filename: str) -> tuple[str, str]:

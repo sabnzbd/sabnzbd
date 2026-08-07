@@ -36,7 +36,7 @@ import ctypes
 import random
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Any, Optional, BinaryIO
+from typing import Any, Iterable, Optional, BinaryIO
 
 try:
     import win32api
@@ -517,11 +517,16 @@ TAR_RE = re.compile(r"\.(tar$)", re.I)
 
 
 def build_filelists(
-    workdir: Optional[str], workdir_complete: Optional[str] = None, check_both: bool = False, check_rar: bool = True
+    workdir: Optional[str],
+    workdir_complete: Optional[str] = None,
+    check_both: bool = False,
+    check_rar: bool = True,
+    extra_dirs: Iterable[str] = (),
 ) -> tuple[list[str], list[str], list[str], list[str], list[str]]:
     """Build filelists, if workdir_complete has files, ignore workdir.
     Optionally scan both directories.
     Optionally test content to establish RAR-ness
+    The workdir itself is never scanned recursively, only the extra_dirs are looked at as well
     """
     sevens, joinables, rars, ts, filelist, tars = ([], [], [], [], [], [])
 
@@ -530,6 +535,10 @@ def build_filelists(
 
     if workdir and (not filelist or check_both):
         filelist.extend(listdir_full(workdir, recursive=False))
+        # Par2-renames can move files into a folder of their own. Those folders are the only
+        # sub-folders of the workdir we know about, anything else is left alone on purpose.
+        for extra_dir in extra_dirs:
+            filelist.extend(listdir_full(extra_dir, recursive=False))
 
     for file in filelist:
         # Extra check for rar (takes CPU/disk)
