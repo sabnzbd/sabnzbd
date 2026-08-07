@@ -253,7 +253,21 @@ input[type="checkbox"]+.desc {
     margin: 0;
     padding: 0 12px 0 6px;
 }
-textarea, select, input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="email"], input[type="month"], input[type="number"], input[type="password"], input[type="search"], input[type="tel"], input[type="text"], input[type="time"], input[type="url"], input[type="week"] {
+textarea,
+select,
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="email"],
+input[type="month"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="time"],
+input[type="url"],
+input[type="week"] {
     padding-left: 5px;
     border: 1px solid #d4d0c8;
 }
@@ -1058,18 +1072,7 @@ input[type="checkbox"] {
     height: 40px;
     width: 40px;
 }
-/*
-.navbar-logo-wide {
-    display: none;
-}
-.navbar-logo-wide {
-    padding-top: 9px;
-}
-.navbar-logo-wide svg {
-    height: 36px;
-    width: 130px;
-}
-*/
+
 .navbar-default .navbar-nav>li>a {
     color: black;
     outline: none;
@@ -1136,7 +1139,7 @@ input[type="checkbox"] {
 }
 
 .Servers .col2 .label {
-    margin-top: 8px;
+    margin-top: 12px;
     font-size: 0.85em;
     float: right;
     line-height: 1.1em;
@@ -1207,8 +1210,8 @@ input[type="checkbox"] {
 }
 
 .Servers .col2 label,
-.Email .col2 label {
-    margin: 2px 0 0 4px;
+.Notify .col2 label {
+    margin: 6px 0 0 6px;
     cursor: pointer;
 }
 
@@ -1251,6 +1254,11 @@ input[type="checkbox"] {
 .fileBrowser .glyphicon {
     margin-right: 2px;
     top: 1px;
+}
+
+.Notify .notify-checkboxes {
+    float: left;
+    margin-right: 8px;
 }
 
 .main-restarting.in {
