@@ -38,11 +38,11 @@ class TestDownloadSorting(DownloadFlowBasics):
     def test_sorter_settings_conversion(self):
         """Read the ini file after the sabnzbd test instance completed startup
         and verify all defined sorters were converted to the new format"""
-        return_status, return_msg = config._read_config(os.path.join(SAB_CACHE_DIR, DEF_INI_FILE), try_backup=False)
+        return_status, return_msg = config.read_config(os.path.join(SAB_CACHE_DIR, DEF_INI_FILE))
         assert return_status
         assert not return_msg
-        assert config.CFG_OBJ["sorters"]
-        assert len(config.CFG_OBJ["sorters"]) == 2  # The ini file only has Series and Movie sorting
+        assert config.CONFIG["sorters"]
+        assert len(config.CONFIG["sorters"]) == 2  # The ini file only has Series and Movie sorting
 
     @pytest.mark.parametrize(
         "test_data_dir, result",

@@ -24,7 +24,6 @@ import uuid
 from typing import Optional
 import random
 
-import configobj
 import pytest
 from pytest_httpserver import HTTPServer
 from werkzeug import Response
@@ -135,7 +134,7 @@ class TestRSS:
                 values[f"filter{n}"] = f
 
         # Setup the config settings
-        sabnzbd.config.CFG_OBJ = configobj.ConfigObj()
+        sabnzbd.config.CONFIG.clear()
         sabnzbd.config.ConfigRSS(feed_name, values)
 
         # Need to create the Default category

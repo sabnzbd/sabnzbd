@@ -939,12 +939,7 @@ class TestMisc:
             # Delete any leftover/pre-defined new-style sorters
             if existing_sorters := get_sorters():
                 for config in list(existing_sorters.keys()):
-                    try:
-                        existing_sorters[config].delete()
-                    except NameError as error:
-                        if "CFG_OBJ" in str(error):
-                            # Ignore failure to save the config to file in this very barebones test environment
-                            pass
+                    existing_sorters[config].delete()
             assert not get_sorters()
 
             # Run conversion
@@ -952,10 +947,10 @@ class TestMisc:
 
             try:
                 save_config()
-            except NameError as error:
-                if "CFG_OBJ" in str(error):
-                    # Once again, ignore failure to save the config
-                    pass
+            except Exception:
+                # Persisting to disk isn't possible in this very barebones test environment
+                # (no INI file backing the config); the in-memory result is what's verified below
+                pass
 
             # Verify the resulting config
             new_sorters = get_sorters()
