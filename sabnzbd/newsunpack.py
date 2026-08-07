@@ -271,6 +271,37 @@ def external_processing(
     return output, ret
 
 
+def wait_for_direct_unpacker(nzo: NzbObject):
+    """Wait for the DirectUnpacker of this job to finish, aborting it if it seems stuck.
+    It reads the volumes straight from the download folder, so it has to be done before
+    post-processing starts renaming, moving or removing any of the job's files.
+    """
+    if not nzo.direct_unpacker or not nzo.direct_unpacker.is_alive():
+        return
+
+    wait_count = 0
+    last_stats = nzo.direct_unpacker.get_formatted_stats()
+    while nzo.direct_unpacker.is_alive():
+        logging.debug("DirectUnpacker still alive for %s: %s", nzo.final_name, last_stats)
+
+        # Bump the file-lock in case it's stuck
+        with nzo.direct_unpacker.next_file_lock:
+            nzo.direct_unpacker.next_file_lock.notify()
+
+        # Returns as soon as it is done
+        nzo.direct_unpacker.join(timeout=2)
+
+        # Did something change? Might be stuck
+        if last_stats == nzo.direct_unpacker.get_formatted_stats():
+            wait_count += 1
+            if wait_count > 60:
+                # We abort after 2 minutes of no changes
+                nzo.direct_unpacker.abort()
+        else:
+            wait_count = 0
+        last_stats = nzo.direct_unpacker.get_formatted_stats()
+
+
 def unpacker(
     nzo: NzbObject,
     workdir_complete: str,
@@ -291,6 +322,10 @@ def unpacker(
     depth += 1
 
     if depth == 1:
+        # Never unpack while the DirectUnpacker is still working on the same files.
+        # Also makes sure we pick up whatever it left behind in the download folder.
+        wait_for_direct_unpacker(nzo)
+
         # First time, ignore anything in workdir_complete
         xjoinables, xrars, xsevens, xts, xtars = build_filelists(nzo.download_path, extra_dirs=nzo.sub_directories())
     else:
@@ -555,28 +590,7 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: li
             extraction_path = os.path.split(rarpath)[0]
 
         # Is the direct-unpacker still running? We wait for it
-        if nzo.direct_unpacker:
-            wait_count = 0
-            last_stats = nzo.direct_unpacker.get_formatted_stats()
-            while nzo.direct_unpacker.is_alive():
-                logging.debug("DirectUnpacker still alive for %s: %s", nzo.final_name, last_stats)
-
-                # Bump the file-lock in case it's stuck
-                with nzo.direct_unpacker.next_file_lock:
-                    nzo.direct_unpacker.next_file_lock.notify()
-
-                # Returns as soon as it is done
-                nzo.direct_unpacker.join(timeout=2)
-
-                # Did something change? Might be stuck
-                if last_stats == nzo.direct_unpacker.get_formatted_stats():
-                    wait_count += 1
-                    if wait_count > 60:
-                        # We abort after 2 minutes of no changes
-                        nzo.direct_unpacker.abort()
-                else:
-                    wait_count = 0
-                last_stats = nzo.direct_unpacker.get_formatted_stats()
+        wait_for_direct_unpacker(nzo)
 
         # Did we already direct-unpack it? Not when recursive-unpacking
         if nzo.direct_unpacker and rar_set in nzo.direct_unpacker.success_sets:

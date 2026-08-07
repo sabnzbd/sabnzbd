@@ -39,6 +39,7 @@ from sabnzbd.newsunpack import (
     build_filelists,
     rar_sort,
     is_sfv_file,
+    wait_for_direct_unpacker,
 )
 from threading import Thread, Event, RLock
 from sabnzbd.misc import (
@@ -450,6 +451,10 @@ def process_job(nzo: NzbObject) -> bool:
 
         # Send post-processing notification
         notifier.send_notification(T("Post-processing"), nzo.final_name, "pp", nzo.cat)
+
+        # Repair, unpack and the move to the complete folder all modify the files the
+        # DirectUnpacker is reading from the download folder, so it has to be done first
+        wait_for_direct_unpacker(nzo)
 
         # Par processing, if enabled
         if all_ok and flag_repair:
