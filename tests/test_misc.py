@@ -945,12 +945,10 @@ class TestMisc:
             # Run conversion
             misc.convert_sorter_settings()
 
-            try:
-                save_config()
-            except Exception:
-                # Persisting to disk isn't possible in this very barebones test environment
-                # (no INI file backing the config); the in-memory result is what's verified below
-                pass
+            # Persisting is a no-op here (no INI file backs the config in this barebones
+            # test); save_config() returns False rather than raising. The in-memory result
+            # is what's verified below.
+            save_config()
 
             # Verify the resulting config
             new_sorters = get_sorters()

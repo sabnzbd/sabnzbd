@@ -135,6 +135,10 @@ class Option:
         """Set callback function"""
         self.__callback = callback
 
+    def __call__(self) -> Any:
+        """get() replacement"""
+        return self.get()
+
 
 class OptionNumber(Option):
     """Numeric option class, int/float is determined from default value."""
@@ -386,14 +390,17 @@ class OptionPassword(Option):
     """Password class."""
 
     def __init__(self, section: str, keyword: str, default_val: str = "", add: bool = True):
-        self.get_string = self.get_stars
         super().__init__(section, keyword, default_val, add=add)
 
     def get(self) -> Optional[str]:
         """Return decoded password"""
         return decode_password(super().get(), self.keyword)
 
-    def get_stars(self) -> Optional[str]:
+    def get_string(self) -> str:
+        """Passwords are shown masked"""
+        return self.get_stars()
+
+    def get_stars(self) -> str:
         """Return non-descript asterisk string"""
         if self.get():
             return "*" * 10
@@ -816,17 +823,23 @@ class SABnzbdConfig(configobj.ConfigObj):
             except IOError:
                 return False, "Cannot create INI file %s" % path
 
-        # Re-parse the file into this object, keeping our database/lock/modified state
-        self.filename = path
+        # Validate the file parses before touching our own state, so a corrupt file
+        # leaves the current config (and filename) intact instead of being destroyed
+        # by reload() clearing us first.
         try:
-            self.reload()
-        except (IOError, configobj.ConfigObjError, UnicodeEncodeError, configobj.ReloadError) as strerror:
+            configobj.ConfigObj(infile=path, default_encoding="utf-8", encoding="utf-8")
+        except (IOError, configobj.ConfigObjError, UnicodeEncodeError) as strerror:
             if try_backup:
                 # No luck!
                 return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
             else:
                 # Try backup file
                 return self.read_config(path, True)
+
+        # The file parses, so re-parse it into this object in place, keeping our
+        # database/lock/modified state (reload() only touches the INI structure)
+        self.filename = path
+        self.reload()
 
         try:
             version = sabnzbd.misc.int_conv(self["__version__"])
@@ -848,8 +861,12 @@ class SABnzbdConfig(configobj.ConfigObj):
                     except KeyError:
                         pass
 
-        # Build the special sections, each backed by its own Config* class
+        # Rebuild the special sections from scratch, each backed by its own Config* class.
+        # Clearing first drops entries from a previous read (e.g. restoring a backup) so
+        # they don't linger in the database and get written back.
         for special_section, section_class in self.SPECIAL_SECTIONS.items():
+            if special_section in self.database:
+                self.database[special_section].clear()
             if special_section in self:
                 for name in self[special_section]:
                     section_class(name, self[special_section][name])
@@ -862,6 +879,10 @@ class SABnzbdConfig(configobj.ConfigObj):
         """Update Setup file with current option values"""
         if not (self.modified or force):
             return True
+
+        if not self.filename:
+            # Nothing has been read yet, so there is no INI file to write to
+            return False
 
         if sabnzbd.cfg.configlock():
             logging.warning(T("Configuration locked, cannot save settings"))
@@ -983,7 +1004,12 @@ class SABnzbdConfig(configobj.ConfigObj):
                     with open(self.filename, "wb") as destination_ref:
                         destination_ref.write(zip_ref.read(DEF_INI_FILE))
                     logging.debug("Loading settings from backup config-file")
-                    self.read_config(self.filename)
+                    loaded, error = self.read_config(self.filename)
+                    if not loaded:
+                        # A corrupt backup left the current config intact; don't persist over it
+                        logging.warning(T("Could not restore backup"))
+                        logging.info("Restoring backup failed: %s", error)
+                        return
 
                     # Write the rest of the admin files that we want to recover
                     adminpath = sabnzbd.cfg.admin_dir.get_path()
@@ -1028,7 +1054,8 @@ class SABnzbdConfig(configobj.ConfigObj):
                 data[section] = get_ordered_categories()
             elif section == "sorters":
                 data[section] = get_ordered_sorters()
-            elif section in ("servers", "rss"):
+            elif section in self.SPECIAL_SECTIONS.keys() - {"categories", "sorters"}:
+                # The remaining special sections (servers, rss) serialize as a list
                 data[section] = []
                 for keyword in sect.keys():
                     conf = self.get_dconfig(section, keyword, True)
