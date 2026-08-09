@@ -538,7 +538,10 @@ class DirectUnpacker(threading.Thread):
 def analyze_rar_filename(filename):
     """Extract volume number and setname from rar-filenames
     Both ".part01.rar" and ".r01"
+    The filename can name a sub-directory of the job, the setname is always just the name so
+    it matches what rar_unpack() derives from the path on disk with setname_from_path()
     """
+    filename = os.path.basename(filename)
     if m := RAR_NR.search(filename):
         if m.group(4):
             # Special since starts with ".rar", ".r00"

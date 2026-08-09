@@ -71,7 +71,7 @@ from sabnzbd.filesystem import (
     UNWANTED_FILE_PERMISSIONS,
     get_unique_filename,
 )
-from sabnzbd.nzb import NzbObject
+from sabnzbd.nzb import NzbObject, NzbFile
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
 
@@ -269,6 +269,22 @@ def external_processing(
     output = "\n".join(lines)
     ret = p.wait()
     return output, ret
+
+
+def rename_deobfuscated_nzf(nzo: NzbObject, nzf: NzbFile, new_filename: str):
+    """Apply a de-obfuscation rename to the bookkeeping that was derived from the old name.
+    The rar set and volume number are re-derived, a running DirectUnpacker matches on those
+    to find the next volume. A set it already completed is keyed by the old name too, so
+    re-key it or rar_unpack() no longer recognizes it as done and extracts it a second time.
+    """
+    old_setname = nzf.setname
+    nzf.filename = new_filename
+    nzf.setname, nzf.vol = sabnzbd.directunpacker.analyze_rar_filename(new_filename)
+
+    if nzo.direct_unpacker and nzf.setname and nzf.setname != old_setname:
+        if success_set := nzo.direct_unpacker.success_sets.pop(old_setname, None):
+            logging.debug("DirectUnpack set %s was renamed to %s", old_setname, nzf.setname)
+            nzo.direct_unpacker.success_sets[nzf.setname] = success_set
 
 
 def wait_for_direct_unpacker(nzo: NzbObject):
@@ -597,7 +613,9 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: li
             logging.info("Set %s completed by DirectUnpack", rar_set)
             fail = 0
             success = True
-            rars, newfiles = nzo.direct_unpacker.success_sets.pop(rar_set)
+            _volumes, newfiles = nzo.direct_unpacker.success_sets.pop(rar_set)
+            # The volumes it listed can have been renamed since, so clean up what is there now
+            rars = rar_sets[rar_set]
         else:
             logging.info("Extracting rarfile %s (belonging to %s) to %s", rarpath, rar_set, extraction_path)
             try:
@@ -1715,8 +1733,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                         create_local_directories=True,
                     )
                     renames[file] = nzf.filename
-                    nzf.filename = file
-                    nzf.setname, nzf.vol = sabnzbd.directunpacker.analyze_rar_filename(nzf.filename)
+                    rename_deobfuscated_nzf(nzo, nzf, file)
                     result &= True
                     found = True
                     found_paths.add(nzf.filepath)
@@ -1889,8 +1906,7 @@ def sfv_check(sfvs: list[str], nzo: NzbObject) -> bool:
                     logging.debug("SFV-check will rename %s to %s", nzf.filename, file)
                     renamer(os.path.join(nzo.download_path, nzf.filename), os.path.join(nzo.download_path, file))
                     renames[file] = nzf.filename
-                    nzf.filename = file
-                    nzf.setname, nzf.vol = sabnzbd.directunpacker.analyze_rar_filename(nzf.filename)
+                    rename_deobfuscated_nzf(nzo, nzf, file)
                     result &= True
                     found = True
                     break
