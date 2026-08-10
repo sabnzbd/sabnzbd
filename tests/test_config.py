@@ -51,11 +51,11 @@ class TestOptions:
         test_option = config.Option(self.test_section, self.test_keyword)
         assert test_option.section == self.test_section
         assert test_option.keyword == self.test_keyword
-        assert test_option.section in config.CFG_DATABASE
-        assert test_option.keyword in config.CFG_DATABASE[test_option.section]
-        assert config.CFG_DATABASE[test_option.section][test_option.keyword] == test_option
+        assert test_option.section in config.CONFIG.database
+        assert test_option.keyword in config.CONFIG.database[test_option.section]
+        assert config.CONFIG.database[test_option.section][test_option.keyword] == test_option
         # Reset database
-        config.CFG_DATABASE = {}
+        config.CONFIG.database = {}
 
     @pytest.mark.xfail(reason="These tests should be added")
     def test_all(self):
@@ -77,7 +77,7 @@ class TestOptions:
         assert test_option.get_dict(for_public_api=True) == {self.test_keyword: "**********"}
 
         # Reset database
-        config.CFG_DATABASE = {}
+        config.CONFIG.database = {}
 
 
 @pytest.mark.usefixtures("clean_cache_dir")

@@ -939,23 +939,16 @@ class TestMisc:
             # Delete any leftover/pre-defined new-style sorters
             if existing_sorters := get_sorters():
                 for config in list(existing_sorters.keys()):
-                    try:
-                        existing_sorters[config].delete()
-                    except NameError as error:
-                        if "CFG_OBJ" in str(error):
-                            # Ignore failure to save the config to file in this very barebones test environment
-                            pass
+                    existing_sorters[config].delete()
             assert not get_sorters()
 
             # Run conversion
             misc.convert_sorter_settings()
 
-            try:
-                save_config()
-            except NameError as error:
-                if "CFG_OBJ" in str(error):
-                    # Once again, ignore failure to save the config
-                    pass
+            # Persisting is a no-op here (no INI file backs the config in this barebones
+            # test); save_config() returns False rather than raising. The in-memory result
+            # is what's verified below.
+            save_config()
 
             # Verify the resulting config
             new_sorters = get_sorters()

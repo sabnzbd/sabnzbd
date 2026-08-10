@@ -160,7 +160,7 @@ class TestPostProc:
                 "is_active": int(has_active_sorter),
             },
         )
-        assert sabnzbd.config.CFG_DATABASE["sorters"]["sorter__test_prepare_extraction_path"]
+        assert sabnzbd.config.CONFIG.database["sorters"]["sorter__test_prepare_extraction_path"]
 
         if category:
             ConfigCat(
@@ -178,7 +178,7 @@ class TestPostProc:
                     "priority": 0,
                 },
             )
-            assert sabnzbd.config.CFG_DATABASE["categories"][category]
+            assert sabnzbd.config.CONFIG.database["categories"][category]
 
         # Mock a minimal nzo, required as function input
         fake_nzo = mock.Mock()

@@ -24,7 +24,6 @@ import uuid
 from typing import Optional
 import random
 
-import configobj
 import pytest
 from pytest_httpserver import HTTPServer
 from werkzeug import Response
@@ -134,12 +133,15 @@ class TestRSS:
             for n, f in enumerate(filters):
                 values[f"filter{n}"] = f
 
-        # Setup the config settings
-        sabnzbd.config.CFG_OBJ = configobj.ConfigObj()
+        # Setup the config settings. Clear the INI structure and drop the filename so
+        # the test can't write to disk: clear() alone keeps the filename from a
+        # previously-read INI, and save_config() would then rewrite that file.
+        sabnzbd.config.CONFIG.clear()
+        sabnzbd.config.CONFIG.filename = None
         sabnzbd.config.ConfigRSS(feed_name, values)
 
-        # Need to create the Default category
-        # Otherwise it will try to save the config
+        # Pre-create the default "*" category (and the ones the feeds use) so
+        # get_categories() doesn't seed the full default set on first access
         sabnzbd.config.ConfigCat("*", {})
         sabnzbd.config.ConfigCat("tv", {})
         sabnzbd.config.ConfigCat("movies", {})
