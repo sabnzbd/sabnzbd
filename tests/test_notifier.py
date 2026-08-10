@@ -24,40 +24,9 @@ from sabnzbd.notifier import send_notification, send_apprise, NOTIFICATION_TYPES
 from unittest import mock, TestCase
 import sabnzbd.cfg as cfg
 from sabnzbd.config import Option
-from importlib import reload
 
 
 class TestNotifier(TestCase):
-
-    @classmethod
-    def setUpClass(self):
-        # hack since test_misc uses @pytest.mark.config fixture eliminating all of the default configuration
-        # We want to test with the default configuration in place; This safely resets all fields and
-        # replaces them correctly in memory
-        reload(cfg)
-
-        # capture state of config so we can reverse it
-        self._saved_cfg = {}
-        for attr in dir(cfg):
-            if isinstance(getattr(cfg, attr), Option):
-                # Backup configuration as it was before entering this test object
-                self._saved_cfg[attr] = getattr(cfg, attr).get()
-                # Set our value to be a default
-                getattr(cfg, attr).set(getattr(cfg, attr).default)
-
-    @classmethod
-    def setUp(self):
-        # Enforce our default values associated with the class
-        for attr in dir(cfg):
-            if isinstance(getattr(cfg, attr), Option):
-                getattr(cfg, attr).set(getattr(cfg, attr).default)
-
-    @classmethod
-    def tearDownClass(self):
-        # rollback our assignments to be as they were
-        for k, v in self._saved_cfg.items():
-            getattr(cfg, k).set(v)
-
     @mock.patch("sabnzbd.DIR_PROG")
     @mock.patch("apprise.Apprise.notify")
     @mock.patch("apprise.Apprise.add")

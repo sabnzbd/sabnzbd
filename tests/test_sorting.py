@@ -474,7 +474,7 @@ class TestSortingFunctions:
             assert return_files == [base_dir + "\\TEST\\" + dvd + "\\FILE"]
 
 
-@pytest.mark.usefixtures("clean_cache_dir")
+@pytest.mark.usefixtures("clean_cache_dir", "warm_up_guessit")
 class TestSortingSorter:
     @pytest.mark.parametrize(
         "s_class, jobname, sort_string, result_path, result_setname",

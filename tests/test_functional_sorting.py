@@ -79,34 +79,41 @@ class TestDownloadSorting(DownloadFlowBasics):
         self.download_nzb(os.path.join("sorting", test_data_dir), result, True)
 
     @pytest.mark.parametrize(
-        "test_data_dir, result",
+        "testcase",
         [
-            (
-                "SINGLE_sort_s23e06_480i-SABnzbd",
-                ["Single.Sort.S23E06.mov"],
-            ),  # Single episode, no other files
-            (
-                "SINGLE_sort_s23e06_480i-SABnzbd",
-                ["Single.Sort.S23E06.1.mov"],
-            ),  # Repeat to verify a unique filename is applied
             pytest.param(
-                "single-ep_sort_s06e66_4k_uhd-SABnzbd",
-                ["Single-Ep.Sort.S06E66." + ext for ext in ("avi", "srt")],
+                [
+                    (
+                        "SINGLE_sort_s23e06_480i-SABnzbd",
+                        ["Single.Sort.S23E06.mov"],
+                    ),  # Single episode, no other files
+                    (
+                        "SINGLE_sort_s23e06_480i-SABnzbd",
+                        ["Single.Sort.S23E06.1.mov"],
+                    ),  # Repeat to verify a unique filename is applied
+                ],
+                id="SINGLE_sort_s23e06_480i-SABnzbd",
+            ),
+            pytest.param(
+                [
+                    (
+                        "single-ep_sort_s06e66_4k_uhd-SABnzbd",
+                        ["Single-Ep.Sort.S06E66." + ext for ext in ("avi", "srt")],
+                    ),  # Single episode with associated smaller file
+                    (
+                        "single-ep_sort_s06e66_4k_uhd-SABnzbd",
+                        ["Single-Ep.Sort.S06E66.1." + ext for ext in ("avi", "srt")],
+                    ),  # Repeat to verify unique filenames are applied
+                ],
                 marks=pytest.mark.xfail(
                     sabnzbd.MACOS or sabnzbd.WINDOWS,
                     reason="Unreliable on macOS and Windows",
                 ),
-            ),  # Single episode with associated smaller file
-            pytest.param(
-                "single-ep_sort_s06e66_4k_uhd-SABnzbd",
-                ["Single-Ep.Sort.S06E66.1." + ext for ext in ("avi", "srt")],
-                marks=pytest.mark.xfail(
-                    sabnzbd.MACOS or sabnzbd.WINDOWS,
-                    reason="Unreliable on macOS and Windows",
-                ),
-            ),  # Repeat to verify unique filenames are applied
+                id="single-ep_sort_s06e66_4k_uhd-SABnzbd",
+            ),
         ],
     )
-    def test_download_sorting_single(self, test_data_dir, result):
+    def test_download_sorting_single(self, testcase):
         """Test single episode file handling"""
-        self.download_nzb(os.path.join("sorting", test_data_dir), result, True)
+        for test_data_dir, result in testcase:
+            self.download_nzb(os.path.join("sorting", test_data_dir), result, True)

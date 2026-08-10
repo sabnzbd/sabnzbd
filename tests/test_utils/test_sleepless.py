@@ -19,9 +19,11 @@
 tests.test_sleepless - Test sleepless for macOS
 """
 
+import os
 import subprocess
 import sys
 import time
+from functools import cached_property
 
 import pytest
 
@@ -32,7 +34,14 @@ import sabnzbd.utils.sleepless as sleepless
 
 
 class TestSleepless:
-    sleep_msg = "SABnzbd is running, don't you stop us now!"
+    # pmset assertions are a machine-global resource, so under pytest-xdist parallel
+    # workers running these tests concurrently would see each other's assertion and
+    # fail the "nothing is set yet" preconditions. Making the message unique per
+    # worker process means each test only ever detects its own assertion. Falls back
+    # to the pid for a serial run (PYTEST_XDIST_WORKER unset).
+    @cached_property
+    def sleep_msg(self):
+        return "SABnzbd is running, don't you stop us now! [%s]" % os.environ.get("PYTEST_XDIST_WORKER", os.getpid())
 
     def check_msg_in_assertions(self):
         return self.sleep_msg in subprocess.check_output(["pmset", "-g", "assertions"], universal_newlines=True)

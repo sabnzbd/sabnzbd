@@ -19,6 +19,7 @@
 tests.test_misc - Testing functions in misc.py
 """
 
+import builtins
 import datetime
 import functools
 import os
@@ -27,14 +28,13 @@ import sys
 import tempfile
 import wave
 from contextlib import nullcontext
+from functools import cached_property
 from random import randint, sample
 from unittest import mock
 
 import pytest
 import rarfile
 
-import sabnzbd
-import sabnzbd.cfg
 from sabnzbd import lang, misc, newsunpack, cfg
 from sabnzbd.config import ConfigCat, get_sorters, save_config
 from sabnzbd.constants import (
@@ -48,6 +48,19 @@ from sabnzbd.misc import SABRarFile
 from tests.testhelper import SAB_BASE_DIR
 
 
+@pytest.fixture
+def reset_language(compiled_language_files, monkeypatch):
+    """Provide a compiled-translations environment for a test and guarantee the global
+    translation state is restored on teardown"""
+    monkeypatch.setattr(lang, "_DOMAIN", lang._DOMAIN)
+    monkeypatch.setattr(lang, "_LOCALEDIR", lang._LOCALEDIR)
+    monkeypatch.setitem(builtins.__dict__, "T", builtins.__dict__.get("T"))
+    monkeypatch.setitem(builtins.__dict__, "TT", builtins.__dict__.get("TT"))
+    yield compiled_language_files
+    # Reset to the default (English) translators regardless of what the test selected
+    lang.set_language()
+
+
 class TestMisc:
     @staticmethod
     def assertTime(offset, age):
@@ -59,8 +72,8 @@ class TestMisc:
         assert "%H:%M" == misc.time_format("%H:%M")
 
     @pytest.mark.config({"ampm": True})
-    def test_timeformatampm(self):
-        misc.HAVE_AMPM = True
+    def test_timeformatampm(self, monkeypatch):
+        monkeypatch.setattr(misc, "HAVE_AMPM", True)
         assert "%I:%M:%S %p" == misc.time_format("%H:%M:%S")
         assert "%I:%M %p" == misc.time_format("%H:%M")
 
@@ -327,12 +340,8 @@ class TestMisc:
         assert "1 day 59 seconds" == misc.format_time_string(86400 + 59)
         assert "2 days 2 hours 2 seconds" == misc.format_time_string(2 * 86400 + 2 * 60 * 60 + 2)
 
-    def test_format_time_string_locale(self):
-        # Have to set the languages, if it was compiled
-        locale_dir = os.path.join(SAB_BASE_DIR, "..", sabnzbd.constants.DEF_LANGUAGE)
-        if not os.path.exists(locale_dir):
-            pytest.mark.skip("No language files compiled")
-
+    def test_format_time_string_locale(self, reset_language):
+        locale_dir = reset_language
         lang.set_locale_info("SABnzbd", locale_dir)
         lang.set_language("de")
         assert "1 Sekunde" == misc.format_time_string(1)
@@ -341,8 +350,6 @@ class TestMisc:
         assert "1 Stunde 1 Minuten 1 Sekunde" == misc.format_time_string(60 * 60 + 60 + 1)
         assert "1 Tag 59 Sekunden" == misc.format_time_string(86400 + 59)
         assert "2 Tage 2 Stunden 2 Sekunden" == misc.format_time_string(2 * 86400 + 2 * 60 * 60 + 2)
-        # Reset language
-        lang.set_language()
 
     def test_format_time_left(self):
         assert "0:00:00" == misc.format_time_left(0)
@@ -1085,7 +1092,9 @@ class TestMisc:
 
 class TestBuildAndRunCommand:
     # Path should exist
-    script_path = os.path.join(SAB_BASE_DIR, "test_misc.py")
+    @cached_property
+    def script_path(self):
+        return os.path.join(SAB_BASE_DIR, "test_misc.py")
 
     def test_none_check(self):
         with pytest.raises(IOError):
@@ -1127,7 +1136,10 @@ class TestBuildAndRunCommand:
     @pytest.mark.config({"nice": "--adjustment=-7", "ionice": "-t -n9 -c7"})
     @mock.patch("sabnzbd.misc.userxbit")
     @mock.patch("subprocess.Popen")
-    def test_linux_features(self, mock_subproc_popen, userxbit):
+    def test_linux_features(self, mock_subproc_popen, userxbit, monkeypatch):
+        monkeypatch.setattr(newsunpack, "NICE_COMMAND", None)
+        monkeypatch.setattr(newsunpack, "IONICE_COMMAND", None)
+
         # Should break on no-execute permissions
         userxbit.return_value = False
         with pytest.raises(IOError):
@@ -1151,8 +1163,8 @@ class TestBuildAndRunCommand:
         assert mock_subproc_popen.call_args[0][0] == test_cmd
 
         # Have to fake these for it to work
-        newsunpack.IONICE_COMMAND = "ionice"
-        newsunpack.NICE_COMMAND = "nice"
+        monkeypatch.setattr(newsunpack, "IONICE_COMMAND", "ionice")
+        monkeypatch.setattr(newsunpack, "NICE_COMMAND", "nice")
         userxbit.return_value = True
         misc.build_and_run_command([self.script_path, "input 1"])
         assert mock_subproc_popen.call_args[0][0] == [

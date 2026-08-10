@@ -32,6 +32,7 @@ import threading
 import time
 import warnings
 from enum import Enum
+from functools import cached_property
 from typing import Optional
 from unittest import mock
 
@@ -113,8 +114,13 @@ def get_local_ip(protocol_version: IPProtocolVersion) -> Optional[str]:
 
 @flaky
 class TestNewsWrapper:
-    cert_file = os.path.join(tempfile.mkdtemp(), "test.cert")
-    key_file = os.path.join(tempfile.mkdtemp(), "test.key")
+    @cached_property
+    def cert_file(self):
+        return os.path.join(tempfile.mkdtemp(), "test.cert")
+
+    @cached_property
+    def key_file(self):
+        return os.path.join(tempfile.mkdtemp(), "test.key")
 
     @pytest.mark.parametrize(
         "server_tls, expected_client_tls, client_cipher, can_connect",
@@ -193,8 +199,18 @@ class TestNewsWrapper:
     @pytest.mark.parametrize(
         "test_host, local_ip, ip_protocol",
         [
-            (TEST_HOST, get_local_ip(protocol_version=IPProtocolVersion.IPV4), IPProtocolVersion.IPV4),
-            (TEST_HOST_IPV6, get_local_ip(protocol_version=IPProtocolVersion.IPV6), IPProtocolVersion.IPV6),
+            pytest.param(
+                TEST_HOST,
+                get_local_ip(protocol_version=IPProtocolVersion.IPV4),
+                IPProtocolVersion.IPV4,
+                id="ipv4",
+            ),
+            pytest.param(
+                TEST_HOST_IPV6,
+                get_local_ip(protocol_version=IPProtocolVersion.IPV6),
+                IPProtocolVersion.IPV6,
+                id="ipv6",
+            ),
             (TEST_HOST, "", None),
             (TEST_HOST_IPV6, "", None),
         ],
@@ -229,9 +245,9 @@ class TestNewsWrapper:
         def mock_connect(self):
             pass
 
-        monkeypatch.setattr("sabnzbd.newswrapper.NNTP.connect", mock_connect)
-        nntp = newswrapper.NNTP(nw, nw.server.info)
-        monkeypatch.undo()
+        with monkeypatch.context() as m:
+            m.setattr("sabnzbd.newswrapper.NNTP.connect", mock_connect)
+            nntp = newswrapper.NNTP(nw, nw.server.info)
 
         # The connection has crashed but the socket should have been bound to the provided ip in the configuration
         with pytest.raises(OSError) as excinfo:

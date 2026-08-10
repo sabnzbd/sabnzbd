@@ -44,6 +44,23 @@ from sabnzbd.misc import format_time_string, SABRarFile
 from sabnzbd.filesystem import long_path, create_all_dirs, listdir_full, clip_path
 
 
+@pytest.fixture(autouse=True)
+def _isolate_newsunpack_globals(monkeypatch):
+    """Snapshot the module globals that these tests mutate so they can't leak into other
+    tests/modules on the same pytest-xdist worker"""
+    for name in (
+        "NICE_COMMAND",
+        "IONICE_COMMAND",
+        "PAR2_COMMAND",
+        "RAR_COMMAND",
+        "SEVENZIP_COMMAND",
+    ):
+        monkeypatch.setattr(newsunpack, name, getattr(newsunpack, name))
+    # PostProcessor is unset by default; raising=False lets monkeypatch delete it on teardown
+    monkeypatch.setattr(sabnzbd, "PostProcessor", getattr(sabnzbd, "PostProcessor", None), raising=False)
+    yield
+
+
 class TestNewsUnpackFunctions:
     def test_is_sfv_file(self):
         assert newsunpack.is_sfv_file("tests/data/good_sfv_unicode.sfv")
@@ -51,8 +68,11 @@ class TestNewsUnpackFunctions:
         assert not newsunpack.is_sfv_file("tests/data/only_comments.sfv")
         assert not newsunpack.is_sfv_file("tests/data/random.bin")
 
-    def test_is_sevenfile(self):
-        # False, because the command is not set
+    def test_is_sevenfile(self, monkeypatch):
+        # False, because the command is not set. Force it explicitly: SEVENZIP_COMMAND
+        # is a module global that another test in this class may have populated via
+        # find_programs(), and under pytest-xdist tests share no ordering guarantee.
+        monkeypatch.setattr(newsunpack, "SEVENZIP_COMMAND", None)
         assert not newsunpack.SEVENZIP_COMMAND
         assert not newsunpack.is_sevenfile("tests/data/test_7zip/testfile.7z")
 
@@ -65,6 +85,11 @@ class TestNewsUnpackFunctions:
         assert newsunpack.is_sevenfile("tests/data/test_7zip/testfile.7z")
 
     def test_sevenzip(self):
+        # Make the test self-sufficient: SEVENZIP_COMMAND is a module global and
+        # under pytest-xdist this test may land on a worker where no earlier test
+        # called find_programs(), leaving it None (SevenZip would then wrongly raise
+        # "File is not a 7zip file"). find_programs() is idempotent.
+        newsunpack.find_programs(".")
         testzip = newsunpack.SevenZip("tests/data/test_7zip/testfile.7z")
         assert testzip.namelist() == ["My_Test_Download.bin"]
         # Basic check that we can get data from the 7zip

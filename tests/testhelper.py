@@ -19,8 +19,10 @@
 tests.testhelper - Basic helper functions
 """
 
+import copy
 import io
 import os
+import socket
 import time
 import uuid
 from http.client import RemoteDisconnected
@@ -44,10 +46,12 @@ from pyfakefs.fake_filesystem import OSType
 
 import sabnzbd
 import sabnzbd.cfg as cfg
+from sabnzbd.config import Option
 from sabnzbd.constants import (
     DEF_INI_FILE,
     Status,
     PP_LOOKUP,
+    NORMAL_PRIORITY,
 )
 import sabnzbd.database as db
 from sabnzbd.misc import pp_to_opts
@@ -56,20 +60,56 @@ import sabnzbd.filesystem as filesystem
 import tests.sabnews
 
 SAB_HOST = "127.0.0.1"
-SAB_PORT = randint(4200, 4299)
+SAB_NEWSSERVER_HOST = "127.0.0.1"
+
+# Each pytest-xdist worker runs in its own process and imports its own copy of
+# these module-level constants. Many test modules capture them with
+# `from tests.testhelper import SAB_PORT, SAB_CACHE_DIR, ...`, so the values must
+# be settled here at import time and never mutated afterwards. To let workers run
+# in parallel (-n auto) without colliding on the shared cache dir or on fixed TCP
+# ports, derive a per-worker suffix and bind free ports once, right here.
+#
+# For a normal single-process run PYTEST_XDIST_WORKER is unset, so the suffix is
+# empty and the cache dir keeps its historical "tests/cache" path.
+_XDIST_WORKER = os.environ.get("PYTEST_XDIST_WORKER", "")
+_WORKER_SUFFIX = ("_" + _XDIST_WORKER) if _XDIST_WORKER else ""
+
+
+def _find_free_port(host: str = SAB_HOST) -> int:
+    """Ask the OS for a currently-unused TCP port and return it."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.bind((host, 0))
+        return sock.getsockname()[1]
+
+
+SAB_PORT = _find_free_port()
 SAB_APIKEY = "apikey"
 SAB_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SAB_CACHE_DIR = os.path.join(SAB_BASE_DIR, "cache")
+SAB_CACHE_DIR = os.path.join(SAB_BASE_DIR, "cache" + _WORKER_SUFFIX)
 SAB_DATA_DIR = os.path.join(SAB_BASE_DIR, "data")
 SAB_INCOMPLETE_DIR = os.path.join(SAB_CACHE_DIR, "Downloads", "incomplete")
 SAB_COMPLETE_DIR = os.path.join(SAB_CACHE_DIR, "Downloads", "complete")
-SAB_NEWSSERVER_HOST = "127.0.0.1"
-SAB_NEWSSERVER_PORT = 8888
+SAB_NEWSSERVER_PORT = _find_free_port(SAB_NEWSSERVER_HOST)
 
 
 @pytest.fixture(autouse=True)
 def config_env(monkeypatch, request):
     """Change config-values on the fly, per test"""
+    monkeypatch.setattr(sabnzbd.config, "CONFIG", sabnzbd.config.SABnzbdConfig())
+
+    # Add default categories
+    sabnzbd.config.ConfigCat("*", {"order": 0, "pp": "3", "script": "None", "priority": NORMAL_PRIORITY})
+    sabnzbd.config.ConfigCat("movies", {"order": 1})
+    sabnzbd.config.ConfigCat("tv", {"order": 2})
+    sabnzbd.config.ConfigCat("audio", {"order": 3})
+    sabnzbd.config.ConfigCat("software", {"order": 4})
+
+    for attr in dir(cfg):
+        if isinstance(getattr(cfg, attr), Option):
+            option = copy.copy(getattr(cfg, attr))
+            monkeypatch.setattr(cfg, attr, option)
+            sabnzbd.config.add_to_database(option.section, option.keyword, option)
+
     marker = request.node.get_closest_marker("config")
     if marker is None:
         # No config changes for this test
@@ -91,17 +131,10 @@ def config_env(monkeypatch, request):
             raise RuntimeError("Missing 'config' param for @pytest.mark.config")
 
     # Setting up as requested
-    originals = {}
     for item, val in config.items():
-        cfg_item = getattr(cfg, item)
-        originals[item] = cfg_item.get()
-        cfg_item.set(val)
+        getattr(cfg, item).set(val)
 
     yield
-
-    # Restore values
-    for item, val in originals.items():
-        getattr(cfg, item).set(val)
 
 
 @pytest.mark.parametrize("config", [{"web_host": "0.0.0.0"}, {"web_host": "::1"}])
@@ -313,8 +346,17 @@ class FakeHistoryDB(db.HistoryDB):
     ]
 
     def __init__(self, db_path):
-        db.HistoryDB.db_path = db_path
+        self._monkeypatch = pytest.MonkeyPatch()
+        self._monkeypatch.setattr(db.HistoryDB, "db_path", db_path)
+        self._monkeypatch.setattr(db.HistoryDB, "startup_done", False)
         super().__init__()
+
+    def close(self):
+        """Close the connection and restore the class attributes patched on creation"""
+        try:
+            super().close()
+        finally:
+            self._monkeypatch.undo()
 
     def add_fake_history_job(
         self,
