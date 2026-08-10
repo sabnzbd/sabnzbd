@@ -1865,7 +1865,9 @@ def retry_job(
         with sabnzbd.db_pool.connection() as history_db:
             futuretype, url, pp, script, cat = history_db.get_other(job)
             if futuretype:
-                nzo_id = next(iter(sabnzbd.urlgrabber.add_url(url, pp, script, cat, dup_check=False)[1]), None)
+                res, nzo_ids = sabnzbd.urlgrabber.add_url(url, pp, script, cat, dup_check=False)
+                if res is AddNzbFileResult.OK:
+                    nzo_id = nzo_ids[0]
             else:
                 path = history_db.get_incomplete_path(job)
                 nzo_id = sabnzbd.NzbQueue.repair_job(path, new_nzb, password)
