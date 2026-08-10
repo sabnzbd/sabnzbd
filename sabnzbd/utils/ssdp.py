@@ -169,9 +169,7 @@ def start_ssdp(
     ssdp_broadcast_interval: int = 15,
 ):
     global _SSDP
-    _SSDP = SSDP(
-        host, server_name, url, description, manufacturer, manufacturer_url, model, ssdp_broadcast_interval
-    )
+    _SSDP = SSDP(host, server_name, url, description, manufacturer, manufacturer_url, model, ssdp_broadcast_interval)
     _SSDP.start()
 
 
