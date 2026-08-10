@@ -252,22 +252,21 @@ DOWNLOAD_EXT = (
     "xpi",
 )
 
-# Combine to one tuple, with unique entries:
-ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))
-# ... and prepend a dot to each extension, because we work with a leading dot in extensions
-ALL_EXT = tuple(["." + i for i in ALL_EXT])
+# Combine both lists into one set of unique extensions, each with a leading dot,
+# because we work with a leading dot in extensions everywhere:
+ALL_EXT = frozenset("." + ext for ext in POPULAR_EXT + DOWNLOAD_EXT)
 
 
-def all_extensions() -> tuple[str, ...]:
-    """returns tuple with ALL (standard + userdef) extensions (including leading dot in extension)"""
-    user_defined_extensions = tuple(["." + i for i in cfg.ext_rename_ignore()])
-    return ALL_EXT + user_defined_extensions
+def all_extensions() -> frozenset[str]:
+    """returns a set with ALL (standard + userdef) extensions (including leading dot in extension)"""
+    user_defined_extensions = frozenset("." + ext for ext in cfg.ext_rename_ignore())
+    return ALL_EXT | user_defined_extensions
 
 
 def has_popular_extension(file_path: str) -> bool:
     """returns boolean if the extension of file_path is a popular, well-known extension"""
     file_extension = get_ext(file_path)
-    return file_extension in all_extensions() or RAR_RE.match(file_extension)
+    return file_extension in all_extensions() or bool(RAR_RE.match(file_extension))
 
 
 def all_possible_extensions(file_path: str) -> list[str]:
@@ -283,8 +282,9 @@ def what_is_most_likely_extension(file_path: str) -> str:
 
     # First: Check if text or NZB, as puremagic is not good at that.
     try:
-        # Only read the start, don't need the whole file
-        with open(file_path, "r") as inp_file:
+        # Only read the start, don't need the whole file. Force utf-8 so that binary
+        # files reliably trigger UnicodeDecodeError regardless of the platform locale.
+        with open(file_path, "r", encoding="utf-8") as inp_file:
             txt = inp_file.read(200).lower()
         # Yes, a text file ... so let's check if it's even an NZB:
         if "!doctype nzb public" in txt or "<nzb xmlns=" in txt:
@@ -296,8 +296,11 @@ def what_is_most_likely_extension(file_path: str) -> str:
         # not txt (and thus not nzb)
         pass
 
+    # Analyze the file once and reuse the result
+    possible_extensions = all_possible_extensions(file_path)
+
     all_exts = all_extensions()
-    for possible_extension in all_possible_extensions(file_path):
+    for possible_extension in possible_extensions:
         # let's see if technically-suggested extension by puremagic is also likely IRL
         if possible_extension in all_exts:
             # Yes, looks likely
@@ -305,7 +308,7 @@ def what_is_most_likely_extension(file_path: str) -> str:
 
     # no popular extension found, so just trust puremagic and return the first extension (if any)
     try:
-        return all_possible_extensions(file_path)[0]
+        return possible_extensions[0]
     except IndexError:
         return ""
 
