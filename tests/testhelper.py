@@ -348,10 +348,11 @@ class FakeHistoryDB(db.HistoryDB):
     def __init__(self, db_path):
         self._monkeypatch = pytest.MonkeyPatch()
         self._monkeypatch.setattr(db.HistoryDB, "db_path", db_path)
+        self._monkeypatch.setattr(db.HistoryDB, "startup_done", False)
         super().__init__()
 
     def close(self):
-        """Close the connection and restore the db_path that was patched on creation"""
+        """Close the connection and restore the class attributes patched on creation"""
         try:
             super().close()
         finally:
