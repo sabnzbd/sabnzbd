@@ -24,3 +24,6 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Actual triggering is gated by the job-level `if` above; this disables
+          # the action's internal write-permission check, which contributors fail
+          allowed_non_write_users: "*"
