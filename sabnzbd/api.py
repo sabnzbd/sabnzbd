@@ -1862,6 +1862,7 @@ def retry_job(
 ) -> Optional[str]:
     """Re enter failed job in the download queue"""
     if job:
+        nzo_id: Optional[str] = None
         with sabnzbd.db_pool.connection() as history_db:
             futuretype, url, pp, script, cat = history_db.get_other(job)
             if futuretype:

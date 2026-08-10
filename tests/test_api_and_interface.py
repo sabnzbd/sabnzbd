@@ -34,7 +34,7 @@ import sabnzbd.api as api
 import sabnzbd.interface as interface
 import sabnzbd
 import sabnzbd.database as db
-from sabnzbd.constants import DB_HISTORY_NAME, DEF_ADMIN_DIR, PP_LOOKUP
+from sabnzbd.constants import DB_HISTORY_NAME, DEF_ADMIN_DIR, PP_LOOKUP, AddNzbFileResult, Status
 from sabnzbd.misc import pp_to_opts
 from tests.testhelper import FakeHistoryDB, SAB_CACHE_DIR
 from tests.test_interface import resolve_client
@@ -298,6 +298,71 @@ class TestOrphanPathTraversal:
         with mock.patch.object(sabnzbd, "NzbQueue", create=True) as nzbqueue_mock:
             api._api_add_orphan("myjob", {})
             nzbqueue_mock.repair_job.assert_called_once_with(os.path.join(download_dir, "myjob"), None, None)
+
+
+class TestRetryJobFuturetype:
+    """A futuretype job never got past fetching its URL, so there is nothing on disk to
+    repair: retry_job() has to re-fetch the URL instead of going through repair_job()"""
+
+    @pytest.fixture
+    def history_db(self, tmp_path, monkeypatch):
+        """A real history database, also served by the pool that retry_job() borrows from"""
+        monkeypatch.setattr(db.HistoryDB, "db_path", str(tmp_path / DB_HISTORY_NAME))
+        monkeypatch.setattr(db.HistoryDB, "startup_done", False)
+        pool = db.HistoryDBPool(max_connections=1)
+        monkeypatch.setattr(sabnzbd, "db_pool", pool)
+        fake_history_db = FakeHistoryDB(db.HistoryDB.db_path)
+        yield fake_history_db
+        fake_history_db.close()
+        pool.close()
+
+    @staticmethod
+    def _add_futuretype_job(history_db) -> tuple[str, tuple]:
+        """Add a failed URL-fetch to the history, return its nzo_id and stored settings"""
+        nzo_id = history_db.add_fake_history_job(
+            "Ubuntu.Linux.ISO-Usenet", status=Status.FAILED, category="catA", futuretype=True
+        )
+        stored_settings = history_db.get_other(nzo_id)
+        assert stored_settings[0] == "future"
+        return nzo_id, stored_settings
+
+    def test_futuretype_job_url_is_refetched(self, history_db):
+        nzo_id, (_, url, pp, script, cat) = self._add_futuretype_job(history_db)
+
+        with (
+            mock.patch.object(
+                sabnzbd.urlgrabber, "add_url", return_value=(AddNzbFileResult.OK, ["new_nzo_id"])
+            ) as add_url_mock,
+            mock.patch.object(sabnzbd, "NzbQueue", create=True) as nzbqueue_mock,
+        ):
+            assert api.retry_job(nzo_id) == "new_nzo_id"
+
+        # Retried with the settings stored in the history, but without the duplicate check:
+        # the job that is being retried is still in the history at that point
+        add_url_mock.assert_called_once_with(url, pp, script, cat, dup_check=False)
+        # There is no incomplete folder to repair
+        nzbqueue_mock.repair_job.assert_not_called()
+        # The old entry is gone, the re-added job will create its own
+        assert history_db.get_other(nzo_id) == ("", "", "", "", "")
+
+    @pytest.mark.parametrize(
+        "add_url_result",
+        [
+            (AddNzbFileResult.NO_FILES_FOUND, []),
+            (AddNzbFileResult.ERROR, []),
+            (AddNzbFileResult.RETRY, []),
+            (AddNzbFileResult.PREQUEUE_REJECTED, []),
+        ],
+    )
+    def test_futuretype_job_kept_in_history_when_refetch_fails(self, history_db, add_url_result):
+        """Only a job that was actually re-added may leave the history, otherwise the
+        failure disappears without anything taking its place"""
+        nzo_id, stored_settings = self._add_futuretype_job(history_db)
+
+        with mock.patch.object(sabnzbd.urlgrabber, "add_url", return_value=add_url_result):
+            assert api.retry_job(nzo_id) is None
+
+        assert history_db.get_other(nzo_id) == stored_settings
 
 
 class TestSecuredExpose:
