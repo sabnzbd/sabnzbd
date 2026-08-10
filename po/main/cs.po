@@ -2285,6 +2285,10 @@ msgid "Cancel"
 msgstr "Zrušit"
 
 #: sabnzbd/skintext.py
+msgid "Close"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Log in"
 msgstr "Přihlásit"
 

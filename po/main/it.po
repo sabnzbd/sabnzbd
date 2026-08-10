@@ -2294,6 +2294,10 @@ msgid "Cancel"
 msgstr "Annulla"
 
 #: sabnzbd/skintext.py
+msgid "Close"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Log in"
 msgstr "Accedi"
 
