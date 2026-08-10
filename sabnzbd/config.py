@@ -882,6 +882,7 @@ class SABnzbdConfig(configobj.ConfigObj):
 
         if not self.filename:
             # Nothing has been read yet, so there is no INI file to write to
+            logging.error("Cannot save settings, no INI file has been read yet")
             return False
 
         if sabnzbd.cfg.configlock():
