@@ -19,7 +19,7 @@ websocket-client==1.9.0
 # requests dependencies
 charset_normalizer==3.4.9
 idna==3.18
-certifi==2026.6.17
+certifi==2026.7.22
 
 # cryptography (via pyjwt[crypto]) dependencies
 cryptography==49.0.0

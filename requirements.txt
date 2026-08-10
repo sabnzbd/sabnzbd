@@ -19,13 +19,13 @@ more-itertools==11.1.0
 zc.lockfile==4.0
 python-dateutil==2.9.0.post0
 tempora==5.8.1
-pytz==2026.2
+pytz==2026.3.post1
 sgmllib3k==1.0.0
 portend==3.2.1
 PySocks==1.7.1
 puremagic # Version-less for Python 3.11 and below
 puremagic==2.2.0; python_version > '3.11'
-rarfile==4.3
+rarfile==4.4
 guessit==4.1.0
 babelfish==0.6.1
 rebulk==6.0.1
@@ -69,7 +69,7 @@ paho-mqtt==2.1.0
 charset_normalizer==3.4.9
 idna==3.18
 urllib3==2.7.0
-certifi==2026.6.17
+certifi==2026.7.22
 oauthlib==3.3.1
 PyJWT==2.13.0
 blinker==1.9.0
