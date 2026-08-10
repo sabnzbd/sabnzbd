@@ -974,21 +974,15 @@ class SABnzbdConfig(configobj.ConfigObj):
                 with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_ref:
                     for filename in CONFIG_BACKUP_FILES:
                         full_path = os.path.join(admin_path, filename)
+                        if not os.path.isfile(full_path):
+                            continue
                         # A raw copy of the live database file misses un-checkpointed WAL
                         # transactions and can be inconsistent while SABnzbd runs, so take
                         # a snapshot through SQLite's online backup instead. Fall back to
-                        # a plain file copy if the file is not the database in active use,
-                        # or the snapshot fails.
-                        snapshot = None
-                        if (
-                            filename == DB_HISTORY_NAME
-                            and sabnzbd.database.HistoryDB.db_path
-                            and full_path == sabnzbd.database.HistoryDB.db_path
-                        ):
-                            snapshot = sabnzbd.database.history_db_snapshot()
-                        if snapshot:
+                        # a plain file copy if the snapshot fails.
+                        if filename == DB_HISTORY_NAME and (snapshot := sabnzbd.database.history_db_snapshot()):
                             zip_ref.writestr(filename, snapshot)
-                        elif os.path.isfile(full_path):
+                        else:
                             with open(full_path, "rb") as data:
                                 zip_ref.writestr(filename, data.read())
                     for filename, setting in CONFIG_BACKUP_HTTPS.items():

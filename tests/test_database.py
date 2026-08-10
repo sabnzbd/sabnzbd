@@ -30,10 +30,10 @@ import sabnzbd.database as db
 
 
 @pytest.fixture
-def pool(tmp_path):
+def pool(tmp_path, monkeypatch):
     """Fresh pool against a fresh database file"""
-    db.HistoryDB.db_path = str(tmp_path / "history1.db")
-    db.HistoryDB.startup_done = False
+    monkeypatch.setattr(db.HistoryDB, "db_path", str(tmp_path / "history1.db"))
+    monkeypatch.setattr(db.HistoryDB, "startup_done", False)
     pool = db.HistoryDBPool(max_connections=2, checkout_timeout=0.2)
     yield pool
     pool.close()
