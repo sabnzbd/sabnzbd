@@ -1,7 +1,10 @@
-Release Notes - SABnzbd 5.1.0 Release Candidate 2
+Release Notes - SABnzbd 5.1.0
 =========================================================
 
-This is the second release candidate of version 5.1.
+This release brings a fundamental improvement to "Retry": instead of
+re-downloading any files with missing data, only the articles that were actually
+missing are fetched again. RSS got an overhaul under the hood, the interface is
+refreshed, and we added quite a long list of of long-requested features and bugfixes.
 
 ## New features in 5.1.0
 
@@ -39,10 +42,12 @@ This is the second release candidate of version 5.1.
 * Diskspace checks would be too strict when unpacking to different disk.
 * Prevent deadlock when a second signal arrives during shutdown procedure.
 * Verification using SFV-checks could fail, even though files were correct.
+* Don't log Warning during clean shutdowns.
 * Windows: Uninstall would not remove Settings or Windows Service.
 * Windows: Warn for OS-limit if more than 1024 connections are configured.
 * macOS: AppleDouble files could result in failures in `Moving` stage.
 * macOS: Restarting the application resulted in Terminal window.
+* macOS: Included par2cmdline-turbo will now use all available CPU-features.
 
 ## Upgrade notices
 
