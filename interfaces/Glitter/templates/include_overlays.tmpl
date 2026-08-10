@@ -72,13 +72,13 @@
 </div>
 
 <!-- Modals -->
-<div id="modal-options" class="modal fade" tabindex="-1">
+<div id="modal-options" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-options-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
                 <a href="#" data-bind="click: loadStatusInfo, css: { 'rotate-refresh': !hasStatusInfo() }" title="$T('Glitter-interfaceRefresh')"><span class="glyphicon glyphicon-repeat"></span></a>
-                <h4 class="modal-title">$T('Glitter-statusInterfaceOptions')</h4>
+                <h4 class="modal-title" id="modal-options-title">$T('Glitter-statusInterfaceOptions')</h4>
             </div>
             <div class="modal-body">
                 <ul class="nav nav-tabs">
@@ -485,12 +485,12 @@
     </div>
 </div>
 
-<div id="modal-add-nzb" class="modal fade" tabindex="-1">
+<div id="modal-add-nzb" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-add-nzb-title">
     <div class="modal-dialog">
         <form class="modal-content" data-bind="submit: addNZB">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('Glitter-addNZB')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-add-nzb-title">$T('Glitter-addNZB')</h4>
             </div>
             <div class="modal-body form-horizontal">
                 <div class="row">
@@ -577,12 +577,12 @@
     </div>
 </div>
 
-<div id="modal-item-files" class="modal fade" tabindex="-1">
+<div id="modal-item-files" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-item-files-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title row-wrap-text" data-bind="text: filelist.filelist_name">$T('Glitter-loading')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title row-wrap-text" id="modal-item-files-title" data-bind="text: filelist.filelist_name">$T('Glitter-loading')</h4>
             </div>
             <div class="modal-body">
                 <div id="modal-item-filelist">
@@ -645,12 +645,12 @@
     </div>
 </div>
 
-<div id="modal-delete-queue-job" class="modal modal-delete-job fade" tabindex="-1">
+<div id="modal-delete-queue-job" class="modal modal-delete-job fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-delete-queue-job-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title row-wrap-text">$T('removeNZB-Files')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title row-wrap-text" id="modal-delete-queue-job-title">$T('removeNZB-Files')</h4>
             </div>
             <form data-bind="submit: queue.removeDownloads">
                 <div class="modal-body">
@@ -669,12 +669,12 @@
     </div>
 </div>
 
-<div id="modal-delete-history-job" class="modal modal-delete-job fade" tabindex="-1">
+<div id="modal-delete-history-job" class="modal modal-delete-job fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-delete-history-job-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title row-wrap-text">$T('nzo-delete')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title row-wrap-text" id="modal-delete-history-job-title">$T('nzo-delete')</h4>
             </div>
             <form data-bind="submit: history.removeDownloads">
                 <div class="modal-body">
@@ -698,12 +698,12 @@
     </div>
 </div>
 
-<div id="modal-retry-job" class="modal modal-small fade" tabindex="-1">
+<div id="modal-retry-job" class="modal modal-small fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-retry-job-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('Glitter-retryJob')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-retry-job-title">$T('Glitter-retryJob')</h4>
             </div>
             <form id="retry-job-form" data-bind="submit: history.retryJob">
                 <div class="modal-body">
@@ -740,24 +740,24 @@
     </div>
 </div>
 
-<div id="history-script-log" class="modal fade" tabindex="-1">
+<div id="history-script-log" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="history-script-log-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('Glitter-scriptLog')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="history-script-log-title">$T('Glitter-scriptLog')</h4>
             </div>
             <div class="modal-body"></div>
         </div>
     </div>
 </div>
 
-<div id="modal-help" class="modal fade">
+<div id="modal-help" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-help-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('menu-help')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-help-title">$T('menu-help')</h4>
             </div>
             <div class="modal-body">
                 #include $webdir + "/../../Config/templates/staticcfg/images/logo-full.svg"#
@@ -790,12 +790,12 @@
     </div>
 </div>
 
-<div id="modal-purge-history" class="modal modal-small fade" tabindex="-1">
+<div id="modal-purge-history" class="modal modal-small fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-purge-history-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('Glitter-clearHistory')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-purge-history-title">$T('Glitter-clearHistory')</h4>
             </div>
             <div class="modal-body">
                 <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purge-failed"><span class="glyphicon glyphicon-floppy-remove"></span> $T('purgeFailed')</button>
@@ -814,12 +814,12 @@
     </div>
 </div>
 
-<div id="modal-custom-pause" class="modal modal-small fade" tabindex="-1">
+<div id="modal-custom-pause" class="modal modal-small fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-custom-pause-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('Glitter-pauseFor')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-custom-pause-title">$T('Glitter-pauseFor')</h4>
             </div>
             <div class="modal-body">
                 <form data-bind="submit: saveCustomPause">
