@@ -399,14 +399,6 @@ def log_warning_and_ip(request: Request, txt: str):
 API_FIRST_WINS_KEYS = ("mode", "name", "value", "value2", "value3", "start", "limit", "search")
 
 
-def first_wins(params: MultiDict) -> MultiDict:
-    """Collapse the CherryPy API scalar keys to their first value, in place."""
-    for key in API_FIRST_WINS_KEYS:
-        if len(values := params.getlist(key)) > 1:
-            params[key] = values[0]
-    return params
-
-
 def is_form_post(request: Request) -> bool:
     return request.method == "POST" and request.headers.get("content-type", "").startswith(
         ("application/x-www-form-urlencoded", "multipart/form-data")
@@ -447,7 +439,12 @@ async def get_request_params(request: Request, merge_query: bool = False) -> Mul
     for key, value in request.query_params.multi_items():
         if key not in body_keys:
             params.append(key, value)
-    return first_wins(params)
+
+    # Collapse the API scalar keys to their first value
+    for key in API_FIRST_WINS_KEYS:
+        if len(values := params.getlist(key)) > 1:
+            params[key] = values[0]
+    return params
 
 
 def request_params(request: Request) -> MultiDict | QueryParams:
@@ -507,11 +504,11 @@ class SecurityMiddleware:
         """Return the response to send when a check fails, or None when allowed."""
         # Check if config is locked
         if self.check_configlock and cfg.configlock():
-            return forbidden(_MSG_ACCESS_DENIED_CONFIG_LOCK)
+            return PlainTextResponse(_MSG_ACCESS_DENIED_CONFIG_LOCK if cfg.api_warnings() else "", status_code=403)
 
         # Check if external access and if it's allowed
         if not check_access(request, access_type=self.access_type, warn_user=True):
-            return forbidden(_MSG_ACCESS_DENIED)
+            return PlainTextResponse(_MSG_ACCESS_DENIED if cfg.api_warnings() else "", status_code=403)
 
         # Verify login status, only for non-key pages
         if self.check_for_login and not self.check_api_key and not check_login(request):
@@ -519,7 +516,7 @@ class SecurityMiddleware:
 
         # Some pages need the correct API key
         if self.check_api_key and (msg := check_apikey(request)):
-            return forbidden(msg)
+            return PlainTextResponse(msg if cfg.api_warnings() else "", status_code=403)
 
         return None
 
@@ -1721,24 +1718,21 @@ _SCHED_ROOT = "/config/scheduling"
 
 @secured_expose(route="/config/scheduling", check_configlock=True, methods=["GET"])
 def config_scheduling_index(request: Request):
-    def get_days():
-        days = {
-            "*": T("Daily"),
-            "1": T("Monday"),
-            "2": T("Tuesday"),
-            "3": T("Wednesday"),
-            "4": T("Thursday"),
-            "5": T("Friday"),
-            "6": T("Saturday"),
-            "7": T("Sunday"),
-        }
-        return days
-
     conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
 
     actions = []
     actions.extend(_SCHED_ACTIONS)
-    day_names = get_days()
+    # Translated per request, so the names follow the currently active language
+    day_names = {
+        "*": T("Daily"),
+        "1": T("Monday"),
+        "2": T("Tuesday"),
+        "3": T("Wednesday"),
+        "4": T("Thursday"),
+        "5": T("Friday"),
+        "6": T("Saturday"),
+        "7": T("Sunday"),
+    }
     categories = list_cats(False)
     snum = 1
     conf["schedlines"] = []
@@ -2367,20 +2361,18 @@ class SecureSessionCookieMiddleware:
             # Runs after SessionMiddleware appended its Set-Cookie, since the send of
             # an inner middleware is called before that of the ones wrapping it
             if message["type"] == "http.response.start" and use_secure_cookies(Request(scope)):
-                message["headers"] = [
-                    (key, self.mark_secure(value)) if key.lower() == b"set-cookie" else (key, value)
-                    for key, value in message["headers"]
-                ]
+                headers = message["headers"]
+                for index, (key, value) in enumerate(headers):
+                    # Append the Secure attribute to the session cookie, if not already set
+                    if (
+                        key.lower() == b"set-cookie"
+                        and value.startswith(self.COOKIE_PREFIX)
+                        and b"secure" not in value.lower().split(b"; ")
+                    ):
+                        headers[index] = (key, value + b"; secure")
             await send(message)
 
         await self.app(scope, receive, send_with_secure_cookie)
-
-    @classmethod
-    def mark_secure(cls, cookie: bytes) -> bytes:
-        """Append the Secure attribute to the session cookie, if not already set"""
-        if cookie.startswith(cls.COOKIE_PREFIX) and b"secure" not in cookie.lower().split(b"; "):
-            return cookie + b"; secure"
-        return cookie
 
 
 class HostnameCheckMiddleware:

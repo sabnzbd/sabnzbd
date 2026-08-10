@@ -30,7 +30,7 @@ import time
 import getpass
 import urllib.parse
 from threading import Thread
-from typing import Any, Callable, NamedTuple, Optional, TypeAlias, Awaitable, TypeGuard
+from typing import Any, Callable, NamedTuple, Optional, TypeAlias, Awaitable
 
 from starlette.background import BackgroundTask
 from starlette.concurrency import run_in_threadpool
@@ -143,10 +143,6 @@ _MSG_NO_SUCH_CONFIG = "Config item does not exist"
 _MSG_CONFIG_LOCKED = "Configuration locked"
 
 
-def is_async_handler(fn: ApiHandler) -> TypeGuard[AsyncHandler]:
-    return inspect.iscoroutinefunction(fn)
-
-
 def _api_lookup(mode: str, name: str, value: str = "") -> tuple[ApiEntry, str]:
     """Resolve a call to its entry, plus the first parameter routing did not consume.
     A call routed on mode and name passes "value" to its handler, one routed on mode
@@ -181,7 +177,7 @@ async def api_handler(kwargs: QueryParams, resolved: Optional[tuple[ApiEntry, st
     if entry.config_locked and cfg.configlock():
         return report(kwargs, _MSG_CONFIG_LOCKED)
 
-    if is_async_handler(entry.handler):
+    if inspect.iscoroutinefunction(entry.handler):
         return await entry.handler(argument, kwargs)
     return await run_in_threadpool(entry.handler, argument, kwargs)
 
