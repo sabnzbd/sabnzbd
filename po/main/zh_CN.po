@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-5.1.0\n"
+"Project-Id-Version: SABnzbd-5.2.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
@@ -4597,6 +4597,14 @@ msgstr "额外的队列列"
 #: sabnzbd/skintext.py
 msgid "Extra history columns"
 msgstr "额外的历史记录列"
+
+#: sabnzbd/skintext.py
+msgid "Progress"
+msgstr "进度"
+
+#: sabnzbd/skintext.py
+msgid "Actions"
+msgstr "操作"
 
 #: sabnzbd/skintext.py
 msgid "page"

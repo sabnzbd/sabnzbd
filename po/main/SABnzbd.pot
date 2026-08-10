@@ -4325,6 +4325,14 @@ msgid "Extra history columns"
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Progress"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Actions"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "page"
 msgstr ""
 
