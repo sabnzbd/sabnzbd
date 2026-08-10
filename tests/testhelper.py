@@ -346,8 +346,16 @@ class FakeHistoryDB(db.HistoryDB):
     ]
 
     def __init__(self, db_path):
-        db.HistoryDB.db_path = db_path
+        self._monkeypatch = pytest.MonkeyPatch()
+        self._monkeypatch.setattr(db.HistoryDB, "db_path", db_path)
         super().__init__()
+
+    def close(self):
+        """Close the connection and restore the db_path that was patched on creation"""
+        try:
+            super().close()
+        finally:
+            self._monkeypatch.undo()
 
     def add_fake_history_job(
         self,
