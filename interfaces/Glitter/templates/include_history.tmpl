@@ -5,17 +5,17 @@
             <span class="glyphicon glyphicon-tasks" data-tooltip="true" data-placement="left" title="$T('Glitter-multiOperations')"></span>
         </a>
     </div>
-    <table class="table table-hover history-table paginated">
+    <table class="table table-hover history-table paginated" aria-label="$T('menu-history')">
         <thead>
             <tr>
-                <th style="width: 25px;"></th>
-                <th></th>
-                <th class="table-status-header" data-bind="css: { 'table-header-status-smaller' : extraHistoryColumns().length || displayCompact() }"></th>
+                <th scope="col" style="width: 25px;"><span class="sr-only">$T('Glitter-result')</span></th>
+                <th scope="col"><span class="sr-only">$T('name')</span></th>
+                <th class="table-status-header" scope="col" data-bind="css: { 'table-header-status-smaller' : extraHistoryColumns().length || displayCompact() }"><span class="sr-only">$T('status')</span></th>
                 <!-- ko foreach: extraHistoryColumns -->
-                <th class="table-header-extra"></th>
+                <th class="table-header-extra" scope="col"><span class="sr-only" data-bind="text: glitterTranslate.column[\$data]"></span></th>
                 <!-- /ko -->
-                <th style="width: 130px;"></th>
-                <th style="width: 60px;"></th>
+                <th scope="col" style="width: 130px;"><span class="sr-only">$T('post-Completed')</span></th>
+                <th scope="col" style="width: 60px;"><span class="sr-only">$T('Glitter-actions')</span></th>
             </tr>
         </thead>
         <!-- ko if: !hasHistory() -->
@@ -30,10 +30,10 @@
         <tbody data-bind="foreach: history.historyItems, visible: hasHistory()" style="display: none;">
             <tr class="history-item" data-bind="css: {'history-failed-download':failed()}">
                 <td>
-                    <div data-bind="visible: processingWaiting()">
-                        <span class="glyphicon glyphicon-time"></span>
+                    <div role="img" aria-label="$T('post-Queued')" data-bind="visible: processingWaiting()">
+                        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
                     </div>
-                    <div data-bind="visible: processingDownload()">
+                    <div role="img" aria-label="$T('stage-download')" data-bind="visible: processingDownload()">
                         <div class="processing-download">
                             <div class="loader-bar-one"></div>
                             <div class="loader-bar-two"></div>
@@ -41,17 +41,17 @@
                             <div class="loader-bar-four"></div>
                         </div>
                     </div>
-                    <div data-bind="visible: (!failed() && !processingDownload() && !processingWaiting())">
-                        <span class="glyphicon glyphicon-ok"></span>
+                    <div role="img" aria-label="$T('post-Completed')" data-bind="visible: (!failed() && !processingDownload() && !processingWaiting())">
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                     </div>
                     <div data-bind="visible: failed() && canRetry()">
                         <a class="retry-button" href="#" aria-label="$T('button-retry')" data-bind="click: retry">
-                            <span class="glyphicon glyphicon-exclamation-sign"></span>
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                         </a>
                     </div>
                     <div data-bind="visible: failed() && !canRetry()">
                         <span class="retry-button-inactive" role="img" aria-label="$T('post-Failed')">
-                            <span class="glyphicon glyphicon-exclamation-sign"></span>
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                         </span>
                     </div>
                 </td>
