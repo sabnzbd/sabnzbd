@@ -238,6 +238,11 @@ COOKIE_SECRET = str(randint(1000, 100000) * os.getpid())
 COOKIE_SESSION = "sabnzbd_session"
 
 
+def use_secure_cookies(request: Request) -> bool:
+    """Whether cookies for this request should carry the Secure attribute"""
+    return request.url.scheme == "https" or bool(cfg.enable_https())
+
+
 def set_login_cookie(request: Request, response: Response, remove=False, remember_me=False):
     """Set login cookie for Starlette (updated version)
     We try to set a cookie as unique as possible
@@ -252,7 +257,7 @@ def set_login_cookie(request: Request, response: Response, remove=False, remembe
     cookie_str = utob(str(salt) + client_address(request).host + COOKIE_SECRET)
     cookie_value = hashlib.sha1(cookie_str).hexdigest()
 
-    secure = cfg.enable_https() or request.url.scheme == "https"
+    secure = use_secure_cookies(request)
     if remove:
         # Remove cookies
         response.set_cookie(
@@ -2336,6 +2341,48 @@ class XFrameOptionsMiddleware:
         await self.app(scope, receive, send_with_header)
 
 
+class SecureSessionCookieMiddleware:
+    """Add the Secure attribute to the session cookie when the connection warrants it.
+
+    SessionMiddleware builds its cookie flags once at construction, so it cannot know
+    that TLS was terminated at a reverse proxy, which is only visible per request. It
+    is therefore mounted without https_only and wrapped by this middleware, which
+    flags the cookie using the same rule as set_login_cookie. Any other Set-Cookie
+    header is passed through untouched: the login cookies are already flagged where
+    they are set. Pure ASGI (not BaseHTTPMiddleware) to keep streaming responses
+    untouched."""
+
+    # Matches the cookie emitted by SessionMiddleware, which is mounted with
+    # session_cookie=COOKIE_SESSION
+    COOKIE_PREFIX = utob(COOKIE_SESSION + "=")
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+
+        async def send_with_secure_cookie(message):
+            # Runs after SessionMiddleware appended its Set-Cookie, since the send of
+            # an inner middleware is called before that of the ones wrapping it
+            if message["type"] == "http.response.start" and use_secure_cookies(Request(scope)):
+                message["headers"] = [
+                    (key, self.mark_secure(value)) if key.lower() == b"set-cookie" else (key, value)
+                    for key, value in message["headers"]
+                ]
+            await send(message)
+
+        await self.app(scope, receive, send_with_secure_cookie)
+
+    @classmethod
+    def mark_secure(cls, cookie: bytes) -> bytes:
+        """Append the Secure attribute to the session cookie, if not already set"""
+        if cookie.startswith(cls.COOKIE_PREFIX) and b"secure" not in cookie.lower().split(b"; "):
+            return cookie + b"; secure"
+        return cookie
+
+
 class HostnameCheckMiddleware:
     """Reject requests whose Host header is not allowed (DNS-rebinding mitigation).
     Applied as global middleware rather than in secured_expose so a single place
@@ -2496,15 +2543,18 @@ def create_app() -> Starlette:
         Middleware(HostnameCheckMiddleware),
         Middleware(RequestLoggingMiddleware),
         Middleware(GZipMiddleware, minimum_size=1000, compresslevel=2),
+        Middleware(SecureSessionCookieMiddleware),
         # Signed session cookie, used for short-lived per-client UI state such as the
         # RSS read-out result message (flash). Secret key is regenerated each run,
         # so sessions naturally expire on restart, which is fine for flash messages.
+        # The Secure attribute is left to SecureSessionCookieMiddleware, which decides
+        # it per request instead of once at start-up.
         Middleware(
             SessionMiddleware,
             secret_key=secrets.token_hex(),
             session_cookie=COOKIE_SESSION,
             same_site="lax",
-            https_only=bool(cfg.enable_https()),
+            https_only=False,
         ),
     ]
 
