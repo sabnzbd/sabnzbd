@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-5.0.0\n"
+"Project-Id-Version: SABnzbd-5.1.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Polish (https://app.transifex.com/sabnzbd/teams/111101/pl/)\n"
@@ -114,7 +114,6 @@ msgstr "Uruchomiono SABnzbd %s"
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd został wyłączony"
 
-#. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Odebrano sygnał %s, zapisywanie i zamykanie programu..."
@@ -235,6 +234,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Nie można określić wyniku połączenia (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "Serwer wymaga podania nazwy użytkownika i hasła."
 
@@ -252,9 +255,13 @@ msgstr ""
 "Zbyt wiele połączeń, proszę wstrzymać pobieranie lub spróbować ponownie "
 "później"
 
+#. Warning message
 #: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "Nie można określić wyniku połączenia (%s)"
+msgid ""
+"Server %s took %d ms to respond. On high-latency connections, increasing "
+"'Articles per request' to a value between 5 and 10 can improve download "
+"speed. See: https://sabnzbd.org/wiki/advanced/nntp-pipelining"
+msgstr ""
 
 #: sabnzbd/api.py
 msgid "Resolving address"
@@ -519,8 +526,8 @@ msgid "Resuming"
 msgstr "Wznawianie"
 
 #. PP status - Priority pick list
-#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Paused"
 msgstr "Wstrzymano"
 
@@ -577,6 +584,13 @@ msgstr "Błąd logowania do serwera %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Błąd połączenia %s@%s, komunikat=%s"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid ""
+"Total number of configured connections (%d) is greater than the operating "
+"system limit (512), downloading will crash if all connections become active"
+msgstr ""
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -857,7 +871,7 @@ msgstr ""
 msgid "Warnings"
 msgstr "Ostrzeżenia"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Bezczynny"
@@ -888,8 +902,8 @@ msgstr "Ogranicz prędkość"
 
 #. Notification - Pause downloading - Four way switch for duplicates -
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Pause"
 msgstr "Wstrzymaj"
 
@@ -899,8 +913,8 @@ msgid "min"
 msgstr "minuta"
 
 #. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Resume"
 msgstr "Wznów"
 
@@ -909,7 +923,7 @@ msgstr "Wznów"
 msgid "Scan watched folder"
 msgstr "Przeszukaj obserwowany katalog"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Read all RSS feeds"
 msgstr "Czytaj wszystkie kanały RSS"
 
@@ -921,17 +935,17 @@ msgstr "Katalog zakończonych"
 msgid "Incomplete Folder"
 msgstr "Katalog niezakończonych"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Troubleshoot"
 msgstr "Rozwiązywanie problemów"
 
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Restart"
 msgstr "Uruchom ponownie"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Restart without login"
 msgstr "Restart bez logowania"
 
@@ -1125,6 +1139,10 @@ msgid "see logfile"
 msgstr "sprawdź logi"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking skipped, TAR support requires Python 3.12 or later"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "Szybkie sprawdzanie"
 
@@ -1301,7 +1319,7 @@ msgid "Open folder"
 msgstr ""
 
 #. Notification action
-#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/notifier.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Open complete folder"
 msgstr "Otwórz katalog zakończonych"
 
@@ -1440,7 +1458,8 @@ msgstr ""
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "Pobrano w %s ze średnią %sB/s"
 
-#. Job details page, file age column header
+#. Config->RSS filter-type selection menu (e.g. ">3d", "<12h") - Job details
+#. page, file age column header
 #: sabnzbd/nzb/object.py, sabnzbd/skintext.py
 msgid "Age"
 msgstr "Wiek"
@@ -1763,6 +1782,10 @@ msgstr ""
 msgid "Removing %s failed"
 msgstr "Usuwanie %s nie powiodło się"
 
+#: sabnzbd/postproc.py
+msgid "Removed %s files with unwanted extensions"
+msgstr ""
+
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Failed to hibernate system"
@@ -1787,10 +1810,6 @@ msgstr ""
 msgid "Empty RSS entry found (%s)"
 msgstr "Znaleziono pusty wpis RSS (%s)"
 
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Niekompatybilny kanał"
-
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1812,56 +1831,59 @@ msgstr "Nie udało się pobrać RSS z %s: %s"
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "Serwer %s używa niezaufanego certyfikatu HTTPS"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "Kanał RSS %s był pusty"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Show interface"
-msgstr "Pokaż interfejs"
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Niekompatybilny kanał"
 
-#. Queue page button or entry box
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for"
-msgstr "Wstrzymaj na"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 5 minutes"
-msgstr "Wstrzymaj na 5 minut"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 15 minutes"
-msgstr "Wstrzymaj na 15 minut"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 30 minutes"
-msgstr "Wstrzymaj na 30 minut"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 1 hour"
-msgstr "Wstrzymaj na 1 godzinę"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 3 hours"
-msgstr "Wstrzymaj na 2 godziny"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 6 hours"
-msgstr "Wstrzymaj na 6 godzin"
-
-#. Config->Scheduling
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Shutdown"
-msgstr "Zakończ"
-
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Remaining"
 msgstr "Pozostało"
 
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Add NZB"
 msgstr "Dodaj NZB"
+
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
+msgid "Show interface"
+msgstr "Pokaż interfejs"
+
+#. Config->Scheduling
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Shutdown"
+msgstr "Zakończ"
+
+#. Queue page button or entry box
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for"
+msgstr "Wstrzymaj na"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 5 minutes"
+msgstr "Wstrzymaj na 5 minut"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 15 minutes"
+msgstr "Wstrzymaj na 15 minut"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 30 minutes"
+msgstr "Wstrzymaj na 30 minut"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 1 hour"
+msgstr "Wstrzymaj na 1 godzinę"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 3 hours"
+msgstr "Wstrzymaj na 2 godziny"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 6 hours"
+msgstr "Wstrzymaj na 6 godzin"
 
 #. Warning message
 #: sabnzbd/scheduler.py
@@ -2920,11 +2942,10 @@ msgstr "Lista czyszczenia"
 
 #: sabnzbd/skintext.py
 msgid ""
-"List of file extensions that should be deleted after download.<br />For "
-"example: <b>nfo</b> or <b>nfo, sfv</b>"
+"List of file extensions, filenames or patterns that should be deleted after "
+"download.<br />Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> "
+"(filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
 msgstr ""
-"Lista rozszerzeń plików, które mają zostać usunięte po pobraniu.<br />Na "
-"przykład: <b>nfo</b> lub <b>nfo, sfv</b>"
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
@@ -3454,7 +3475,9 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgid ""
+"The queue will resort every 30 seconds if % downloaded or Remaining Size is "
+"selected."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3871,10 +3894,6 @@ msgstr "Pobierz kanał"
 #: sabnzbd/skintext.py
 msgid "Force Download"
 msgstr "Wymuś pobranie"
-
-#: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr ""
 
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
@@ -4537,6 +4556,14 @@ msgid "Filename"
 msgstr "Nazwa pliku"
 
 #: sabnzbd/skintext.py
+msgid "Toggle SABnzbd navigation menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Open SABnzbd main menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Wolne miejsce"
 
@@ -4545,12 +4572,20 @@ msgid "Temp Folder"
 msgstr "Folder tymczasowy"
 
 #: sabnzbd/skintext.py
+msgid "Clear search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "Operacje na wielu"
 
 #: sabnzbd/skintext.py
 msgid "Hold shift key to select a range"
 msgstr "Przytrzymaj klawisz Shift, aby zaznaczyć zakres"
+
+#: sabnzbd/skintext.py
+msgid "Select job"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Check all"
@@ -4787,6 +4822,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Sort by Remaining Size <small>Smallest&rarr;Largest</small>"
 msgstr ""
 
 #: sabnzbd/skintext.py

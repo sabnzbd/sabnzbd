@@ -24,7 +24,7 @@ import os
 import time
 import uuid
 from http.client import RemoteDisconnected
-from typing import BinaryIO, Optional
+from typing import BinaryIO, Optional, Callable
 
 import pytest
 from random import choice, randint
@@ -37,23 +37,15 @@ from string import ascii_lowercase, digits
 from unittest import mock
 from urllib3.exceptions import ProtocolError
 import xmltodict
-import functools
 from werkzeug import Request
 from werkzeug.utils import send_from_directory
+from pyfakefs.fake_filesystem_unittest import Patcher
+from pyfakefs.fake_filesystem import OSType
 
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import (
-    DB_HISTORY_NAME,
-    DEF_ADMIN_DIR,
     DEF_INI_FILE,
-    DEFAULT_PRIORITY,
-    FORCE_PRIORITY,
-    HIGH_PRIORITY,
-    INTERFACE_PRIORITIES,
-    LOW_PRIORITY,
-    NORMAL_PRIORITY,
-    REPAIR_PRIORITY,
     Status,
     PP_LOOKUP,
 )
@@ -75,61 +67,158 @@ SAB_NEWSSERVER_HOST = "127.0.0.1"
 SAB_NEWSSERVER_PORT = 8888
 
 
-def set_config(settings_dict):
+@pytest.fixture(autouse=True)
+def config_env(monkeypatch, request):
     """Change config-values on the fly, per test"""
+    marker = request.node.get_closest_marker("config")
+    if marker is None:
+        # No config changes for this test
+        yield
+        return
 
-    def set_config_decorator(func):
-        @functools.wraps(func)
-        def wrapper_func(*args, **kwargs):
-            # Setting up as requested
-            for item, val in settings_dict.items():
-                getattr(cfg, item).set(val)
+    if marker.args:
+        config = marker.args[0]
 
-            # Perform test
-            value = func(*args, **kwargs)
+        if callable(config):
+            if not hasattr(request.node, "callspec"):
+                raise RuntimeError("Dynamic config requires parameterized test")
+            config = config(request.node.callspec.params)
+    else:
+        if not hasattr(request.node, "callspec"):
+            raise RuntimeError("@pytest.mark.config requires parameterized 'config'")
+        config = request.node.callspec.params.get("config")
+        if config is None:
+            raise RuntimeError("Missing 'config' param for @pytest.mark.config")
 
-            # Reset values
-            for item in settings_dict:
-                getattr(cfg, item).set(getattr(cfg, item).default)
-            return value
+    # Setting up as requested
+    originals = {}
+    for item, val in config.items():
+        cfg_item = getattr(cfg, item)
+        originals[item] = cfg_item.get()
+        cfg_item.set(val)
 
-        return wrapper_func
+    yield
 
-    return set_config_decorator
+    # Restore values
+    for item, val in originals.items():
+        getattr(cfg, item).set(val)
 
 
-def set_platform(platform):
-    """Change config-values on the fly, per test"""
+@pytest.mark.parametrize("config", [{"web_host": "0.0.0.0"}, {"web_host": "::1"}])
+@pytest.mark.config()
+def test_config_parametrize(config):
+    for item, val in config.items():
+        assert getattr(cfg, item)() == val
 
-    def set_platform_decorator(func):
-        def wrapper_func(*args, **kwargs):
-            # Save original values
-            is_windows = sabnzbd.WINDOWS
-            is_macos = sabnzbd.MACOS
 
-            # Set current platform
-            if platform == "win32":
-                sabnzbd.WINDOWS = True
-                sabnzbd.MACOS = False
-            elif platform == "macos":
-                sabnzbd.WINDOWS = False
-                sabnzbd.MACOS = True
-            elif platform == "linux":
-                sabnzbd.WINDOWS = False
-                sabnzbd.MACOS = False
+@pytest.mark.parametrize("web_host", ["0.0.0.0", "::1"])
+@pytest.mark.config(lambda params: {"web_host": params["web_host"]})
+def test_config_parametrize_dynamic(web_host):
+    assert cfg.web_host() == web_host
 
-            # Perform test
-            value = func(*args, **kwargs)
 
-            # Reset values
-            sabnzbd.WINDOWS = is_windows
-            sabnzbd.MACOS = is_macos
+@pytest.mark.config({"web_host": "0.0.0.0"})
+def test_config_marker():
+    assert cfg.web_host() == "0.0.0.0"
 
-            return value
 
-        return wrapper_func
+@pytest.fixture(autouse=True)
+def platform_env(monkeypatch, request):
+    """Change platform-values on the fly, per test"""
+    marker = request.node.get_closest_marker("platform")
+    if marker is None:
+        # No platform changes for this test
+        yield
+        return
 
-    return set_platform_decorator
+    if marker.args:
+        platform_name = marker.args[0]
+
+        if callable(platform_name):
+            if not hasattr(request.node, "callspec"):
+                raise RuntimeError("Dynamic platform requires parameterized test")
+            platform_name = platform_name(request.node.callspec.params)
+    else:
+        if not hasattr(request.node, "callspec"):
+            raise RuntimeError("@pytest.mark.platform requires parameterized 'platform'")
+        platform_name = request.node.callspec.params.get("platform")
+        if platform_name is None:
+            raise RuntimeError("Missing 'platform' param for @pytest.mark.platform")
+
+    if platform_name == "win32":
+        monkeypatch.setattr(sabnzbd, "WINDOWS", True)
+        monkeypatch.setattr(sabnzbd, "MACOS", False)
+    elif platform_name == "macos":
+        monkeypatch.setattr(sabnzbd, "WINDOWS", False)
+        monkeypatch.setattr(sabnzbd, "MACOS", True)
+    elif platform_name == "linux":
+        monkeypatch.setattr(sabnzbd, "WINDOWS", False)
+        monkeypatch.setattr(sabnzbd, "MACOS", False)
+    else:
+        raise ValueError(f"Unknown platform: {platform_name}")
+
+    yield platform_name
+
+
+@pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
+@pytest.mark.platform()
+def test_platform_parametrize(platform):
+    if platform == "win32":
+        assert sabnzbd.WINDOWS
+        assert not sabnzbd.MACOS
+    elif platform == "macos":
+        assert sabnzbd.MACOS
+        assert not sabnzbd.WINDOWS
+    elif platform == "linux":
+        assert not sabnzbd.WINDOWS
+        assert not sabnzbd.MACOS
+
+
+@pytest.mark.platform("win32")
+def test_platform_marker_win32():
+    assert sabnzbd.WINDOWS
+    assert not sabnzbd.MACOS
+
+
+@pytest.mark.platform("macos")
+def test_platform_marker_macos():
+    assert sabnzbd.MACOS
+    assert not sabnzbd.WINDOWS
+
+
+@pytest.mark.platform("linux")
+def test_platform_marker_linux():
+    assert not sabnzbd.WINDOWS
+    assert not sabnzbd.MACOS
+
+
+@pytest.fixture()
+def fake_fs(request):
+    """Create fake filesystem"""
+    fake_fs_marker = request.node.get_closest_marker("fake_fs")
+    platform_marker = request.node.get_closest_marker("platform")
+
+    with Patcher() as patcher:
+        if platform_marker:
+            os_map = {"win32": OSType.WINDOWS, "macos": OSType.MACOS, "linux": OSType.LINUX}
+            patcher.fs.os = os_map.get(platform_marker.args[0], patcher.fs.os)
+
+        if fake_fs_marker:
+            options = fake_fs_marker.args[0] if fake_fs_marker.args else {}
+
+            for key, val in options.items():
+                if key == "create_dirs":
+                    # Special case: create directories
+                    for dir_path in val:
+                        patcher.fs.makedirs(dir_path, mode=755, exist_ok=True)
+                        # Verify the fake filesystem does its thing
+                        assert os.path.exists(dir_path) is True
+                elif hasattr(patcher.fs, key):
+                    setattr(patcher.fs, key, val)
+                else:
+                    raise AttributeError(f"fake_fs has no attribute '{key}'")
+
+        yield patcher.fs
 
 
 def get_url_result(url="", host=SAB_HOST, port=SAB_PORT):
@@ -178,6 +267,32 @@ def random_name(length: int = 16) -> str:
     return "".join(choice(ascii_lowercase + digits) for _ in range(length))
 
 
+def wait_for(
+    condition: Callable,
+    timeout: float = 2,
+    interval: float = 0.05,
+    err_msg: str = "Condition not met",
+    suppress: tuple[type[Exception], ...] = (),
+):
+    """Polls condition every interval until timeout."""
+    deadline = time.time() + timeout
+    while True:
+        try:
+            if result := condition():
+                return result
+        except suppress:
+            pass
+        if time.time() > deadline:
+            pytest.fail(err_msg)
+        time.sleep(interval)
+
+
+@pytest.fixture
+def sleepless(monkeypatch):
+    monkeypatch.setattr(time, "sleep", lambda _: None)
+    yield
+
+
 class FakeHistoryDB(db.HistoryDB):
     """
     HistoryDB class with added control of the db_path via an argument and the
@@ -201,49 +316,66 @@ class FakeHistoryDB(db.HistoryDB):
         db.HistoryDB.db_path = db_path
         super().__init__()
 
+    def add_fake_history_job(
+        self,
+        name: str,
+        status: str = Status.COMPLETED,
+        category: str = "*",
+        password: str = "",
+        path: Optional[str] = None,
+        futuretype: bool = False,
+        archive: bool = False,
+        completed: Optional[float] = None,
+    ) -> str:
+        """Add a single history entry, with random values for anything not specified"""
+        nzo = mock.Mock()
+
+        nzo.password = password
+        nzo.correct_password = "secret"
+        nzo.final_name = name
+        nzo.filename = "%s%s.nzb" % (name, "{{" + password + "}}" if password else "")
+        nzo.cat = category
+        nzo.script = "placeholder_script"
+        nzo.url = "placeholder_url"
+        nzo.status = status
+        nzo.fail_msg = "Failure" if status == Status.FAILED else ""
+        nzo.nzo_id = str(uuid.uuid4())
+        nzo.bytes_downloaded = randint(1024, 1024**4)
+        nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
+        nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))  # for "pp"
+        nzo.nzo_info = {"download_time": randint(1, 10**4)}
+        nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
+        nzo.duplicate_key = "show/season/episode"
+        nzo.time_added = int(time.time())
+        nzo.futuretype = futuretype  # for "report", only True when fetching an URL
+        if path is None:
+            path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
+        nzo.download_path = path
+
+        # Mock time when calling add_history_db() to randomize completion times
+        almost_time = mock.Mock(return_value=completed if completed is not None else time.time() - randint(0, 10**8))
+        with mock.patch("time.time", almost_time):
+            self.add_history_db(
+                nzo,
+                storage=os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_workdir"),
+                postproc_time=randint(1, 10**3),
+                script_output="",
+                script_line="",
+            )
+        if archive:
+            self.archive(nzo.nzo_id)
+
+        return nzo.nzo_id
+
     def add_fake_history_jobs(self, number_of_entries=1):
         """Generate a history db with any number of fake entries"""
-
         for _ in range(0, number_of_entries):
-            nzo = mock.Mock()
-
-            # Mock all input build_history_info() needs
-            distro_choice = choice(self.distro_names)
-            distro_random = random_name()
-            nzo.password = choice(["secret", ""])
-            nzo.correct_password = "secret"
-            nzo.final_name = "%s.%s.Linux.ISO-Usenet" % (distro_choice, distro_random)
-            nzo.filename = "%s.%s.Linux-Usenet%s.nzb" % (
-                (distro_choice, distro_random, "{{" + nzo.password + "}}")
-                if nzo.password
-                else (distro_choice, distro_random, "")
+            self.add_fake_history_job(
+                name="%s.%s.Linux.ISO-Usenet" % (choice(self.distro_names), random_name()),
+                status=choice([Status.COMPLETED, choice(self.status_options)]),
+                category=choice(self.category_options),
+                password=choice(["secret", ""]),
             )
-            nzo.cat = choice(self.category_options)
-            nzo.script = "placeholder_script"
-            nzo.url = "placeholder_url"
-            nzo.status = choice([Status.COMPLETED, choice(self.status_options)])
-            nzo.fail_msg = "¡Fracaso absoluto!" if nzo.status == Status.FAILED else ""
-            nzo.nzo_id = str(uuid.uuid4())
-            nzo.bytes_downloaded = randint(1024, 1024**4)
-            nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
-            nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))  # for "pp"
-            nzo.nzo_info = {"download_time": randint(1, 10**4)}
-            nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
-            nzo.duplicate_key = "show/season/episode"
-            nzo.time_added = int(time.time())
-            nzo.futuretype = False  # for "report", only True when fetching an URL
-            nzo.download_path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
-
-            # Mock time when calling add_history_db() to randomize completion times
-            almost_time = mock.Mock(return_value=time.time() - randint(0, 10**8))
-            with mock.patch("time.time", almost_time):
-                self.add_history_db(
-                    nzo,
-                    storage=os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_workdir"),
-                    postproc_time=randint(1, 10**3),
-                    script_output="",
-                    script_line="",
-                )
 
 
 @pytest.mark.usefixtures("run_sabnzbd", "run_sabnews_and_selenium")
@@ -261,7 +393,11 @@ class SABnzbdBaseTest:
 
     def scroll_to_top(self):
         self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
-        time.sleep(2)
+        try:
+            wait = WebDriverWait(self.driver, 2)
+            wait.until(lambda driver_wait: self.driver.execute_script("return window.scrollY") == 0)
+        except RemoteDisconnected:
+            pass
 
     def wait_for_ajax(self):
         # We catch common nonsense errors from Selenium
@@ -320,9 +456,13 @@ class DownloadFlowBasics(SABnzbdBaseTest):
         port_inp.send_keys(SAB_NEWSSERVER_PORT)
 
         # Test server-check
+        server_response = self.selenium_wrapper(self.driver.find_element, By.ID, "serverResponse")
         self.selenium_wrapper(self.driver.find_element, By.ID, "serverTest").click()
-        self.wait_for_ajax()
-        assert "Connection Successful" in self.selenium_wrapper(self.driver.find_element, By.ID, "serverResponse").text
+        wait_for(
+            lambda: "Connection Successful" in server_response.text,
+            timeout=5,
+            err_msg="The connection test was not successful",
+        )
 
         # Final page done
         self.selenium_wrapper(self.driver.find_element, By.ID, "next-button").click()

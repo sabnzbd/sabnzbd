@@ -42,7 +42,7 @@ PAR_SLICE_ID = b"PAR 2.0\x00IFSC\x00\x00\x00\x00"
 PAR_RECOVERY_ID = b"RecvSlic"
 
 
-@dataclass
+@dataclass(slots=True)
 class FilePar2Info:
     """Class for keeping track of par2 information of a file"""
 

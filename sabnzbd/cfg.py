@@ -25,7 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
-from typing import Union
+from typing import TypeAlias
 
 import sabnzbd
 from sabnzbd.config import (
@@ -59,7 +59,7 @@ from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_ne
 
 # Validators currently only are made for string/list-of-strings
 # and return those on success or an error message.
-ValidateResult = Union[tuple[None, str], tuple[None, list[str]], tuple[str, None]]
+ValidateResult: TypeAlias = tuple[None, str | list[str]] | tuple[str, None]
 
 
 ##############################################################################
@@ -124,18 +124,39 @@ def supported_unrar_parameters(value: str) -> ValidateResult:
     return None, value
 
 
-def all_lowercase(value: Union[str, list]) -> tuple[None, Union[str, list]]:
+def all_lowercase(value: str | list) -> tuple[None, str | list]:
     """Lowercase and strip everything!"""
     if isinstance(value, list):
         return None, [item.lower().strip() for item in value]
     return None, value.lower().strip()
 
 
-def lower_case_ext(value: Union[str, list]) -> tuple[None, Union[str, list]]:
+def lower_case_ext(value: str | list) -> tuple[None, str | list]:
     """Generate lower case extension(s), without dot"""
     if isinstance(value, list):
         return None, [item.lower().strip(" .") for item in value]
     return None, value.lower().strip(" .")
+
+
+def cleanup_list_validator(value: str | list) -> tuple[None, str | list]:
+    """Validate cleanup list entries
+    Accepts extensions (exe, nfo), filenames (Thumbs.db), patterns (*.tmp), and paths (images/*)
+    """
+
+    def validate_entry(entry: str) -> str:
+        # Always lowercase and clean
+        entry = entry.lower().strip()
+
+        # For pure extensions (no slash, single or no dot), strip leading dots
+        # For filenames/patterns/paths, keep structure as-is
+        if "/" not in entry and "\\" not in entry:
+            # Strip leading/trailing dots and spaces only if it's a pure extension
+            entry = entry.strip(" .")
+        return entry
+
+    if isinstance(value, list):
+        return None, [validate_entry(item) for item in value]
+    return None, validate_entry(value)
 
 
 def validate_single_tag(value: list[str]) -> tuple[None, list[str]]:
@@ -160,7 +181,7 @@ def validate_url_base(value: str) -> tuple[None, str]:
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
 
 
-def validate_email(value: Union[list, str]) -> ValidateResult:
+def validate_email(value: list | str) -> ValidateResult:
     if email_endjob() or email_full() or email_rss():
         if isinstance(value, list):
             values = value
@@ -436,7 +457,7 @@ safe_postproc = OptionBool("misc", "safe_postproc", True)
 pause_on_post_processing = OptionBool("misc", "pause_on_post_processing", False)
 enable_all_par = OptionBool("misc", "enable_all_par", False)
 sanitize_safe = OptionBool("misc", "sanitize_safe", False)
-cleanup_list = OptionList("misc", "cleanup_list", validation=lower_case_ext)
+cleanup_list = OptionList("misc", "cleanup_list", validation=cleanup_list_validator)
 unwanted_extensions = OptionList("misc", "unwanted_extensions", validation=lower_case_ext)
 action_on_unwanted_extensions = OptionNumber("misc", "action_on_unwanted_extensions", 0)
 unwanted_extensions_mode = OptionNumber("misc", "unwanted_extensions_mode", 0)
@@ -485,6 +506,7 @@ enable_unrar = OptionBool("misc", "enable_unrar", True)
 enable_7zip = OptionBool("misc", "enable_7zip", True)
 enable_filejoin = OptionBool("misc", "enable_filejoin", True)
 enable_tsjoin = OptionBool("misc", "enable_tsjoin", True)
+enable_tar = OptionBool("misc", "enable_tar", True)
 overwrite_files = OptionBool("misc", "overwrite_files", False)
 ignore_unrar_dates = OptionBool("misc", "ignore_unrar_dates", False)
 backup_for_duplicates = OptionBool("misc", "backup_for_duplicates", False)

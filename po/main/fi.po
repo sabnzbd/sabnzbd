@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-5.0.0\n"
+"Project-Id-Version: SABnzbd-5.1.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Finnish (https://app.transifex.com/sabnzbd/teams/111101/fi/)\n"
@@ -119,7 +119,6 @@ msgstr "SABnzbd %s käynnistetty"
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd sammutus valmis"
 
-#. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Signaali %s kaapattu, tallennetaan ja lopetetaan..."
@@ -240,6 +239,10 @@ msgstr ""
 "Tuntematon SSL protokolla: Kokeile ottaa SSL käytöstä tai vaihda porttia."
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Yhteystestin lopputulosta ei voitu määrittää (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "Palvelin vaatii käyttäjänimen ja salasanan."
 
@@ -255,9 +258,13 @@ msgstr "Varmennus epäonnistui, tarkista käyttäjänimi/salasana."
 msgid "Too many connections, please pause downloading or try again later"
 msgstr "Liikaa yhteyksiä, keskeytä lataaminen tai yritä myöhemmin uudelleen"
 
+#. Warning message
 #: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "Yhteystestin lopputulosta ei voitu määrittää (%s)"
+msgid ""
+"Server %s took %d ms to respond. On high-latency connections, increasing "
+"'Articles per request' to a value between 5 and 10 can improve download "
+"speed. See: https://sabnzbd.org/wiki/advanced/nntp-pipelining"
+msgstr ""
 
 #: sabnzbd/api.py
 msgid "Resolving address"
@@ -522,8 +529,8 @@ msgid "Resuming"
 msgstr "Jatketaan"
 
 #. PP status - Priority pick list
-#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Paused"
 msgstr "Keskeytetty"
 
@@ -579,6 +586,13 @@ msgstr "Kirjautuminen palvelimelle %s epäonnistui [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Yhdistäminen %s@%s epäonnistui, viesti=%s"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid ""
+"Total number of configured connections (%d) is greater than the operating "
+"system limit (512), downloading will crash if all connections become active"
+msgstr ""
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -857,7 +871,7 @@ msgstr ""
 msgid "Warnings"
 msgstr "Varoitukset"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Toimeton"
@@ -888,8 +902,8 @@ msgstr "Nopeusrajoitus"
 
 #. Notification - Pause downloading - Four way switch for duplicates -
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Pause"
 msgstr "Keskeytä"
 
@@ -899,8 +913,8 @@ msgid "min"
 msgstr "minuutti"
 
 #. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Resume"
 msgstr "Jatka"
 
@@ -909,7 +923,7 @@ msgstr "Jatka"
 msgid "Scan watched folder"
 msgstr "Tarkista vahdittu kansio"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Read all RSS feeds"
 msgstr "Lue kaikki RSS syötteet"
 
@@ -921,17 +935,17 @@ msgstr "Valmistuneet-kansio"
 msgid "Incomplete Folder"
 msgstr "Lataukset-kansio"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Troubleshoot"
 msgstr "Vianmääritys"
 
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Restart"
 msgstr "Käynnistä uudelleen"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Restart without login"
 msgstr "Käynnistä uudelleen ilman kirjautumista"
 
@@ -1125,6 +1139,10 @@ msgid "see logfile"
 msgstr "katso lokitiedosto"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking skipped, TAR support requires Python 3.12 or later"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "Pikatarkistetaan"
 
@@ -1298,7 +1316,7 @@ msgid "Open folder"
 msgstr ""
 
 #. Notification action
-#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/notifier.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Open complete folder"
 msgstr "Avaa valmistuneet-kansio"
 
@@ -1437,7 +1455,8 @@ msgstr "LEVITETÄÄN %s min"
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "Ladattiin ajassa %s keskilatausnopeudella %sB/s"
 
-#. Job details page, file age column header
+#. Config->RSS filter-type selection menu (e.g. ">3d", "<12h") - Job details
+#. page, file age column header
 #: sabnzbd/nzb/object.py, sabnzbd/skintext.py
 msgid "Age"
 msgstr "Ikä"
@@ -1756,6 +1775,10 @@ msgstr ""
 msgid "Removing %s failed"
 msgstr "%s poistaminen epäonnistui"
 
+#: sabnzbd/postproc.py
+msgid "Removed %s files with unwanted extensions"
+msgstr ""
+
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Failed to hibernate system"
@@ -1780,10 +1803,6 @@ msgstr ""
 msgid "Empty RSS entry found (%s)"
 msgstr "Tyhjä RSS kohde löytyi (%s)"
 
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Puutteellinen syöte"
-
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1805,56 +1824,59 @@ msgstr "RSS noutaminen epäonnistui kohteesta %s: %s"
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "Palvelin %s käyttää epäluotettavaa HTTPS sertifikaattia"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS syöte %s oli tyhjä"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Show interface"
-msgstr "Näytä käyttöliittymä"
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Puutteellinen syöte"
 
-#. Queue page button or entry box
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for"
-msgstr "Keskeytä ajaksi"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 5 minutes"
-msgstr "Keskeytä 5:ksi minuutiksi"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 15 minutes"
-msgstr "Keskeytä 15:ksi minuutiksi"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 30 minutes"
-msgstr "Keskeytä 30:ksi minuutiksi"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 1 hour"
-msgstr "Keskeytä tunniksi"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 3 hours"
-msgstr "Keskeytä 3:ksi tunniksi"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 6 hours"
-msgstr "Keskeytä 6:ksi tunniksi"
-
-#. Config->Scheduling
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Shutdown"
-msgstr "Sammuta"
-
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Remaining"
 msgstr "Jäljellä"
 
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Add NZB"
 msgstr "Lisää NZB"
+
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
+msgid "Show interface"
+msgstr "Näytä käyttöliittymä"
+
+#. Config->Scheduling
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Shutdown"
+msgstr "Sammuta"
+
+#. Queue page button or entry box
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for"
+msgstr "Keskeytä ajaksi"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 5 minutes"
+msgstr "Keskeytä 5:ksi minuutiksi"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 15 minutes"
+msgstr "Keskeytä 15:ksi minuutiksi"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 30 minutes"
+msgstr "Keskeytä 30:ksi minuutiksi"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 1 hour"
+msgstr "Keskeytä tunniksi"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 3 hours"
+msgstr "Keskeytä 3:ksi tunniksi"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 6 hours"
+msgstr "Keskeytä 6:ksi tunniksi"
 
 #. Warning message
 #: sabnzbd/scheduler.py
@@ -2917,11 +2939,10 @@ msgstr "Puhdistuslista"
 
 #: sabnzbd/skintext.py
 msgid ""
-"List of file extensions that should be deleted after download.<br />For "
-"example: <b>nfo</b> or <b>nfo, sfv</b>"
+"List of file extensions, filenames or patterns that should be deleted after "
+"download.<br />Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> "
+"(filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
 msgstr ""
-"Lista tiedostopäätteistä jotka poistetaan latauksen valmistuttua.<br "
-"/>Esimerkiksi: <b>nfo</b> tai <b>nfo, sfv</b>"
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
@@ -3462,7 +3483,9 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgid ""
+"The queue will resort every 30 seconds if % downloaded or Remaining Size is "
+"selected."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3880,10 +3903,6 @@ msgstr "Lue syöte"
 #: sabnzbd/skintext.py
 msgid "Force Download"
 msgstr "Pakota lataus"
-
-#: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr ""
 
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
@@ -4551,6 +4570,14 @@ msgid "Filename"
 msgstr "Tiedostonimi"
 
 #: sabnzbd/skintext.py
+msgid "Toggle SABnzbd navigation menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Open SABnzbd main menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Vapaa tila"
 
@@ -4559,12 +4586,20 @@ msgid "Temp Folder"
 msgstr "Väliaikaiskansio"
 
 #: sabnzbd/skintext.py
+msgid "Clear search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "Monioperaatiot"
 
 #: sabnzbd/skintext.py
 msgid "Hold shift key to select a range"
 msgstr "Paina vaihto-näppäintä pohjassa valitaksesi alueen"
+
+#: sabnzbd/skintext.py
+msgid "Select job"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Check all"
@@ -4804,6 +4839,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Sort by Remaining Size <small>Smallest&rarr;Largest</small>"
 msgstr ""
 
 #: sabnzbd/skintext.py

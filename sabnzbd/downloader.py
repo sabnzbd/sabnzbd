@@ -28,7 +28,7 @@ import sys
 import ssl
 import time
 from datetime import date
-from typing import Optional, Union, Deque, Callable
+from typing import Optional, Callable
 
 import sabctools
 
@@ -147,12 +147,12 @@ class Server:
         self.bad_cons: int = 0
         self.errormsg: str = ""
         self.warning: str = ""
-        self.addrinfo: Union[AddrInfo, None, bool] = None  # Will hold fasted address information
+        self.addrinfo: AddrInfo | bool | None = None  # Will hold fasted address information
         self.ssl_info: str = ""  # Will hold the type and cipher of SSL connection
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
-        self.article_queue: Deque[sabnzbd.nzb.Article] = deque()
+        self.article_queue: deque[sabnzbd.nzb.Article] = deque()
 
         # Skip during server testing
         if threads:
@@ -313,6 +313,8 @@ class Downloader(Thread):
         for server in config.get_servers():
             self.init_server(None, server)
 
+        self.check_total_number_of_connections()
+
     def init_server(self, oldserver: Optional[str], newserver: str):
         """Setup or re-setup single server
         When oldserver is defined and in use, delay startup.
@@ -459,7 +461,7 @@ class Downloader(Thread):
         logging.info("Forcing disconnect")
         self.force_disconnect = True
 
-    def limit_speed(self, value: Union[str, int]):
+    def limit_speed(self, value: str | int):
         """Set the actual download speed in Bytes/sec
         When 'value' ends with a '%' sign or is within 1-100, it is interpreted as a percentage of the maximum bandwidth
         When no '%' is found, it is interpreted as an absolute speed (including KMGT notation).
@@ -562,7 +564,7 @@ class Downloader(Thread):
         sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
 
         # Handle broken articles directly
-        if not response or not response.bytes_decoded and not article.nzf.nzo.precheck:
+        if not response or (not response.bytes_decoded and not article.nzf.nzo.precheck):
             if not article.search_new_server():
                 article.nzf.nzo.increase_bad_articles_counter("missing_articles")
                 sabnzbd.NzbQueue.register_article(article, success=False)
@@ -595,11 +597,6 @@ class Downloader(Thread):
         try:
             while 1:
                 now = time.time()
-
-                # Set Article to None so references from this
-                # thread do not keep the parent objects alive (see #1628)
-                article = None
-
                 for server in self.servers:
                     # Skip this server if there's no point searching for new stuff to do
                     if server.addrinfo and not server.busy_threads and server.next_article_search > now:
@@ -1042,6 +1039,18 @@ class Downloader(Thread):
         the update in the loop to do housekeeping"""
         self.init_server(oldserver, newserver)
         self.wakeup()
+
+    def check_total_number_of_connections(self):
+        """Check the total number of connections,
+        because on Windows select() has a hard limit of 512"""
+        total_connections = sum(srv.threads for srv in self.servers)
+        if sabnzbd.WINDOWS and total_connections > 512:
+            logging.warning(
+                T(
+                    "Total number of configured connections (%d) is greater than the operating system limit (512), downloading will crash if all connections become active"
+                ),
+                total_connections,
+            )
 
     @NzbQueueLocker
     def wakeup(self):

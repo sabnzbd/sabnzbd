@@ -1,18 +1,19 @@
+:root {
+    /* Light mode defaults — overridden by Night.css */
+    --clr-page-bg:    #E4E4E4;
+    --clr-surface:    #FFFFFF;
+    --clr-input-bg:   #FFFFFF;
+    --clr-border:     rgba(0, 0, 0, 0.15);
+    --clr-text:       #000000;
+    --clr-text-muted: #636363;
+    --radius-lg:      8px;
+    --clr-toggle-active:   #f9ca33;
+    --clr-toggle-inactive: #aaaaaa;
+}
+
 body {
     overflow-y: scroll;
-    background-color: #E4E4E4;
-}
-
-* {
-    border-radius: 0 !important;
-}
-
-.btn,
-.btn:hover,
-.btn:active,
-.btn:focus {
-    box-shadow: 1px 1px 1px rgba(0,0,0,.1) !important;
-    background-color: white !important;
+    background-color: var(--clr-page-bg);
 }
 
 .logo-header {
@@ -25,29 +26,33 @@ body {
 }
 
 .account-wall {
-    width: 300px;
+    width: 400px;
     position: absolute;
     top: 30%;
     left: 50%;
-      transform: translate(-50%, -30%);
+    transform: translate(-50%, -30%);
+    background-color: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    padding: 25px 40px 15px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .text-center a {
     position: absolute;
     right: 13px;
     top: 12px;
-    color: #636363;
+    color: var(--clr-text-muted);
     font-size: 1.2em
 }
 
 .text-center a:hover {
-    color: black;
+    color: var(--clr-text);
 }
 
 .form-signin .alert {
     margin: 5px 0px;
 }
-
 
 .form-signin input {
     margin-top: 5px
@@ -66,12 +71,43 @@ body {
     font-size: 1.2em;
 }
 
-input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    margin-top: 2px;
+/* Toggle switch — text on the left, switch on the right */
+label {
+    margin-top: 10px;
+    color: var(--clr-text-muted);
 }
 
-label {
-    color: #636363;
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    top: 5px;
+    left: 5px;
+    width: 36px;
+    height: 20px;
+    background-color: var(--clr-toggle-inactive);
+    background-image:
+        radial-gradient(circle at 10px 10px, #ffffff 6.5px, rgba(255,255,255,0) 7px),
+        radial-gradient(circle at 11px 11px, rgba(0,0,0,0.30) 6.5px, transparent 9.5px);
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    background-position: 0px center;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, background-position 0.15s;
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--clr-toggle-active);
+    background-position: 16px center;
+    background-image:
+        radial-gradient(circle at 10px 10px, #ffffff 6.5px, rgba(255,255,255,0) 7px),
+        radial-gradient(circle at 10.5px 10.5px, rgba(0,0,0,0.30) 6.5px, transparent 9.5px);
+}
+
+input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--clr-toggle-active);
+    outline-offset: 2px;
+    border-radius: 10px;
 }

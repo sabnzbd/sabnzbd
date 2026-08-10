@@ -18,6 +18,10 @@
 
 Unicode true
 
+; Must precede any data/header output. Solid LZMA dedups identical files (e.g. the
+; two SABnzbd*.pkg archives) and shrinks the whole installer.
+SetCompressor /SOLID lzma
+
 !addplugindir builder\win\nsis\Plugins
 !addincludedir builder\win\nsis\Include
 
@@ -86,7 +90,6 @@ Unicode true
 
 ;------------------------------------------------------------------
 ; Some default compiler settings (uncomment and change at will):
-  SetCompress auto ; (can be off or force)
   SetDatablockOptimize on ; (can be off)
   CRCCheck on ; (can be off)
   AutoCloseWindow false ; (can be true for the window go away automatically at end)
@@ -151,7 +154,6 @@ Unicode true
   !insertmacro MUI_PAGE_FINISH
 
   !insertmacro MUI_UNPAGE_CONFIRM
-  !define MUI_UNPAGE_COMPONENTSPAGE_NODESC
   !insertmacro MUI_UNPAGE_COMPONENTS
   !insertmacro MUI_UNPAGE_INSTFILES
 
@@ -165,6 +167,7 @@ Function PageFinishRun
   ${If} $0 == true
     ; Service is installed, start the service
     !insertmacro SERVICE "start" "SABnzbd" ""
+    Pop $0
   ${Else}
     ; Service not installed, run executable as user
     ${StdUtils.ExecShellAsUser} $0 "$INSTDIR\SABnzbd.exe" "" ""
@@ -221,21 +224,32 @@ Section "SABnzbd" SecDummy
   ; Shutdown any running service
 
   !insertmacro SERVICE "stop" "SABnzbd" ""
+  Pop $0
 
   ;------------------------------------------------------------------
   ; Terminate SABnzbd.exe
+  ; Ask nicely first, but kill forcefully if it does not exit in time
+  StrCpy $R1 0
   loop:
     ${nsProcess::FindProcess} "SABnzbd.exe" $R0
     StrCmp $R0 0 0 endcheck
+    IntCmp $R1 20 forcekill 0 forcekill
     ${nsProcess::CloseProcess} "SABnzbd.exe" $R0
+    IntOp $R1 $R1 + 1
     Sleep 500
     Goto loop
+  forcekill:
+    ${nsProcess::KillProcess} "SABnzbd.exe" $R0
+    Sleep 500
   endcheck:
   ${nsProcess::Unload}
 
   ;------------------------------------------------------------------
   ; Make sure old versions are gone (reg-key already read in onInt)
   StrCmp $PREV_INST_DIR "" noPrevInstallRemove
+    ; Only remove the directory if it actually contains a SABnzbd installation,
+    ; the registry value could point anywhere
+    IfFileExists "$PREV_INST_DIR\SABnzbd.exe" 0 noPrevInstallRemove
     ${RemovePrev} "$PREV_INST_DIR"
     Goto continueSetupAfterRemove
 
@@ -264,7 +278,9 @@ Section "SABnzbd" SecDummy
   WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "Comments" 'The automated Usenet download tool'
   WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "DisplayIcon" '$INSTDIR\icons\sabnzbd.ico'
 
-  WriteRegDWORD HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "EstimatedSize"  40674
+  ; Calculate the actual installed size for Add/Remove Programs
+  ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
+  WriteRegDWORD HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "EstimatedSize" "$0"
   WriteRegDWORD HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "NoRepair" -1
   WriteRegDWORD HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "NoModify" -1
 
@@ -351,7 +367,6 @@ Function .onInit
     endCheckDesktop:
     SetShellVarContext all
 
-    Push $1
     ReadRegStr $1 HKCR ".nzb" ""  ; read current file association
     StrCmp "$1" "NZB File" noPrevInstall 0
       SectionSetFlags ${assoc} 0 ; Uncheck it when it wasn't checked before
@@ -367,9 +382,34 @@ FunctionEnd
 ; begin uninstall settings/section
 UninstallText $(MsgUninstall)
 
+; Uninstaller variants of the servicelib functions, needed by the SERVICE macro.
+; APITAG is undefined again at the end of servicelib.nsh, so redefine it here.
+!define APITAG "W"
+
+Function un.Service
+  !insertmacro FUNC_SERVICE "un."
+FunctionEnd
+
+Function un.GetParam
+  !insertmacro FUNC_GETPARAM
+FunctionEnd
+
+!undef APITAG
+
 Section "un.$(MsgDelProgram)" Uninstall
 ;make sure sabnzbd.exe isn't running..if so shut it down
   DetailPrint $(MsgShutting)
+
+  ; Stop and remove the SABnzbd service, if it is installed
+  !insertmacro SERVICE "installed" "SABnzbd" ""
+  Pop $0
+  ${If} $0 == true
+    !insertmacro SERVICE "stop" "SABnzbd" ""
+    Pop $0
+    !insertmacro SERVICE "delete" "SABnzbd" ""
+    Pop $0
+  ${EndIf}
+
   ${nsProcess::KillProcess} "SABnzbd.exe" $R0
   ${nsProcess::Unload}
 
@@ -380,7 +420,10 @@ Section "un.$(MsgDelProgram)" Uninstall
   DeleteRegKey HKEY_CURRENT_USER "Software\Classes\AppUserModelId\SABnzbd"
   DeleteRegKey HKEY_CURRENT_USER "Software\SABnzbd"
 
-  ${RemovePrev} "$INSTDIR"
+  ; Only remove the directory if it actually contains a SABnzbd installation
+  IfFileExists "$INSTDIR\SABnzbd.exe" 0 skipRemoveDir
+    ${RemovePrev} "$INSTDIR"
+  skipRemoveDir:
   ${RemovePrevShortcuts}
 
   ; Remove firewall entries
@@ -393,8 +436,10 @@ Section "un.$(MsgDelProgram)" Uninstall
 SectionEnd ; end of uninstall section
 
 Section /o "un.$(MsgDelSettings)" DelSettings
-  DetailPrint "Uninstall settings $LOCALAPPDATA"
-  Delete "$LOCALAPPDATA\sabnzbd\sabnzbd.ini"
+  ; The main uninstall section leaves the context on "all", which would make
+  ; $LOCALAPPDATA point to C:\ProgramData instead of the user's profile
+  SetShellVarContext current
+  DetailPrint "Uninstall settings $LOCALAPPDATA\sabnzbd"
   RMDir /r "$LOCALAPPDATA\sabnzbd"
 SectionEnd
 
@@ -503,14 +548,14 @@ SectionEnd
   LangString MsgNoWin7      ${LANG_SIMPCHINESE} "SABnzbd 仅支持 Windows 8.1 及更高版本。"
 
   LangString MsgARM64Notice ${LANG_ENGLISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
-  LangString MsgARM64Notice ${LANG_CZECH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
-  LangString MsgARM64Notice ${LANG_DANISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
-  LangString MsgARM64Notice ${LANG_GERMAN} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
-  LangString MsgARM64Notice ${LANG_SPANISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_CZECH} "Na naší stránce „Ke stažení“ je k dispozici verze SABnzbd pro architekturu ARM. Tento instalační program obsahuje pouze standardní verzi.$\nStiskněte tlačítko OK pro pokračování nebo Zrušit pro ukončení."
+  LangString MsgARM64Notice ${LANG_DANISH} "En ARM-version af SABnzbd er tilgængelig på vores downloadside. Dette installationsprogram indeholder kun den almindelige version.$\nTryk på OK for at fortsætte eller Annuller for at afslutte."
+  LangString MsgARM64Notice ${LANG_GERMAN} "Eine ARM-Version von SABnzbd ist auf unserer Downloads-Seite verfügbar. Dieses Installationsprogramm enthält nur die reguläre Version.$\nKlicken Sie auf OK, um fortzufahren, oder auf Abbrechen, um zu beenden."
+  LangString MsgARM64Notice ${LANG_SPANISH} "Hay una versión ARM de SABnzbd disponible en nuestra página de descargas. Este instalador solo contiene la versión normal.$\nPulsa Aceptar para continuar o Cancelar para salir."
   LangString MsgARM64Notice ${LANG_FINNISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
   LangString MsgARM64Notice ${LANG_FRENCH} "Une version ARM de SABnzbd est disponible sur notre page de téléchargement. Ce programme d'installation ne contient que la version standard.$\nCliquez sur OK pour continuer ou sur Annuler pour quitter."
-  LangString MsgARM64Notice ${LANG_HEBREW} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
-  LangString MsgARM64Notice ${LANG_ITALIAN} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_HEBREW} "גרסת ARM של SABnzbd זמינה בעמוד ההורדות שלנו. תוכנת התקנה זו מכילה רק את הגרסה הרגילה.$\nלחץ על אישור כדי להמשיך או על ביטול כדי לצאת."
+  LangString MsgARM64Notice ${LANG_ITALIAN} "Una versione ARM di SABnzbd è disponibile nella nostra pagina dei download. Questo programma di installazione contiene solo la versione normale.$\nPremi OK per continuare o Annulla per uscire."
   LangString MsgARM64Notice ${LANG_NORWEGIAN} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
   LangString MsgARM64Notice ${LANG_DUTCH} "Er is een ARM versie van SABnzbd beschikbaar op onze Downloads pagina. Deze installatie bevat alleen de normale (niet-ARM) versie.$\nKlik OK om door te gaan of Annuleren om af te breken."
   LangString MsgARM64Notice ${LANG_POLISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
@@ -520,7 +565,7 @@ SectionEnd
   LangString MsgARM64Notice ${LANG_SERBIAN} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
   LangString MsgARM64Notice ${LANG_SWEDISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
   LangString MsgARM64Notice ${LANG_TURKISH} "SABnzbd'nin ARM sürümü İndirmeler sayfamızda mevcuttur. Bu kurulum programı sadece normal sürümü içermektedir.$\nDevam etmek için Tamam'a veya çıkmak için İptal'e tıklayın."
-  LangString MsgARM64Notice ${LANG_SIMPCHINESE} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_SIMPCHINESE} "我们的下载页面提供 SABnzbd 的 ARM 版本。此安装程序仅包含常规版本。$\n按“确定”继续，或按“取消”退出。"
 
   LangString MsgShutting    ${LANG_ENGLISH} "Shutting down SABnzbd"
   LangString MsgShutting    ${LANG_CZECH} "Vypínání SABnzbd"

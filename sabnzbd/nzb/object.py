@@ -25,7 +25,8 @@ import logging
 import datetime
 import threading
 import difflib
-from typing import Any, Optional, Union, BinaryIO, Deque
+from typing import Literal, Optional, TypedDict, BinaryIO
+from collections import deque
 
 # SABnzbd modules
 import sabnzbd
@@ -48,6 +49,7 @@ from sabnzbd.constants import (
     Status,
     DuplicateStatus,
     NZO_FILE,
+    ONDISK_FILE,
 )
 from sabnzbd.misc import (
     to_units,
@@ -96,6 +98,32 @@ import sabnzbd.cfg as cfg
 from sabnzbd.downloader import Server
 from sabnzbd.database import HistoryDB
 from sabnzbd.deobfuscate_filenames import is_probably_obfuscated
+
+# Fixed types for the bad-article counter keys
+BadArticleType = Literal["bad_articles", "missing_articles", "duplicate_articles"]
+
+
+class NzoInfo(TypedDict, total=False):
+    """Metadata accumulated during download and post-processing of an NZB job.
+    All fields are optional — they are set incrementally as information becomes available.
+    """
+
+    # Set from HTTP response headers (urlgrabber) or NZB <meta> tags
+    more_info: str
+    propername: str
+    episodename: str
+    year: str
+    failure: str
+    details: str
+    password: str
+    # RSS feed source name
+    RSS: str
+    # Download duration in seconds (set on completion)
+    download_time: int
+    # Article quality counters (incremented during download)
+    bad_articles: int
+    missing_articles: int
+    duplicate_articles: int
 
 
 class NzbEmpty(Exception):
@@ -190,11 +218,11 @@ class NzbObject(TryList):
         futuretype: bool = False,
         cat: Optional[str] = None,
         url: Optional[str] = None,
-        priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
+        priority: Optional[int | str] = DEFAULT_PRIORITY,
         password: Optional[str] = None,
         nzbname: Optional[str] = None,
         status: str = Status.QUEUED,
-        nzo_info: Optional[dict[str, Any]] = None,
+        nzo_info: Optional[NzoInfo] = None,
         reuse: Optional[str] = None,
         nzo_id: Optional[str] = None,
         dup_check: bool = True,
@@ -313,7 +341,7 @@ class NzbObject(TryList):
         # Stores one line containing the last failure
         self.fail_msg = ""
         # Stores various info about the nzo to be
-        self.nzo_info: dict[str, Any] = nzo_info or {}
+        self.nzo_info: NzoInfo = nzo_info or {}
 
         self.next_save = None
         self.save_timeout = None
@@ -699,7 +727,7 @@ class NzbObject(TryList):
         """In case of a broken par2 or missing par2, move another
         of the same set to the top (if we can find it)
         """
-        setname, vol, block = analyse_par2(nzf.filename)
+        setname, _vol, _block = analyse_par2(nzf.filename)
         # Now we need to identify if we have more in this set
         if setname and self.repair:
             # Maybe it was the first one
@@ -828,12 +856,8 @@ class NzbObject(TryList):
 
         # Substitute renamed files
         if renames := load_data(RENAMES_FILE, self.admin_path, remove=True):
-            for name in renames:
-                if name in existing_files or renames[name] in existing_files:
-                    if name in existing_files:
-                        existing_files.remove(name)
-                    existing_files.append(renames[name])
-            self.renames = renames
+            for name, old_name in renames.items():
+                self.renamed_file(name, old_name)
 
         # Looking for the longest name first, minimizes the chance on a mismatch
         existing_files.sort(key=len)
@@ -842,21 +866,45 @@ class NzbObject(TryList):
         nzfs = self.files[:]
         nzfs.sort(key=lambda x: len(x.filename))
 
+        # Mapping of filename to bitmap of articles already on disk
+        on_disk_lookup: dict[str, list[bool]] = {}
+        if cfg.direct_write() and (on_disk_data := load_data(ONDISK_FILE, self.admin_path, remove=True)):
+            _, mapping = on_disk_data
+            on_disk_lookup: dict[str, list[bool]] = mapping
+
         # Flag files from NZB that already exist as finished
         for existing_filename in existing_files[:]:
             for nzf in nzfs:
-                if existing_filename in nzf.filename:
+                if existing_filename in nzf.filename or nzf.filename == self.renames.get(existing_filename, None):
                     logging.info("Matched file %s to %s of %s", existing_filename, nzf.filename, self.final_name)
                     nzf.filename = existing_filename
-                    nzf.bytes_left = 0
-                    self.remove_nzf(nzf)
-                    nzfs.remove(nzf)
+                    nzf.filename_checked = True
+                    nzf.filepath = os.path.join(self.download_path, existing_filename)
+                    self.filenames.add(existing_filename)
                     existing_files.remove(existing_filename)
 
-                    # Set bytes correctly
-                    nzf.bytes_left = 0
-                    self.bytes_tried += nzf.bytes
-                    self.bytes_downloaded += nzf.bytes
+                    # Does the finished file have missing articles
+                    if on_disks := on_disk_lookup.get(existing_filename, None):
+                        if not nzf.import_finished:
+                            nzf.finish_import()
+                        for index, on_disk in enumerate(on_disks):
+                            if on_disk:
+                                article = nzf.decodetable[index]
+                                article.on_disk = True
+                                self.remove_article(article, True)
+                    else:
+                        # Since not import_finished will only contain first articles
+                        for article in nzf.decodetable:
+                            article.on_disk = True
+                        # Mark as assembled so when it is imported the articles are marked on_disk
+                        nzf.assembled = True
+                        self.remove_nzf(nzf)
+                        nzfs.remove(nzf)
+
+                        # Set bytes correctly
+                        nzf.bytes_left = 0
+                        self.bytes_tried += nzf.bytes
+                        self.bytes_downloaded += nzf.bytes
                     break
 
         # Create an NZF for each remaining existing file
@@ -871,7 +919,8 @@ class NzbObject(TryList):
                 self.files.append(nzf)
                 self.files_table[nzf.nzf_id] = nzf
                 nzf.filename = existing_filename
-                self.remove_nzf(nzf)
+                if not nzf.articles:
+                    self.remove_nzf(nzf)
 
                 # Set bytes correctly
                 nzf.bytes_left = 0
@@ -915,7 +964,7 @@ class NzbObject(TryList):
         if not self.unpack:
             self.abort_direct_unpacker()
 
-    def set_priority(self, value: Optional[Union[int, str]]):
+    def set_priority(self, value: Optional[int | str]):
         """Check if this is a valid priority"""
         # When unknown (0 is a known one), set to DEFAULT
         if value == "" or value is None:
@@ -1196,7 +1245,7 @@ class NzbObject(TryList):
         self.set_unpack_info("Source", self.url or self.filename, unique=True)
 
     @synchronized()
-    def increase_bad_articles_counter(self, bad_article_type: str):
+    def increase_bad_articles_counter(self, bad_article_type: BadArticleType):
         """Record information about bad articles. Should be called before
         register_article, which triggers the availability check."""
         if bad_article_type not in self.nzo_info:
@@ -1206,7 +1255,7 @@ class NzbObject(TryList):
 
     def get_articles(self, server: Server, servers: list[Server], fetch_limit: int):
         """Assign articles server up to the fetch_limit"""
-        articles: Deque[Article] = server.article_queue
+        articles: deque[Article] = server.article_queue
         nzf_remove_list = []
 
         # Did we go through all first-articles?
@@ -1379,15 +1428,17 @@ class NzbObject(TryList):
             self.direct_unpacker.set_volumes_for_nzo()
 
     @synchronized()
-    def renamed_file(self, name_set, old_name=None):
+    def renamed_file(self, renames_or_name: dict[str, str] | str, old_name: Optional[str] = None):
         """Save renames at various stages (Download/PP)
         to be used on Retry. Accepts strings and dicts.
         """
-        if not old_name:
+        if isinstance(renames_or_name, dict):
             # Add to dict
-            self.renames.update(name_set)
-        else:
-            self.renames[name_set] = old_name
+            for name, old_name in renames_or_name.items():
+                if old_name is not None:
+                    self.renames[name] = self.renames.pop(old_name, old_name)
+        elif old_name is not None:
+            self.renames[renames_or_name] = self.renames.pop(old_name, old_name)
 
     @synchronized()
     def get_unique_filepath(self, filename: str) -> str:
@@ -1672,6 +1723,11 @@ class NzbObject(TryList):
         ):
             logging.info("Pausing duplicate alternative %s", self.final_name)
             self.pause()
+
+    @synchronized()
+    def on_disk(self) -> dict[str, list[bool]]:
+        """Mapping of filename to list of on_disk articles per file"""
+        return {nzf.filename: bm for nzf in self.finished_files if (bm := nzf.on_disk()) is not None}
 
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""

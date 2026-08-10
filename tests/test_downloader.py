@@ -21,13 +21,14 @@ tests.test_downloader - Test the downloader connection state machine
 
 import socket
 import threading
+import pytest
+import time
+from unittest import mock
 
 import sabnzbd.cfg
 from sabnzbd.downloader import Server, Downloader
 from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.get_addrinfo import AddrInfo
-
-from tests.testhelper import *
 
 
 class FakeNNTPServer:
@@ -54,7 +55,7 @@ class FakeNNTPServer:
     def _accept_loop(self):
         while not self._stop.is_set():
             try:
-                conn, addr = self.server_socket.accept()
+                conn, _addr = self.server_socket.accept()
                 self.connections.append(conn)
                 threading.Thread(target=self._handle_client, args=(conn,), daemon=True).start()
             except OSError:
@@ -78,7 +79,7 @@ class FakeNNTPServer:
                         conn.sendall(b"381 More auth required\r\n")
                     elif data.startswith(b"authinfo pass"):
                         conn.sendall(b"281 Auth accepted\r\n")
-                except socket.timeout:
+                except TimeoutError:
                     continue
         except Exception:
             pass
@@ -101,21 +102,6 @@ class FakeNNTPServer:
 @pytest.fixture
 def fake_nntp_server(request):
     """Fixture that provides a fake NNTP server"""
-    params = getattr(request, "param", {})
-
-    # For fail_connect, don't start a server at all - use a closed port
-    if params.get("fail_connect"):
-        # Find a port and don't listen on it
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.bind(("127.0.0.1", 0))
-        port = sock.getsockname()[1]
-
-        server = FakeNNTPServer(port=port)
-        server.port = port  # Don't start, just hold the port number
-        yield server
-        sock.close()
-        return
-
     server = FakeNNTPServer()
     server.start()
     yield server
@@ -259,23 +245,3 @@ class TestConnectionStateMachine:
         assert nw.nntp is None
         assert nw.connected is False
         assert nw.ready is False
-
-    @pytest.mark.parametrize("fake_nntp_server", [{"fail_connect": True}], indirect=True)
-    @pytest.mark.parametrize("test_server", [{"timeout": 0.1}], indirect=True)
-    def test_failed_connect_allows_retry(self, fake_nntp_server, test_server, mock_downloader):
-        """Failed connect should set error_msg (and optionally clear nntp)"""
-        nw = NewsWrapper(test_server, thrdnum=1)
-        test_server.idle_threads.add(nw)
-
-        nw.init_connect()
-
-        # Wait for connect to fail (connection refused)
-        for _ in range(100):
-            if nw.nntp is None:
-                break
-            time.sleep(0.05)
-
-        # Connection should have failed and been reset
-        assert nw.ready is False
-        assert nw.connected is False
-        assert nw.nntp is None

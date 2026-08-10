@@ -1,8 +1,8 @@
 <div id="queue-messages" class="queue-messages" data-bind="visible: hasMessages() || displayTabbed()" style="display: none;">
-    <table class="table table-hover table-messages">
+    <table class="table table-hover table-messages" aria-label="$T('warnings')">
         <thead>
             <tr>
-                <th class="table-messages-header-label"></th>
+                <th class="table-messages-header-label"><span class="sr-only">$T('warnings')</span></th>
                 <th style="width: 30px;"></th>
             </tr>
         </thead>
@@ -11,7 +11,7 @@
                 <tr>
                     <td class="table-messages-hide"></td>
                     <td data-bind="attr: { 'rowspan': parseInt(nrWarnings())+1 }, click: clearWarnings" class="table-messages-remove">
-                        <a href="#" class="hover-button"><span class="glyphicon glyphicon-remove"></span></a>
+                        <a href="#" class="hover-button" aria-label="$T('button-clear')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
                     </td>
                 </tr>
                 <!-- ko foreach: allWarnings -->
@@ -32,7 +32,7 @@
                     </td>
                     <!-- ko if: \$data.hasOwnProperty("clear") -->
                     <td class="table-messages-remove">
-                        <a href="#" data-bind="click: clear"  class="hover-button"><span class="glyphicon glyphicon-remove"></span></a>
+                        <a href="#" data-bind="click: clear" class="hover-button" aria-label="$T('button-clear')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
                     </td>
                     <!-- /ko -->
                 </tr>

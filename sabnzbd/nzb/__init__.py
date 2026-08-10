@@ -20,37 +20,26 @@ sabnzbd.nzb - NZB-related classes and functionality
 """
 
 # Article-related classes
-from sabnzbd.nzb.article import Article, ArticleSaver, TryList
+from sabnzbd.nzb.article import Article, TryList
 
 # File-related classes
-from sabnzbd.nzb.file import NzbFile, NzbFileSaver, SkippedNzbFile
+from sabnzbd.nzb.file import NzbFile, SkippedNzbFile
 
 # Object-related classes
-from sabnzbd.nzb.object import (
-    NzbObject,
-    NzbObjectSaver,
-    NzoAttributeSaver,
-    NzbEmpty,
-    NzbRejected,
-    NzbPreQueueRejected,
-    NzbRejectToHistory,
-)
+from sabnzbd.nzb.object import NzbObject, NzbEmpty, NzbRejected, NzbPreQueueRejected, NzbRejectToHistory, NzoInfo
 
 __all__ = [
     # Article
-    "Article",
-    "ArticleSaver",
     "TryList",
+    "Article",
     # File
     "NzbFile",
-    "NzbFileSaver",
     "SkippedNzbFile",
     # Object
     "NzbObject",
-    "NzbObjectSaver",
-    "NzoAttributeSaver",
     "NzbEmpty",
     "NzbRejected",
     "NzbPreQueueRejected",
     "NzbRejectToHistory",
+    "NzoInfo",
 ]

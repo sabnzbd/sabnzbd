@@ -19,13 +19,22 @@
 tests.test_api - Tests for API functions
 """
 
+import os
+from random import choice, randint
+from unittest import mock
+
 import cherrypy
 import pytest
 
-from tests.testhelper import *
-
+import sabnzbd
 import sabnzbd.api as api
+import sabnzbd.cfg
+import sabnzbd.config
+import sabnzbd.database as db
 import sabnzbd.interface as interface
+from sabnzbd.constants import DB_HISTORY_NAME, DEF_ADMIN_DIR, PP_LOOKUP
+from sabnzbd.misc import pp_to_opts
+from tests.testhelper import FakeHistoryDB, SAB_CACHE_DIR
 
 
 class TestApiInternals:
@@ -45,6 +54,149 @@ class TestApiInternals:
 
     def test_auth(self):
         assert "apikey" in str(api.api_handler({"mode": "auth"}))
+
+    @pytest.mark.parametrize(
+        "line,ip",
+        [
+            (
+                b"2026-05-19 18:35:18,271::INFO::[notifier:169] Sending notification: Warning - Unsuccessful login attempt from ::ffff:172.18.0.1 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0] (type=warning, job_cat=None)\n",
+                b"::ffff:172.18.0.1",
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 172.18.0.1 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"172.18.0.1",
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 2001:4860::1 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"<REMOVED>",
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 8.8.8.8 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"<REMOVED>",
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 127.0.0.1 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"127.0.0.1",
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from fe80::1 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"fe80::1",
+            ),
+        ],
+        ids=[
+            "ipv6-local",
+            "ipv4-local",
+            "ipv6-removed",
+            "ipv4-removed",
+            "ipv4-loopback",
+            "ipv6-linklocal",
+        ],
+    )
+    def test_log_sanitize_remote_label(self, line, ip):
+        sanitized = api.sanitize_line(line)
+        assert (
+            sanitized.count(
+                b"%s [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]" % ip
+            )
+            == 1
+        )
+
+    @pytest.mark.parametrize(
+        "line,ip,xff",
+        [
+            (
+                b"2026-05-19 18:35:18,271::INFO::[notifier:169] Sending notification: Warning - Unsuccessful login attempt from ::ffff:172.18.0.1 (X-Forwarded-For: 8.8.8.8, 1.1.1.1) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0] (type=warning, job_cat=None)\n",
+                b"::ffff:172.18.0.1",
+                [b"<REMOVED>", b"<REMOVED>"],
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 172.18.0.1 (X-Forwarded-For: 8.8.8.8, 1.1.1.1) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"172.18.0.1",
+                [b"<REMOVED>", b"<REMOVED>"],
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 2001:4860::1 (X-Forwarded-For: 192.168.0.50, 8.8.8.8) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"<REMOVED>",
+                [b"192.168.0.50", b"<REMOVED>"],
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 8.8.8.8 (X-Forwarded-For: 1.1.1.1) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"<REMOVED>",
+                [b"<REMOVED>"],
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 127.0.0.1 (X-Forwarded-For: 127.1.2.3) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"127.0.0.1",
+                [b"127.1.2.3"],
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from fe80::1 (X-Forwarded-For: fe80::2) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"fe80::1",
+                [b"fe80::2"],
+            ),
+        ],
+        ids=[
+            "ipv6-local-removed-removed",
+            "ipv4-local-removed-removed",
+            "ipv6-removed-local-removed",
+            "ipv4-removed-removed",
+            "ipv4-loopback-loopback",
+            "ipv6-linklocal-linklocal",
+        ],
+    )
+    def test_log_sanitize_remote_label_xff(self, line, ip, xff):
+        sanitized = api.sanitize_line(line)
+        assert (
+            sanitized.count(
+                b"%s (X-Forwarded-For: %s) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]"
+                % (ip, b", ".join(xff))
+            )
+            == 1
+        )
+
+
+class TestOrphanPathTraversal:
+    """Orphaned-job handlers must not allow deleting/adding paths outside the download folder"""
+
+    @pytest.fixture
+    def download_dir(self, tmp_path):
+        """Point cfg.download_dir at a temporary folder for the duration of a test"""
+        ddir = tmp_path / "incomplete"
+        ddir.mkdir()
+        with mock.patch.object(api.cfg.download_dir, "get_path", return_value=str(ddir)):
+            yield str(ddir)
+
+    # Values that must be silently rejected: absolute paths and '..' traversal escape the
+    # download folder, an empty value resolves to the download folder itself
+    traversal_values = [
+        "/etc/passwd",  # absolute path overrides the join base
+        "../../../etc/passwd",  # traversal with ..
+        "..",  # the parent of the download folder
+        "sub/../../escape",  # traversal hidden behind a valid component
+        "",  # resolves to the download folder itself
+    ]
+
+    @pytest.mark.parametrize("value", traversal_values)
+    def test_delete_orphan_does_not_remove_outside(self, download_dir, value):
+        with mock.patch.object(api, "remove_all") as remove_all_mock:
+            api._api_delete_orphan(value, {})
+            remove_all_mock.assert_not_called()
+
+    def test_delete_orphan_removes_valid_child(self, download_dir):
+        with mock.patch.object(api, "remove_all") as remove_all_mock:
+            api._api_delete_orphan("myjob", {})
+            remove_all_mock.assert_called_once_with(os.path.join(download_dir, "myjob"), recursive=True)
+
+    @pytest.mark.parametrize("value", traversal_values)
+    def test_add_orphan_does_not_repair_outside(self, download_dir, value):
+        with mock.patch.object(sabnzbd, "NzbQueue", create=True) as nzbqueue_mock:
+            api._api_add_orphan(value, {})
+            nzbqueue_mock.repair_job.assert_not_called()
+
+    def test_add_orphan_repairs_valid_child(self, download_dir):
+        with mock.patch.object(sabnzbd, "NzbQueue", create=True) as nzbqueue_mock:
+            api._api_add_orphan("myjob", {})
+            nzbqueue_mock.repair_job.assert_called_once_with(os.path.join(download_dir, "myjob"), None, None)
 
 
 def set_remote_host_or_ip(hostname: str = "localhost", remote_ip: str = "127.0.0.1"):
@@ -117,12 +269,12 @@ class TestSecuredExpose:
             set_remote_host_or_ip(hostname=test_hostname)
             self.check_full_access()
 
-    @set_config({"username": "foo", "password": "bar"})
+    @pytest.mark.config({"username": "foo", "password": "bar"})
     def test_check_hostname_not_user_password(self):
         set_remote_host_or_ip(hostname="not_me")
         self.check_full_access(redirect_match=r".*login.*")
 
-    @set_config({"host_whitelist": "test.com, not_evil"})
+    @pytest.mark.config({"host_whitelist": "test.com, not_evil"})
     def test_check_hostname_whitelist(self):
         set_remote_host_or_ip(hostname="test.com")
         self.check_full_access()
@@ -133,7 +285,7 @@ class TestSecuredExpose:
         set_remote_host_or_ip(remote_ip="::ffff:192.168.0.10")
         self.check_full_access()
 
-    @set_config({"local_ranges": "132.10."})
+    @pytest.mark.config({"local_ranges": "132.10."})
     def test_dual_stack_local_ranges(self):
         # Without custom local_ranges this one would be allowed
         set_remote_host_or_ip(remote_ip="::ffff:192.168.0.10")
@@ -209,7 +361,7 @@ class TestSecuredExpose:
         # Reset it
         sabnzbd.cfg.inet_exposure.set(sabnzbd.cfg.inet_exposure.default)
 
-    @set_config({"inet_exposure": 5, "username": "foo", "password": "bar"})
+    @pytest.mark.config({"inet_exposure": 5, "username": "foo", "password": "bar"})
     def test_inet_exposure_login_for_external(self):
         # Local user: full access
         set_remote_host_or_ip()
@@ -219,7 +371,7 @@ class TestSecuredExpose:
         set_remote_host_or_ip(hostname="100.100.100.100", remote_ip="11.11.11.11")
         self.check_full_access(redirect_match=r".*login.*")
 
-    @set_config({"api_warnings": False})
+    @pytest.mark.config({"api_warnings": False})
     def test_no_text_warnings(self):
         assert self.main_page.index() is None
         assert cherrypy.response.status == 403
@@ -237,7 +389,7 @@ class TestHistory:
         history_db = os.path.join(SAB_CACHE_DIR, DEF_ADMIN_DIR, DB_HISTORY_NAME)
         with FakeHistoryDB(history_db) as fake_history:
             fake_history.add_fake_history_jobs(1)
-            jobs, total_items = fake_history.fetch_history()
+            jobs, _total_items = fake_history.fetch_history()
             history_job = jobs[-1]
 
             # Add minimal attributes to create pp-job

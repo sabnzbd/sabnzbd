@@ -1,175 +1,237 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2022-2026 by The SABnzbd-Team (sabnzbd.org) -->
 <component type="desktop-application">
-  <id>org.sabnzbd.sabnzbd</id>
-  <metadata_license>MIT</metadata_license>
-  <name>SABnzbd</name>
-  <summary>Free and easy binary newsreader</summary>
-  <branding>
-    <color type="primary" scheme_preference="light">#e7e7e7</color>
-    <color type="primary" scheme_preference="dark">#444444</color>
-  </branding>
-  <description>
-    <p>
-      SABnzbd is a free and Open Source web-based binary newsreader,
-      with support for the popular nzb file format. It greatly simplifies
-      the process of downloading from Usenet, thanks to a friendly
-      web-based user interface and advanced built-in post-processing
-      options including the ability to automatically verify, repair,
-      extract and clean up downloaded posts. It runs anywhere, comes in
-      over a dozen languages, and integrates with a host of tools, apps
-      and services that help automate the download process.
-    </p>
-  </description>
-  <keywords>
-    <keyword>usenet</keyword>
-    <keyword>nzb</keyword>
-    <keyword>download</keyword>
-    <keyword>newsreader</keyword>
-    <keyword>binary</keyword>
-  </keywords>
-  <categories>
-    <category>Network</category>
-    <category>FileTransfer</category>
-  </categories>
-  <url type="homepage">https://sabnzbd.org</url>
-  <url type="bugtracker">https://github.com/sabnzbd/sabnzbd/issues</url>
-  <url type="vcs-browser">https://github.com/sabnzbd/sabnzbd</url>
-  <url type="contribute">https://github.com/sabnzbd/sabnzbd</url>
-  <url type="translate">https://sabnzbd.org/wiki/translate</url>
-  <url type="donation">https://sabnzbd.org/donate</url>
-  <url type="help">https://sabnzbd.org/wiki/</url>
-  <url type="faq">https://sabnzbd.org/wiki/faq</url>
-  <url type="contact">https://sabnzbd.org/live-chat.html</url>
-  <releases>
-    <release version="5.0.4" date="2026-06-11" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/5.0.4</url>
-    </release>
-    <release version="5.0.3" date="2026-05-15" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/5.0.3</url>
-    </release>
-    <release version="5.0.2" date="2026-05-14" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/5.0.2</url>
-    </release>
-    <release version="5.0.1" date="2026-05-01" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/5.0.1</url>
-    </release>
-    <release version="5.0.0" date="2026-05-01" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/5.0.0</url>
-    </release>
-    <release version="4.5.5" date="2025-10-24" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.5</url>
-    </release>
-    <release version="4.5.4" date="2025-10-22" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.4</url>
-    </release>
-    <release version="4.5.3" date="2025-08-25" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.3</url>
-    </release>
-    <release version="4.5.2" date="2025-07-09" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.2</url>
-    </release>
-    <release version="4.5.1" date="2025-04-11" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.1</url>
-    </release>
-    <release version="4.5.0" date="2025-04-01" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.0</url>
-    </release>
-    <release version="4.4.1" date="2024-12-23" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.4.1</url>
-    </release>
-    <release version="4.4.0" date="2024-12-09" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.4.0</url>
-    </release>
-    <release version="4.3.3" date="2024-08-01" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.3.3</url>
-    </release>
-    <release version="4.3.2" date="2024-05-30" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.3.2</url>
-    </release>
-    <release version="4.3.1" date="2024-05-03" type="stable">
-      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.3.1</url>
-    </release>
-  </releases>
-  <launchable type="desktop-id">sabnzbd.desktop</launchable>
-  <provides>
-    <mediatype>application/x-nzb</mediatype>
-    <mediatype>application/x-compressed-nzb</mediatype>
-  </provides>
-  <supports>
-    <control>pointing</control>
-    <control>keyboard</control>
-    <control>touch</control>
-  </supports>
-  <recommends>
-    <display_length compare="ge">640</display_length>
-    <internet>always</internet>
-  </recommends>
-  <project_license>GPL-2.0-or-later</project_license>
-  <developer id="org.sabnzbd">
-    <name>The SABnzbd-Team</name>
-  </developer>
-  <screenshots>
-    <screenshot type="default">
-      <image>https://sabnzbd.org/images/landing/screenshots/interface.png</image>
-      <caption>Intuitive interface</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/night-mode.png</image>
-      <caption>Also comes in Night-mode</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/add-nzb.png</image>
-      <caption>Add NZB's or use drag-and-drop!</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/phone-interface.png</image>
-      <caption>Scales to any screen size</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/history-details.png</image>
-      <caption>Easy overview of all history details</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/phone-extra.png</image>
-      <caption>Every option, on every screen size</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/file-lists.png</image>
-      <caption>Manage a job's individual files</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/set-speedlimit.png</image>
-      <caption>Easy speed limiting</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/set-options.png</image>
-      <caption>Quickly change settings</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/dashboard.png</image>
-      <caption>Easy system check</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/connections-overview.png</image>
-      <caption>See active connections</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/skin-settings.png</image>
-      <caption>Customize the interface</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/tabbed.png</image>
-      <caption>Tabbed-mode</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/set-custom-pause.png</image>
-      <caption>Specify any pause duration</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://sabnzbd.org/images/landing/screenshots/config.png</image>
-      <caption>Easy configuration</caption>
-    </screenshot>
-  </screenshots>
-  <content_rating type="oars-1.1"/>
+    <id>org.sabnzbd.sabnzbd</id>
+    <metadata_license>MIT</metadata_license>
+    <name>SABnzbd</name>
+    <summary>Free and easy binary newsreader</summary>
+    <summary xml:lang="fr">Lecteur de news binaire libre et facile à utiliser</summary>
+    <summary xml:lang="tr">Özgür ve kullanımı kolay Usenet ikili okuyucu</summary>
+    <branding>
+        <color type="primary" scheme_preference="light">#e7e7e7</color>
+        <color type="primary" scheme_preference="dark">#444444</color>
+    </branding>
+    <description>
+        <p>
+            SABnzbd is a free and Open Source web-based binary newsreader,
+            with support for the popular nzb file format. It greatly simplifies
+            the process of downloading from Usenet, thanks to a friendly
+            web-based user interface and advanced built-in post-processing
+            options including the ability to automatically verify, repair,
+            extract and clean up downloaded posts. It runs anywhere, comes in
+            over a dozen languages, and integrates with a host of tools, apps
+            and services that help automate the download process.
+        </p>
+        <p xml:lang="fr">
+            SABnzbd est un lecteur binaire de newsgroups libre et gratuit prenant
+            en charge le format nzb très répandu. Il simplifie grandement le processus
+            de téléchargement depuis Usenet grâce à une interface web conviviale
+            et à des options avancées de post-traitement intégrées qui comprennent
+            la capacité à vérifier, réparer, extraire et nettoyer automatiquement
+            les messages téléchargés. Il fonctionne partout, est fourni avec une
+            douzaine de traductions et s'intègre avec de nombreux outils, applications
+            et services qui aident à automatiser le processus de téléchargement.
+        </p>
+        <p xml:lang="tr">
+            SABnzbd, popüler nzb biçimini destekleyen özgür ve ücretsiz bir ikili
+            haber grupları okuyucusudur. Kullanıcı dostu Web tabanlı arayüzü ve
+            indirilen mesajları otomatik olarak doğrulama, tamir etme, çıkarma ve
+            temizleme kabiliyetine sahip gelişmiş yerleşik son işlem seçenekleri
+            sayesinde Usenet ağından indirmeyi büyük ölçüde kolaylaştırır. Her yerde
+            çalışabilir, bir düzineden fazla dil desteği sunar ve indirme sürecini
+            otomatik hâle getirmeye yardımcı olan birçok araç, uygulama ve hizmet ile
+            birlikte çalışabilir.
+        </p>
+    </description>
+    <keywords>
+        <keyword>usenet</keyword>
+        <keyword>nzb</keyword>
+        <keyword>download</keyword>
+        <keyword>newsreader</keyword>
+        <keyword>binary</keyword>
+        <keyword xml:lang="fr">usenet</keyword>
+        <keyword xml:lang="fr">nzb</keyword>
+        <keyword xml:lang="fr">téléchargement</keyword>
+        <keyword xml:lang="fr">binaires</keyword>
+        <keyword xml:lang="tr">usenet</keyword>
+        <keyword xml:lang="tr">nzb</keyword>
+        <keyword xml:lang="tr">indirme</keyword>
+    </keywords>
+    <categories>
+        <category>Network</category>
+        <category>FileTransfer</category>
+    </categories>
+    <url type="homepage">https://sabnzbd.org</url>
+    <url type="bugtracker">https://github.com/sabnzbd/sabnzbd/issues</url>
+    <url type="vcs-browser">https://github.com/sabnzbd/sabnzbd</url>
+    <url type="contribute">https://github.com/sabnzbd/sabnzbd</url>
+    <url type="translate">https://sabnzbd.org/wiki/translate</url>
+    <url type="donation">https://sabnzbd.org/donate</url>
+    <url type="help">https://sabnzbd.org/wiki/</url>
+    <url type="faq">https://sabnzbd.org/wiki/faq</url>
+    <url type="contact">https://sabnzbd.org/live-chat.html</url>
+    <releases>
+        <release version="5.1.0" date="2026-08-10" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/5.1.0</url>
+        </release>
+        <release version="5.0.4" date="2026-06-11" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/5.0.4</url>
+        </release>
+        <release version="5.0.3" date="2026-05-15" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/5.0.3</url>
+        </release>
+        <release version="5.0.2" date="2026-05-14" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/5.0.2</url>
+        </release>
+        <release version="5.0.1" date="2026-05-01" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/5.0.1</url>
+        </release>
+        <release version="5.0.0" date="2026-05-01" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/5.0.0</url>
+        </release>
+        <release version="4.5.5" date="2025-10-24" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.5</url>
+        </release>
+        <release version="4.5.4" date="2025-10-22" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.4</url>
+        </release>
+        <release version="4.5.3" date="2025-08-25" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.3</url>
+        </release>
+        <release version="4.5.2" date="2025-07-09" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.2</url>
+        </release>
+        <release version="4.5.1" date="2025-04-11" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.1</url>
+        </release>
+        <release version="4.5.0" date="2025-04-01" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.0</url>
+        </release>
+        <release version="4.4.1" date="2024-12-23" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.4.1</url>
+        </release>
+        <release version="4.4.0" date="2024-12-09" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.4.0</url>
+        </release>
+        <release version="4.3.3" date="2024-08-01" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.3.3</url>
+        </release>
+        <release version="4.3.2" date="2024-05-30" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.3.2</url>
+        </release>
+        <release version="4.3.1" date="2024-05-03" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.3.1</url>
+        </release>
+    </releases>
+    <launchable type="desktop-id">sabnzbd.desktop</launchable>
+    <provides>
+        <mediatype>application/x-nzb</mediatype>
+        <mediatype>application/x-compressed-nzb</mediatype>
+    </provides>
+    <supports>
+        <control>pointing</control>
+        <control>keyboard</control>
+        <control>touch</control>
+    </supports>
+    <recommends>
+        <display_length compare="ge">640</display_length>
+        <internet>always</internet>
+    </recommends>
+    <project_license>GPL-2.0-or-later</project_license>
+    <developer id="org.sabnzbd">
+        <name>The SABnzbd-Team</name>
+    </developer>
+    <screenshots>
+        <screenshot type="default">
+            <image>https://sabnzbd.org/images/landing/screenshots/interface.png</image>
+            <caption>Intuitive interface</caption>
+            <caption xml:lang="fr">Interface intuitive</caption>
+            <caption xml:lang="tr">Sezgisel arayüz</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/night-mode.png</image>
+            <caption>Also comes in Night-mode</caption>
+            <caption xml:lang="fr">Fourni également avec le mode nuit</caption>
+            <caption xml:lang="tr">Gece kipi ile de sunulur</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/add-nzb.png</image>
+            <caption>Add NZB's or use drag-and-drop!</caption>
+            <caption xml:lang="fr">Ajoutez des fichiers NZB ou utilisez le glisser - déposer !</caption>
+            <caption xml:lang="tr">NZB dosyaları ekleyin veya kaydır - bırak kullanın!</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/phone-interface.png</image>
+            <caption>Scales to any screen size</caption>
+            <caption xml:lang="fr">S'adapte à toutes les tailles d'écran</caption>
+            <caption xml:lang="tr">Her ekran boyutuna uyum sağlar</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/history-details.png</image>
+            <caption>Easy overview of all history details</caption>
+            <caption xml:lang="fr">Vue d'ensemble aisée de tous les détails de l'historique</caption>
+            <caption xml:lang="tr">Tarihçenin tüm ayrıntıları için kolay genel bakış</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/phone-extra.png</image>
+            <caption>Every option, on every screen size</caption>
+            <caption xml:lang="fr">Toutes les options, quelle que soit la taille d'écran</caption>
+            <caption xml:lang="tr">Ekran boyutu ne olursa olsun, tüm seçenekler elinizin altında</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/file-lists.png</image>
+            <caption>Manage a job's individual files</caption>
+            <caption xml:lang="fr">Gérez les fichiers individuels d'une tâche</caption>
+            <caption xml:lang="tr">Herhangi bir görevin dosyalarını tek tek yönetin</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/set-speedlimit.png</image>
+            <caption>Easy speed limiting</caption>
+            <caption xml:lang="fr">Limitation facile du débit</caption>
+            <caption xml:lang="tr">Kolay hız sınırlaması</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/set-options.png</image>
+            <caption>Quickly change settings</caption>
+            <caption xml:lang="fr">Changement rapide des réglages</caption>
+            <caption xml:lang="tr">Ayarları hızlıca değiştirin</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/dashboard.png</image>
+            <caption>Easy system check</caption>
+            <caption xml:lang="fr">Vérification facile du système</caption>
+            <caption xml:lang="tr">Sistemi kolayca kontrol edin</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/connections-overview.png</image>
+            <caption>See active connections</caption>
+            <caption xml:lang="fr">Voyez les connexions actives</caption>
+            <caption xml:lang="tr">Etkin bağlantıları görüntüleyin</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/skin-settings.png</image>
+            <caption>Customize the interface</caption>
+            <caption xml:lang="fr">Personnalisez l'interface</caption>
+            <caption xml:lang="tr">Arayüzü kişiselleştirin</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/tabbed.png</image>
+            <caption>Tabbed-mode</caption>
+            <caption xml:lang="fr">Mode avec onglets</caption>
+            <caption xml:lang="tr">Sekmeli kip</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/set-custom-pause.png</image>
+            <caption>Specify any pause duration</caption>
+            <caption xml:lang="fr">Spécifiez une durée de pause quelconque</caption>
+            <caption xml:lang="tr">Herhangi bir duraklama süresi belirtin</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://sabnzbd.org/images/landing/screenshots/config.png</image>
+            <caption>Easy configuration</caption>
+            <caption xml:lang="fr">Configuration facile</caption>
+            <caption xml:lang="tr">Kolay yapılandırma</caption>
+        </screenshot>
+    </screenshots>
+    <content_rating type="oars-1.1"/>
 </component>

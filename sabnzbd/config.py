@@ -28,7 +28,8 @@ import time
 import uuid
 import io
 import zipfile
-from typing import Any, Callable, Optional, Union
+from itertools import chain
+from typing import Any, Callable, Optional, TypeAlias
 from urllib.parse import urlparse
 
 import configobj
@@ -43,6 +44,7 @@ from sabnzbd.constants import (
     DEF_INI_FILE,
     DEF_SORTER_RENAME_SIZE,
     DEF_PIPELINING_REQUESTS,
+    CONFIG_RESTORE_FILES,
 )
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
@@ -186,7 +188,7 @@ class OptionNumber(Option):
                     value = self.__minval
                 super().set(value)
 
-    def __call__(self) -> Union[int, float]:
+    def __call__(self) -> int | float:
         """get() replacement"""
         return self.get()
 
@@ -288,7 +290,7 @@ class OptionDir(Option):
                 error, value = self.__validation(self.__root, value, super().default)
             if not error:
                 if value and (self.__create or create):
-                    _, path, error = self.create_path(value)
+                    _success, _path, error = self.create_path(value)
             if not error:
                 super().set(value)
         return error
@@ -309,7 +311,7 @@ class OptionList(Option):
         self,
         section: str,
         keyword: str,
-        default_val: Union[str, list, None] = None,
+        default_val: str | list | None = None,
         validation: Optional[Callable] = None,
         add: bool = True,
         public: bool = True,
@@ -320,7 +322,7 @@ class OptionList(Option):
             default_val = []
         super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
-    def set(self, value: Union[str, list]) -> Optional[str]:
+    def set(self, value: str | list) -> Optional[str]:
         """Set the list given a comma-separated string or a list"""
         error = None
         if value is not None:
@@ -740,26 +742,15 @@ class ConfigRSS:
         # Sanitize the name before using it
         new_name = clean_section_name(new_name)
         delete_from_database("rss", self.__name)
-        sabnzbd.RSSReader.rename(self.__name, new_name)
+        with sabnzbd.rss.rss_repository() as repo:
+            repo.rename(self.__name, new_name)
         self.__name = new_name
         add_to_database("rss", self.__name, self)
         return self.__name
 
 
 # Add typing to the options database-dict
-AllConfigTypes = Union[
-    Option,
-    OptionStr,
-    OptionPassword,
-    OptionNumber,
-    OptionBool,
-    OptionList,
-    OptionDir,
-    ConfigCat,
-    ConfigSorter,
-    ConfigRSS,
-    ConfigServer,
-]
+AllConfigTypes: TypeAlias = Option | ConfigCat | ConfigSorter | ConfigRSS | ConfigServer
 CFG_DATABASE: dict[str, dict[str, AllConfigTypes]] = {}
 
 
@@ -785,21 +776,21 @@ def delete_from_database(section, keyword):
 
 
 @synchronized(CONFIG_LOCK)
-def get_dconfig(section, keyword, nested=False):
+def get_dconfig(section: str, keyword: Optional[str], nested: bool = False) -> dict:
     """Return a config values dictionary,
     Single item or slices based on 'section', 'keyword'
     """
     data = {}
     if not section:
         for section in CFG_DATABASE.keys():
-            res, conf = get_dconfig(section, None, True)
+            conf = get_dconfig(section, None, True)
             data.update(conf)
 
     elif not keyword:
         try:
             sect = CFG_DATABASE[section]
         except KeyError:
-            return False, {}
+            return {}
 
         if section == "categories":
             data[section] = get_ordered_categories()
@@ -808,19 +799,19 @@ def get_dconfig(section, keyword, nested=False):
         elif section in ("servers", "rss"):
             data[section] = []
             for keyword in sect.keys():
-                res, conf = get_dconfig(section, keyword, True)
+                conf = get_dconfig(section, keyword, True)
                 data[section].append(conf)
         else:
             data[section] = {}
             for keyword in sect.keys():
-                res, conf = get_dconfig(section, keyword, True)
+                conf = get_dconfig(section, keyword, True)
                 data[section].update(conf)
 
     else:
         try:
             item = CFG_DATABASE[section][keyword]
         except KeyError:
-            return False, {}
+            return {}
         data = item.get_dict(for_public_api=True)
         if not nested:
             if section in ("sorters", "servers", "categories", "rss"):
@@ -828,7 +819,7 @@ def get_dconfig(section, keyword, nested=False):
             else:
                 data = {section: data}
 
-    return True, data
+    return data
 
 
 @synchronized(CONFIG_LOCK)
@@ -1019,7 +1010,7 @@ def save_config(force=False):
     return res
 
 
-def create_config_backup() -> Union[str, bool]:
+def create_config_backup() -> str | bool:
     """Put config data in a zip file, returns path on success"""
     admin_path = sabnzbd.cfg.admin_dir.get_path()
     output_filename = "sabnzbd_backup_%s_%s.zip" % (sabnzbd.__version__, time.strftime("%Y.%m.%d_%H.%M.%S"))
@@ -1086,7 +1077,7 @@ def restore_config_backup(config_backup_data: bytes):
 
                 # Write the rest of the admin files that we want to recover
                 adminpath = sabnzbd.cfg.admin_dir.get_path()
-                for filename in CONFIG_BACKUP_FILES + list(CONFIG_BACKUP_HTTPS.keys()):
+                for filename in chain(CONFIG_BACKUP_FILES, CONFIG_RESTORE_FILES, CONFIG_BACKUP_HTTPS.keys()):
                     try:
                         zip_ref.getinfo(filename)
                         destination_file = os.path.join(adminpath, filename)

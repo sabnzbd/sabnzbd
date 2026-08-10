@@ -314,7 +314,8 @@ SKIN_TEXT = {
     ),
     "opt-cleanup_list": TT("Cleanup List"),
     "explain-cleanup_list": TT(
-        "List of file extensions that should be deleted after download.<br />For example: <b>nfo</b> or <b>nfo, sfv</b>"
+        "List of file extensions, filenames or patterns that should be deleted after download.<br />"
+        "Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> (filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
     ),
     "opt-history_retention": TT("History Retention"),
     "history_retention-all": TT("Keep all jobs"),
@@ -468,7 +469,9 @@ SKIN_TEXT = {
     "explain-auto_disconnect": TT("Disconnect from Usenet server(s) when queue is empty or paused."),
     "opt-auto_sort": TT("Automatically sort queue"),
     "explain-auto_sort": TT("Automatically sort jobs in the queue when a new job is added."),
-    "explain-auto_sort_remaining": TT("The queue will resort every 30 seconds if % downloaded is selected."),
+    "explain-auto_sort_remaining": TT(
+        "The queue will resort every 30 seconds if % downloaded or Remaining Size is selected."
+    ),
     "opt-direct_unpack": TT("Direct Unpack"),
     "explain-direct_unpack": TT(
         "Jobs will start unpacking during the downloading to reduce post-processing time. Only works for jobs that do not need repair."
@@ -611,7 +614,6 @@ SKIN_TEXT = {
     "addMultipleFeeds": TT("Seperate multiple URLs by a comma"),  #: Config->RSS, placeholder (cannot be too long)
     "button-preFeed": TT("Read Feed"),  #: Config->RSS button
     "button-forceFeed": TT("Force Download"),  #: Config->RSS button
-    "button-evalFeed": TT("Apply filters"),
     "rss-edit": TT("Edit"),  #: Config->RSS edit button
     "rss-nextscan": TT("Next scan at"),  #: Config->RSS when will be the next RSS scan
     "rss-order": TT("Order"),  #: Config->RSS table column header
@@ -625,6 +627,7 @@ SKIN_TEXT = {
     "rss-atmost": TT("At most"),  #: Config->RSS filter-type selection menu
     "rss-from": TT("From SxxEyy"),  #: Config->RSS filter-type selection menu "From Season/Episode"
     "rss-from-show": TT("From Show SxxEyy"),  #: Config->RSS filter-type selection menu "From Show Season/Episode"
+    "rss-age": TT("Age"),  #: Config->RSS filter-type selection menu (e.g. ">3d", "<12h")
     "rss-matched": TT("Matched"),  #: Config->RSS section header
     "rss-notMatched": TT("Not Matched"),  #: Config->RSS section header
     "rss-done": TT("Downloaded"),  #: Config->RSS section header
@@ -813,11 +816,15 @@ SKIN_TEXT = {
     "Glitter-pause6h": TT("Pause for 6 hours"),
     "Glitter-setMaxLinespeed": TT("You must set a maximum bandwidth before you can set a bandwidth limit"),
     "Glitter-left": TT("left"),
+    "Glitter-toggleNavigation": TT("Toggle SABnzbd navigation menu"),
+    "Glitter-mainMenu": TT("Open SABnzbd main menu"),
     "Glitter-free": TT("Free Space"),
     "Glitter-freeTemp": TT("Temp Folder"),
     "Glitter-search": TT("Search"),
+    "Glitter-clearSearch": TT("Clear search"),
     "Glitter-multiOperations": TT("Multi-Operations"),
     "Glitter-multiSelect": TT("Hold shift key to select a range"),
+    "Glitter-selectJob": TT("Select job"),
     "Glitter-checkAll": TT("Check all"),
     "Glitter-restartSab": TT("Restart SABnzbd"),
     "Glitter-onFinish": TT("On queue finish"),
@@ -894,6 +901,7 @@ SKIN_TEXT = {
         "All usernames, passwords and API-keys are automatically removed from the log and the included copy of your settings."
     ),
     "Glitter-sortRemaining": TT("Sort by % downloaded <small>Most&rarr;Least</small>"),
+    "Glitter-sortRemainingBytesAsc": TT("Sort by Remaining Size <small>Smallest&rarr;Largest</small>"),
     "Glitter-sortAgeAsc": TT("Sort by Age <small>Oldest&rarr;Newest</small>"),
     "Glitter-sortAgeDesc": TT("Sort by Age <small>Newest&rarr;Oldest</small>"),
     "Glitter-sortNameAsc": TT("Sort by Name <small>A&rarr;Z</small>"),

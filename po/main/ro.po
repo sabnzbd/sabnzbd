@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-5.0.0\n"
+"Project-Id-Version: SABnzbd-5.1.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Romanian (https://app.transifex.com/sabnzbd/teams/111101/ro/)\n"
@@ -121,7 +121,6 @@ msgstr "SABnzbd %s pornit"
 msgid "SABnzbd shutdown finished"
 msgstr "Închidere SABnzbd terminată"
 
-#. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Semnal %s  prins, salvez şi ies..."
@@ -245,6 +244,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Nu pot determina reultatul conexiunii (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "Serverul necesită nume utilizator şi parolă"
 
@@ -262,9 +265,13 @@ msgstr ""
 "Prea multe conexiuni, vă rugăm să întrerupeţi descărcarea sau să încercaţi "
 "din nou mai târziu"
 
+#. Warning message
 #: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "Nu pot determina reultatul conexiunii (%s)"
+msgid ""
+"Server %s took %d ms to respond. On high-latency connections, increasing "
+"'Articles per request' to a value between 5 and 10 can improve download "
+"speed. See: https://sabnzbd.org/wiki/advanced/nntp-pipelining"
+msgstr ""
 
 #: sabnzbd/api.py
 msgid "Resolving address"
@@ -541,8 +548,8 @@ msgid "Resuming"
 msgstr "Reluare"
 
 #. PP status - Priority pick list
-#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Paused"
 msgstr "Întrerupt"
 
@@ -599,6 +606,13 @@ msgstr "Autentificare nereuşită la serverul %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Conectare %s@%s eșuată, mesaj=%s"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid ""
+"Total number of configured connections (%d) is greater than the operating "
+"system limit (512), downloading will crash if all connections become active"
+msgstr ""
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -879,7 +893,7 @@ msgstr ""
 msgid "Warnings"
 msgstr "Atenționări"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Inactiv"
@@ -910,8 +924,8 @@ msgstr "Limitare de Viteză"
 
 #. Notification - Pause downloading - Four way switch for duplicates -
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Pause"
 msgstr "Pauză"
 
@@ -921,8 +935,8 @@ msgid "min"
 msgstr "min"
 
 #. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Resume"
 msgstr "Reia"
 
@@ -931,7 +945,7 @@ msgstr "Reia"
 msgid "Scan watched folder"
 msgstr "Scanează dosar urmărire"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Read all RSS feeds"
 msgstr "Citește toate feed-urile RSS"
 
@@ -943,17 +957,17 @@ msgstr "Dosar Complet"
 msgid "Incomplete Folder"
 msgstr "Dosar Incomplet"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Troubleshoot"
 msgstr "Depanare"
 
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Restart"
 msgstr "Repornește"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Restart without login"
 msgstr "Reporneşte fără autorizare"
 
@@ -1150,6 +1164,10 @@ msgid "see logfile"
 msgstr "vezi fişier jurnal"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking skipped, TAR support requires Python 3.12 or later"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "Verificare Rapidă"
 
@@ -1328,7 +1346,7 @@ msgid "Open folder"
 msgstr ""
 
 #. Notification action
-#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/notifier.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Open complete folder"
 msgstr "Deschide dosar descărcări complete"
 
@@ -1467,7 +1485,8 @@ msgstr "SE PROPAGHEAZĂ %s min"
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "Descărcat în %s cu o medie de %sB/s"
 
-#. Job details page, file age column header
+#. Config->RSS filter-type selection menu (e.g. ">3d", "<12h") - Job details
+#. page, file age column header
 #: sabnzbd/nzb/object.py, sabnzbd/skintext.py
 msgid "Age"
 msgstr "Vârsta"
@@ -1792,6 +1811,10 @@ msgstr ""
 msgid "Removing %s failed"
 msgstr "Ştergerea %s nereuşită"
 
+#: sabnzbd/postproc.py
+msgid "Removed %s files with unwanted extensions"
+msgstr ""
+
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Failed to hibernate system"
@@ -1816,10 +1839,6 @@ msgstr ""
 msgid "Empty RSS entry found (%s)"
 msgstr "Valoare RSS gasită a fost goală (%s)"
 
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Fulx RSS incompatibil"
-
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1841,56 +1860,59 @@ msgstr "Descărcare %s: %s din RSS nereuşită"
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "Serverul %s utilizează un certificat HTTPS nesigur"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "Fluxul RSS %s a fost gol"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Show interface"
-msgstr "Arată interfața"
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Fulx RSS incompatibil"
 
-#. Queue page button or entry box
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for"
-msgstr "Pauză timp de"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 5 minutes"
-msgstr "Pauză timp de 5 minute"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 15 minutes"
-msgstr "Pauză timp de 15 minute"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 30 minutes"
-msgstr "Pauză timp de 30 minute"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 1 hour"
-msgstr "Pauză timp de o oră"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 3 hours"
-msgstr "Pauză timp de 3 ore"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 6 hours"
-msgstr "Pauză timp de 6 ore"
-
-#. Config->Scheduling
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Shutdown"
-msgstr "Închidere"
-
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Remaining"
 msgstr "Rămas"
 
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Add NZB"
 msgstr "Adaugă NZB"
+
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
+msgid "Show interface"
+msgstr "Arată interfața"
+
+#. Config->Scheduling
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Shutdown"
+msgstr "Închidere"
+
+#. Queue page button or entry box
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for"
+msgstr "Pauză timp de"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 5 minutes"
+msgstr "Pauză timp de 5 minute"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 15 minutes"
+msgstr "Pauză timp de 15 minute"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 30 minutes"
+msgstr "Pauză timp de 30 minute"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 1 hour"
+msgstr "Pauză timp de o oră"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 3 hours"
+msgstr "Pauză timp de 3 ore"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 6 hours"
+msgstr "Pauză timp de 6 ore"
 
 #. Warning message
 #: sabnzbd/scheduler.py
@@ -2949,11 +2971,10 @@ msgstr "Listă Curăţenie"
 
 #: sabnzbd/skintext.py
 msgid ""
-"List of file extensions that should be deleted after download.<br />For "
-"example: <b>nfo</b> or <b>nfo, sfv</b>"
+"List of file extensions, filenames or patterns that should be deleted after "
+"download.<br />Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> "
+"(filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
 msgstr ""
-"Listă de extensii fișiere ce trebuie să fie șterse după descărcare.<br />De "
-"exemplu: <b>nfo</b> or <b>nfo, sfv</b>"
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
@@ -3483,7 +3504,9 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgid ""
+"The queue will resort every 30 seconds if % downloaded or Remaining Size is "
+"selected."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3903,10 +3926,6 @@ msgstr "Citeşte Flux"
 #: sabnzbd/skintext.py
 msgid "Force Download"
 msgstr "Descărcare Forţată"
-
-#: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr ""
 
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
@@ -4568,6 +4587,14 @@ msgid "Filename"
 msgstr "Nume de fișier"
 
 #: sabnzbd/skintext.py
+msgid "Toggle SABnzbd navigation menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Open SABnzbd main menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Spațiu liber"
 
@@ -4576,12 +4603,20 @@ msgid "Temp Folder"
 msgstr "Dosar Temporar"
 
 #: sabnzbd/skintext.py
+msgid "Clear search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "Operaţii-Multiple"
 
 #: sabnzbd/skintext.py
 msgid "Hold shift key to select a range"
 msgstr "Ține-ți tasta shift pentru a selecta un interval"
+
+#: sabnzbd/skintext.py
+msgid "Select job"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Check all"
@@ -4819,6 +4854,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Sort by Remaining Size <small>Smallest&rarr;Largest</small>"
 msgstr ""
 
 #: sabnzbd/skintext.py

@@ -22,7 +22,8 @@
 
 .main-content {
     border: 0;
-    margin-bottom: 0 !important;
+    margin: 0;
+    padding: 0;
 }
 
 .main-menu-link .icon-bar:first-child {
@@ -74,6 +75,10 @@ h2 {
     QUEUE & HISTORY
 **/
 
+.history-queue-swicher {
+    margin-bottom: 0;
+}
+
 .info-container {
     margin-top: 0px;
     margin-bottom: 10px;
@@ -93,13 +98,6 @@ h2 {
 .info-container-break:after {
     content: "\A";
     white-space: pre;
-}
-
-.info-container .info-container-box-sorting {
-    position: absolute;
-    right: 10px;
-    top: 0px;
-    font-size: 1em;
 }
 
 .queue-table .table-header-progress {
@@ -128,7 +126,7 @@ h2 {
 }
 
 .queue-table .progress {
-    margin: 0px 8px;
+    margin: 0px 15px;
 }
 
 .queue-table td.name .row-wrap-text,
@@ -151,6 +149,9 @@ tr.queue-item>td:first-child>a {
 
 .queue-table td.name .name-options {
     display: inline-block;
+    opacity: 1;
+    pointer-events: auto;
+    position: static;
 }
 
 .queue-table td.name .name-options small {

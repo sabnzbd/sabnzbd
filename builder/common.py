@@ -32,13 +32,13 @@ with open(VERSION_FILE) as version_file:
     exec(version_file.read())
 RELEASE_VERSION = __version__
 
-# Pre-releases are longer than 6 characters (e.g. 3.1.0Beta1 vs 3.1.0, but also 3.0.11)
-PRERELEASE = len(RELEASE_VERSION) > 5
-
 # Parse the version info for Windows file properties information
 version_regexed = re.search(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)", RELEASE_VERSION)
 RELEASE_VERSION_TUPLE = (int(version_regexed.group(1)), int(version_regexed.group(2)), int(version_regexed.group(3)), 0)
 RELEASE_VERSION_BASE = f"{RELEASE_VERSION_TUPLE[0]}.{RELEASE_VERSION_TUPLE[1]}.{RELEASE_VERSION_TUPLE[2]}"
+
+# Pre-releases carry an alpha suffix (e.g. 5.1.0Beta1); stable releases don't (e.g. 5.1.0 or 5.1.10)
+PRERELEASE = bool(version_regexed.group(4))
 
 # Define release name
 RELEASE_NAME = "SABnzbd-%s" % RELEASE_VERSION
@@ -59,7 +59,6 @@ if platform.machine() == "ARM64":
 EXTRA_FILES = [
     RELEASE_README,
     "README.html",
-    "INSTALL.txt",
     "LICENSE.txt",
     "GPL2.txt",
     "GPL3.txt",
@@ -76,3 +75,15 @@ EXTRA_FOLDERS = [
     "interfaces/Config/",
     "icons/",
 ]
+
+
+def pe_has_authenticode_signature(pe_file: str) -> bool:
+    """Check if a PE file (.exe) has an embedded Authenticode signature by
+    inspecting the certificate table in the optional header data directory."""
+    # Imported here as tools/extract_pot.py execs this file without
+    # the build dependencies to get the RELEASE_VERSION_BASE
+    import pefile
+
+    pe = pefile.PE(pe_file, fast_load=True)
+    security = pe.OPTIONAL_HEADER.DATA_DIRECTORY[pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_SECURITY"]]
+    return security.VirtualAddress != 0 and security.Size != 0

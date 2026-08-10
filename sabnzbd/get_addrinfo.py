@@ -25,7 +25,7 @@ import time
 import logging
 from dataclasses import dataclass
 from more_itertools import roundrobin
-from typing import Union, Optional
+from typing import Optional
 
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import DEF_NETWORKING_TIMEOUT
@@ -48,19 +48,17 @@ IPV6_MAPPING = {
     "news.sunnyusenet.com": "news6.sunnyusenet.com",
     "news.newshosting.com": "news6.newshosting.com",
     "news.usenetserver.com": "news6.usenetserver.com",
-    "news.frugalusenet.com": "news-v6.frugalusenet.com",
-    "eunews.frugalusenet.com": "eunews-v6.frugalusenet.com",
 }
 
 
 # For typing and convenience!
-@dataclass
+@dataclass(slots=True)
 class AddrInfo:
     family: socket.AddressFamily
     type: socket.SocketKind
     proto: int
     canonname: str
-    sockaddr: Union[tuple[str, int], tuple[str, int, int, int]]
+    sockaddr: tuple[str, int] | tuple[str, int, int, int]
     ipaddress: str = ""
     port: int = 0
     connection_time: float = 0.0

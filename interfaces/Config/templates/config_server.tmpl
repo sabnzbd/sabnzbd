@@ -47,7 +47,6 @@
                     <div class="field-pair">
                         <label class="config" for="enable">$T('srv-enable')</label>
                         <input type="checkbox" name="enable" id="enable" value="1" checked="checked" />
-                        <span class="desc">$T('srv-enable')</span>
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="displayname">$T('srv-displayname')</label>
@@ -77,7 +76,7 @@
                     </div>
                     <div class="field-pair">
                         <label class="config" for="connections">$T('srv-connections')</label>
-                        <input type="number" name="connections" id="connections" min="1" max="500" value="8" required />
+                        <input type="number" name="connections" id="connections" min="1" max="500" value="16" required />
                     </div>
                     <div class="field-pair">
                         <label class="config" for="priority">$T('srv-priority')</label>
@@ -140,10 +139,11 @@
                     <div class="field-pair no-field-pair-bg">
                         <button class="btn btn-default addNewServer" disabled data-toggle="tooltip" data-placement="top" title="$T('wizard-test-server-required')"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
                         <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
+                        <div class="result-box">
+                            <div class="alert"></div>
+                        </div>
                     </div>
-                    <div class="field-pair result-box">
-                        <div class="alert"></div>
-                    </div>
+
                 </fieldset>
             </form>
         </div>
@@ -278,13 +278,14 @@
                             <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                             <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                             <button class="btn btn-default delServer"><span class="glyphicon glyphicon-trash"></span> $T('button-delServer')</button>
-                        </div>
-                        <div class="field-pair result-box">
-                            <div class="alert"></div>
+
+                            <div class="result-box">
+                                <div class="alert"></div>
+                            </div>
                         </div>
                     </fieldset>
                 </div>
-                <div class="col1" style="display:block;">
+                <div class="col1 padding" style="display:block;">
                     <!--#if 'amounts' in $server#-->
                         <div class="server-amounts-text">
                             <p>
@@ -517,14 +518,10 @@
                 // Recalculate the charts if changed while details were open
                 showCharts()
             }
-            // Add coloring
-            addRowColor()
         });
 
         jQuery('#addServerButton').click(function(){
             jQuery('#addServerContent').show();
-            // Add coloring
-            addRowColor()
         });
 
         jQuery('[name="ssl"]').click(function() {

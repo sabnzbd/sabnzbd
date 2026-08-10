@@ -19,7 +19,9 @@
 tests.test_nzbparser - Tests of basic NZB parsing
 """
 
-from tests.testhelper import *
+import os
+import pytest
+from tests.testhelper import SAB_CACHE_DIR, SAB_DATA_DIR, create_and_read_nzb_fp
 import sabnzbd.nzbparser as nzbparser
 from sabnzbd.nzb import NzbObject
 from sabnzbd.filesystem import save_compressed
@@ -27,7 +29,7 @@ from sabnzbd.filesystem import save_compressed
 
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestNzbParser:
-    @set_config({"download_dir": SAB_CACHE_DIR})
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     def test_nzbparser(self):
         nzo = NzbObject("test_basic")
         # Create test file

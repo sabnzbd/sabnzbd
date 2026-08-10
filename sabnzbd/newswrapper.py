@@ -29,7 +29,7 @@ from threading import Thread
 import time
 import logging
 import ssl
-from typing import Optional, Tuple, Union, Callable
+from typing import Optional, Callable
 
 import sabctools
 import sabnzbd
@@ -103,7 +103,7 @@ class NewsWrapper:
         self.group: Optional[str] = None
 
         # Command queue and concurrency
-        self.next_request: Optional[tuple[bytes, Optional["sabnzbd.nzb.Article"]]] = None
+        self.next_request: Optional[tuple[bytes, Optional[sabnzbd.nzb.Article]]] = None
         self.concurrent_requests: threading.BoundedSemaphore = threading.BoundedSemaphore(
             self.server.pipelining_requests()
         )
@@ -286,7 +286,7 @@ class NewsWrapper:
         nbytes: int = 0,
         on_response: Optional[Callable[[int, str], None]] = None,
         generation: Optional[int] = None,
-    ) -> Tuple[int, Optional[int]]:
+    ) -> tuple[int, Optional[int]]:
         """Receive data, return #bytes, #pendingbytes
         :param nbytes: maximum number of bytes to read
         :param on_response: callback for each complete response received
@@ -423,7 +423,9 @@ class NewsWrapper:
                     command, article = self.next_request
                     if article:
                         nzo = article.nzf.nzo
-                        if nzo.removed_from_queue or nzo.status is Status.PAUSED and nzo.priority is not FORCE_PRIORITY:
+                        if nzo.removed_from_queue or (
+                            nzo.status is Status.PAUSED and nzo.priority is not FORCE_PRIORITY
+                        ):
                             self.discard(article, count_article_try=False, retry_article=True)
                             self.concurrent_requests.release()
                             self.next_request = None
@@ -590,7 +592,7 @@ class NNTP:
                 self.nw.server.ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
 
         # Create socket and store fileno of the socket
-        self.sock: Union[socket.socket, ssl.SSLSocket] = socket.socket(self.addrinfo.family, self.addrinfo.type)
+        self.sock: socket.socket | ssl.SSLSocket = socket.socket(self.addrinfo.family, self.addrinfo.type)
         self.fileno: int = self.sock.fileno()
 
         # Open the connection in a separate thread due to avoid blocking
@@ -655,7 +657,7 @@ class NNTP:
             error = T("This server does not allow SSL on this port")
 
         # Catch certificate errors
-        if type(error) == ssl.CertificateError or "CERTIFICATE_VERIFY_FAILED" in raw_error_str:
+        if isinstance(error, ssl.CertificateError) or "CERTIFICATE_VERIFY_FAILED" in raw_error_str:
             # Log the raw message for debug purposes
             logging.info("Certificate error for host %s: %s", self.nw.server.host, raw_error_str)
 

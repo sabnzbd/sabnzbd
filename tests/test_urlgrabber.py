@@ -23,11 +23,12 @@ import json
 import urllib.error
 import urllib.parse
 
+import pytest
 import pytest_httpbin
 
+import sabnzbd
 import sabnzbd.urlgrabber as urlgrabber
 from sabnzbd.cfg import selftest_host
-from tests.testhelper import *
 
 
 @pytest_httpbin.use_class_based_httpbin

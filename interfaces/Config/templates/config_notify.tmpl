@@ -1,4 +1,4 @@
-<!--#set global $pane="Email"#-->
+<!--#set global $pane="Notify"#-->
 <!--#set global $help_uri = $confighelpuri + "notifications"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
@@ -7,10 +7,11 @@
 <!--#def show_notify_checkboxes($section_label)#-->
     <!--#for $type in $notify_types#-->
         <div class="field-pair">
-            <label class="config wide" for="${section_label}_prio_$type">
+            <input type="checkbox" class="notify-checkboxes" name="${section_label}_prio_$type" id="${section_label}_prio_$type" value="1" <!--#if $getVar($section_label + '_prio_' + $type) then 'checked="checked"' else ""#--> />
+            <label class="config" for="${section_label}_prio_$type">
                 $T($notify_types[$type]).replace('/', ' / ')
             </label>
-            <input type="checkbox" name="${section_label}_prio_$type" id="${section_label}_prio_$type" value="1" <!--#if $getVar($section_label + '_prio_' + $type) then 'checked="checked"' else ""#--> />
+
         </div>
     <!--#end for#-->
 <!--#end def#-->
@@ -94,9 +95,9 @@
                 <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_email" rel="$T('askTestEmail')"><span class="glyphicon glyphicon-envelope"></span> $T('link-testEmail')</button>
-                </div>
-                <div class="field-pair result-box">
-                    <div class="alert"></div>
+                    <div class="result-box">
+                        <div class="alert"></div>
+                    </div>
                 </div>
             </fieldset>
         </div>
@@ -118,9 +119,9 @@
                 <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_notif"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-               </div>
-               <div class="field-pair result-box">
-                    <div class="alert"></div>
+                    <div class="result-box">
+                        <div class="alert"></div>
+                    </div>
                 </div>
            </fieldset>
        </div>
@@ -144,9 +145,9 @@
                 <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_windows"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-               </div>
-               <div class="field-pair result-box">
-                    <div class="alert"></div>
+                    <div class="result-box">
+                        <div class="alert"></div>
+                    </div>
                 </div>
            </fieldset>
        </div>
@@ -170,9 +171,9 @@
                 <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_osd"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-               </div>
-               <div class="field-pair result-box">
-                    <div class="alert"></div>
+                    <div class="result-box">
+                        <div class="alert"></div>
+                    </div>
                 </div>
            </fieldset>
        </div>
@@ -209,17 +210,17 @@
                         <label class="config" for="${section_label}_target_${type}">
                             $T($notify_types[$type]).replace('/', ' / ')
                         </label>
-                        <input type="checkbox" name="${section_label}_target_${type}_enable" id="${section_label}_target_${type}_enable" value="1" <!--#if $getVar($section_label + '_target_' + $type + '_enable') then 'checked="checked"' else ""#--> />
+                        <input type="checkbox" class="notify-checkboxes" name="${section_label}_target_${type}_enable" id="${section_label}_target_${type}_enable" value="1" <!--#if $getVar($section_label + '_target_' + $type + '_enable') then 'checked="checked"' else ""#--> />
                         <input type="text" name="${section_label}_target_${type}" id="${section_label}_target_${type}" value="$getVar($section_label + '_target_' + $type)"  placeholder="$T('opt-apprise_urls')" />
                     </div>
                 <!--#end for#-->
 
                 <div class="field-pair no-field-pair-bg">
-                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                   <button class="btn btn-default" type="button" id="test_apprise"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                </div>
-                <div class="field-pair result-box">
-                    <div class="alert"></div>
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_apprise"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                    <div class="result-box">
+                        <div class="alert"></div>
+                    </div>
                 </div>
            </fieldset>
        </div>
@@ -256,9 +257,9 @@
                 <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_nscript"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                </div>
-                <div class="field-pair result-box">
-                    <div class="alert"></div>
+                    <div class="result-box">
+                        <div class="alert"></div>
+                    </div>
                 </div>
             </fieldset>
         </div>
@@ -301,9 +302,9 @@
                 <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_prowl"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                </div>
-                <div class="field-pair result-box">
-                    <div class="alert"></div>
+                    <div class="result-box">
+                        <div class="alert"></div>
+                    </div>
                 </div>
             </fieldset>
         </div>
@@ -367,9 +368,9 @@
                 <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_pushover"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                </div>
-                <div class="field-pair result-box">
-                    <div class="alert"></div>
+                    <div class="result-box">
+                        <div class="alert"></div>
+                    </div>
                 </div>
             </fieldset>
         </div>
@@ -402,11 +403,11 @@
                 <!--#end if#-->
                 $show_notify_checkboxes('pushbullet')
                 <div class="field-pair no-field-pair-bg">
-                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                   <button class="btn btn-default" type="button" id="test_pushbullet"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                </div>
-                <div class="field-pair result-box">
-                    <div class="alert"></div>
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_pushbullet"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                    <div class="result-box">
+                        <div class="alert"></div>
+                    </div>
                 </div>
            </fieldset>
        </div>
@@ -426,7 +427,6 @@ jQuery(document).ready(function(){
             jQuery(this).parents('.col2').find('.col2-cats').hide()
         }
         jQuery('form').submit()
-        addRowColor()
     })
     jQuery('#email_endjob').change(function() {
         if(jQuery(this).val() > 0) {

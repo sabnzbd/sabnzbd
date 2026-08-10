@@ -24,7 +24,7 @@ import logging
 import time
 import uuid
 import cherrypy._cpreqbody
-from typing import Union, Optional
+from typing import Optional
 
 import sabnzbd
 from sabnzbd.nzb import Article, NzbObject
@@ -33,6 +33,7 @@ from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_
 from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.panic import panic_queue
 from sabnzbd.decorators import NzbQueueLocker
+from sabnzbd.database import HistoryDB
 from sabnzbd.constants import (
     QUEUE_FILE_NAME,
     QUEUE_VERSION,
@@ -144,20 +145,16 @@ class NzbQueue:
         result = []
         # Folders from the download queue
         if all_jobs:
-            registered = []
+            registered = set()
         else:
-            registered = [nzo.work_name for nzo in self.__nzo_list]
+            registered = {nzo.work_name for nzo in self.__nzo_list}
 
         # Retryable folders from History
-        items = sabnzbd.api.build_history()[0]
-        # Anything waiting or active or retryable is a known item
-        registered.extend(
-            [
-                os.path.basename(item["path"])
-                for item in items
-                if item["retry"] or item["loaded"] or item["status"] == Status.QUEUED
-            ]
-        )
+        with HistoryDB() as history_db:
+            registered.update(os.path.basename(job["path"]) for job in history_db.get_retryable_jobs())
+
+        # Anything waiting or active in post-processing is also a known item
+        registered.update(os.path.basename(nzo.download_path) for nzo in sabnzbd.PostProcessor.get_queue())
 
         # Repair unregistered folders
         for folder in globber_full(cfg.download_dir.get_path()):
@@ -239,7 +236,7 @@ class NzbQueue:
             self.__nzo_table[nzo_ids[0]].reuse = None
 
     @NzbQueueLocker
-    def save(self, save_nzo: Union[NzbObject, None, bool] = None):
+    def save(self, save_nzo: NzbObject | bool | None = None):
         """Save queue, all nzo's or just the specified one"""
         logging.info("Saving queue")
 
@@ -301,7 +298,7 @@ class NzbQueue:
         return result
 
     @NzbQueueLocker
-    def change_name(self, nzo_id: str, name: str, password: str = None) -> bool:
+    def change_name(self, nzo_id: str, name: str, password: Optional[str] = None) -> bool:
         """Locked so changes during URLGrabbing are correctly passed to new job"""
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
@@ -521,7 +518,7 @@ class NzbQueue:
             nzo3 = self.__nzo_table[item_id_3]
             nzo3_priority = nzo3.priority
             # if id1 is surrounded by items of a different priority then change its priority to match
-            if nzo2_priority != nzo1_priority and nzo3_priority != nzo1_priority or nzo2_priority > nzo1_priority:
+            if (nzo2_priority != nzo1_priority and nzo3_priority != nzo1_priority) or nzo2_priority > nzo1_priority:
                 nzo1.priority = nzo2_priority
         except Exception:
             nzo1.priority = nzo2_priority
@@ -571,7 +568,7 @@ class NzbQueue:
 
     @NzbQueueLocker
     def sort_queue(self, field: str, direction: Optional[str] = None):
-        """Sort queue by field: "name", "size" or "avg_age" or by percentage remaining
+        """Sort queue by field: "name", "size", "avg_age", "remaining" or "remaining_bytes"
         Direction is specified as "desc" or "asc"
         """
         field = field.lower()
@@ -593,6 +590,10 @@ class NzbQueue:
             if self.__nzo_list:
                 logging.debug("Sorting by percentage downloaded...")
             sort_function = lambda nzo: nzo.remaining / nzo.bytes if nzo.bytes else 1
+        elif field == "remaining_bytes":
+            if self.__nzo_list:
+                logging.debug("Sorting by remaining size...")
+            sort_function = lambda nzo: nzo.remaining
         else:
             logging.debug("Sort: %s not recognized", field)
             return
@@ -604,11 +605,13 @@ class NzbQueue:
     def update_sort_order(self):
         """Resorts the queue if it is useful for the selected sort method"""
         auto_sort = cfg.auto_sort()
-        if auto_sort and auto_sort.startswith("remaining"):
+        if auto_sort == "remaining_bytes asc":
+            self.sort_queue("remaining_bytes")
+        elif auto_sort and auto_sort.startswith("remaining"):
             self.sort_queue("remaining")
 
     @NzbQueueLocker
-    def __set_priority(self, nzo_id: str, priority: Union[int, str]) -> Optional[int]:
+    def __set_priority(self, nzo_id: str, priority: int | str) -> Optional[int]:
         """Sets the priority on the nzo and places it in the queue at the appropriate position"""
         try:
             priority = int_conv(priority)
@@ -747,9 +750,6 @@ class NzbQueue:
         file_done, post_done = nzo.remove_article(article, success)
 
         if not nzo.precheck:
-            # Mark as on_disk so assembler knows it can skip this article
-            if not success:
-                article.on_disk = True
             # The type is only set if sabctools could decode the article
             if nzf.type:
                 sabnzbd.Assembler.process(nzo, nzf, file_done, article=article)
@@ -885,7 +885,7 @@ class NzbQueue:
     def stop_idle_jobs(self):
         """Detect jobs that have zero files left and send them to post processing"""
         # Only check servers that are active
-        active_servers = set(server for server in sabnzbd.Downloader.servers[:] if server.active)
+        active_servers = {server for server in sabnzbd.Downloader.servers[:] if server.active}
         empty = []
 
         if len(active_servers) <= 0:

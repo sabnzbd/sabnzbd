@@ -31,7 +31,7 @@ import zipfile
 import tempfile
 
 import cherrypy._cpreqbody
-from typing import Optional, Any, Union
+from typing import Optional
 
 import sabnzbd
 from sabnzbd.nzb import (
@@ -40,6 +40,7 @@ from sabnzbd.nzb import (
     NzbRejected,
     NzbPreQueueRejected,
     NzbRejectToHistory,
+    NzoInfo,
     NzbFile,
     SkippedNzbFile,
 )
@@ -57,12 +58,12 @@ import rarfile
 
 
 def add_nzbfile(
-    nzbfile: Union[str, cherrypy._cpreqbody.Part],
-    pp: Optional[Union[int, str]] = None,
+    nzbfile: str | cherrypy._cpreqbody.Part,
+    pp: Optional[int | str] = None,
     script: Optional[str] = None,
     cat: Optional[str] = None,
     catdir: Optional[str] = None,
-    priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
+    priority: Optional[int | str] = DEFAULT_PRIORITY,
     nzbname: Optional[str] = None,
     nzo_info=None,
     url: Optional[str] = None,
@@ -158,10 +159,10 @@ def process_nzb_archive_file(
     cat: Optional[str] = None,
     catdir: Optional[str] = None,
     keep: bool = False,
-    priority: Optional[Union[int, str]] = None,
+    priority: Optional[int | str] = None,
     nzbname: Optional[str] = None,
     reuse: Optional[str] = None,
-    nzo_info: Optional[dict[str, Any]] = None,
+    nzo_info: Optional[NzoInfo] = None,
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
@@ -277,10 +278,10 @@ def process_single_nzb(
     cat: Optional[str] = None,
     catdir: Optional[str] = None,
     keep: bool = False,
-    priority: Optional[Union[int, str]] = None,
+    priority: Optional[int | str] = None,
     nzbname: Optional[str] = None,
     reuse: Optional[str] = None,
-    nzo_info: Optional[dict[str, Any]] = None,
+    nzo_info: Optional[NzoInfo] = None,
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,

@@ -19,21 +19,24 @@
 tests.test_sorting - Testing functions in sorting.py
 """
 
+import datetime
 import os
-import pyfakefs
 import re
 import shutil
 import sys
-import datetime
 from random import choice, choices, randint, sample
 from string import ascii_letters
 from unittest import mock
 
+import pyfakefs
+import pytest
+
+import sabnzbd
 from sabnzbd import sorting
-from sabnzbd.constants import IGNORED_MOVIE_FOLDERS, GUESSIT_PART_INDICATORS
-from sabnzbd.filesystem import globber, get_ext
+from sabnzbd.constants import GUESSIT_PART_INDICATORS, IGNORED_MOVIE_FOLDERS
+from sabnzbd.filesystem import get_ext, globber
 from sabnzbd.misc import sort_to_opts
-from tests.testhelper import *
+from tests.testhelper import SAB_CACHE_DIR
 
 
 class TestSortingFunctions:
@@ -117,8 +120,8 @@ class TestSortingFunctions:
             ("", False, False),
         ],
     )
+    @pytest.mark.platform(lambda params: params["platform"])
     def test_is_full_path(self, platform, path, result_unix, result_win):
-        @set_platform(platform)
         def _func():
             result = result_win if sabnzbd.WINDOWS else result_unix
             assert sorting.is_full_path(path) == result
@@ -348,18 +351,22 @@ class TestSortingFunctions:
             for test_dir in ["dir/2", "TEST/DIR2"]:
                 ffs.fs.create_dir(base_dir + "/" + test_dir, perm_bits=755)
                 assert os.path.exists(base_dir + "/" + test_dir) is True
-            for test_file in ["dir/some.file", "TEST/DIR/FILE"]:
+            for test_file in ["dir/some.file", "TEST/DIR/FILE", "TEST/untracked.file"]:
                 ffs.fs.create_file(base_dir + "/" + test_file, int("0644", 8))
                 assert os.path.exists(base_dir + "/" + test_file) is True
 
-            return_path, return_status = sorting.move_to_parent_directory(base_dir + "/TEST")
+            return_path, return_status, return_files = sorting.move_to_parent_directory(
+                base_dir + "/TEST", [base_dir + "/TEST/DIR/FILE"]
+            )
 
             # Affected by move
             assert not os.path.exists(base_dir + "/TEST/DIR/FILE")  # Moved to subdir
-            assert not os.path.exists(base_dir + "/TEST/DIR2")  # Deleted empty directory
+            assert not os.path.exists(base_dir + "/TEST/DIR")  # Deleted empty directory the job file left behind
             assert not os.path.exists(base_dir + "/DIR2")  # Dirs don't get moved, only their file content
             assert os.path.exists(base_dir + "/DIR/FILE")  # Moved file
             # Not moved
+            assert os.path.exists(base_dir + "/TEST/DIR2")  # Unrelated empty directory is left alone
+            assert os.path.exists(base_dir + "/TEST/untracked.file")  # Files not part of the job are left alone
             assert not os.path.exists(base_dir + "/some.file")
             assert not os.path.exists(base_dir + "/2")
             assert os.path.exists(base_dir + "/dir/some.file")
@@ -367,6 +374,7 @@ class TestSortingFunctions:
             # Function return values
             assert (return_path) == base_dir
             assert (return_status) is True
+            assert return_files == [base_dir + "/DIR/FILE"]
 
         # Exception for DVD directories
         with pyfakefs.fake_filesystem_unittest.Patcher() as ffs:
@@ -381,7 +389,9 @@ class TestSortingFunctions:
                 ffs.fs.create_file(base_dir + "/" + test_file, int("0644", 8))
                 assert os.path.exists(base_dir + "/" + test_file) is True
 
-            return_path, return_status = sorting.move_to_parent_directory(base_dir + "/TEST")
+            return_path, return_status, return_files = sorting.move_to_parent_directory(
+                base_dir + "/TEST", [base_dir + "/TEST/" + dvd + "/FILE"]
+            )
 
             # Nothing should move in the presence of a DVD directory structure
             assert os.path.exists(base_dir + "/TEST/" + dvd + "/FILE")
@@ -395,6 +405,7 @@ class TestSortingFunctions:
             # Function return values
             assert (return_path) == base_dir + "/TEST"
             assert (return_status) is True
+            assert return_files == [base_dir + "/TEST/" + dvd + "/FILE"]
 
     @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows tests")
     def test_move_to_parent_directory_win(self):
@@ -406,18 +417,22 @@ class TestSortingFunctions:
             for test_dir in ["dir\\2", "TEST\\DIR2"]:
                 ffs.fs.create_dir(base_dir + "\\" + test_dir, perm_bits=755)
                 assert os.path.exists(base_dir + "\\" + test_dir) is True
-            for test_file in ["dir\\some.file", "TEST\\DIR\\FILE"]:
+            for test_file in ["dir\\some.file", "TEST\\DIR\\FILE", "TEST\\untracked.file"]:
                 ffs.fs.create_file(base_dir + "\\" + test_file, int("0644", 8))
                 assert os.path.exists(base_dir + "\\" + test_file) is True
 
-            return_path, return_status = sorting.move_to_parent_directory(base_dir + "\\TEST")
+            return_path, return_status, return_files = sorting.move_to_parent_directory(
+                base_dir + "\\TEST", [base_dir + "\\TEST\\DIR\\FILE"]
+            )
 
             # Affected by move
             assert not os.path.exists(base_dir + "\\TEST\\DIR\\FILE")  # Moved to subdir
-            assert not os.path.exists(base_dir + "\\TEST\\DIR2")  # Deleted empty directory
+            assert not os.path.exists(base_dir + "\\TEST\\DIR")  # Deleted empty directory the job file left behind
             assert not os.path.exists(base_dir + "\\DIR2")  # Dirs don't get moved, only their file content
             assert os.path.exists(base_dir + "\\DIR\\FILE")  # Moved file
             # Not moved
+            assert os.path.exists(base_dir + "\\TEST\\DIR2")  # Unrelated empty directory is left alone
+            assert os.path.exists(base_dir + "\\TEST\\untracked.file")  # Files not part of the job are left alone
             assert not os.path.exists(base_dir + "\\some.file")
             assert not os.path.exists(base_dir + "\\2")
             assert os.path.exists(base_dir + "\\dir\\some.file")
@@ -425,6 +440,7 @@ class TestSortingFunctions:
             # Function return values
             assert (return_path) == base_dir
             assert (return_status) is True
+            assert return_files == [base_dir + "\\DIR\\FILE"]
 
         # Exception for DVD directories
         with pyfakefs.fake_filesystem_unittest.Patcher() as ffs:
@@ -439,7 +455,9 @@ class TestSortingFunctions:
                 ffs.fs.create_file(base_dir + "\\" + test_file, int("0644", 8))
                 assert os.path.exists(base_dir + "\\" + test_file) is True
 
-            return_path, return_status = sorting.move_to_parent_directory(base_dir + "\\TEST")
+            return_path, return_status, return_files = sorting.move_to_parent_directory(
+                base_dir + "\\TEST", [base_dir + "\\TEST\\" + dvd + "\\FILE"]
+            )
 
             # Nothing should move in the presence of a DVD directory structure
             assert os.path.exists(base_dir + "\\TEST\\" + dvd + "\\FILE")
@@ -453,6 +471,7 @@ class TestSortingFunctions:
             # Function return values
             assert (return_path) == base_dir + "\\TEST"
             assert (return_status) is True
+            assert return_files == [base_dir + "\\TEST\\" + dvd + "\\FILE"]
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
@@ -684,7 +703,7 @@ class TestSortingSorter:
                         + spacer
                         + ("S23" if pack_files_have_season else "")
                         + "E"
-                        + "{0:0>2}".format(i)
+                        + f"{i:0>2}"
                         + spacer
                         + "2160p-SABnzbdTeam"
                         + extension
@@ -817,7 +836,12 @@ class TestSortingSorter:
             )
             sorter.get_values()
             sorter.construct_path()
-            sort_dest, is_ok = sorter.rename(all_files, job_dir)
+            sort_dest, is_ok, final_files = sorter.rename(all_files, job_dir)
+
+            # The tracked files should all exist at their returned locations
+            if is_ok:
+                for final_file in final_files:
+                    assert os.path.exists(final_file)
 
             # Check the result
             try:
@@ -1315,12 +1339,13 @@ class TestSortingSorter:
             sorted_path = sorter.construct_path()
             # Check season pack status again after constructing the path
             assert sorter.is_season_pack is result_is_season_pack_later
-            sorted_dest, sorted_ok = sorter.rename(globber(job_dir), job_dir)
+            sorted_dest, _sorted_ok, _final_files = sorter.rename(globber(job_dir), job_dir)
 
             # Verify the results
             for pattern, number in result_globs.items():
                 try:
-                    assert len(glob := globber(sorted_dest or job_dir, pattern)) == number
+                    glob = globber(sorted_dest or job_dir, pattern)
+                    assert len(glob) == number
                 except AssertionError:
                     # Print some details to help diagnose the issue
                     pytest.fail(

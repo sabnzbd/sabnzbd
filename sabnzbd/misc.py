@@ -35,12 +35,22 @@ import inspect
 import queue
 import html
 import ipaddress
+import sabctools
 import socks
 import math
 import rarfile
+import hashlib
 from threading import Thread, RLock
 from collections.abc import Iterable
-from typing import Union, Any, AnyStr, Optional, Collection
+from typing import Any, AnyStr, Optional, Collection
+from functools import lru_cache
+
+from hachoir.parser import createParser as hachoir_create_parser
+from hachoir.metadata import extractMetadata as hachoir_extract_metadata
+from hachoir.core.log import log as hachoir_log
+
+# Keep hachoir from printing parser warnings straight to the console
+hachoir_log.use_print = False
 
 import sabnzbd
 import sabnzbd.getipaddress
@@ -56,7 +66,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.decorators import conditional_cache, synchronized
 from sabnzbd.encoding import ubtou, platform_btou
-from sabnzbd.filesystem import userxbit, make_script_path, remove_file, strip_extensions
+from sabnzbd.filesystem import userxbit, make_script_path, remove_file, strip_extensions, safe_fnmatch
 
 if sabnzbd.WINDOWS:
     try:
@@ -78,12 +88,17 @@ if sabnzbd.WINDOWS:
 if sabnzbd.MACOS:
     from sabnzbd.utils import sleepless
 
+
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
 RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]?)", re.I)
 RE_VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)")
-RE_SAMPLE = re.compile(r"((^|[\W_])(sample|proof))", re.I)  # something-sample or something-proof
 RE_IP4 = re.compile(r"inet\s+(addr:\s*)?(\d+\.\d+\.\d+\.\d+)")
 RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
+
+# Media shorter than this (in seconds) can be an actual sample; anything longer
+# is considered real content even when its name matches the sample pattern
+RE_SAMPLE = re.compile(r"((^|[\W_])(sample|proof))", re.I)  # something-sample or something-proof
+SAMPLE_MAX_DURATION = 2 * 60
 
 # Name patterns for NZB parsing
 RE_SUBJECT_FILENAME_QUOTES = re.compile(r'"([^"]*)"')
@@ -161,11 +176,16 @@ def calc_age(date: datetime.datetime, trans: bool = False) -> str:
         m = "m"
 
     try:
+        # Assume no tzinfo means it is localtime
+        if date.tzinfo is None:
+            date = date.replace(tzinfo=datetime.datetime.now().astimezone().tzinfo)
+
+        now = datetime.datetime.now(datetime.timezone.utc)
         # Return time difference in human-readable format
-        date_diff = datetime.datetime.now() - date
+        date_diff = now - date
         if date_diff.days:
             return "%d%s" % (date_diff.days, d)
-        elif int(date_diff.seconds / 3600):
+        elif date_diff.seconds >= 3600:
             return "%d%s" % (date_diff.seconds / 3600, h)
         else:
             return "%d%s" % (date_diff.seconds / 60, m)
@@ -222,9 +242,9 @@ class MultiAddQueue(queue.Queue):
 
 def cat_pp_script_sanitizer(
     cat: Optional[str] = None,
-    pp: Optional[Union[int, str]] = None,
+    pp: Optional[int | str] = None,
     script: Optional[str] = None,
-) -> tuple[Optional[Union[int, str]], Optional[str], Optional[str]]:
+) -> tuple[Optional[int | str], Optional[str], Optional[str]]:
     """Basic sanitizer from outside input to a bit more predictable values"""
     # * and Default are valid values
     if safe_lower(cat) in ("", "none"):
@@ -606,7 +626,7 @@ def from_units(val: str) -> float:
         return 0.0
 
 
-def to_units(val: Union[int, float], postfix="") -> str:
+def to_units(val: int | float, postfix="") -> str:
     """Convert number to K/M/G/T/P notation
     Show single decimal for M and higher
     Also supports negative numbers
@@ -633,16 +653,26 @@ def to_units(val: Union[int, float], postfix="") -> str:
         # Limit it to 5 as the maximum defined index.
         n = min(5, math.trunc(math.log2(val) / 10))
 
-    # Now we scale our value to the appropriate power of 1024
-    # It is written as 2^10n for symmetry with the
-    # selection above.
-    val = val / 2 ** (10 * n)
-
     # Showing the single decimal per doc string
     if n > 1:
         decimals = 1
     else:
         decimals = 0
+
+    # Now we scale our value to the appropriate power of 1024
+    # It is written as 2^10n for symmetry with the selection above.
+    # Round it to the precision we are going to display, so
+    # what we check below is what ends up in the output.
+    val = round(val / 2 ** (10 * n), decimals)
+
+    # That rounding can carry the value up into the next unit, for example 1048575
+    # would be shown as "1024 K" instead of "1.0 M". Move it up a unit instead,
+    # unless we are already at the maximum defined index.
+    if n < 5 and val >= 1024:
+        n += 1
+        if n > 1:
+            decimals = 1
+        val = round(val / 1024, decimals)
 
     # We might not have anything at all to append
     if n == 0 and postfix == "":
@@ -736,7 +766,7 @@ def get_cache_limit() -> str:
         pass
 
     # Always at least minimum on Windows/macOS
-    if sabnzbd.WINDOWS and sabnzbd.MACOS:
+    if sabnzbd.WINDOWS or sabnzbd.MACOS:
         return DEF_ARTICLE_CACHE_DEFAULT
 
     # If failed, leave empty for Linux so user needs to decide
@@ -744,6 +774,18 @@ def get_cache_limit() -> str:
 
 
 def get_memory() -> int:
+    """Memory we are allowed to use: the memory installed in the machine, clamped by
+    any cgroup limit so containers size against their own budget rather than the
+    host's. Returns 0 when neither could be determined."""
+    physical = _physical_memory()
+    limit = _cgroup_memory_limit()
+    if physical and limit:
+        return min(physical, limit)
+    return physical or limit or 0
+
+
+def _physical_memory() -> Optional[int]:
+    """Total memory installed in the machine, or None if it could not be determined"""
     try:
         if sabnzbd.WINDOWS:
             # Use win32api to get total physical memory
@@ -760,10 +802,51 @@ def get_memory() -> int:
                             return int(line.split()[1]) * 1024
             except Exception:
                 pass
-            return os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
+            # sysconf reports -1 for values it does not know, which would multiply
+            # out to a plausible looking but negative amount of memory
+            if (memory := os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")) > 0:
+                return memory
     except Exception:
         pass
-    return 0
+    return None
+
+
+def _cgroup_memory_limit() -> Optional[int]:
+    """Memory limit applied to this container, or None if unlimited/absent"""
+    if sabnzbd.WINDOWS or sabnzbd.MACOS:
+        return None
+
+    # Exceeding memory.high throttles us under heavy reclaim, exceeding memory.max
+    # invokes the OOM killer. Take the lowest limit that is set, so we size against
+    # the budget we are meant to stay within rather than the one that gets us killed.
+    limit = None
+    for path in (
+        # cgroup v2
+        "/sys/fs/cgroup/memory.high",
+        "/sys/fs/cgroup/memory.max",
+        # cgroup v1, no equivalent of memory.high
+        "/sys/fs/cgroup/memory/memory.limit_in_bytes",
+    ):
+        value = _read_cgroup_limit(path)
+        if value and (limit is None or value < limit):
+            limit = value
+    return limit
+
+
+def _read_cgroup_limit(path: str) -> Optional[int]:
+    """Read a single cgroup limit file, returning None if absent or unlimited"""
+    try:
+        with open(path) as f:
+            raw = f.read().strip()
+        # cgroup v2 spells unlimited as "max", v1 uses a huge sentinel
+        if raw == "max":
+            return None
+        value = int(raw)
+        if value <= 0 or value >= (1 << 62):
+            return None
+        return value
+    except (OSError, ValueError):
+        return None
 
 
 @conditional_cache(cache_time=3600)
@@ -853,17 +936,46 @@ def get_platform_description() -> str:
     return sabnzbd.PLATFORM
 
 
-def on_cleanup_list(filename: str, skip_nzb: bool = False) -> bool:
-    """Return True if a filename matches the clean-up list"""
-    cleanup_list = cfg.cleanup_list()
-    if cleanup_list:
+def on_cleanup_list(filename: str, skip_nzb: bool = False, relative_path: Optional[str] = None) -> bool:
+    """Return True if a filename matches the clean-up list
+
+    Supports three match types:
+    - Extensions (no dots): exe, nfo -> matches file.exe, file.nfo
+    - Filename patterns (with dots): *.tmp, Thumbs.db -> matches file.tmp, Thumbs.db
+    - Path patterns (with slashes): images/*, */test.jpg -> matches relative paths
+    """
+    if cleanup_list := cfg.cleanup_list():
+        filename = filename.lower()
         name, ext = os.path.splitext(filename)
-        ext = ext.strip().lower()
+        ext = ext.strip()
         name = name.strip()
-        for cleanup_ext in cleanup_list:
-            cleanup_ext = "." + cleanup_ext
-            if (cleanup_ext == ext or (ext == "" and cleanup_ext == name)) and not (skip_nzb and cleanup_ext == ".nzb"):
-                return True
+        if relative_path:
+            relative_path = relative_path.lower().replace("\\", "/")
+
+        for entry in cleanup_list:
+            # Skip empty entries, entries with ".." in it or entries that end with nzb
+            if not entry or ".." in entry or (skip_nzb and entry.endswith("nzb")):
+                continue
+
+            # Type 1: Pure extension (no dots or slashes) - backwards compatible
+            if "." not in entry and "/" not in entry and "\\" not in entry:
+                cleanup_ext = "." + entry
+                if cleanup_ext == ext or (ext == "" and cleanup_ext == name):
+                    return True
+
+            # Type 2: Filename/wildcard pattern (has dots, no slashes)
+            elif "." in entry and "/" not in entry and "\\" not in entry:
+                if safe_fnmatch(filename, entry):
+                    return True
+
+            # Type 3: Path pattern (has slashes)
+            elif "/" in entry or "\\" in entry:
+                if relative_path:
+                    # Normalize both to forward slashes for cross-platform matching
+                    entry_normalized = entry.replace("\\", "/")
+                    if safe_fnmatch(relative_path, entry_normalized):
+                        return True
+
     return False
 
 
@@ -1038,12 +1150,45 @@ def get_all_passwords(nzo) -> list[str]:
     return unique_passwords
 
 
-def is_sample(filename: str) -> bool:
-    """Try to determine if filename is (most likely) a sample"""
-    return bool(re.search(RE_SAMPLE, filename))
+def is_sample(filename_or_filepath: str) -> bool:
+    """Try to determine if the file is (most likely) a sample.
+    When given a path to an actual file on disk, the media duration is used
+    to rule out false-positives on titles that merely contain "sample" or
+    "proof" (e.g. "The.Moment.of.Proof.S01E01")."""
+    if not re.search(RE_SAMPLE, os.path.basename(filename_or_filepath)):
+        return False
+
+    # Long media files are never a sample, no matter what its name suggests
+    if os.path.isfile(filename_or_filepath):
+        if duration := get_media_duration(filename_or_filepath):
+            logging.debug("Media duration of %s is %s seconds", filename_or_filepath, duration)
+            return duration <= SAMPLE_MAX_DURATION
+        logging.debug(
+            "Could not determine media duration of %s, using filename-based sample detection",
+            filename_or_filepath,
+        )
+    return True
 
 
-def find_on_path(targets: Union[str, tuple[str, ...]]) -> Optional[str]:
+def get_media_duration(filepath: str) -> Optional[float]:
+    """Return the duration of a media file in seconds using the pure-Python
+    hachoir parser (no external tools required), or None when it cannot be
+    determined (not a media file, unreadable, or missing duration metadata)."""
+    if not os.path.isfile(filepath):
+        return None
+    try:
+        parser = hachoir_create_parser(filepath)
+        if not parser:
+            return None
+        with parser:
+            if duration := hachoir_extract_metadata(parser).get("duration", 0):
+                return duration.total_seconds()
+    except Exception:
+        logging.debug("Failed to read media duration of %s", filepath, exc_info=True)
+    return None
+
+
+def find_on_path(targets: str | tuple[str, ...]) -> Optional[str]:
     """Search the PATH for a program and return full path"""
     if sabnzbd.WINDOWS:
         paths = os.getenv("PATH").split(";")
@@ -1144,7 +1289,7 @@ def is_lan_addr(ip: str) -> bool:
         ip = strip_ipv4_mapped_notation(ip)
         return (
             # The ipaddress module considers these private, see https://bugs.python.org/issue38655
-            not ip in ("0.0.0.0", "255.255.255.255")
+            ip not in ("0.0.0.0", "255.255.255.255")
             and not ip_in_subnet(ip, "::/128")  # Also catch (partially) exploded forms of "::"
             and ipaddress.ip_address(ip).is_private
             and not is_loopback_addr(ip)
@@ -1202,7 +1347,7 @@ def get_base_url(url: str) -> str:
         # Exception for localhost and IPv6 addresses
         if len(url_split) < 3:
             return url_host
-        return ".".join(len(url_split[-2]) < 4 and url_split[-3:] or url_split[-2:])
+        return ".".join((len(url_split[-2]) < 4 and url_split[-3:]) or url_split[-2:])
     else:
         return ""
 
@@ -1216,7 +1361,7 @@ def match_str(text: AnyStr, matches: tuple[AnyStr, ...]) -> Optional[AnyStr]:
     return None
 
 
-def recursive_html_escape(input_dict_or_list: Union[dict[str, Any], list], exclude_items: tuple[str, ...] = ()):
+def recursive_html_escape(input_dict_or_list: dict[str, Any] | list, exclude_items: tuple[str, ...] = ()):
     """Recursively update the input_dict in-place with html-safe values"""
     if isinstance(input_dict_or_list, (dict, list)):
         if isinstance(input_dict_or_list, dict):
@@ -1674,6 +1819,60 @@ class SABRarFile(rarfile.RarFile):
         """Return list of filenames in archive."""
         return [f.filename for f in self.infolist() if not f.isdir()]
 
-    def trigger_parse(self):
-        """Force re-parse, wich is needed to trigger password checking logic"""
-        self._parse()
+    def setpassword(self, pwd):
+        """Sets the password to use when extracting."""
+        self._file_parser = None  # Always trigger parse
+        super().setpassword(pwd)
+
+    def _parse(self):
+        """Run parser for file type"""
+        super()._parse()
+        self._verify_file_passwords()
+
+    def _verify_file_passwords(self):
+        """Verify passwords for all files in archive"""
+        if not self._password:
+            return
+        if isinstance(self._file_parser, rarfile.RAR5Parser):
+            # Encrypted headers already verify the password, and we assume all files use the same password
+            if self._file_parser.has_header_encryption():
+                return
+            for rar_obj in self.infolist():
+                if rar_obj.is_file() and rar_obj.needs_password():
+                    _algo, flags, kdf_count, salt, _iv, checkval = rar_obj.file_encryption
+                    if flags & rarfile.RAR5_XENC_CHECKVAL:
+                        if not rar5_check_password(self._password, salt, kdf_count, checkval):
+                            raise rarfile.RarWrongPassword()
+                        # All files typically share the same password and usually even the same salt, so one successful check is enough
+                        return
+
+
+@lru_cache(maxsize=128)
+def rar5_check_password(password: str | bytes, salt: bytes, kdf_count_shift: int, check_value: bytes) -> bool:
+    """Verify a check_value against a password, salt and kdf_count_shift"""
+    if len(check_value) != rarfile.RAR5_PW_CHECK_SIZE + rarfile.RAR5_PW_SUM_SIZE:
+        return False
+    if kdf_count_shift > rarfile.RAR_MAX_KDF_SHIFT:
+        raise rarfile.BadRarFile("Too large kdf_count")
+
+    hdr_check = check_value[: rarfile.RAR5_PW_CHECK_SIZE]
+    hdr_sum = check_value[rarfile.RAR5_PW_CHECK_SIZE :]
+    sum_hash = hashlib.sha256(hdr_check).digest()
+    if sum_hash[: rarfile.RAR5_PW_SUM_SIZE] != hdr_sum:
+        return False
+
+    kdf_count = (1 << kdf_count_shift) + 32
+    password_hash = rarfile.rar5_s2k(password, salt, kdf_count)
+
+    # Fold the 32-byte value into 8 bytes
+    pwd_check = bytearray(rarfile.RAR5_PW_CHECK_SIZE)
+    len_mask = rarfile.RAR5_PW_CHECK_SIZE - 1
+    for i, v in enumerate(password_hash):
+        pwd_check[i & len_mask] ^= v
+
+    return pwd_check == hdr_check
+
+
+# Replace rar3_s2k with native implementation which is faster for longer passwords
+rarfile.rar3_s2k = lru_cache(maxsize=128)(sabctools.rarfile_rar3_s2k)
+rarfile.rar5_s2k = lru_cache(maxsize=128)(rarfile.rar5_s2k)

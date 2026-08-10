@@ -21,7 +21,6 @@ sabnzbd.interface - webinterface
 
 import os
 import time
-import datetime
 import cherrypy
 import logging
 import urllib.parse
@@ -34,7 +33,7 @@ import copy
 from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
-from typing import Optional, Callable, Union, Any
+from typing import Optional, Callable, Any
 from guessit.api import properties as guessit_properties
 
 import sabnzbd
@@ -92,6 +91,8 @@ from sabnzbd.api import (
     build_header,
     Ttemplate,
 )
+from sabnzbd.nzb import NzoInfo
+from sabnzbd.rss import ResolvedEntry, RSSState
 
 ##############################################################################
 # Security functions
@@ -110,7 +111,7 @@ def secured_expose(
     check_for_login: bool = True,
     check_api_key: bool = False,
     access_type: int = 4,
-) -> Union[Callable, str]:
+) -> Callable | str:
     """Wrapper for both cherrypy.expose and login/access check"""
     if not wrap_func:
         return functools.partial(
@@ -879,6 +880,7 @@ SPECIAL_BOOL_LIST = (
     "enable_7zip",
     "enable_filejoin",
     "enable_tsjoin",
+    "enable_tar",
     "ignore_unrar_dates",
     "tray_icon",
     "allow_incomplete_nzb",
@@ -1220,13 +1222,36 @@ def handle_server(kwargs, root=None, new_svr=False):
 class ConfigRss:
     def __init__(self, root):
         self.__root = root
-        self.__refresh_readout = None  # Set to URL when new readout is needed
-        self.__refresh_download = False  # True when feed needs to be read
-        self.__refresh_force = False  # True if forced download of all matches is required
-        self.__refresh_ignore = False  # True if first batch of new feed must be ignored
-        self.__evaluate = False  # True if feed needs to be re-filtered
-        self.__show_eval_button = False  # True if the "Apply filers" button should be shown
         self.__last_msg = ""  # Last error message from RSS reader
+
+    def process_feed(
+        self,
+        feed: str,
+        download: bool = False,
+        force: bool = False,
+        ignore_first: bool = False,
+        readout: bool = False,
+    ) -> None:
+        """Process a feed and cache the result message. When readout=True the feed
+        is re-fetched from its URL and the result message is stored for display.
+        When readout=False the cached items are re-evaluated against current filters."""
+        logging.debug(
+            "Processing RSS-feed: %s (download=%s, force=%s, ignore_first=%s, readout=%s)",
+            feed,
+            download,
+            force,
+            ignore_first,
+            readout,
+        )
+        msg = sabnzbd.RSSReader.process_feed(
+            feed,
+            download=download,
+            force=force,
+            ignore_first=ignore_first,
+            readout=readout,
+        )
+        if readout:
+            self.__last_msg = msg
 
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
@@ -1261,32 +1286,7 @@ class ConfigRss:
         conf["rss_next"] = time.strftime(time_format("%H:%M"), time.localtime(sabnzbd.RSSReader.next_run))
 
         if active_feed:
-            readout = bool(self.__refresh_readout)
-            logging.debug("RSS READOUT = %s", readout)
-            if not readout:
-                self.__refresh_download = False
-                self.__refresh_force = False
-                self.__refresh_ignore = False
-            if self.__evaluate:
-                msg = sabnzbd.RSSReader.process_feed(
-                    active_feed,
-                    download=self.__refresh_download,
-                    force=self.__refresh_force,
-                    ignore_first=self.__refresh_ignore,
-                    readout=readout,
-                )
-            else:
-                msg = ""
-            self.__evaluate = False
-            if readout:
-                sabnzbd.RSSReader.save()
-                self.__last_msg = msg
-            else:
-                msg = self.__last_msg
-            self.__refresh_readout = None
-            conf["evalButton"] = self.__show_eval_button
-            conf["error"] = msg
-
+            conf["error"] = self.__last_msg
             conf["downloaded"], conf["matched"], conf["unmatched"] = GetRssLog(active_feed)
         else:
             self.__last_msg = ""
@@ -1328,8 +1328,7 @@ class ConfigRss:
             cf.set_dict(kwargs)
             config.save_config()
 
-        self.__evaluate = False
-        self.__show_eval_button = True
+        self.process_feed(kwargs.get("feed"))
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1388,13 +1387,10 @@ class ConfigRss:
                 config.ConfigRSS(feed, kwargs)
                 # Clear out any existing reference to this feed name
                 # Otherwise first-run detection can fail
-                sabnzbd.RSSReader.clear_feed(feed)
+                with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
+                    repo.clear_feed(feed)
                 config.save_config()
-                self.__refresh_readout = feed
-                self.__refresh_download = False
-                self.__refresh_force = False
-                self.__refresh_ignore = True
-                self.__evaluate = True
+                self.process_feed(feed, readout=True, ignore_first=True)
                 raise rssRaiser(self.__root, kwargs)
             else:
                 raise Raiser(self.__root)
@@ -1434,8 +1430,7 @@ class ConfigRss:
                 feed_cfg.filters.move(int(index), int_conv(new_index))
 
             config.save_config()
-        self.__evaluate = False
-        self.__show_eval_button = True
+        self.process_feed(kwargs.get("feed"))
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1444,7 +1439,8 @@ class ConfigRss:
         kwargs["section"] = "rss"
         kwargs["keyword"] = kwargs.get("feed")
         del_from_section(kwargs)
-        sabnzbd.RSSReader.clear_feed(kwargs.get("feed"))
+        with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
+            repo.clear_feed(kwargs.get("feed"))
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1461,52 +1457,29 @@ class ConfigRss:
 
         feed_cfg.filters.delete(int(kwargs.get("index", 0)))
         config.save_config()
-        self.__evaluate = False
-        self.__show_eval_button = True
+        self.process_feed(kwargs.get("feed"))
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def download_rss_feed(self, *args, **kwargs):
         """Force download of all matching jobs in a feed"""
         if "feed" in kwargs:
-            feed = kwargs["feed"]
-            self.__refresh_readout = feed
-            self.__refresh_download = True
-            self.__refresh_force = True
-            self.__refresh_ignore = False
-            self.__evaluate = True
+            self.process_feed(kwargs["feed"], readout=True, download=True, force=True)
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def clean_rss_jobs(self, *args, **kwargs):
         """Remove processed RSS jobs from UI"""
-        sabnzbd.RSSReader.clear_downloaded(kwargs["feed"])
-        self.__evaluate = True
+        with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
+            repo.clear_downloaded(kwargs["feed"])
+        self.process_feed(kwargs["feed"])
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def test_rss_feed(self, *args, **kwargs):
         """Read the feed content again and show results"""
         if "feed" in kwargs:
-            feed = kwargs["feed"]
-            self.__refresh_readout = feed
-            self.__refresh_download = False
-            self.__refresh_force = False
-            self.__refresh_ignore = True
-            self.__evaluate = True
-            self.__show_eval_button = False
-        raise rssRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def eval_rss_feed(self, *args, **kwargs):
-        """Re-apply the filters to the feed"""
-        if "feed" in kwargs:
-            self.__refresh_download = False
-            self.__refresh_force = False
-            self.__refresh_ignore = False
-            self.__show_eval_button = False
-            self.__evaluate = True
-
+            self.process_feed(kwargs["feed"], readout=True, ignore_first=True)
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1514,12 +1487,14 @@ class ConfigRss:
         """Download NZB from provider (Download button)"""
         feed = kwargs.get("feed")
         url = kwargs.get("url")
-        if att := sabnzbd.RSSReader.find_job_by_url(feed, url):
+        db = sabnzbd.get_db_connection()
+        repo = sabnzbd.rss.RSSRepository(db)
+        if att := repo.find_job_by_url(feed, url):
             nzbname = kwargs.get("nzbname")
-            pp = att.get("pp")
-            cat = att.get("cat")
-            script = att.get("script")
-            priority = att.get("prio")
+            pp = att.pp
+            cat = att.cat
+            script = att.script
+            priority = att.priority
 
             if url:
                 logging.info("Adding %s (%s) to queue", url, nzbname)
@@ -1530,10 +1505,9 @@ class ConfigRss:
                     cat=cat,
                     priority=priority,
                     nzbname=nzbname,
-                    nzo_info={"RSS": feed},
+                    nzo_info=NzoInfo(RSS=feed),
                 )
-            # Need to pass the title instead
-            sabnzbd.RSSReader.flag_downloaded(feed, url)
+            repo.flag_downloaded(feed, url)
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1942,69 +1916,60 @@ def ShowString(name, msg):
 
 
 def GetRssLog(feed):
-    def make_item(job):
+    def make_item(entry: ResolvedEntry):
         # Make a copy
-        job = job.copy()
-
-        # Now we apply some formatting
-        job["title"] = job["title"]
-        job["skip"] = "*" * int(job.get("status", "").endswith("*"))
-        # These fields could be empty
-        job["cat"] = job.get("cat", "") or T("Default")
-        job["size"] = job.get("size", "")
-        job["infourl"] = job.get("infourl", "")
+        job: dict = {
+            "url": entry.link,
+            "rule": entry.rule,
+            "title": entry.title,
+            "skip": "*" if entry.is_starred else "",
+            "cat": entry.cat or T("Default"),
+            "size": entry.size,
+            "infourl": entry.infourl,
+        }
 
         # Auto-fetched jobs didn't have these fields set
-        if job.get("url"):
-            job["baselink"] = get_base_url(job.get("url"))
-            if sabnzbd.rss.special_rss_site(job.get("url")):
+        if entry.link:
+            job["baselink"] = get_base_url(entry.link)
+            if entry.is_special_rss_site:
                 job["nzbname"] = ""
             else:
-                job["nzbname"] = job["title"]
+                job["nzbname"] = entry.title
         else:
             job["baselink"] = ""
-            job["nzbname"] = job["title"]
+            job["nzbname"] = entry.title
 
-        if job.get("size", 0):
-            job["size_units"] = to_units(job["size"])
+        if entry.size:
+            job["size_units"] = to_units(entry.size)
         else:
             job["size_units"] = "-"
 
         # And we add extra fields for sorting
-        if job.get("age", 0):
-            job["age_ms"] = (job["age"] - datetime.datetime(1970, 1, 1)).total_seconds()
-            job["age"] = calc_age(job["age"], True)
+        if entry.age:
+            job["age_ms"] = int(entry.age.timestamp())
+            job["age"] = calc_age(entry.age, True)
         else:
             job["age_ms"] = ""
             job["age"] = ""
 
-        if job.get("time_downloaded"):
-            job["time_downloaded_ms"] = time.mktime(job["time_downloaded"])
-            job["time_downloaded"] = time.strftime(time_format("%H:%M %a %d %b"), job["time_downloaded"])
+        if entry.downloaded_at:
+            job["time_downloaded_ms"] = int(entry.downloaded_at.timestamp())
+            job["time_downloaded"] = entry.downloaded_at.strftime(time_format("%H:%M %a %d %b"))
         else:
             job["time_downloaded_ms"] = ""
             job["time_downloaded"] = ""
 
         return job
 
-    jobs = sabnzbd.RSSReader.get_feed_jobs(feed).values()
-    good, bad, done = ([], [], [])
-    for job in jobs:
-        if job["status"][0] == "G":
-            good.append(make_item(job))
-        elif job["status"][0] == "B":
-            bad.append(make_item(job))
-        elif job["status"] == "D":
-            done.append(make_item(job))
-
-    try:
-        # Sort based on actual age, in try-catch just to be sure
-        good.sort(key=lambda job: job["age_ms"], reverse=True)
-        bad.sort(key=lambda job: job["age_ms"], reverse=True)
-        done.sort(key=lambda job: job["time_downloaded_ms"], reverse=True)
-    except Exception:
-        # Let the javascript do it then..
-        pass
+    with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
+        good, bad, done = ([], [], [])
+        for job in repo.get_feed_jobs(feed, states=[RSSState.GOOD, RSSState.BAD, RSSState.DOWNLOADED]):
+            if job.is_good:
+                good.append(make_item(job))
+            elif job.is_bad:
+                bad.append(make_item(job))
+            elif job.is_downloaded:
+                done.append(make_item(job))
 
     return done, good, bad
 

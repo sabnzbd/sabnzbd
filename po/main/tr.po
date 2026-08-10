@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-5.0.0\n"
+"Project-Id-Version: SABnzbd-5.1.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: mauron, 2026\n"
 "Language-Team: Turkish (https://app.transifex.com/sabnzbd/teams/111101/tr/)\n"
@@ -123,7 +123,6 @@ msgstr "SABnzbd %s başlatıldı"
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd kapatılması tamamlandı"
 
-#. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "%s sinyali yakalandı, kaydediliyor ve çıkılıyor..."
@@ -258,6 +257,10 @@ msgstr ""
 " noktasını deneyin."
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Bağlantı sonucu belirlenemedi (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "Sunucu kullanıcı ismi ve parola gerektiriyor."
 
@@ -276,9 +279,17 @@ msgstr ""
 "Çok fazla bağlantı, lütfen indirmeyi duraklatın veya daha sonra tekrar "
 "deneyin"
 
+#. Warning message
 #: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "Bağlantı sonucu belirlenemedi (%s)"
+msgid ""
+"Server %s took %d ms to respond. On high-latency connections, increasing "
+"'Articles per request' to a value between 5 and 10 can improve download "
+"speed. See: https://sabnzbd.org/wiki/advanced/nntp-pipelining"
+msgstr ""
+"%s sunucusunun cevap vermesi %d ms sürdü. Yüksek gecikmeli bağlantılarda, "
+"'talep başı makale' değerini 5 ila 10 olarak ayarlamak indirme hızını "
+"iyileştirebilir. Şu sayfaya bakın: https://sabnzbd.org/wiki/advanced/nntp-"
+"pipelining"
 
 #: sabnzbd/api.py
 msgid "Resolving address"
@@ -562,8 +573,8 @@ msgid "Resuming"
 msgstr "Sürdürülüyor"
 
 #. PP status - Priority pick list
-#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Paused"
 msgstr "Duraklatılmış"
 
@@ -622,6 +633,15 @@ msgstr "%s [%s] sunucusunda oturum açılışı başarısız oldu"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "%s@%s bağlantısı başarısız oldu, mesaj=%s"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid ""
+"Total number of configured connections (%d) is greater than the operating "
+"system limit (512), downloading will crash if all connections become active"
+msgstr ""
+"Toplam yapılandırılmış bağlantı sayısı (%d) işletim sisteminin sınırından "
+"yüksektir (512), tüm bağlantılar faal hâle gelirse indirme işlemi çökecektir"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -907,7 +927,7 @@ msgstr ""
 msgid "Warnings"
 msgstr "İkazlar"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Boşta"
@@ -938,8 +958,8 @@ msgstr "Hızı Sınırla"
 
 #. Notification - Pause downloading - Four way switch for duplicates -
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Pause"
 msgstr "Duraklat"
 
@@ -949,8 +969,8 @@ msgid "min"
 msgstr "dakika"
 
 #. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Resume"
 msgstr "Sürdür"
 
@@ -959,7 +979,7 @@ msgstr "Sürdür"
 msgid "Scan watched folder"
 msgstr "İzlenen dizini tara"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Read all RSS feeds"
 msgstr "Tüm RSS beslemelerini oku"
 
@@ -971,17 +991,17 @@ msgstr "Tamamlanmışlar Dizini"
 msgid "Incomplete Folder"
 msgstr "Tamamlanmamışlar Dizini"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Troubleshoot"
 msgstr "Sorun Giderme"
 
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Restart"
 msgstr "Tekrar Başlat"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Restart without login"
 msgstr "Oturum açmadan tekrar başlat"
 
@@ -1179,6 +1199,10 @@ msgid "see logfile"
 msgstr "kütük dosyasına bakın"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking skipped, TAR support requires Python 3.12 or later"
+msgstr "Açma atlandı, TAR desteği Python 3.12 veya daha yenisini gerektirir"
+
+#: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "Hızlı Kontrol"
 
@@ -1361,7 +1385,7 @@ msgid "Open folder"
 msgstr "Dizin aç"
 
 #. Notification action
-#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/notifier.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Open complete folder"
 msgstr "Tamamlanmışlar dizinini aç"
 
@@ -1500,7 +1524,8 @@ msgstr "YAYINLANIYOR %s dakika"
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "%s içinde ortalama %sB/s hızında indirildi"
 
-#. Job details page, file age column header
+#. Config->RSS filter-type selection menu (e.g. ">3d", "<12h") - Job details
+#. page, file age column header
 #: sabnzbd/nzb/object.py, sabnzbd/skintext.py
 msgid "Age"
 msgstr "Yaş"
@@ -1823,6 +1848,10 @@ msgstr "%s için eşleşen önceki bir rar dosyası yok"
 msgid "Removing %s failed"
 msgstr "%s kaldırması başarısız oldu"
 
+#: sabnzbd/postproc.py
+msgid "Removed %s files with unwanted extensions"
+msgstr "İstemeyen uzantılı %s dosya kaldırıldı"
+
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Failed to hibernate system"
@@ -1847,10 +1876,6 @@ msgstr "Bir DBUS istisnası alındı %s"
 msgid "Empty RSS entry found (%s)"
 msgstr "Boş RSS girdisi bulundu (%s)"
 
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Uyumsuz besleme"
-
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1872,56 +1897,59 @@ msgstr "%s unsurundan RSS alınması başarısız oldu: %s"
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "%s sunucusu güvenilmez bir HTTPS sertifikası kullanıyor"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "%s RSS Beselemesi boştu"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Show interface"
-msgstr "Arayüzü göster"
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Uyumsuz besleme"
 
-#. Queue page button or entry box
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for"
-msgstr "Şu süre boyunca duraklat"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 5 minutes"
-msgstr "5 dakika boyunca duraklat"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 15 minutes"
-msgstr "15 dakika boyunca duraklat"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 30 minutes"
-msgstr "30 dakika boyunca duraklat"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 1 hour"
-msgstr "1 saat boyunca duraklat"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 3 hours"
-msgstr "3 saat boyunca duraklat"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 6 hours"
-msgstr "6 saat boyunca duraklat"
-
-#. Config->Scheduling
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Shutdown"
-msgstr "Kapat"
-
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Remaining"
 msgstr "Kalan"
 
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Add NZB"
 msgstr "NZB Ekle"
+
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
+msgid "Show interface"
+msgstr "Arayüzü göster"
+
+#. Config->Scheduling
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Shutdown"
+msgstr "Kapat"
+
+#. Queue page button or entry box
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for"
+msgstr "Şu süre boyunca duraklat"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 5 minutes"
+msgstr "5 dakika boyunca duraklat"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 15 minutes"
+msgstr "15 dakika boyunca duraklat"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 30 minutes"
+msgstr "30 dakika boyunca duraklat"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 1 hour"
+msgstr "1 saat boyunca duraklat"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 3 hours"
+msgstr "3 saat boyunca duraklat"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 6 hours"
+msgstr "6 saat boyunca duraklat"
 
 #. Warning message
 #: sabnzbd/scheduler.py
@@ -3002,11 +3030,13 @@ msgstr "Listeyi Temizle"
 
 #: sabnzbd/skintext.py
 msgid ""
-"List of file extensions that should be deleted after download.<br />For "
-"example: <b>nfo</b> or <b>nfo, sfv</b>"
+"List of file extensions, filenames or patterns that should be deleted after "
+"download.<br />Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> "
+"(filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
 msgstr ""
-"İndirmeden sonra silinecek uzantıların listesi.<br />Mesela: <b>nfo</b> veya"
-" <b>nfo, sfv</b>"
+"İndirmeden sonra silinecek dosya uzantılarının, isimlerinin veya örüntülerin"
+" listesi. <br /> Örnekler: <b>nfo, sfv</b> (uzantılar) veya <b>thumbs.db</b>"
+" (dosya isimleri) veya <b>*.tmp, images/*, */test.jpg</b> (örüntüler)."
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
@@ -3563,9 +3593,12 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr "Kuyruktaki işleri yeni bir iş eklendiğinde otomatik olarak sırala."
 
 #: sabnzbd/skintext.py
-msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgid ""
+"The queue will resort every 30 seconds if % downloaded or Remaining Size is "
+"selected."
 msgstr ""
-"İndirme %'si seçildiyse, kuyruk her 30 saniyede bir tekrar sıralanacaktır."
+"Eğer % indirildiyse veya Kalan Boyut seçildiyse kuyruk her 30 saniyede bir "
+"tekrar sıralanacaktır."
 
 #: sabnzbd/skintext.py
 msgid "Propagation delay"
@@ -4009,10 +4042,6 @@ msgstr "Beslemeyi Oku"
 #: sabnzbd/skintext.py
 msgid "Force Download"
 msgstr "İndirmeyi Zorla"
-
-#: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr "Filtreleri Uygula"
 
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
@@ -4703,6 +4732,14 @@ msgid "Filename"
 msgstr "Dosya ismi"
 
 #: sabnzbd/skintext.py
+msgid "Toggle SABnzbd navigation menu"
+msgstr "SABnzbd gezinti menüsünü aç veya kapat"
+
+#: sabnzbd/skintext.py
+msgid "Open SABnzbd main menu"
+msgstr "SABnzbd ana menüsünü aç"
+
+#: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Boş alan"
 
@@ -4711,12 +4748,20 @@ msgid "Temp Folder"
 msgstr "Geçici Dizin"
 
 #: sabnzbd/skintext.py
+msgid "Clear search"
+msgstr "Aramayı temizle"
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "Çoklu-İşlemler"
 
 #: sabnzbd/skintext.py
 msgid "Hold shift key to select a range"
 msgstr "Bir aralık seçmek için Shift tuşunu basılı tutun"
+
+#: sabnzbd/skintext.py
+msgid "Select job"
+msgstr "İş seç"
 
 #: sabnzbd/skintext.py
 msgid "Check all"
@@ -4964,6 +5009,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
 msgstr "İndirilen % ile sırala <small>Azami&rarr;Asgari</small>"
+
+#: sabnzbd/skintext.py
+msgid "Sort by Remaining Size <small>Smallest&rarr;Largest</small>"
+msgstr "Kalan Boyuta Göre Sırala <small>Asgari&rarr;Azami</small>"
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"

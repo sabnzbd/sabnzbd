@@ -19,8 +19,10 @@
 tests.test_utils.test_check_dir - Testing SABnzbd checkdir util
 """
 
+import socket
+
 from sabnzbd.cfg import selftest_host
-from sabnzbd.getipaddress import *
+from sabnzbd.getipaddress import addresslookup4, public_ipv4, local_ipv4, public_ipv6
 from sabnzbd.misc import is_ipv4_addr, is_ipv6_addr
 
 

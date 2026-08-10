@@ -19,21 +19,42 @@
 tests.test_functional_api - Functional tests for the API
 """
 
+import os
 import shutil
 import stat
 import sys
-
+import time
 from math import ceil
-from random import sample
-
-from tavern.core import run
+from random import choice, randint, sample
 from warnings import warn
 
-import sabnzbd.interface as interface
-from sabnzbd.constants import DEF_SORTER_RENAME_SIZE
-from sabnzbd.misc import from_units
+import pytest
+from tavern.core import run
 
-from tests.testhelper import *
+import sabnzbd
+import sabnzbd.interface as interface
+from sabnzbd.constants import (
+    DEFAULT_PRIORITY,
+    DEF_SORTER_RENAME_SIZE,
+    FORCE_PRIORITY,
+    HIGH_PRIORITY,
+    INTERFACE_PRIORITIES,
+    LOW_PRIORITY,
+    NORMAL_PRIORITY,
+    Status,
+)
+from sabnzbd.misc import from_units
+from tests.testhelper import (
+    SAB_APIKEY,
+    SAB_BASE_DIR,
+    SAB_CACHE_DIR,
+    SAB_DATA_DIR,
+    SAB_HOST,
+    SAB_PORT,
+    create_nzb,
+    get_api_result,
+    random_name,
+)
 
 
 class ApiTestFunctions:
@@ -464,7 +485,7 @@ class TestOtherApi(ApiTestFunctions):
                 "keyword": sorter_name,
             },
         )
-        assert json_del["status"] == True
+        assert json_del["status"]
 
         # Try getting the deleted sorter again and make sure it's actually gone
         json_get_again = self._get_api_json(
@@ -517,7 +538,7 @@ class TestQueueApi(ApiTestFunctions):
                 else:
                     assert slot["status"] != Status.PAUSED
 
-    @pytest.mark.parametrize("sample_size", [i for i in range(0, 5)])
+    @pytest.mark.parametrize("sample_size", list(range(0, 5)))
     @pytest.mark.parametrize("select_filename", [True, False])
     def test_api_queue_search_and_nzo_ids(self, sample_size, select_filename):
         queue_size = max(4, sample_size)
@@ -636,6 +657,7 @@ class TestQueueApi(ApiTestFunctions):
             ("name", "filename", "desc"),
             ("size", "size", "asc"),  # Issue #1666, incorrect (reversed) sort order for avg_age
             ("size", "size", "desc"),
+            ("remaining_bytes", "sizeleft", "asc"),
         ],
     )
     def test_api_queue_sort(self, sort_by, slot_name, sort_order):
@@ -677,7 +699,7 @@ class TestQueueApi(ApiTestFunctions):
         key = None
         if sort_by == "avg_age":
             key = age_in_minutes
-        elif sort_by == "size":
+        elif sort_by in ("size", "remaining_bytes"):
             key = size_in_bytes
         original_order.sort(reverse=(sort_order == "desc"), key=key)
 
@@ -685,8 +707,14 @@ class TestQueueApi(ApiTestFunctions):
         new_order = list(filter((geriatric_entry).__ne__, new_order))
         original_order = list(filter((geriatric_entry).__ne__, original_order))
 
-        # Verify the result
-        assert new_order == original_order
+        # Verify the result. The api sorts on the exact values, while the slots only
+        # report them rounded to the nearest display unit ("1024 KB" and "1.0 MB" both
+        # mean 1MiB). Comparing at that lower resolution avoids failing on entries that
+        # are indistinguishable in the api output but not to the actual sort.
+        if key:
+            assert [key(entry) for entry in new_order] == [key(entry) for entry in original_order]
+        else:
+            assert new_order == original_order
 
     @pytest.mark.parametrize(
         "queue_size, index_from, index_to, value2_is_nzo_id",

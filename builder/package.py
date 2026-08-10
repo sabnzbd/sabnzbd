@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import glob
+import importlib.util
 import re
 import sys
 import os
@@ -31,7 +32,7 @@ import markdown
 import packaging.version
 import xml.etree.ElementTree as ET
 
-from constants import (
+from common import (
     RELEASE_VERSION,
     RELEASE_VERSION_TUPLE,
     VERSION_FILE,
@@ -47,6 +48,7 @@ from constants import (
     EXTRA_FOLDERS,
     APPDATA_FILE,
     RELEASE_VERSION_BASE,
+    pe_has_authenticode_signature,
 )
 
 
@@ -88,7 +90,7 @@ def run_external_command(command: list[str], print_output: bool = True, **kwargs
 
 def run_git_command(parms):
     """Run git command, raise error if it failed"""
-    return run_external_command(["git"] + parms)
+    return run_external_command(["git", *parms])
 
 
 def patch_version_file(release_name):
@@ -193,7 +195,7 @@ def test_macos_min_version(binary_path: str):
             print(lines)
             raise RuntimeError(f"Could not determine minimum macOS version for {binary_path}")
     else:
-        print(f"Skipping macOS version check, MACOSX_DEPLOYMENT_TARGET not set")
+        print("Skipping macOS version check, MACOSX_DEPLOYMENT_TARGET not set")
 
 
 def test_sab_binary(binary_path: str):
@@ -268,9 +270,7 @@ if __name__ == "__main__":
         raise FileNotFoundError("Run from the main SABnzbd source folder: python builder/package.py")
 
     # Check if we have the needed certificates
-    try:
-        import certifi
-    except ImportError:
+    if importlib.util.find_spec("certifi") is None:
         raise FileNotFoundError("Need certifi module")
 
     # Check if we have correct appdata file
@@ -337,6 +337,12 @@ if __name__ == "__main__":
             # Make sure it exists
             if not os.path.exists("dist/SABnzbd/SABnzbd.exe"):
                 raise FileNotFoundError("SABnzbd executable not found, signed zip extraction failed")
+
+            # Make sure the executables are actually signed
+            for exe_to_check in ("dist/SABnzbd/SABnzbd.exe", "dist/SABnzbd/SABnzbd-console.exe"):
+                if not pe_has_authenticode_signature(exe_to_check):
+                    raise RuntimeError("%s is not signed!" % exe_to_check)
+                print("%s has an Authenticode signature" % exe_to_check)
         elif RELEASE_THIS:
             raise FileNotFoundError("Signed SABnzbd executable not found, required for release!")
         else:

@@ -20,7 +20,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-5.0.0\n"
+"Project-Id-Version: SABnzbd-5.1.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
@@ -138,7 +138,6 @@ msgstr "SABnzbd %s gestartet"
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd wurde beendet"
 
-#. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Signal %s erkannt. Wird gespeichert und beendet …"
@@ -171,6 +170,8 @@ msgstr ""
 #: sabnzbd/__init__.py
 msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
 msgstr ""
+"Eine Windows-ARM-Version von SABnzbd ist auf unserer Downloads-Seite "
+"verfügbar!"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -275,6 +276,10 @@ msgstr ""
 "versuchen."
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Die Verbindung konnte nicht überprüft werden. (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "Server benötigt ein Benutzername und ein Passwort."
 
@@ -293,9 +298,13 @@ msgstr ""
 "Zu viele Verbindungen. Bitte halten Sie die Downloads an oder versuchen Sie "
 "es später erneut."
 
+#. Warning message
 #: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "Die Verbindung konnte nicht überprüft werden. (%s)"
+msgid ""
+"Server %s took %d ms to respond. On high-latency connections, increasing "
+"'Articles per request' to a value between 5 and 10 can improve download "
+"speed. See: https://sabnzbd.org/wiki/advanced/nntp-pipelining"
+msgstr ""
 
 #: sabnzbd/api.py
 msgid "Resolving address"
@@ -582,8 +591,8 @@ msgid "Resuming"
 msgstr "Fortgesetzt"
 
 #. PP status - Priority pick list
-#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Paused"
 msgstr "Angehalten"
 
@@ -642,6 +651,16 @@ msgstr "Anmelden beim Server fehlgeschlagen. %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Fehler beim Verbinden mit %s@%s, Meldung = %s"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid ""
+"Total number of configured connections (%d) is greater than the operating "
+"system limit (512), downloading will crash if all connections become active"
+msgstr ""
+"Die Gesamtzahl der konfigurierten Verbindungen (%d) ist größer als das Limit"
+" des Betriebssystems (512); das Herunterladen stürzt ab, wenn alle "
+"Verbindungen aktiv werden"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -815,6 +834,9 @@ msgid ""
 "files. For details and possible solutions, see: "
 "https://sabnzbd.org/wiki/advanced/direct-write"
 msgstr ""
+"Der Direct-Write-Modus wurde deaktiviert, weil %s keine Sparse-Dateien "
+"unterstützt. Einzelheiten und mögliche Lösungen finden Sie unter: "
+"https://sabnzbd.org/wiki/advanced/direct-write"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -924,13 +946,15 @@ msgid ""
 "Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
 " %f MB/s"
 msgstr ""
+"Internet Bandbreite von IPv4 weicht deutlich von IPv6 ab: %f MB/s gegenüber "
+"%f MB/s"
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Warnings"
 msgstr "Warnungen"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Leerlauf"
@@ -961,8 +985,8 @@ msgstr "Geschwindigkeit begrenzen"
 
 #. Notification - Pause downloading - Four way switch for duplicates -
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Pause"
 msgstr "Anhalten"
 
@@ -972,8 +996,8 @@ msgid "min"
 msgstr "Minuten"
 
 #. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Resume"
 msgstr "Fortsetzen"
 
@@ -982,7 +1006,7 @@ msgstr "Fortsetzen"
 msgid "Scan watched folder"
 msgstr "Überwachter Ordner lesen"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Read all RSS feeds"
 msgstr "Alle RSS-Feeds lesen"
 
@@ -994,17 +1018,17 @@ msgstr "Fertige Downloads"
 msgid "Incomplete Folder"
 msgstr "Unfertige Download"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Troubleshoot"
 msgstr "Fehler suchen"
 
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Restart"
 msgstr "Neu starten"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Restart without login"
 msgstr "Neustart ohne Anmeldung"
 
@@ -1205,6 +1229,11 @@ msgid "see logfile"
 msgstr "Beachten Sie die Protokolldatei"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking skipped, TAR support requires Python 3.12 or later"
+msgstr ""
+"Entpacken übersprungen, TAR-Unterstützung erfordert Python 3.12 oder neuer"
+
+#: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "Schnelle Überprüfung"
 
@@ -1389,7 +1418,7 @@ msgid "Open folder"
 msgstr "Ordner öffnen"
 
 #. Notification action
-#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/notifier.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Open complete folder"
 msgstr "Öffne Zielverzeichnis"
 
@@ -1532,7 +1561,8 @@ msgid "Downloaded in %s at an average of %sB/s"
 msgstr ""
 "Heruntergeladen in %s mit einer Durchschnittsgeschwindigkeit von %sB/s"
 
-#. Job details page, file age column header
+#. Config->RSS filter-type selection menu (e.g. ">3d", "<12h") - Job details
+#. page, file age column header
 #: sabnzbd/nzb/object.py, sabnzbd/skintext.py
 msgid "Age"
 msgstr "Alter"
@@ -1862,6 +1892,10 @@ msgstr "Keine zugehörige frühere RAR-Datei für %s"
 msgid "Removing %s failed"
 msgstr "Entfernen von %s fehlgeschlagen"
 
+#: sabnzbd/postproc.py
+msgid "Removed %s files with unwanted extensions"
+msgstr ""
+
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Failed to hibernate system"
@@ -1886,10 +1920,6 @@ msgstr "DBus-Ausnahmefehler empfangen %s "
 msgid "Empty RSS entry found (%s)"
 msgstr "Leerer RSS-Feed gefunden: %s"
 
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Inkompatibeler RSS-Feed"
-
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1911,56 +1941,59 @@ msgstr "Abrufen des RSS-Feeds von %s fehlgeschlagen: %s"
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "Der Server %s nutzt ein nicht vertrauenswürdiges HTTPS-Zertifikat"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS-Feed %s war leer"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Show interface"
-msgstr "Interface anzeigen"
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Inkompatibeler RSS-Feed"
 
-#. Queue page button or entry box
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for"
-msgstr "Anhalten für"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 5 minutes"
-msgstr "5 Minuten anhalten"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 15 minutes"
-msgstr "15 Minuten anhalten"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 30 minutes"
-msgstr "30 Minuten anhalten"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 1 hour"
-msgstr "Eine Stunde anhalten"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 3 hours"
-msgstr "3 Stunden anhalten"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 6 hours"
-msgstr "6 Stunden anhalten"
-
-#. Config->Scheduling
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Shutdown"
-msgstr "Beenden"
-
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Remaining"
 msgstr "Verbleibend"
 
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Add NZB"
 msgstr "NZB hinzufügen"
+
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
+msgid "Show interface"
+msgstr "Interface anzeigen"
+
+#. Config->Scheduling
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Shutdown"
+msgstr "Beenden"
+
+#. Queue page button or entry box
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for"
+msgstr "Anhalten für"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 5 minutes"
+msgstr "5 Minuten anhalten"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 15 minutes"
+msgstr "15 Minuten anhalten"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 30 minutes"
+msgstr "30 Minuten anhalten"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 1 hour"
+msgstr "Eine Stunde anhalten"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 3 hours"
+msgstr "3 Stunden anhalten"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 6 hours"
+msgstr "6 Stunden anhalten"
 
 #. Warning message
 #: sabnzbd/scheduler.py
@@ -3043,11 +3076,14 @@ msgstr "Unerwünschte Dateien"
 
 #: sabnzbd/skintext.py
 msgid ""
-"List of file extensions that should be deleted after download.<br />For "
-"example: <b>nfo</b> or <b>nfo, sfv</b>"
+"List of file extensions, filenames or patterns that should be deleted after "
+"download.<br />Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> "
+"(filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
 msgstr ""
-"Liste der Dateiendungen, die nach dem Download gelöscht werden sollen.<br "
-"/>Zum Beispiel:<b>nfo</b> or <b>nfo,sfv</b>"
+"Liste von Dateierweiterungen, Dateinamen oder Mustern, die nach dem Download"
+" gelöscht werden sollen.<br />Beispiele: <b>nfo, sfv</b> (Erweiterungen) "
+"oder <b>thumbs.db</b> (Dateinamen) oder <b>*.tmp, images/*, */test.jpg</b> "
+"(Muster)."
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
@@ -3444,6 +3480,10 @@ msgid ""
 "all jobs will be marked as Completed and moved to the Complete folder even "
 "if they are incomplete."
 msgstr ""
+"Nur Aufträge entpacken, welche die Überprüfung bestanden haben. Wenn "
+"deaktiviert, werden alle Aufträge als Fertiggestellt markiert und in den "
+"\"Abgeschlossene Downloads\"-Ordner verschoben, auch wenn sie unvollständig "
+"sind."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
@@ -3539,6 +3579,8 @@ msgstr "SFV-basierte Überprüfung aktivieren"
 msgid ""
 "If no par2 files are available, use sfv files (if present) to verify files"
 msgstr ""
+"Wenn keine par2-Dateien verfügbar sind, sfv-Dateien (falls vorhanden) zur "
+"Überprüfung der Dateien verwenden"
 
 #: sabnzbd/skintext.py
 msgid "User script can flag job as failed"
@@ -3619,10 +3661,10 @@ msgstr ""
 "Warteschlange automatisch sortieren wenn ein neuer Job hinzugefügt wird."
 
 #: sabnzbd/skintext.py
-msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgid ""
+"The queue will resort every 30 seconds if % downloaded or Remaining Size is "
+"selected."
 msgstr ""
-"Die Warteschlange wird alle 30 Sekunden neu sortiert, wenn % "
-"heruntergeladen, ausgewählt ist."
 
 #: sabnzbd/skintext.py
 msgid "Propagation delay"
@@ -3973,7 +4015,7 @@ msgstr "Aktivieren"
 
 #: sabnzbd/skintext.py
 msgid "Articles per request"
-msgstr ""
+msgstr "Artikel pro Anfrage"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3981,6 +4023,9 @@ msgid ""
 "first.<br />This can improve download speeds, especially on connections with"
 " higher latency."
 msgstr ""
+"Mehrere Artikel pro Verbindung anfordern, ohne zuerst auf jede Antwort zu "
+"warten.<br />Dies kann die Download-Geschwindigkeit verbessern, insbesondere"
+" bei Verbindungen mit höherer Latenz."
 
 #. Button: Remove server
 #: sabnzbd/skintext.py
@@ -4068,10 +4113,6 @@ msgstr "Feed lesen"
 #: sabnzbd/skintext.py
 msgid "Force Download"
 msgstr "Download erzwingen"
-
-#: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr "Filter übernehmen"
 
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
@@ -4766,6 +4807,14 @@ msgid "Filename"
 msgstr "Dateiname"
 
 #: sabnzbd/skintext.py
+msgid "Toggle SABnzbd navigation menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Open SABnzbd main menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Freier Speicherplatz"
 
@@ -4774,12 +4823,20 @@ msgid "Temp Folder"
 msgstr "Temporärer Ordner"
 
 #: sabnzbd/skintext.py
+msgid "Clear search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "Mehrfach-Funktionen"
 
 #: sabnzbd/skintext.py
 msgid "Hold shift key to select a range"
 msgstr "Shift-Taste gedrückt halten, um einen ganzen Bereich auszuwählen"
+
+#: sabnzbd/skintext.py
+msgid "Select job"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Check all"
@@ -5025,6 +5082,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
 msgstr "Sortiere nach % heruntergeladen <small>Viel&rarr;Wenig</small>"
+
+#: sabnzbd/skintext.py
+msgid "Sort by Remaining Size <small>Smallest&rarr;Largest</small>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"

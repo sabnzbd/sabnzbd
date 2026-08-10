@@ -190,12 +190,12 @@ class TestValidators:
         is_correct = is_correct_win if sys.platform.startswith("win") else is_correct_unix
 
         if is_correct:
-            assert msg == None
+            assert msg is None
             assert value == setting
         else:
             assert msg
             assert msg.startswith("Incorrect parameter")
-            assert value == None
+            assert value is None
 
     def test_validate_single_tag(self):
         assert cfg.validate_single_tag(["TV", ">", "HD"]) == (None, ["TV > HD"])
@@ -214,6 +214,23 @@ class TestValidators:
         assert cfg.lower_case_ext(".Bla") == (None, "bla")
         assert cfg.lower_case_ext([".foo", ".bar"]) == (None, ["foo", "bar"])
         assert cfg.lower_case_ext([".foo ", " .bar"]) == (None, ["foo", "bar"])
+
+    def test_cleanup_list_validator(self):
+        # Extensions (with or without leading dot)
+        assert cfg.cleanup_list_validator(".exe") == (None, "exe")
+        assert cfg.cleanup_list_validator("nfo") == (None, "nfo")
+        assert cfg.cleanup_list_validator([".exe", "nfo"]) == (None, ["exe", "nfo"])
+
+        # Filenames (with dots, not stripped)
+        assert cfg.cleanup_list_validator("Thumbs.db") == (None, "thumbs.db")
+        assert cfg.cleanup_list_validator(["Thumbs.db", "*.tmp"]) == (None, ["thumbs.db", "*.tmp"])
+
+        # Path patterns (with slashes, not stripped)
+        assert cfg.cleanup_list_validator("images/*") == (None, "images/*")
+        assert cfg.cleanup_list_validator(["images/*", "*/test.jpg"]) == (None, ["images/*", "*/test.jpg"])
+
+        # Case insensitivity
+        assert cfg.cleanup_list_validator("CLEANUP.LOG") == (None, "cleanup.log")
 
     def test_validate_safedir(self):
         assert cfg.validate_safedir("", "", "def") == (None, "def")

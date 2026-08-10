@@ -20,7 +20,7 @@ Testing SABnzbd correct extension functionality module
 """
 
 import os
-from tests.testhelper import *
+import pytest
 import sabnzbd.utils.file_extension as file_extension
 
 
@@ -37,7 +37,7 @@ class Test_File_Extension:
         assert not file_extension.has_popular_extension("blabla/blabla.yyy")
 
     # user defined ext_rename_ignore
-    @set_config({"ext_rename_ignore": "xxx, yyy, zzz"})
+    @pytest.mark.config({"ext_rename_ignore": "xxx, yyy, zzz"})
     def test_ext_rename_ignore(self):
         assert file_extension.has_popular_extension("blabla/blabla.yyy")
 

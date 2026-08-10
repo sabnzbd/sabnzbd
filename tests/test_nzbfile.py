@@ -21,14 +21,15 @@ tests.test_nzbfile - Testing functions in nzb/file.py
 
 from datetime import datetime
 
-from sabnzbd.nzb import NzbObject, NzbFile
+import pytest
 
-from tests.testhelper import *
+from sabnzbd.nzb import NzbFile, NzbObject
+from tests.testhelper import SAB_CACHE_DIR
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestNzbFile:
-    @set_config({"download_dir": SAB_CACHE_DIR})
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     @pytest.mark.parametrize(
         "filenames",
         [

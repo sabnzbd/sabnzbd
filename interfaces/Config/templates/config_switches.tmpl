@@ -152,6 +152,7 @@
                         <select name="auto_sort" id="auto_sort">
                             <option value="">$T('default')</option>
                             <option value="remaining asc" <!--#if $auto_sort == "remaining asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortRemaining')</option>
+                            <option value="remaining_bytes asc" <!--#if $auto_sort == "remaining_bytes asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortRemainingBytesAsc')</option>
                             <option value="avg_age desc" <!--#if $auto_sort == "avg_age desc" then 'selected="selected"' else ""#--> >$T('Glitter-sortAgeAsc')</option>
                             <option value="avg_age asc" <!--#if $auto_sort == "avg_age asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortAgeDesc')</option>
                             <option value="name asc" <!--#if $auto_sort == "name asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortNameAsc')</option>
@@ -261,7 +262,7 @@
                     <div class="field-pair">
                         <label class="config" for="history_retention_option">$T('opt-history_retention')</label>
                         <select name="history_retention_option" id="history_retention_option">
-                            <option value="all" <!--#if $auto_sort == "all" then 'selected="selected"' else ""#-->>$T('history_retention-all')</option>
+                            <option value="all" <!--#if $history_retention_option == "all" then 'selected="selected"' else ""#-->>$T('history_retention-all')</option>
                             <option value="number-archive" <!--#if $history_retention_option == "number-archive" then 'selected="selected"' else ""#-->>$T('history_retention-number-archive')</option>
                             <option value="number-delete" <!--#if $history_retention_option == "number-delete" then 'selected="selected"' else ""#-->>$T('history_retention-number-delete')</option>
                             <option value="days-archive" <!--#if $history_retention_option == "days-archive" then 'selected="selected"' else ""#-->>$T('history_retention-days-archive')</option>

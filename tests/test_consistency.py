@@ -19,12 +19,16 @@
 tests.test_consistency - Keep things consistent
 """
 
+import os
 import re
 
-import sabnzbd
 import lxml.html
+import pytest
+import requests
+
+import sabnzbd
 from sabnzbd.skintext import SKIN_TEXT
-from tests.testhelper import *
+from tests.testhelper import SAB_HOST, SAB_PORT
 
 
 class TestVersion:

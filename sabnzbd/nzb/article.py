@@ -72,7 +72,7 @@ class TryList:
 
     def __getstate__(self):
         """Save the servers"""
-        return set(server.id for server in self.try_list)
+        return {server.id for server in self.try_list}
 
     def __setstate__(self, servers_ids: list[str]):
         self.try_list = set()
@@ -94,6 +94,7 @@ ArticleSaver = (
     "data_begin",
     "data_size",
     "on_disk",
+    "failed",
     "nzf",
     "crc32",
     "decoded_size",
@@ -104,7 +105,7 @@ class Article(TryList):
     """Representation of one article"""
 
     # Pre-define attributes to save memory
-    __slots__ = ArticleSaver + ("fetcher", "fetcher_priority", "tries", "lock")
+    __slots__ = (*ArticleSaver, "fetcher", "fetcher_priority", "tries", "lock")
 
     def __init__(self, article, article_bytes, nzf):
         super().__init__()
@@ -121,8 +122,9 @@ class Article(TryList):
         self.data_size: Optional[int] = None
         self.decoded_size: Optional[int] = None  # Size of the decoded article
         self.on_disk: bool = False
+        self.failed: bool = False  # Download failed, assembler should skip this article
         self.crc32: Optional[int] = None
-        self.nzf: "sabnzbd.nzb.NzbFile" = nzf  # NzbFile reference
+        self.nzf: sabnzbd.nzb.NzbFile = nzf  # NzbFile reference
         # Share NzbFile lock for file-wide atomicity of try-list ops
         self.lock: threading.RLock = nzf.lock
 

@@ -21,10 +21,22 @@ tests.test_functional_config - Basic testing if Config pages work
 
 from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException, NoAlertPresentException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from pytest_httpserver import HTTPServer
 
 
-from tests.testhelper import *
+import os
+from tests.testhelper import (
+    SAB_DATA_DIR,
+    SAB_HOST,
+    SAB_PORT,
+    SAB_NEWSSERVER_HOST,
+    SAB_NEWSSERVER_PORT,
+    SABnzbdBaseTest,
+    create_and_read_nzb_fp,
+    get_api_result,
+    wait_for,
+)
 
 
 class TestBasicPages(SABnzbdBaseTest):
@@ -72,8 +84,11 @@ class TestBasicPages(SABnzbdBaseTest):
                 self.no_page_crash()
             else:
                 # For others if all is fine, button will be back to normal in 1 second
-                time.sleep(1.5)
-                assert submit_btn.text == "Save Changes"
+                wait_for(
+                    lambda: submit_btn.text == "Save Changes",
+                    timeout=1.5,
+                    err_msg=f"submit_btn.text was '{submit_btn.text}' but expected 'Save Changes'",
+                )
 
 
 class TestConfigLogin(SABnzbdBaseTest):
@@ -223,25 +238,20 @@ class TestConfigRSS(SABnzbdBaseTest):
             self.driver.find_element, By.XPATH, '//div[@id="rss-tab-matched"]/table/tbody//button'
         )
         download_btn.click()
-        self.wait_for_ajax()
 
         # Does the page think it's a success?
-        assert "Added NZB" in download_btn.text
+        wait_for(
+            lambda: "Added NZB" in download_btn.text,
+            timeout=5,
+            err_msg="Added NZB is not visible",
+        )
 
-        # Wait 2 seconds for the fetch
-        time.sleep(2)
-
-        # Let's check the queue
-        for _ in range(10):
-            queue_result_slots = get_api_result("queue")["queue"]["slots"]
-            # Check if the fetch-request was added to the queue
-            if queue_result_slots:
-                break
-            time.sleep(1)
-        else:
-            # The loop never stopped, so we fail
-            pytest.fail("Did not find the RSS job in the queue")
-            return
+        # Check if the fetch-request was added to the queue
+        wait_for(
+            lambda: len(get_api_result("queue")["queue"]["slots"]) > 0,
+            timeout=10,
+            err_msg="Did not find the RSS job in the queue",
+        )
 
         # Let's remove this thing
         get_api_result("queue", extra_arguments={"name": "delete", "value": "all"})
@@ -280,21 +290,25 @@ class TestConfigServers(SABnzbdBaseTest):
         self.selenium_wrapper(self.driver.find_element, By.NAME, "ssl").click()
 
         # Test server-check
+        result_box = self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, "#addServerContent .result-box")
         self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, "#addServerContent .testServer").click()
-        self.wait_for_ajax()
-        check_result = self.selenium_wrapper(
-            self.driver.find_element, By.CSS_SELECTOR, "#addServerContent .result-box"
-        ).text
-        assert "Connection Successful" in check_result
+        wait_for(
+            lambda: "Connection Successful" in result_box.text,
+            timeout=5,
+            err_msg="The connection test was not successful",
+        )
 
         # Set test-servername
         self.selenium_wrapper(self.driver.find_element, By.ID, "displayname").send_keys(self.server_name)
 
         # Add and show details
         port_inp.send_keys(Keys.RETURN)
-        time.sleep(1)
-        if not self.selenium_wrapper(self.driver.find_element, By.ID, "host0").is_displayed():
-            self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "showserver").click()
+        wait_for(
+            lambda: not self.selenium_wrapper(self.driver.find_element, By.ID, "host0").is_displayed(),
+            timeout=2,
+            err_msg="The Add Server interface did not close",
+        )
+        self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "showserver").click()
 
     def remove_server(self):
         # Remove the first server and accept the confirmation
@@ -302,8 +316,11 @@ class TestConfigServers(SABnzbdBaseTest):
         self.driver.switch_to.alert.accept()
 
         # Check that it's gone
-        time.sleep(2)
-        assert self.server_name not in self.driver.page_source
+        wait_for(
+            lambda: self.server_name not in self.driver.page_source,
+            timeout=2,
+            err_msg=f"Page still contains '{self.server_name}'",
+        )
 
     def test_add_and_remove_server(self):
         self.open_config_servers()

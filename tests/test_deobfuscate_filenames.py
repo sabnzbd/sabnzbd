@@ -23,9 +23,18 @@ import os.path
 import random
 import shutil
 import zipfile
+from unittest import mock
 
-from sabnzbd.deobfuscate_filenames import *
-from tests.testhelper import *
+import pytest
+
+from sabnzbd.deobfuscate_filenames import (
+    is_probably_obfuscated,
+    deobfuscate,
+    recover_par2_names,
+    get_biggest_file,
+    deobfuscate_subtitles,
+)
+from tests.testhelper import SAB_CACHE_DIR, SAB_DATA_DIR
 
 
 def create_big_file(filename):

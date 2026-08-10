@@ -19,8 +19,8 @@ import sys
 
 # Trick to show a better message on older Python
 # releases that don't support walrus operator
-if Python_39_is_required_to_run_SABnzbd := sys.hexversion < 0x03090000:
-    print("Sorry, requires Python 3.9 or above")
+if Python_39_is_required_to_run_SABnzbd := sys.hexversion < 0x030A00F0:
+    print("Sorry, requires Python 3.10 or above")
     print("You can read more at: https://sabnzbd.org/wiki/installation/install-off-modules")
     sys.exit(1)
 
@@ -35,6 +35,7 @@ import socket
 import subprocess
 import multiprocessing
 import ssl
+import shlex
 import time
 import re
 import gc
@@ -115,7 +116,7 @@ try:
     from win32com.shell import shell, shellcon
 
     from sabnzbd.utils.apireg import get_connection_info, set_connection_info
-    import sabnzbd.sabtray
+    import sabnzbd.sabtraywin
 
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
 except ImportError:
@@ -194,7 +195,7 @@ class GUIHandler(logging.Handler):
 
 def print_help():
     print()
-    print(("Usage: %s [-f <configfile>] <other options>" % sabnzbd.MY_NAME))
+    print("Usage: %s [-f <configfile>] <other options>" % sabnzbd.MY_NAME)
     print()
     print("Options marked [*] are stored in the config file")
     print()
@@ -236,7 +237,7 @@ def print_help():
 
 
 def print_version():
-    print(("""
+    print("""
 %s-%s
 
 (C) Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
@@ -245,7 +246,7 @@ This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the
 GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 
-""" % (sabnzbd.MY_NAME, sabnzbd.__version__)))
+""" % (sabnzbd.MY_NAME, sabnzbd.__version__))
 
 
 def daemonize():
@@ -1170,8 +1171,8 @@ def main():
     # Handle the several tray icons
     if sabnzbd.cfg.tray_icon() and not sabnzbd.DAEMON and not sabnzbd.WIN_SERVICE:
         if sabnzbd.WINDOWS:
-            sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
-        elif sabnzbd.LINUX_POWER and os.environ.get("DISPLAY"):
+            sabnzbd.WINTRAY = sabnzbd.sabtraywin.SABTrayThread()
+        elif sabnzbd.LINUX_POWER and (os.environ.get("DISPLAY") or os.environ.get("XDG_CURRENT_DESKTOP")):
             try:
                 import gi
 
@@ -1463,11 +1464,16 @@ def main():
             # Binaries require special restart
             if hasattr(sys, "frozen"):
                 if sabnzbd.MACOS:
-                    # On macOS restart of app instead of embedded python
-                    my_args = " ".join(sys.argv[1:])
-                    cmd = 'kill -9 %s && open "%s" --args %s' % (os.getpid(), sys.executable, my_args)
-                    logging.info("Launching: %s", cmd)
-                    os.system(cmd)
+                    # Relaunch the .app via LaunchServices (clean env, proper menu-bar
+                    # context). Opening sys.executable directly makes macOS launch the
+                    # raw binary in Terminal.app — issue #3455.
+                    from Foundation import NSBundle
+
+                    subprocess.Popen(
+                        'open -n "%s" --args %s'
+                        % (NSBundle.mainBundle().bundlePath(), " ".join(shlex.quote(arg) for arg in sys.argv[1:])),
+                        shell=True,
+                    )
                 elif sabnzbd.WIN_SERVICE:
                     # Use external service handler to do the restart
                     # Wait 5 seconds to clean up
@@ -1593,7 +1599,7 @@ def handle_windows_service():
             # In this case check for required parameters
             path = get_f_option(sab_opts)
             if not path:
-                print(("The -f <path> parameter is required.\n" "Use: -f <path> %s" % service))
+                print("The -f <path> parameter is required.\n" "Use: -f <path> %s" % service)
                 return True
 
             # First run the service installed, because this will

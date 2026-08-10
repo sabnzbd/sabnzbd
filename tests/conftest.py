@@ -20,39 +20,70 @@ tests.conftest - Setup pytest fixtures
 These have to be separate otherwise SABnzbd is started multiple times!
 """
 
+import os
 import shutil
 import subprocess
 import sys
-
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options as ChromeOptions
+import time
+from random import randint
 from warnings import warn
 
-from tests.testhelper import *
+import pytest
+import requests
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+
+from sabnzbd.constants import DB_HISTORY_NAME, DEF_ADMIN_DIR, DEF_INI_FILE
+from tests.testhelper import (
+    FakeHistoryDB,
+    SAB_BASE_DIR,
+    SAB_CACHE_DIR,
+    SAB_DATA_DIR,
+    SAB_HOST,
+    SAB_PORT,
+    SABnzbdBaseTest,
+    get_api_result,
+    get_url_result,
+)
+
+# Re-export the shared fixtures so they are registered suite-wide. These are
+# defined in testhelper.py; importing them here (in conftest) makes them
+# available to every test without needing a wildcard import. The autouse
+# fixtures (config_env, platform_env) are what apply the @pytest.mark.config
+# and @pytest.mark.platform markers, so they must be globally visible.
+from tests.testhelper import config_env, platform_env, fake_fs, sleepless  # noqa: F401
 
 
 @pytest.fixture(scope="module")
 def clean_cache_dir(request):
     # Remove cache if already there
-    try:
-        if os.path.isdir(SAB_CACHE_DIR):
-            shutil.rmtree(SAB_CACHE_DIR)
-        # Create an empty placeholder
-        os.makedirs(SAB_CACHE_DIR)
-    except Exception:
+    for x in range(100):
+        try:
+            if os.path.exists(SAB_CACHE_DIR):
+                shutil.rmtree(SAB_CACHE_DIR)
+            # Create an empty placeholder
+            os.makedirs(SAB_CACHE_DIR)
+            break
+        except PermissionError:
+            break
+        except OSError:
+            time.sleep(0.1)
+    else:
         pytest.fail("Failed to freshen up cache dir %s" % SAB_CACHE_DIR)
 
     yield request
 
     # Remove cache dir with retries in case it's still running
-    for x in range(10):
+    for x in range(100):
         try:
-            time.sleep(1)
             shutil.rmtree(SAB_CACHE_DIR)
             break
+        except (FileNotFoundError, PermissionError):
+            break
         except OSError:
-            print("Unable to remove cache dir (try %d)" % x)
-            time.sleep(1)
+            time.sleep(0.1)
+    else:
+        print("Unable to remove cache dir")
 
 
 @pytest.fixture(scope="module")
@@ -109,13 +140,13 @@ def run_sabnzbd(clean_cache_dir, request):
     )
 
     # Wait for SAB to respond
-    for _ in range(30):
+    for _ in range(600):
         try:
             get_url_result()
             # Woohoo, we're up!
             break
         except requests.ConnectionError:
-            time.sleep(1)
+            time.sleep(0.05)
     else:
         # Make sure we clean up
         shutdown_sabnzbd()

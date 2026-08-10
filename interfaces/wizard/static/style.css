@@ -1,16 +1,36 @@
+:root {
+    /* Border radius scale */
+    --radius-sm: 4px;   /* small elements: progress bars */
+    --radius-md: 6px;   /* search bar, multi-edit toolbar, file controls */
+    --radius-lg: 8px;   /* cards, modals, notification box */
+
+    /* Color palette — light mode defaults; overridden by Night.css */
+    --clr-page-bg:       #E4E4E4;
+    --clr-surface:       #FFFFFF;
+    --clr-surface-alt:   #F5F5F5;
+    --clr-surface-hover: #E4E4E4;
+    --clr-border:        rgba(0, 0, 0, 0.2);
+    --clr-text:          #000000;
+    --clr-text-muted:    #777777;
+    --clr-link:          #555555;
+    --clr-toggle-active:   #f9ca33;
+    --clr-toggle-inactive: #aaaaaa;
+}
+
 body {
-    background-color: #E4E4E4;
+    background-color: var(--clr-page-bg);
+    color: var(--clr-text);
     text-align: center;
 }
 .container {
     max-width: 1000px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    background-color: #fff;
     text-align: left;
 }
 #inner {
-    background-color: #fff;
     padding: 4px 32px 20px 32px;
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--clr-surface);
 }
 #content {
     min-height: 550px;
@@ -33,7 +53,7 @@ body {
     float: left;
 }
 .language:hover {
-    background-color: #E4E4E4;
+    background-color: var(--clr-surface-hover);
 }
 .float {
     float: left;
@@ -51,7 +71,7 @@ body {
     padding: 12px;
     margin-top: 1px;
     margin-bottom: 15px;
-    background-color: #f5f5f5;
+    background-color: var(--clr-surface-alt);
 }
 .quoteBlock a,
 a[target="_blank"] {
@@ -79,6 +99,39 @@ label {
 }
 .input-checkbox {
     padding-top: 7px !important;
+}
+/* Toggle switch */
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+    width: 36px;
+    height: 20px;
+    background-color: var(--clr-toggle-inactive);
+    background-image:
+        radial-gradient(circle at 10px 10px, #ffffff 6.5px, rgba(255,255,255,0) 7px),
+        radial-gradient(circle at 11px 11px, rgba(0,0,0,0.30) 6.5px, transparent 9.5px);
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    background-position: 0px center;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, background-position 0.15s;
+}
+input[type="checkbox"]:checked {
+    background-color: var(--clr-toggle-active);
+    background-position: 16px center;
+    background-image:
+        radial-gradient(circle at 10px 10px, #ffffff 6.5px, rgba(255,255,255,0) 7px),
+        radial-gradient(circle at 10.5px 10.5px, rgba(0,0,0,0.30) 6.5px, transparent 9.5px);
+}
+input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--clr-toggle-active);
+    outline-offset: 2px;
+    border-radius: 10px;
 }
 .input-checkbox input+.help-block {
     display: none;
@@ -136,24 +189,22 @@ label {
     Bootstrap overwrites
 ***/
 
-* {
-    border-radius: 0 !important;
-}
+
 a,
 a:hover,
 a:active,
 a:visited,
 #serverResponse {
-    color: #555;
+    color: var(--clr-link);
 }
 .btn {
-    box-shadow: 1px 1px 1px rgba(0, 0, 0, .1) !important;
     min-width: 150px;
+    box-shadow: 1px 0px 1px rgba(0,0,0,.1);
 }
 .btn .glyphicon,
 a .glyphicon {
     top: 2px;
 }
 small {
-    color: #777;
+    color: var(--clr-text-muted);
 }

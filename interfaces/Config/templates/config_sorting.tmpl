@@ -442,8 +442,6 @@
 
         jQuery('.addSorter').click(function(){
             jQuery('#sorter_0').toggle();
-            // Add coloring
-            addRowColor()
         });
 
         jQuery('.showSorter').click(function () {
@@ -455,8 +453,6 @@
             } else {
                 theSwitch.html(theSwitch.html().replace("$T('hideDetails')", "$T('showDetails')"));
             }
-            // Add coloring
-            addRowColor()
         });
 
         // Make the configured sorters sortable

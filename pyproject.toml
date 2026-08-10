@@ -1,0 +1,52 @@
+[tool.black]
+line-length = 120
+target-version = ["py310"]
+
+[tool.ruff]
+exclude = [
+    "tools",
+    "sabnzbd/utils"
+]
+builtins = ["T", "TT"]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "RUF",
+    "UP",
+    "C4"
+]
+ignore = [
+    "E402",
+    "E501",
+    "E731",
+    "RUF012",
+    "RUF022",
+    "RUF023",
+    "UP015",
+    "UP024",
+    "UP031",
+    "UP035",
+    "UP045"
+]
+
+[tool.ruff.lint.per-file-ignores]
+# We want to keep the start-up import checks
+"SABnzbd.py" = ["F401"]
+"sabnzbd/__init__.py" = ["F401"]
+# Dynamic symbol injection during version/build setup
+"builder/common.py" = ["F821"]
+# macOS Bonjour symbols resolved via ctypes/dylib at runtime
+"sabnzbd/utils/pybonjour.py" = ["F821"]
+"sabnzbd/utils/sleepless.py" = ["F821"]
+
+[tool.pytest.ini_options]
+markers = [
+    "config",
+    "platform",
+    "fake_fs"
+]

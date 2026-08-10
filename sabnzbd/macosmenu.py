@@ -25,7 +25,7 @@ import time
 import logging
 from typing import Optional
 
-from objc import YES, NO, lookUpClass
+from objc import YES, NO
 from Foundation import (
     NSObject,
     NSDate,

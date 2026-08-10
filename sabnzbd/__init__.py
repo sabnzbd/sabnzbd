@@ -50,7 +50,8 @@ if os.name == "nt":
     except Exception:
         pass
 elif os.name == "posix":
-    ORG_UMASK = os.umask(18)
+    # Retrieve current umask by setting any umask and then restoring it
+    ORG_UMASK = os.umask(0o022)
     os.umask(ORG_UMASK)
 
     # See if we have the GNU glibc malloc_trim() memory release function
@@ -175,6 +176,7 @@ RESTORE_DATA = None
 
 # Condition used to handle the main loop in SABnzbd.py
 SABSTOP_CONDITION = Condition(Lock())
+SHUTDOWN_LOCK = Lock()
 
 # General threadpool
 THREAD_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=2)
@@ -203,7 +205,7 @@ def sig_handler(signum=None, frame=None):
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
     if signum is not None:
-        logging.warning(T("Signal %s caught, saving and exiting..."), signum)
+        logging.info(T("Signal %s caught, saving and exiting..."), signum)
         sabnzbd.shutdown_program()
 
 
@@ -264,6 +266,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.https_port.callback(cfg.guard_restart)
     cfg.https_cert.callback(cfg.guard_restart)
     cfg.https_key.callback(cfg.guard_restart)
+    cfg.https_chain.callback(cfg.guard_restart)
     cfg.enable_https.callback(cfg.guard_restart)
     cfg.socks5_proxy_url.callback(cfg.guard_restart)
     cfg.top_only.callback(cfg.guard_top_only)
@@ -431,12 +434,20 @@ def notify_shutdown_loop():
 
 def shutdown_program():
     """Stop program after halting and saving"""
-    if not sabnzbd.SABSTOP:
+    # Non-blocking acquire so a concurrent caller returns instead of running the teardown twice.
+    # Releasing it again keeps a failed shutdown retryable, SABSTOP blocks the successful case
+    if sabnzbd.SABSTOP or not SHUTDOWN_LOCK.acquire(blocking=False):
+        logging.debug("[%s] Shutdown already in progress", misc.caller_name())
+        return
+
+    try:
         logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
         sabnzbd.halt()
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True
         notify_shutdown_loop()
+    finally:
+        SHUTDOWN_LOCK.release()
 
 
 def trigger_restart(timeout=None):
@@ -458,7 +469,6 @@ def save_state():
     sabnzbd.BPSMeter.save()
     sabnzbd.DirScanner.save()
     sabnzbd.PostProcessor.save()
-    sabnzbd.RSSReader.save()
 
 
 def delayed_startup_actions():
@@ -482,7 +492,7 @@ def delayed_startup_actions():
     logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
 
     # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly advised:
-    if not sabnzbd.WINDOWS and not sabnzbd.MACOS and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
+    if not sabnzbd.WINDOWS and not sabnzbd.MACOS and "utf-8" not in sabnzbd.encoding.CODEPAGE.lower():
         misc.helpful_warning(
             T(
                 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
@@ -522,6 +532,9 @@ def delayed_startup_actions():
     # Do an extra purge of the history on startup to ensure timely removal on systems that
     # aren't on 24/7 and typically don't benefit from the daily scheduled call at midnight
     sabnzbd.database.scheduled_history_purge()
+
+    # Purge links older than 3 days
+    sabnzbd.rss.expired_purge()
 
     # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only
     if sabnzbd.cfg.enable_broadcast() and not misc.is_localhost(cfg.web_host()):

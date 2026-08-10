@@ -30,7 +30,7 @@ import http.client
 import json
 import apprise
 from threading import Thread
-from typing import Optional, Union
+from typing import Optional
 
 import sabnzbd
 import sabnzbd.cfg
@@ -48,7 +48,7 @@ if sabnzbd.WINDOWS:
 
     try:
         from win32comext.shell import shell
-        from windows_toasts import InteractableWindowsToaster, Toast, ToastActivatedEventArgs, ToastButton
+        from windows_toasts import InteractableWindowsToaster, Toast, ToastButton
 
         # Only Windows 10 and above are supported
         if windows_major_version < 10:
@@ -128,7 +128,7 @@ def get_prio(notification_type: str, section: str) -> int:
         return -1000
 
 
-def get_targets(notification_type: str, section: str) -> Union[str, bool, None]:
+def get_targets(notification_type: str, section: str) -> str | bool | None:
     """Check target of `notification_type` in `section` if enabled is set"""
     try:
         if sabnzbd.config.get_config(section, "%s_target_%s_enable" % (section, notification_type))() > 0:
@@ -553,7 +553,7 @@ def send_windows(title: str, msg: str, notification_type: str, actions: Optional
 
             notification_sender.show_toast(toast_notification)
         elif sabnzbd.WINTRAY and not sabnzbd.WINTRAY.terminate:
-            sabnzbd.WINTRAY.sendnotification(title, msg)
+            sabnzbd.WINTRAY.send_notification(title, msg)
     except Exception:
         logging.info(T("Failed to send Windows notification"))
         logging.debug("Traceback: ", exc_info=True)

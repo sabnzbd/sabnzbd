@@ -19,17 +19,19 @@
 tests.test_nzbobject - Testing functions in nzbobject.py
 """
 
+import os
+import pytest
+from tests.testhelper import SAB_CACHE_DIR, create_and_read_nzb_fp
+
 from sabnzbd.nzb import NzbObject
 from sabnzbd.config import ConfigCat
 from sabnzbd.constants import NORMAL_PRIORITY, MAX_BAD_ARTICLES
 from sabnzbd.filesystem import globber
 
-from tests.testhelper import *
-
 
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestNZO:
-    @set_config({"download_dir": SAB_CACHE_DIR})
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     def test_nzo_basic(self):
         # Need to create the Default category, as we would in normal instance
         # Otherwise it will try to save the config
@@ -39,6 +41,13 @@ class TestNZO:
         nzo = NzbObject("test_basic")
         assert nzo.work_name == "test_basic"
         assert not nzo.files
+
+        # Renaming a file twice should remove the redundant entry
+        nzo.renamed_file("YENC NAME", "NZF NAME")
+        assert nzo.renames["YENC NAME"] == "NZF NAME"
+        nzo.renamed_file("PAR2 NAME", "YENC NAME")
+        assert nzo.renames["PAR2 NAME"] == "NZF NAME"
+        assert len(nzo.renames) == 1
 
         # Create NZB-file to import
         nzb_fp = create_and_read_nzb_fp("basic_rar5")
@@ -153,7 +162,7 @@ class TestCheckAvailabilityRatio:
         nzo.bytes_par2 = self.BYTES_PAR2  # bytes == bytes_par2
         nzo.bytes_missing = 0
         nzo.bad_articles = MAX_BAD_ARTICLES + 1
-        result, ratio = nzo.check_availability_ratio()
+        result, _ratio = nzo.check_availability_ratio()
         assert result is True
 
     def test_no_par2_missing_data(self):

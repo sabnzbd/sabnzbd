@@ -35,7 +35,8 @@ import stat
 import ctypes
 import random
 from dataclasses import dataclass
-from typing import Union, Any, Optional, BinaryIO
+from functools import lru_cache
+from typing import Any, Optional, BinaryIO
 
 try:
     import win32api
@@ -318,7 +319,7 @@ def sanitize_and_trim_path(path: str) -> str:
         new_path = "/"
     for part in parts:
         new_path = os.path.join(new_path, sanitize_foldername(part))
-    return os.path.abspath(os.path.normpath(new_path))
+    return os.path.abspath(new_path)
 
 
 def sanitize_files(folder: Optional[str] = None, filelist: Optional[list[str]] = None) -> list[str]:
@@ -493,16 +494,17 @@ SPLITFILE_RE = re.compile(r"\.(\d\d\d?\d$)", re.I)
 SEVENZIP_RE = re.compile(r"\.(zip|7z)$", re.I)
 SEVENMULTI_RE = re.compile(r"\.7z\.\d+$", re.I)
 TS_RE = re.compile(r"\.(\d+)\.(ts$)", re.I)
+TAR_RE = re.compile(r"\.(tar$)", re.I)
 
 
 def build_filelists(
     workdir: Optional[str], workdir_complete: Optional[str] = None, check_both: bool = False, check_rar: bool = True
-) -> tuple[list[str], list[str], list[str], list[str]]:
+) -> tuple[list[str], list[str], list[str], list[str], list[str]]:
     """Build filelists, if workdir_complete has files, ignore workdir.
     Optionally scan both directories.
     Optionally test content to establish RAR-ness
     """
-    sevens, joinables, rars, ts, filelist = ([], [], [], [], [])
+    sevens, joinables, rars, ts, filelist, tars = ([], [], [], [], [], [])
 
     if workdir_complete:
         filelist.extend(listdir_full(workdir_complete))
@@ -529,13 +531,17 @@ def build_filelists(
         elif TS_RE.search(file):
             # TS split files
             ts.append(file)
+        elif TAR_RE.search(file):
+            # TAR files
+            tars.append(file)
 
     logging.debug("build_filelists(): joinables: %s", joinables)
     logging.debug("build_filelists(): rars: %s", rars)
     logging.debug("build_filelists(): 7zips: %s", sevens)
     logging.debug("build_filelists(): ts: %s", ts)
+    logging.debug("build_filelists(): tars: %s", tars)
 
-    return joinables, rars, sevens, ts
+    return joinables, rars, sevens, ts, tars
 
 
 def safe_fnmatch(f: str, pattern: str) -> bool:
@@ -733,7 +739,7 @@ def long_path(path: str) -> str:
 UNIQUE_PATH_LOCK = threading.RLock()
 
 
-def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bool]:
+def create_all_dirs(path: str, apply_permissions: bool = False) -> str | bool:
     """Create all required path elements and set permissions on all
     The apply_permissions argument is ignored on Windows
     Return path if elements could be made or exists
@@ -769,7 +775,7 @@ def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bo
 
 
 @synchronized(UNIQUE_PATH_LOCK)
-def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> Union[str, bool]:
+def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> str | bool:
     """Determine a unique folder or filename"""
     if not mount_is_available(path):
         return path
@@ -877,6 +883,23 @@ def cleanup_empty_directories(path: str):
             remove_dir(path)
         except Exception:
             pass
+
+
+def remove_empty_parent_directories(base_dir: str, files: list[str]):
+    """Remove directories below 'base_dir' that are left empty
+    after 'files' were moved or removed. Other (unrelated) empty
+    directories and 'base_dir' itself are never removed."""
+    base_dir = os.path.normpath(base_dir)
+    for check_dir in {os.path.normpath(os.path.dirname(filepath)) for filepath in files}:
+        # Walk up towards base_dir, removing directories as long as they are empty
+        while check_dir != base_dir and check_dir.startswith(base_dir + os.path.sep):
+            try:
+                if os.listdir(check_dir):
+                    break
+                remove_dir(check_dir)
+            except OSError:
+                break
+            check_dir = os.path.dirname(check_dir)
 
 
 def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
@@ -1004,24 +1027,30 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
 ##############################################################################
 # Diskfree
 ##############################################################################
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Diskspace:
     path: str
     size: float = 0.0
     free: float = 0.0
 
 
+def first_existing_path(path: str) -> str:
+    """Return the first folder level of the path that exists"""
+    x = "x"
+    while x and not os.path.exists(path):
+        path, x = os.path.split(path)
+    return path
+
+
 def diskspace_base(dir_to_check: str) -> Diskspace:
     """Return amount of free and used diskspace in GBytes"""
     # Find first folder level that exists in the path
-    x = "x"
-    while x and not os.path.exists(dir_to_check):
-        dir_to_check, x = os.path.split(dir_to_check)
+    dir_to_check = first_existing_path(dir_to_check)
 
     if sabnzbd.WINDOWS:
         # windows diskfree
         try:
-            available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(dir_to_check)
+            available, disk_size, _total_free = win32api.GetDiskFreeSpaceEx(dir_to_check)
             return Diskspace(path=dir_to_check, size=disk_size / GIGI, free=available / GIGI)
         except Exception:
             return Diskspace(path=dir_to_check)
@@ -1053,6 +1082,27 @@ def diskspace(force: bool = False, complete_dir: Optional[str] = None) -> tuple[
     return diskspace_base(sabnzbd.cfg.download_dir.get_path()), diskspace_base(complete_dir)
 
 
+@lru_cache(maxsize=16)
+def same_device(path_a: str, path_b: str) -> bool:
+    """Determine if both paths are located on the same device, meaning a file can be moved
+    between them by renaming it, without requiring any additional free space.
+    The paths do not have to exist, the first existing folder level is used."""
+    path_a = first_existing_path(path_a)
+    path_b = first_existing_path(path_b)
+
+    # Different drive letters or UNC shares are never the same device. Checked separately
+    # because st_dev is not reliable for network locations on Windows
+    if os.path.splitdrive(path_a)[0].lower() != os.path.splitdrive(path_b)[0].lower():
+        return False
+
+    try:
+        return os.stat(path_a).st_dev == os.stat(path_b).st_dev
+    except OSError:
+        # Assume separate devices, so callers keep reserving space for a copy
+        logging.debug("Could not determine if %s and %s are on the same device", path_a, path_b)
+        return False
+
+
 def get_new_id(prefix: str, folder: str, check_list: Optional[list] = None) -> str:
     """Return unique prefixed admin identifier within folder
     optionally making sure that id is not in the check_list.
@@ -1063,9 +1113,9 @@ def get_new_id(prefix: str, folder: str, check_list: Optional[list] = None) -> s
                 os.makedirs(folder)
             fd, path = tempfile.mkstemp("", "SABnzbd_%s_" % prefix, folder)
             os.close(fd)
-            head, tail = os.path.split(path)
-            if not check_list or tail not in check_list:
-                return tail
+            new_id = get_filename(path)
+            if not check_list or new_id not in check_list:
+                return new_id
         except Exception:
             logging.error(T("Failure in tempfile.mkstemp"))
             logging.info("Traceback: ", exc_info=True)
@@ -1227,19 +1277,26 @@ def purge_log_files():
 
 
 def directory_is_writable_with_file(mydir: str, myfilename: str) -> bool:
+    """Test whether a file named myfilename can be created and written in mydir.
+
+    Only creating and writing the file needs to succeed. Cleaning up the test
+    file afterwards is best-effort: if it has already been removed (for example
+    by a concurrent writability check), that is not a failure. Treating it as
+    one caused spurious "is not writable at all. This blocks downloads."
+    warnings at startup."""
     filename = os.path.join(mydir, myfilename)
-    if os.path.exists(filename):
-        try:
-            os.remove(filename)
-        except Exception:
-            return False
     try:
         with open(filename, "w") as f:
             f.write("Some random content to test directory and file permissions")
-        os.remove(filename)
-        return True
-    except Exception:
+    except Exception as e:
+        logging.info("Cannot write test file %s: %s", filename, e)
         return False
+    finally:
+        try:
+            os.remove(filename)
+        except OSError:
+            pass
+    return True
 
 
 def directory_is_writable(test_dir: str) -> bool:
@@ -1361,7 +1418,7 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
             path = os.path.dirname(path)
 
     # Fix up the path and find the parent
-    path = os.path.abspath(os.path.normpath(path))
+    path = os.path.abspath(path)
     parent_path = os.path.dirname(path)
 
     # If we're at the root then the next step is the meta-node showing our drive letters
