@@ -1440,9 +1440,11 @@ class NzbObject(TryList):
             self.renames[renames_or_name] = self.renames.pop(old_name, old_name)
 
     @synchronized()
-    def get_unique_filepath(self, filename: str) -> str:
+    def get_unique_filepath(self, filename: str) -> tuple[str, str]:
         """
-        Ensure a unique filepath by appending .N before extension if needed
+        Ensure a unique filepath by appending .N before extension if needed.
+        The filename can name a sub-directory of the job, that folder is created here.
+        Returns the (unique) filename relative to the download folder and its full path.
         """
         directory = self.download_path
         base_name, ext = os.path.splitext(filename)
@@ -1453,8 +1455,15 @@ class NzbObject(TryList):
             candidate = f"{base_name}.{num}{ext}"
             path = os.path.join(directory, candidate)
             num += 1
+
+        if subdir := os.path.dirname(candidate):
+            # sanitize_filename() keeps the name local, so this should never trigger
+            if same_directory(directory, os.path.dirname(path)) == 0:
+                raise ValueError("Refusing to write %s outside of %s" % (candidate, directory))
+            create_all_dirs(os.path.join(directory, subdir))
+
         self.filenames.add(candidate)
-        return path
+        return candidate, path
 
     @property
     def admin_path(self):
@@ -1757,7 +1766,8 @@ class NzbObject(TryList):
         self.filenames = set()
         for nzf in self.files_table.values():
             if nzf.filepath:
-                self.filenames.add(get_filename(nzf.filepath))
+                # Relative to the download folder, it can name a sub-directory
+                self.filenames.add(nzf.filename)
 
         # Attributes added since 3.0.0
         if self.bytes_par2 is None:

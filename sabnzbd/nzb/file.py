@@ -30,7 +30,6 @@ from sabnzbd.nzb.article import TryList, Article
 from sabnzbd.downloader import Server
 from sabnzbd.filesystem import (
     sanitize_filename,
-    get_filename,
     remove_file,
     get_new_id,
     save_data,
@@ -243,9 +242,9 @@ class NzbFile(TryList):
             with self.nzo.lock:
                 if not self.filepath:
                     self.nzo.verify_nzf_filename(self)
-                    filename = sanitize_filename(self.filename)
-                    self.filepath = self.nzo.get_unique_filepath(filename)
-                    self.filename = get_filename(self.filepath)
+                    # Par2 can name a file inside a sub-directory of the job, write it there
+                    filename = sanitize_filename(self.filename, allow_subdirs=True)
+                    self.filename, self.filepath = self.nzo.get_unique_filepath(filename)
         return self.filepath
 
     @property
