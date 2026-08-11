@@ -855,15 +855,6 @@ msgstr ""
 "Clé API incorrecte, utilisez la clé API de la configuration générale dans "
 "votre application tierce :"
 
-#: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr "Utilisateur connecté à l'interface web"
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr "Utilisateur connecté"
-
 #. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -924,14 +915,6 @@ msgid ""
 msgstr ""
 "Le dossier de catégorie ne peut pas être un sous-dossier du dossier de "
 "téléchargement temporaire."
-
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "ERREUR:"
-
-#: sabnzbd/interface.py
-msgid "Back"
-msgstr "Retour"
 
 #. Warning message
 #: sabnzbd/internetspeed.py
@@ -1402,6 +1385,11 @@ msgstr "File d'attente terminée"
 
 #. Notification
 #: sabnzbd/notifier.py
+msgid "User logged in"
+msgstr "Utilisateur connecté"
+
+#. Notification
+#: sabnzbd/notifier.py
 msgid "Other Messages"
 msgstr "Autres messages"
 
@@ -1648,6 +1636,23 @@ msgstr ""
 #: sabnzbd/panic.py
 msgid ""
 "\n"
+"    SABnzbd is not allowed to use port %s on %s.<br>\n"
+"    Low port numbers are reserved for privileged processes on most systems,\n"
+"    so the port itself is available but cannot be claimed.<br>\n"
+"    <br>\n"
+"    Either run SABnzbd with the privileges needed for that port, or restart it\n"
+"    with a port number of 1024 or higher."
+msgstr ""
+
+#: sabnzbd/panic.py
+msgid ""
+"To keep using the low port, put a reverse proxy in front of SABnzbd "
+"instead.<br>"
+msgstr ""
+
+#: sabnzbd/panic.py
+msgid ""
+"\n"
 "    SABnzbd needs a valid host address for its internal web server.<br>\n"
 "    You have specified an invalid address.<br>\n"
 "    Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>\n"
@@ -1733,20 +1738,15 @@ msgstr ""
 "Impossible de lier le port %s sur %s. Un autre logiciel utilise le port ou "
 "SABnzbd est déjà en cours d'exécution."
 
+#: sabnzbd/panic.py
+msgid ""
+"Not allowed to bind to port %s on %s. Low ports need elevated privileges."
+msgstr ""
+
 #. Warning message
 #: sabnzbd/panic.py
 msgid "Cannot launch the browser, probably not found"
 msgstr "Impossible de lancer le navigateur web, probablement pas trouvé"
-
-#: sabnzbd/panic.py
-msgid "Access denied"
-msgstr "Accès refusé"
-
-#: sabnzbd/panic.py
-msgid "Error %s: You need to provide a valid username and password."
-msgstr ""
-"Erreur %s: vous devez fournir un nom d'utilisateur et un mot de passe "
-"valide."
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -2913,10 +2913,6 @@ msgstr "Port que SABnzbd doit surveiller."
 #: sabnzbd/skintext.py
 msgid "Web Interface Theme"
 msgstr "Thème de l'interface web"
-
-#: sabnzbd/skintext.py
-msgid "Choose a theme."
-msgstr "Choisissez un thème."
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Username"
@@ -4863,6 +4859,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "AVERTISSEMENT :"
+
+#: sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "ERREUR:"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"

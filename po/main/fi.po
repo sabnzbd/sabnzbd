@@ -783,15 +783,6 @@ msgstr ""
 "API avain virheellinen, käytä Asetukset->Yleiset löytyvää api avainta "
 "käyttämääsi kolmannen osapuolen ohjelmaan:"
 
-#: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr "Käyttäjä kirjautui sisään web-käyttöliittymään"
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr "Käyttäjä kirjautui sisään"
-
 #. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -850,14 +841,6 @@ msgstr "Määrittämätön palvelin!"
 msgid ""
 "Category folder cannot be a subfolder of the Temporary Download Folder."
 msgstr ""
-
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "VIRHE:"
-
-#: sabnzbd/interface.py
-msgid "Back"
-msgstr "Takaisin"
 
 #. Warning message
 #: sabnzbd/internetspeed.py
@@ -1307,6 +1290,11 @@ msgstr "Jono valmistunut"
 
 #. Notification
 #: sabnzbd/notifier.py
+msgid "User logged in"
+msgstr "Käyttäjä kirjautui sisään"
+
+#. Notification
+#: sabnzbd/notifier.py
 msgid "Other Messages"
 msgstr "Muut viestit"
 
@@ -1551,6 +1539,23 @@ msgstr "Jos saat tämän virhesanoman uudestaan, kokeile toista numeroa.<br>"
 #: sabnzbd/panic.py
 msgid ""
 "\n"
+"    SABnzbd is not allowed to use port %s on %s.<br>\n"
+"    Low port numbers are reserved for privileged processes on most systems,\n"
+"    so the port itself is available but cannot be claimed.<br>\n"
+"    <br>\n"
+"    Either run SABnzbd with the privileges needed for that port, or restart it\n"
+"    with a port number of 1024 or higher."
+msgstr ""
+
+#: sabnzbd/panic.py
+msgid ""
+"To keep using the low port, put a reverse proxy in front of SABnzbd "
+"instead.<br>"
+msgstr ""
+
+#: sabnzbd/panic.py
+msgid ""
+"\n"
 "    SABnzbd needs a valid host address for its internal web server.<br>\n"
 "    You have specified an invalid address.<br>\n"
 "    Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>\n"
@@ -1634,18 +1639,15 @@ msgid ""
 "SABnzbd is already running."
 msgstr ""
 
+#: sabnzbd/panic.py
+msgid ""
+"Not allowed to bind to port %s on %s. Low ports need elevated privileges."
+msgstr ""
+
 #. Warning message
 #: sabnzbd/panic.py
 msgid "Cannot launch the browser, probably not found"
 msgstr "Selainta ei voida käynnistää, todennäköisesti ei löydy"
-
-#: sabnzbd/panic.py
-msgid "Access denied"
-msgstr "Ei käyttöoikeutta"
-
-#: sabnzbd/panic.py
-msgid "Error %s: You need to provide a valid username and password."
-msgstr "Virhe %s: Syötä kelvollinen käyttäjänimi ja salasana."
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -2797,10 +2799,6 @@ msgstr "Portti jota SABnzbdn tulisi kuunnella."
 
 #: sabnzbd/skintext.py
 msgid "Web Interface Theme"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Choose a theme."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4637,6 +4635,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "VAROITUS:"
+
+#: sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "VIRHE:"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"
