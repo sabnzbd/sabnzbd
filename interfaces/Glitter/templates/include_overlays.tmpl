@@ -197,7 +197,7 @@
                         </div>
                         <div class="row options-function-box">
                             <div class="col-sm-6">
-                                <a href="./api?mode=showlog&apikey=$apikey" target="_blank" class="btn btn-default" data-tooltip="true" data-placement="top" title="$T('Glitter-logText')">
+                                <a href="$url('api', mode='showlog', apikey=$apikey)" target="_blank" class="btn btn-default" data-tooltip="true" data-placement="top" title="$T('Glitter-logText')">
                                     <span class="glyphicon glyphicon-file"></span> $T('link-showLog')
                                 </a>
                             </div>
@@ -747,7 +747,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="history-script-log-title">$T('Glitter-scriptLog')</h4>
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body"><pre></pre></div>
         </div>
     </div>
 </div>

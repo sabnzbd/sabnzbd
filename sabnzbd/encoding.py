@@ -87,15 +87,6 @@ def correct_unknown_encoding(str_or_bytes_in: AnyStr) -> str:
             return unicode_nfc_normalize(str(charset_normalizer.from_bytes(str_or_bytes_in).best()))
 
 
-def correct_cherrypy_encoding(inputstring: str) -> str:
-    """convert inputstring with separate, individual chars (1-255) to valid string (with UTF8 encoding)"""
-    try:
-        return inputstring.encode("raw_unicode_escape").decode("utf8")
-    except Exception:
-        # not possible to convert to UTF8, so don't change anything:
-        return inputstring
-
-
 def xml_name(input_value) -> str:
     """Prepare name for use in HTML/XML context"""
     if input_value is not None:

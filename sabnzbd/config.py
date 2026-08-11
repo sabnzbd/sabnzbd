@@ -41,6 +41,7 @@ from sabnzbd.constants import (
     DEFAULT_PRIORITY,
     CONFIG_BACKUP_FILES,
     CONFIG_BACKUP_HTTPS,
+    DB_HISTORY_NAME,
     DEF_INI_FILE,
     DEF_SORTER_RENAME_SIZE,
     DEF_PIPELINING_REQUESTS,
@@ -108,6 +109,10 @@ class Option:
                 self.set(values["value"])
             except KeyError:
                 pass
+
+    def get_from_dict(self, values: dict[str, Any], kw: str) -> Any:
+        """Extract this option's value from a dict by key, raising KeyError if absent"""
+        return values[kw]
 
     def set(self, value: Any):
         """Set new value, no validation"""
@@ -330,6 +335,14 @@ class OptionList(Option):
                 super().set(value)
         return error
 
+    def get_from_dict(self, values: dict[str, Any], kw: str) -> Any:
+        """Extract list value using getlist() for MultiDict sources, falling back to plain key access"""
+        if hasattr(values, "getlist"):
+            if lst := values.getlist(kw):
+                return lst
+            raise KeyError(kw)
+        return values[kw]
+
     def get_string(self) -> str:
         """Return the list as a comma-separated string"""
         return ", ".join(self.get())
@@ -486,8 +499,8 @@ class ConfigServer:
             "notes",
         ):
             try:
-                value = values[kw]
-                getattr(self, kw).set(value)
+                attr = getattr(self, kw)
+                attr.set(attr.get_from_dict(values, kw))
             except KeyError:
                 continue
         if not self.displayname():
@@ -552,8 +565,8 @@ class ConfigCat:
         """Set one or more fields, passed as dictionary"""
         for kw in ("order", "pp", "script", "dir", "newzbin", "priority"):
             try:
-                value = values[kw]
-                getattr(self, kw).set(value)
+                attr = getattr(self, kw)
+                attr.set(attr.get_from_dict(values, kw))
             except KeyError:
                 continue
 
@@ -596,8 +609,8 @@ class ConfigSorter:
         """Set one or more fields, passed as dictionary"""
         for kw in ("order", "min_size", "multipart_label", "sort_string", "sort_cats", "sort_type", "is_active"):
             try:
-                value = values[kw]
-                getattr(self, kw).set(value)
+                attr = getattr(self, kw)
+                attr.set(attr.get_from_dict(values, kw))
             except KeyError:
                 continue
 
@@ -708,8 +721,8 @@ class ConfigRSS:
         """Set one or more fields, passed as dictionary"""
         for kw in ("uri", "cat", "pp", "script", "priority", "enable"):
             try:
-                value = values[kw]
-                getattr(self, kw).set(value)
+                attr = getattr(self, kw)
+                attr.set(attr.get_from_dict(values, kw))
             except KeyError:
                 continue
         self.filters.set_dict(values)
@@ -961,7 +974,15 @@ class SABnzbdConfig(configobj.ConfigObj):
                 with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_ref:
                     for filename in CONFIG_BACKUP_FILES:
                         full_path = os.path.join(admin_path, filename)
-                        if os.path.isfile(full_path):
+                        if not os.path.isfile(full_path):
+                            continue
+                        # A raw copy of the live database file misses un-checkpointed WAL
+                        # transactions and can be inconsistent while SABnzbd runs, so take
+                        # a snapshot through SQLite's online backup instead. Fall back to
+                        # a plain file copy if the snapshot fails.
+                        if filename == DB_HISTORY_NAME and (snapshot := sabnzbd.database.history_db_snapshot()):
+                            zip_ref.writestr(filename, snapshot)
+                        else:
                             with open(full_path, "rb") as data:
                                 zip_ref.writestr(filename, data.read())
                     for filename, setting in CONFIG_BACKUP_HTTPS.items():
@@ -1021,6 +1042,14 @@ class SABnzbdConfig(configobj.ConfigObj):
                             logging.debug("Writing backup of %s to %s", filename, destination_file)
                             with open(destination_file, "wb") as destination_ref:
                                 destination_ref.write(zip_ref.read(filename))
+                            if filename == DB_HISTORY_NAME:
+                                # Remove any stale WAL sidecar files left by the replaced
+                                # database, so SQLite cannot try to recover the restored
+                                # database with the old write-ahead log
+                                for sidecar in (destination_file + "-wal", destination_file + "-shm"):
+                                    if os.path.isfile(sidecar):
+                                        logging.debug("Removing stale database sidecar %s", sidecar)
+                                        remove_file(sidecar)
                             # For HTTPS config files, point the associated setting to the restored file
                             if setting := CONFIG_BACKUP_HTTPS.get(filename):
                                 logging.debug("Setting value of %s to restored file %s", setting, filename)

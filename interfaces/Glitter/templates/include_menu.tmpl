@@ -5,7 +5,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-logo" href="./" aria-label="SABnzbd $T('menu-queue')">
+        <a class="navbar-logo" href="$url()" aria-label="SABnzbd $T('menu-queue')">
             #include $webdir + "/../../Config/templates/staticcfg/images/logo-small.svg"#
         </a>
         <div class="btn-group">
@@ -48,7 +48,7 @@
                         </a>
                         <div class="dropdown-menu max-speed-input">
                             <div data-bind="visible: !bandwithLimit()">
-                                <a href="./config/general/#bandwidth_max_value">
+                                <a href="$url('config/general#bandwidth_max_value')">
                                     <span class="glyphicon glyphicon-cog"></span> $T('Glitter-setMaxLinespeed')
                                 </a>
                             </div>
@@ -68,7 +68,7 @@
             </li>
             <!--#if $have_rss_defined#-->
             <li data-tooltip="true" data-placement="bottom" title="$T('cmenu-rss')">
-                <a href="./config/rss/" aria-label="$T('cmenu-rss')">
+                <a href="$url('config/rss')" aria-label="$T('cmenu-rss')">
                     <svg class="rss-icon-svg" viewBox="0 0 8 8">
                         <rect class="rss-button" width="8" height="8" />
                         <circle class="rss-symbol" cx="2" cy="6" r="1" />
@@ -79,7 +79,7 @@
             </li>
             <!--#end if#-->
             <li data-tooltip="true" data-placement="bottom" title="SABnzbd $T('menu-config')">
-                <a href="./config/" aria-label="SABnzbd $T('menu-config')"><span class="glyphicon glyphicon-cog"></span></a>
+                <a href="$url('config')" aria-label="SABnzbd $T('menu-config')"><span class="glyphicon glyphicon-cog"></span></a>
             </li>
             <li class="dropdown main-menu-link" data-bind="css: { 'active-on-queue-finish-menu': finishaction()}">
                 <a href="#" data-toggle="dropdown"  onclick="keepOpen(this)" aria-label="$T('Glitter-mainMenu')" aria-haspopup="true" aria-expanded="false">
@@ -91,13 +91,13 @@
                     <li><a href="#modal-help" data-toggle="modal"><span class="glyphicon glyphicon-question-sign"></span> $T('menu-help')</a></li>
                     <li><a href="https://sabnzbd.org/donate" target="_blank"><span class="glyphicon glyphicon-heart"></span> $T('menu-donate')</a></li>
                     <!--#if $have_logout or $have_quota or $have_rss_defined or $have_watched_dir or $pp_pause_event#--><li class="divider"></li><!--#end if#-->
-                    <!--#if $have_logout#--><li><a href="./login/?logout=1"><span class="glyphicon glyphicon-log-out"></span> $T('logout')</a></li><!--#end if#-->
+                    <!--#if $have_logout#--><li><a href="$url('logout')"><span class="glyphicon glyphicon-log-out"></span> $T('logout')</a></li><!--#end if#-->
                     <!--#if $have_quota#--><li><a href="#" data-bind="click: doQueueAction" data-mode="reset_quota">$T('link-resetQuota')</a></li><!--#end if#-->
                     <!--#if $have_rss_defined#--><li><a href="#" data-bind="click: doQueueAction" data-mode="rss_now">$T('button-rssNow')</a></li><!--#end if#-->
                     <!--#if $have_watched_dir#--><li><a href="#" data-bind="click: doQueueAction" data-mode="watched_now">$T('sch-scan_folder')</a></li><!--#end if#-->
                     <!--#if $pp_pause_event#--><li><a href="#" data-bind="click: doQueueAction" data-mode="resume_pp">$T('sch-resume_post')</a></li><!--#end if#-->
                     <li class="divider"></li>
-                    <li><a href="./shutdown/?apikey=$apikey&amp;pid=$pid" data-bind="click: shutdownSAB">$T('shutdownSab')</a></li>
+                    <li><a href="$url('shutdown', apikey=$apikey, pid=$pid)" data-bind="click: shutdownSAB">$T('shutdownSab')</a></li>
                     <li><a href="#" data-bind="click: restartSAB">$T('Glitter-restartSab')</a></li>
                     <li class="divider"></li>
                     <li class="dropdown-header"><span class="glyphicon glyphicon-off"></span> $T('Glitter-onFinish'):</li>

@@ -96,7 +96,6 @@ from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.downloader import Server
-from sabnzbd.database import HistoryDB
 from sabnzbd.deobfuscate_filenames import is_probably_obfuscated
 
 # Fixed types for the bad-article counter keys
@@ -1648,7 +1647,7 @@ class NzbObject(TryList):
         duplicate_in_history = smart_duplicate_in_history = False
         duplicate_in_queue = smart_duplicate_in_queue = False
 
-        with HistoryDB() as history_db:
+        with sabnzbd.db_pool.connection() as history_db:
             # Dupe check off just name or nzb contents
             if cfg.no_dupes():
                 logging.debug("Duplicate checking NZB %s (md5sum=%s)", self.final_name, self.md5sum)

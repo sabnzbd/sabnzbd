@@ -1224,7 +1224,7 @@ function ViewModel() {
             }
         });
         $(document).bind('keydown', 'c', function(e) {
-            window.location.href = './config/';
+            window.location.href = './config';
         });
         $(document).bind('keydown', 's', function(e) {
             // Update the data

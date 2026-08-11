@@ -509,7 +509,7 @@ $(document).ready(function() {
         // Load things to search if we haven't yet
         if(!pagesContainer[0]) {
             $.each(arrPages, function(index, page) {
-                $.get(rootURL + 'config/' + page + '/', function(data) {
+                $.get(rootURL + 'config/' + page, function(data) {
                     pagesContainer[index] = $(data).find('label')
                 });
             });
@@ -638,7 +638,7 @@ function doConfigSearch(value) {
                 searchOutput.append($('<li class="divider"></li>'))
                 searchOutput.append($('<li class="dropdown-header"></li>').text(configTranslate.searchPages[page_index]))
                 $.each(subResults, function(index, result) {
-                    var resultUrl = rootURL + 'config/' + arrPages[page_index] +  '/#' + $(result).attr('for')
+                    var resultUrl = rootURL + 'config/' + arrPages[page_index] +  '#' + $(result).attr('for')
                     searchOutput.append(
                         $('<li></li>').append(
                             $('<a class="config-search-result"></a>')

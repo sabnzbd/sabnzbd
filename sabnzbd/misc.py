@@ -19,6 +19,7 @@
 sabnzbd.misc - misc classes
 """
 
+import errno
 import os
 import platform
 import ssl
@@ -743,6 +744,90 @@ def split_host(srv: Optional[str]) -> tuple[Optional[str], Optional[int]]:
     return out[0], port
 
 
+class HostNotAvailableError(OSError):
+    """The address is not one of ours, so no port on it can ever be bound"""
+
+
+# "Cannot assign requested address" is errno 99 on Linux but 49 on macOS/BSD,
+# and Winsock reports its own value, so collect whichever names exist here
+ADDRESS_NOT_AVAILABLE = {getattr(errno, name) for name in ("EADDRNOTAVAIL", "WSAEADDRNOTAVAIL") if hasattr(errno, name)}
+
+
+def bind_web_socket(host: str, port: int) -> socket.socket:
+    """Return a listening socket on host:port, ready to be served on.
+
+    Built the way uvicorn would (see uvicorn.Config.bind_socket) so it can be
+    handed straight to the server. Doing that removes the window between finding
+    a port free and actually claiming it.
+
+    Raises PermissionError if the port may not be used and HostNotAvailableError
+    if the address is not ours. Neither is solved by trying a different port.
+    """
+    # uvicorn derives the family from the shape of the host string, so match it
+    family = socket.AF_INET6 if host and ":" in host else socket.AF_INET
+    sock = socket.socket(family, socket.SOCK_STREAM)
+    try:
+        # uvicorn sets this before binding, so a port held in TIME_WAIT is free
+        # to us too. Skipped on Windows, where SO_REUSEADDR instead permits
+        # taking over a port another process is actively listening on, which
+        # would make every bind succeed.
+        if not sabnzbd.WINDOWS:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.bind((host, port))
+        # Binding alone does not reserve the port: another SO_REUSEADDR socket
+        # can still bind it until someone listens. asyncio calls listen() again
+        # with its own backlog when it takes the socket over, which is harmless.
+        sock.listen(socket.SOMAXCONN)
+    except PermissionError:
+        # Where the privileged range starts is configurable on Linux and does
+        # not exist on Windows, so react to the error rather than comparing
+        # the port against 1024
+        sock.close()
+        logging.debug("Not allowed to bind %s:%s", host, port)
+        raise
+    except OSError as err:
+        sock.close()
+        if err.errno in ADDRESS_NOT_AVAILABLE:
+            logging.debug("Address %s is not available", host)
+            raise HostNotAvailableError(err.errno, "Host address not available: %s" % host) from err
+        raise
+    return sock
+
+
+def port_is_free(host: str, port: int) -> bool:
+    """Return True if host:port can be bound.
+
+    Binds and immediately releases, so the answer predicts whether the web
+    server will actually come up rather than merely whether something answers
+    there. Propagates the errors that no other port would avoid.
+    """
+    try:
+        bind_web_socket(host, port).close()
+        return True
+    except (PermissionError, HostNotAvailableError):
+        raise
+    except OSError as err:
+        logging.debug("Cannot bind %s:%s (%s)", host, port, err)
+        return False
+
+
+def find_free_port(host: str, currentport: int) -> Optional[int]:
+    """Return the first bindable port at or above currentport, None if there is none.
+
+    Propagates PermissionError and HostNotAvailableError from port_is_free, so a
+    caller can report those instead of a fruitless search for a free port.
+    """
+    for _ in range(10):
+        # Port 0 would have the OS hand out an arbitrary port, and 49152 and up
+        # is the dynamic range that outgoing connections draw from
+        if currentport < 1 or currentport > 49151:
+            break
+        if port_is_free(host, currentport):
+            return currentport
+        currentport += 5
+    return None
+
+
 def get_cache_limit() -> str:
     """Depending on OS, calculate cache limits.
     In ArticleCache it will make sure we stay
@@ -1305,6 +1390,35 @@ def is_local_addr(ip: str) -> bool:
         return any(ip_in_subnet(ip, local_range) for local_range in local_ranges)
     else:
         return is_lan_addr(ip)
+
+
+def xff_trusted_networks() -> list[str]:
+    """Networks from which the X-Forwarded-For header may be trusted, for use as
+    uvicorn's forwarded_allow_ips. Mirrors is_loopback_addr plus is_local_addr:
+    loopback and the user-defined local_ranges, or the private LAN address space
+    when no local_ranges are set.
+
+    Uvicorn compares the raw peer address without normalization, so for every
+    IPv4 entry the IPv4-mapped IPv6 form (::ffff:a.b.c.d) is added as well.
+    """
+    networks = ["127.0.0.0/8", "::1"]
+    if local_ranges := cfg.local_ranges():
+        networks.extend(local_ranges)
+    else:
+        # Private address space, matching is_lan_addr()
+        networks.extend(["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "169.254.0.0/16", "fc00::/7", "fe80::/10"])
+
+    # Add IPv4-mapped IPv6 equivalents of all IPv4 entries
+    mapped = []
+    for network in networks:
+        try:
+            net = ipaddress.ip_network(network, strict=False)
+        except ValueError:
+            # Not a valid IP or network; leave it to uvicorn as a literal
+            continue
+        if net.version == 4:
+            mapped.append("::ffff:%s/%d" % (net.network_address, net.prefixlen + 96))
+    return networks + mapped
 
 
 def ip_extract() -> list[str]:

@@ -21,8 +21,8 @@ import datetime
 import ctypes.util
 import time
 import ssl
+from typing import Optional
 
-import cherrypy
 import platform
 import concurrent.futures
 import sys
@@ -155,6 +155,7 @@ LOGFILE = None
 WEBLOGFILE = None
 GUIHANDLER = None
 LOG_ALL = False
+WEB_SERVER: Optional[sabnzbd.interface.ThreadedServer] = None
 WIN_SERVICE = None  # Instance of our Win32 Service Class
 BROWSER_URL = None
 
@@ -215,11 +216,9 @@ def sig_handler(signum=None, frame=None):
 INIT_LOCK = Lock()
 
 
-def get_db_connection(thread_index=0):
-    # Create a connection and store it in the current thread
-    if not (hasattr(cherrypy.thread_data, "history_db") and cherrypy.thread_data.history_db):
-        cherrypy.thread_data.history_db = sabnzbd.database.HistoryDB()
-    return cherrypy.thread_data.history_db
+# Pool of History database connections, shared by web handlers and workers.
+# Borrow with: with sabnzbd.db_pool.connection() as history_db
+db_pool = sabnzbd.database.HistoryDBPool()
 
 
 @synchronized(INIT_LOCK)
@@ -230,9 +229,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.__SHUTTING_DOWN__ = False
 
     sys.setswitchinterval(cfg.switchinterval())
-
-    # Set global database connection for Web-UI threads
-    cherrypy.engine.subscribe("start_thread", get_db_connection)
 
     # Paused?
     pause_downloader = pause_downloader or cfg.start_paused()
@@ -268,6 +264,8 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.https_key.callback(cfg.guard_restart)
     cfg.https_chain.callback(cfg.guard_restart)
     cfg.enable_https.callback(cfg.guard_restart)
+    cfg.verify_xff_header.callback(cfg.guard_restart)
+    cfg.local_ranges.callback(cfg.guard_restart)
     cfg.socks5_proxy_url.callback(cfg.guard_restart)
     cfg.top_only.callback(cfg.guard_top_only)
     cfg.pause_on_post_processing.callback(cfg.guard_pause_on_pp)
@@ -421,6 +419,11 @@ def halt():
         logging.debug("Terminating scheduler")
         sabnzbd.Scheduler.abort()
 
+        # All writers have stopped; close the database connections so the
+        # WAL is checkpointed into the main database file
+        logging.debug("Closing database pool")
+        sabnzbd.db_pool.close()
+
         logging.info("All processes stopped")
 
         sabnzbd.__INITIALIZED__ = False
@@ -443,20 +446,20 @@ def shutdown_program():
     try:
         logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
         sabnzbd.halt()
-        cherrypy.engine.exit()
+        if sabnzbd.WEB_SERVER:
+            sabnzbd.WEB_SERVER.stop()
         sabnzbd.SABSTOP = True
         notify_shutdown_loop()
     finally:
         SHUTDOWN_LOCK.release()
 
 
-def trigger_restart(timeout=None):
-    """Trigger a restart by setting a flag an shutting down CP"""
-    # Sometimes we need to wait a bit to send good-bye to the browser
-    if timeout:
-        time.sleep(timeout)
+def trigger_restart():
+    """Trigger a restart by setting a flag and waking up the main loop.
 
-    # Set the flag and wake up the main loop
+    Callers that must let a response reach the browser first arrange the ordering
+    themselves (e.g. the API restart handler defers this to a post-response
+    background task), so no delay is needed here."""
     sabnzbd.TRIGGER_RESTART = True
     notify_shutdown_loop()
 

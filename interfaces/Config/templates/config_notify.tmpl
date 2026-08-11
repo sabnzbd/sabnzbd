@@ -30,10 +30,9 @@
 <!--#end def#-->
 
 <div class="colmask">
-    <form action="saveNotify" method="post" name="fullform" class="fullform" autocomplete="off">
+    <form action="$url('config/notify/save')" method="post" class="fullform" autocomplete="off">
     <input type="hidden" id="apikey" name="apikey" value="$apikey" />
     <input type="hidden" name="output" value="json" />
-    <input type="hidden" id="ajax" name="ajax" value="1" />
     <div class="section" id="email">
         <div class="col2">
             <h3>$T('cmenu-email') <a href="$help_uri#toc0" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
@@ -456,7 +455,7 @@ jQuery(document).ready(function(){
         // Get the request
         jQuery.ajax({
             type: "GET",
-            url: "../../api",
+            url: "$url('api')",
             data: data
         }).then(function(data) {
             // Remove disabled and make the box

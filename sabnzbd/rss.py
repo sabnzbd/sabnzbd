@@ -1275,7 +1275,7 @@ def expired_purge():
 @contextmanager
 def rss_repository(db: Optional[sabnzbd.database.HistoryDB] = None):
     if db is None:
-        with HistoryDB() as db:
+        with sabnzbd.db_pool.connection() as db:
             yield RSSRepository(db)
     else:
         yield RSSRepository(db)

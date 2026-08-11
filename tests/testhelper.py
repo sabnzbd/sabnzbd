@@ -35,6 +35,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from string import ascii_lowercase, digits
 from unittest import mock
 from urllib3.exceptions import ProtocolError
@@ -440,6 +441,45 @@ class SABnzbdBaseTest:
             wait.until(lambda driver_wait: self.driver.execute_script("return window.scrollY") == 0)
         except RemoteDisconnected:
             pass
+
+    def wait_for_alert(self, timeout=15):
+        """Wait for a JS confirm()/alert dialog and return it.
+
+        Selenium's click() can return before a dialog opened synchronously in the
+        click handler is registered, and a confirm() raised from an AJAX success
+        callback only appears once the request settles. Waiting explicitly avoids
+        both races. Use this only where a dialog is guaranteed."""
+        WebDriverWait(self.driver, timeout).until(EC.alert_is_present())
+        return self.driver.switch_to.alert
+
+    def dismiss_restart_prompt(self, timeout=15):
+        """Dismiss the "restart required" confirmation raised after saving.
+
+        Changing username/password (and other guarded options) sets RESTART_REQ,
+        so the save callback always pops a confirm() dialog. Cancel it (= no
+        restart). The alert is guaranteed here, so wait for it deterministically."""
+        self.wait_for_alert(timeout).dismiss()
+
+    def dismiss_alert_if_present(self, timeout=15):
+        """Wait until a submitted save settles, dismissing a restart-request
+        confirm() only if one is raised.
+
+        Use where the dialog is conditional (a save that may or may not change a
+        guarded option), so its absence must not fail the test. The alert, if any,
+        is popped in the same JS turn that completes the request, so poll for either
+        terminal state and return as soon as one is reached."""
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            if EC.alert_is_present()(self.driver):
+                self.driver.switch_to.alert.dismiss()
+                return
+            try:
+                if self.driver.execute_script("return jQuery.active") == 0:
+                    return
+            except (RemoteDisconnected, ProtocolError):
+                return
+            time.sleep(0.1)
+        pytest.fail("Config save did not settle within %s seconds" % timeout)
 
     def wait_for_ajax(self):
         # We catch common nonsense errors from Selenium

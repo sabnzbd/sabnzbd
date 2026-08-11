@@ -142,6 +142,11 @@ class TestPostProc:
     def test_prepare_extraction_path(
         self, category, has_jobdir, has_catdir, has_active_sorter, sort_string, marker_file, do_folder_rename
     ):
+        # Every parametrization asserts on the exact directory name that comes out, but that
+        # name depends on what's already on disk. Best effort cleanup.
+        shutil.rmtree(SAB_CACHE_DIR, ignore_errors=True)
+        os.makedirs(SAB_CACHE_DIR, exist_ok=True)
+
         # Ensure global CFG_ vars are initialised
         sabnzbd.config.read_config(os.devnull)
 

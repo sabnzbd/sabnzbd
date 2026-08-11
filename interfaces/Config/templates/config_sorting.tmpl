@@ -20,7 +20,7 @@
         <!--#set $selected_types = ["0"] if not len($selected_types) else $selected_types #-->
         <!-- SORTER $cur -->
         <div class="section <!--#if $cur != 0#-->sorter<!--#end if#-->" id="sorter_$cur" <!--#if $cur == 0#-->style="display: none;"<!--#end if#-->>
-            <form action="save_sorter" method="post" autocomplete="off" <!--#if $cur != 0#-->class="sorting-row"<!--#end if#-->>
+            <form action="$url('config/sorting/save_sorter')" method="post" autocomplete="off" <!--#if $cur != 0#-->class="sorting-row"<!--#end if#-->>
                 <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="order" value="$slot.order" />
                 <input type="hidden" value="$slot.name" name="name" />
@@ -347,7 +347,7 @@
     <div class="section align-center sorting-quick-setup">
         <h3>$T('sort-quick-add'):</h3>
         <!--#if "tv" in $categories#-->
-        <form action="save_sorter" method="post" autocomplete="off">
+        <form action="$url('config/sorting/save_sorter')" method="post" autocomplete="off">
             <input type="hidden" name="apikey" value="$apikey" />
             <input type="hidden" name="order" value="0" />
             <input type="hidden" name="is_active" value="1" />
@@ -366,7 +366,7 @@
         </form>
         <!--#end if#-->
         <!--#if "movies" in $categories#-->
-        <form action="save_sorter" method="post" autocomplete="off">
+        <form action="$url('config/sorting/save_sorter')" method="post" autocomplete="off">
             <input type="hidden" name="apikey" value="$apikey" />
             <input type="hidden" name="order" value="0" />
             <input type="hidden" name="is_active" value="1" />
@@ -388,7 +388,7 @@
     </div>
     <!--#end if#-->
 </div>
-<script type="text/javascript" src="${root}staticcfg/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="$url('staticcfg/js/jquery-ui.min.js')"></script>
 <script type="text/javascript">
     // http://stackoverflow.com/questions/2219924/
     var typewatch = (function(){
@@ -414,7 +414,7 @@
             typewatch(function () {
                 jQuery.ajax({
                     type: "GET",
-                    url: "../../api",
+                    url: "$url('api')",
                     data: {
                         mode: 'eval_sort',
                         job_name: jQuery('#preview_name_' + sort_nr).val(),
@@ -437,7 +437,7 @@
     jQuery(document).ready(function() {
         jQuery('.delSorter').click(function() {
             var theForm = jQuery(this).closest("form");
-            theForm.attr("action", "delete").submit();
+            theForm.attr("action", "$url('config/sorting/delete')").submit();
         });
 
         jQuery('.addSorter').click(function(){
@@ -494,8 +494,8 @@
                         var data = {}
                         jQuery(elm).extractFormDataTo(data);
                         jQuery.ajax({
-                            type: "GET",
-                            url: window.location.pathname + 'save_sorter',
+                            type: "POST",
+                            url: "$url('config/sorting/save_sorter')",
                             data: data,
                             async: false // To prevent race-conditions when updating sorters
                         })
@@ -509,7 +509,7 @@
             var whichSorter = jQuery(this).attr("rel");
             jQuery.ajax({
                 type: "POST",
-                url: "toggle_sorter",
+                url: "$url('config/sorting/toggle_sorter')",
                 data: {sorter: whichSorter, apikey: "$apikey" }
             }).done(function() {
                 formWasSubmitted = true;
