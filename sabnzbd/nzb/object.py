@@ -76,7 +76,6 @@ from sabnzbd.filesystem import (
     get_unique_filename,
     renamer,
     make_script_path,
-    globber,
     listdir_full,
     is_valid_script,
     has_unwanted_extension,
