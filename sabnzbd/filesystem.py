@@ -210,12 +210,31 @@ for i in range(1, 32):
     CH_ILLEGAL_WIN += chr(i)
 
 
-def sanitize_filename(filename: str) -> str:
+def sanitize_filename(filename: str, allow_subdirs: bool = False) -> str:
     """Return filename with illegal chars converted to legal ones
-    and with the par2 extension always in lowercase
+    and with the par2 extension always in lowercase.
+    With allow_subdirs the forward slashes that par2 uses to separate sub-directories are kept
+    and every part is sanitized on its own. The result is always local to the current folder:
+    empty parts, "." and ".." are dropped, so a leading slash or any amount of traversal can
+    never produce a name that points outside of it.
     """
     if not filename:
         return filename
+
+    if allow_subdirs:
+        # Par2 always uses a forward slash, no matter which platform created the set
+        parts = []
+        for part in filename.split("/"):
+            if part in ("", os.curdir):
+                continue
+            if part == os.pardir:
+                logging.info("Dropping directory traversal from name %s", filename)
+                continue
+            parts.append(sanitize_filename(part))
+        # Nothing usable left, or no sub-directories after all
+        if not parts:
+            return "unknown"
+        return os.path.join(*parts)
 
     filename = unicode_nfc_normalize(filename)
 
