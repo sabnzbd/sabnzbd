@@ -26,7 +26,7 @@ from tests.testhelper import SAB_CACHE_DIR, create_and_read_nzb_fp
 from sabnzbd.nzb import NzbObject
 from sabnzbd.config import ConfigCat
 from sabnzbd.constants import NORMAL_PRIORITY, MAX_BAD_ARTICLES
-from sabnzbd.filesystem import globber, sanitize_filename
+from sabnzbd.filesystem import globber, sanitize_filename, create_all_dirs
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
@@ -91,6 +91,29 @@ class TestNZO:
         # A repeat stays in the same folder, only the name is made unique
         filename, _path = nzo.get_unique_filepath(sanitize_filename("sub/testfile.rar", allow_subdirs=True))
         assert filename == os.path.join("sub", "testfile.1.rar")
+
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+    def test_check_existing_files_matches_subdirs(self):
+        """On a retry the volumes can already be in the folder par2 named them in"""
+        ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
+        nzo = NzbObject("test_reuse", nzb_fp=create_and_read_nzb_fp("basic_rar5"))
+        nzf = nzo.files[0]
+        assert nzf.filename == "testfile.rar"
+
+        # A previous run adopted the par2 name, which is recorded for exactly this purpose
+        nzo.renamed_file("sub/testfile.rar", "testfile.rar")
+
+        # Put it on disk where par2 named it, as that previous run would have left it
+        subdir = os.path.join(nzo.download_path, "sub")
+        create_all_dirs(subdir)
+        existing_path = os.path.join(subdir, "testfile.rar")
+        with open(existing_path, "wb") as existing_file:
+            existing_file.write(b"already downloaded")
+
+        nzo.check_existing_files(nzo.download_path)
+
+        assert nzf.filename == os.path.join("sub", "testfile.rar"), "sub-directory was not matched, re-downloading"
+        assert nzf.filepath == existing_path
 
     @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     @pytest.mark.parametrize(

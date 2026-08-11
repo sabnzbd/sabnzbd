@@ -77,6 +77,7 @@ from sabnzbd.filesystem import (
     renamer,
     make_script_path,
     globber,
+    listdir_full,
     is_valid_script,
     has_unwanted_extension,
     create_all_dirs,
@@ -850,8 +851,13 @@ class NzbObject(TryList):
         """Check if downloaded files already exits, for these set NZF to complete"""
         fix_unix_encoding(wdir)
 
-        # Get a list of already present files, ignore folders
-        existing_files = globber(wdir, "*.*")
+        # Get a list of already present files, ignore folders. Par2 can name a file inside a
+        # sub-directory of the job, so look there too, but never inside the admin folder.
+        existing_files = [
+            os.path.relpath(path, wdir)
+            for path in listdir_full(wdir)
+            if JOB_ADMIN not in path and "." in os.path.basename(path)
+        ]
 
         # Substitute renamed files
         if renames := load_data(RENAMES_FILE, self.admin_path, remove=True):
@@ -1435,9 +1441,9 @@ class NzbObject(TryList):
             # Add to dict
             for name, old_name in renames_or_name.items():
                 if old_name is not None:
-                    self.renames[name] = self.renames.pop(old_name, old_name)
+                    self.renames[os.path.normpath(name)] = self.renames.pop(old_name, old_name)
         elif old_name is not None:
-            self.renames[renames_or_name] = self.renames.pop(old_name, old_name)
+            self.renames[os.path.normpath(renames_or_name)] = self.renames.pop(old_name, old_name)
 
     @synchronized()
     def get_unique_filepath(self, filename: str) -> tuple[str, str]:
