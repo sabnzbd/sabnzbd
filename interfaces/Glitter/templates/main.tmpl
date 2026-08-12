@@ -36,7 +36,9 @@
         <link rel="stylesheet" type="text/css" href="$url('static/bootstrap/css/bootstrap.min.css', v=$cache_buster)" />
         <link rel="stylesheet" type="text/css" href="$url('static/stylesheets/glitter.css', v=$cache_buster)" />
         <link rel="stylesheet" type="text/css" href="$url('static/stylesheets/glitter.mobile.css', v=$cache_buster)" media="all and (max-width: 768px)" />
-        <!--#if $color_scheme not in ('Light', '') #-->
+        <!--#if $color_scheme == 'Auto' #-->
+        <link rel="stylesheet" type="text/css" href="$url('static/stylesheets/colorschemes/Night.css', v=$cache_buster)" media="screen and (prefers-color-scheme: dark)"/>
+        <!--#else if $color_scheme not in ('Light', '') #-->
         <link rel="stylesheet" type="text/css" href="$url('static/stylesheets/colorschemes/' + $color_scheme + '.css', v=$cache_buster)"/>
         <!--#end if#-->
 

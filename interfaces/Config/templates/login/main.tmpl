@@ -16,7 +16,9 @@
 
     <link rel="stylesheet" type="text/css" href="$url('staticcfg/bootstrap/css/bootstrap.min.css', v=$cache_buster)" />
     <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/login.css', v=$cache_buster)" />
-    <!--#if $color_scheme not in ('Light', '') #-->
+    <!--#if $color_scheme == 'Auto' #-->
+    <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/Night.css', v=$cache_buster)" media="screen and (prefers-color-scheme: dark)" />
+    <!--#else if $color_scheme not in ('Light', '') #-->
     <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/' + $color_scheme + '.css', v=$cache_buster)" />
     <!--#end if#-->
 
