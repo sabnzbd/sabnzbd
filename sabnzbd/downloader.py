@@ -724,6 +724,8 @@ class Downloader(Thread):
                     BPSMeter.update()
                     next_bpsmeter_update = now + _BPSMETER_UPDATE_DELAY
                     self.check_assembler_levels()
+                    # thread_time() only reports the calling thread, so each thread has to
+                    # report its own. Tied to the existing tick rather than the loop.
 
                 if not events:
                     continue
@@ -742,6 +744,7 @@ class Downloader(Thread):
         while True:
             try:
                 self.process_nw(*nw_queue.get())
+                # Reported per role, so all the receive threads aggregate into one figure
             except Exception:
                 # We cannot break out of the Downloader from here, so just pause
                 logging.error(T("Fatal error in Downloader"), exc_info=True)
