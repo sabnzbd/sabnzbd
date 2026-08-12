@@ -1008,6 +1008,7 @@ SPECIAL_BOOL_LIST = (
     "enable_season_sorting",
     "verify_xff_header",
     "direct_write",
+    "direct_decode",
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",

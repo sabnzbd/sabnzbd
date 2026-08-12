@@ -529,6 +529,7 @@ allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
 enable_season_sorting = OptionBool("misc", "enable_season_sorting", True)
 verify_xff_header = OptionBool("misc", "verify_xff_header", True)
 direct_write = OptionBool("misc", "direct_write", True)
+direct_decode = OptionBool("misc", "direct_decode", False)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])

@@ -803,6 +803,12 @@ class Downloader(Thread):
                 # Make sure to discard the article
                 self.reset_nw(nw, "Maximum data buffer size exceeded", wait=False, retry_article=False)
                 return
+            except OSError as err:
+                # A streamed article could not be written: out of space, or the file
+                # went away underneath us. Not the connection's fault, so the article is
+                # retried rather than discarded.
+                self.reset_nw(nw, "Failed to write article: %s" % err, wait=False)
+                return
 
             if not bytes_pending:
                 break

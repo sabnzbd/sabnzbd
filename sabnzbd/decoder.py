@@ -151,13 +151,21 @@ def decode(article: Article, decoder: sabctools.NNTPResponse):
         sabnzbd.ArticleCache.save_article(article, decoded_data)
         article.decoded = True
     elif not nzo.precheck:
-        # Nothing to save
+        # Either there was nothing to save, or the decoder streamed it straight to the
+        # file. Both are on disk as far as the rest of the pipeline is concerned; the
+        # assembler advances past an on_disk article on its own when it next runs.
         article.on_disk = True
 
     sabnzbd.NzbQueue.register_article(article, article_success)
 
 
-def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> bytearray:
+def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[bytearray]:
+    """Record what the decoder produced.
+
+    data is None when the article was streamed straight to its file rather than
+    decoded into memory. Everything the caller needs is still reported - sizes, offset,
+    CRC - so the only difference is that there is nothing left to cache or assemble.
+    """
     # Let SABCTools do all the heavy lifting
     decoded_data = response.data
     article.file_size = response.file_size
@@ -169,8 +177,10 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> bytearray
     # Assume it is yenc
     nzf.type = "yenc"
 
-    # Only set the name if it was found and not obfuscated
-    if not nzf.filename_checked and (file_name := response.file_name):
+    # Only set the name if it was found and not obfuscated. Streamed articles never
+    # reach here: a sink is only handed out once the filename has been checked, exactly
+    # because this needs the bytes.
+    if decoded_data is not None and not nzf.filename_checked and (file_name := response.file_name):
         # Set the md5-of-16k if this is the first article
         if article.lowest_partnum:
             nzf.md5of16k = hashlib.md5(memoryview(decoded_data)[:16384]).digest()
@@ -182,6 +192,8 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> bytearray
     # CRC check
     if (crc := response.crc) is None:
         logging.info("CRC Error in %s", article.article)
+        # A streamed article is already on disk, so there is nothing to hand back; the
+        # bytes stay put either way, so par2 has the same chance of repairing it
         raise BadData(decoded_data)
 
     article.crc32 = crc
