@@ -22,6 +22,7 @@ sabnzbd.assembler - threaded assembly of files
 import os
 import queue
 import logging
+from collections import OrderedDict
 import re
 import threading
 from threading import Thread
@@ -51,6 +52,7 @@ from sabnzbd.constants import (
     ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE,
     ASSEMBLER_WRITE_INTERVAL,
     ASSEMBLER_TRIGGER_PERCENTAGE,
+    ASSEMBLER_MAX_OPEN_WRITERS,
 )
 import sabnzbd.cfg as cfg
 from sabnzbd.nzb import NzbFile, NzbObject, Article
@@ -82,6 +84,8 @@ class Assembler(Thread):
         self.queued_next_time: dict[str, float] = {}
         self.ready_bytes_lock = threading.Lock()
         self.ready_bytes: dict[str, int] = {}
+        self.writers_lock = threading.Lock()
+        self.open_writers: OrderedDict[str, NzbFile] = OrderedDict()
 
     def stop(self):
         self.queue.put(AssemblerTask())
@@ -156,6 +160,62 @@ class Assembler(Thread):
             for nzf in nzfs:
                 self.ready_bytes.pop(nzf.nzf_id, None)
                 self.queued_next_time.pop(nzf.nzf_id, None)
+
+        # Called when a file finishes and when a job is removed, which are exactly the
+        # points where the handle has to go. Post-processing reads, renames or deletes
+        # the file immediately afterwards, and on Windows a file with an open handle
+        # cannot be replaced even though it can be read.
+        for nzf in nzfs:
+            self.close_writer(nzf)
+
+    def get_writer(self, nzf: NzbFile) -> sabctools.FileWriter:
+        """Open handle for this file, reusing the one already open where there is one.
+
+        Opening per write costs an open and a close for every article, which at the
+        article rates this is built for outweighs the write itself. Handles are kept
+        instead, bounded by ASSEMBLER_MAX_OPEN_WRITERS because they are a limited
+        resource shared with every socket the downloader holds.
+        """
+        with self.writers_lock:
+            if (writer := nzf.writer) is not None:
+                self.open_writers.move_to_end(nzf.nzf_id)
+                return writer
+
+            writer = sabctools.FileWriter(nzf.filepath)
+            nzf.writer = writer
+            self.open_writers[nzf.nzf_id] = nzf
+
+            while len(self.open_writers) > ASSEMBLER_MAX_OPEN_WRITERS:
+                _, evicted = self.open_writers.popitem(last=False)
+                # Dropped rather than closed. Another thread may be inside a write on
+                # this very handle, and closing it would turn that write into an error;
+                # letting the last reference go closes it once that write returns.
+                evicted.writer = None
+
+            return writer
+
+    def close_writer(self, nzf: NzbFile) -> None:
+        """Close the handle for this file, if one is open"""
+        with self.writers_lock:
+            self.open_writers.pop(nzf.nzf_id, None)
+            writer = nzf.writer
+            nzf.writer = None
+
+        if writer is not None:
+            # Outside the lock: close waits for writes still in flight
+            writer.close()
+
+    def close_all_writers(self) -> None:
+        """Release every open handle, on shutdown"""
+        with self.writers_lock:
+            writers = [nzf.writer for nzf in self.open_writers.values()]
+            for nzf in self.open_writers.values():
+                nzf.writer = None
+            self.open_writers.clear()
+
+        for writer in writers:
+            if writer is not None:
+                writer.close()
 
     def process(
         self,
@@ -263,6 +323,9 @@ class Assembler(Thread):
             nzo, nzf, file_done, allow_non_contiguous, direct_write = self.queue.get()
             if not nzo:
                 logging.debug("Shutting down assembler")
+                # Anything still open belongs to a job that was interrupted rather than
+                # finished, so it never reached clear_ready_bytes
+                self.close_all_writers()
                 break
 
             if nzf:
@@ -447,8 +510,8 @@ class Assembler(Thread):
                     offset += Assembler.write(writer, idx, nzf, article, data, offset)
 
         finally:
-            if writer is not None:
-                writer.close()
+            # Deliberately not closed here. The next articles for this file are moments
+            # away, and clear_ready_bytes() closes it when the file is actually done.
 
             # Final steps
             if file_done:
@@ -470,8 +533,6 @@ class Assembler(Thread):
             except OSError:
                 # nzo has probably been deleted or not enough disk space, ArticleCache tries the fallback and handles it
                 return False
-            finally:
-                writer.close()
         return True
 
     @staticmethod
@@ -551,7 +612,7 @@ class Assembler(Thread):
         :returns (writer, current_offset, can_direct_write)
         """
         with nzf.file_lock:
-            writer = sabctools.FileWriter(nzf.filepath)
+            writer = sabnzbd.Assembler.get_writer(nzf)
             # Every write carries its own offset, so the file position is never read and
             # does not need seeking to the append point
             offset = nzf.contiguous_offset()

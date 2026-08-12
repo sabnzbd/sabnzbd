@@ -107,6 +107,10 @@ DEF_MAX_ASSEMBLER_QUEUE = 12
 SOFT_ASSEMBLER_QUEUE_LIMIT = 0.5
 # Percentage of cache to use before adding file to assembler
 ASSEMBLER_TRIGGER_PERCENTAGE = 0.05
+# Files kept open for writing at once. Handles are cached so an article does not cost an
+# open/close pair, but they are a limited resource shared with every socket the
+# downloader holds, so the cache is bounded rather than growing with the queue.
+ASSEMBLER_MAX_OPEN_WRITERS = 32
 ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE = 1.5
 ASSEMBLER_WRITE_INTERVAL = 5.0
 NNTP_BUFFER_SIZE = int(256 * KIBI)
