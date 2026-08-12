@@ -60,6 +60,15 @@ class BadUu(Exception):
     pass
 
 
+class SinkFailed(Exception):
+    """A streamed article could not be written, so nothing was kept.
+
+    Deliberately not a BadYenc: that handler inspects the response lines and can decide
+    the article was fine after all, which would mark an article as successful when it
+    is not on disk anywhere.
+    """
+
+
 def decode(article: Article, decoder: sabctools.NNTPResponse):
     decoded_data: Optional[bytearray] = None
     nzo = article.nzf.nzo
@@ -104,6 +113,14 @@ def decode(article: Article, decoder: sabctools.NNTPResponse):
         logging.info("Badly formed uu article in %s", art_id)
 
         # Try the next server
+        if search_new_server(article):
+            return
+
+    except SinkFailed:
+        # The file went away under the article, so it has to be fetched again. Any
+        # part of it already written is overwritten at the same offsets next time.
+        logging.info("Could not write %s to its file, fetching it again", art_id)
+
         if search_new_server(article):
             return
 
@@ -166,6 +183,12 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
     decoded into memory. Everything the caller needs is still reported - sizes, offset,
     CRC - so the only difference is that there is nothing left to cache or assemble.
     """
+    # The job was deleted while the article was arriving, or the write failed. The
+    # decoder consumed the response anyway so the connection survives, but nothing was
+    # kept, so this is a failed article rather than one on disk.
+    if response.sink_failed:
+        raise SinkFailed
+
     # Let SABCTools do all the heavy lifting
     decoded_data = response.data
     article.file_size = response.file_size
