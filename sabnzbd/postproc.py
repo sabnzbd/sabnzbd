@@ -1141,6 +1141,9 @@ def handle_empty_queue():
             Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
             change_queue_complete_action(cfg.queue_complete(), new=False)
 
+        # Re-pause when an "unpause until queue empty" was armed
+        sabnzbd.Scheduler.repause_on_empty_queue()
+
         # Trigger garbage collection and release of memory
         logging.debug("Triggering garbage collection and release of memory")
         gc.collect()

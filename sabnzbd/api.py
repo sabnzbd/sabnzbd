@@ -1051,6 +1051,12 @@ def _api_config_set_unpause(value: str, kwargs: QueryParams) -> Response:
     return report(kwargs)
 
 
+def _api_config_unpause_until_empty(value: str, kwargs: QueryParams) -> Response:
+    """API: resume now and re-pause once the queue is empty"""
+    sabnzbd.Scheduler.plan_resume_until_empty()
+    return report(kwargs)
+
+
 def _api_config_set_apikey(value: str, kwargs: QueryParams) -> Response:
     cfg.api_key.set(config.create_api_key())
     config.save_config()
@@ -1207,6 +1213,7 @@ _api_table: ApiHandlerTable = {
     ("config", "speedlimit"): ApiEntry(_api_config_speedlimit, 2, config_locked=True),
     ("config", "set_pause"): ApiEntry(_api_config_set_pause, 2, config_locked=True),
     ("config", "set_unpause"): ApiEntry(_api_config_set_unpause, 2, config_locked=True),
+    ("config", "unpause_until_empty"): ApiEntry(_api_config_unpause_until_empty, 2, config_locked=True),
     ("config", "set_apikey"): ApiEntry(_api_config_set_apikey, 3, config_locked=True),
     ("config", "set_nzbkey"): ApiEntry(_api_config_set_nzbkey, 3, config_locked=True),
     ("config", "regenerate_certs"): ApiEntry(_api_config_regenerate_certs, 3, config_locked=True),

@@ -821,6 +821,8 @@ SKIN_TEXT = {
     "Glitter-unpause1h": TT("Unpause for 1 hour"),
     "Glitter-unpause3h": TT("Unpause for 3 hours"),
     "Glitter-unpause6h": TT("Unpause for 6 hours"),
+    "Glitter-unpauseUntilEmpty": TT("Unpause until queue empty"),
+    "Glitter-unpauseUntilEmptyDisabled": TT("Queue is empty"),
     "Glitter-setMaxLinespeed": TT("You must set a maximum bandwidth before you can set a bandwidth limit"),
     "Glitter-left": TT("left"),
     "Glitter-toggleNavigation": TT("Toggle SABnzbd navigation menu"),

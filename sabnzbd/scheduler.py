@@ -40,6 +40,7 @@ class Scheduler:
         self.scheduler = kronos.ThreadedScheduler()
         self.pause_end: Optional[float] = None  # Moment when pause will end
         self.resume_end: Optional[float] = None  # Moment when temporary resume will end
+        self.resume_until_empty = False  # Re-pause once the queue is empty
         self.resume_task: Optional[kronos.Task] = None
         self.rss_task: Optional[kronos.Task] = None  # RSS interval task
         self.restart_scheduler = False
@@ -379,16 +380,21 @@ class Scheduler:
         else:
             logging.debug("Ignoring cancelled resume")
 
+    def __reset_scheduled_state(self):
+        """Clear any pending timed pause/resume or unpause-until-empty"""
+        self.pause_end = None
+        self.resume_end = None
+        self.resume_until_empty = False
+
     def plan_resume(self, interval):
         """Set a scheduled resume after the interval"""
-        self.resume_end = None
+        self.__reset_scheduled_state()
         if interval > 0:
             self.pause_end = time.time() + (interval * 60)
             logging.debug("Schedule resume at %s", self.pause_end)
             self.scheduler.add_single_task(self.__oneshot_resume, "", interval * 60, args=[self.pause_end])
             sabnzbd.Downloader.pause()
         else:
-            self.pause_end = None
             sabnzbd.downloader.unpause_all()
 
     def __oneshot_pause(self, when):
@@ -404,14 +410,28 @@ class Scheduler:
 
     def plan_pause(self, interval):
         """Set a scheduled re-pause after the interval"""
-        self.pause_end = None
+        self.__reset_scheduled_state()
         if interval > 0:
             self.resume_end = time.time() + (interval * 60)
             logging.debug("Schedule re-pause at %s", self.resume_end)
             self.scheduler.add_single_task(self.__oneshot_pause, "", interval * 60, args=[self.resume_end])
             sabnzbd.downloader.unpause_all()
         else:
-            self.resume_end = None
+            sabnzbd.Downloader.pause()
+
+    def plan_resume_until_empty(self):
+        """Resume now and re-pause once the queue is empty, ignored if nothing is queued"""
+        if sabnzbd.NzbQueue.is_empty():
+            return
+        self.__reset_scheduled_state()
+        self.resume_until_empty = True
+        sabnzbd.downloader.unpause_all()
+
+    def repause_on_empty_queue(self):
+        """Re-pause when an 'unpause until queue empty' was armed, called at end-of-queue"""
+        if self.resume_until_empty:
+            self.resume_until_empty = False
+            logging.debug("Re-pause after queue finished")
             sabnzbd.Downloader.pause()
 
     def __check_diskspace(self, full_dir: str, required_space: float):
