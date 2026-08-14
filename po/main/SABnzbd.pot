@@ -4253,6 +4253,14 @@ msgid "Unpause for 6 hours"
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Unpause until queue empty"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Queue is empty"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Toggle SABnzbd navigation menu"
 msgstr ""
 

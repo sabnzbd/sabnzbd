@@ -36,6 +36,7 @@
                     <li><a href="#" data-time="360" data-bind="click: unpauseTime">$T('Glitter-unpause6h')</a></li>
                     <li class="divider"></li>
                     <li><a href="#" data-bind="click: openCustomUnpauseTime">$T('Glitter-custom')</a></li>
+                    <li data-bind="css: { 'disabled': !hasQueue() }"><a href="#" data-bind="click: unpauseUntilEmpty, attr: { 'title': hasQueue() ? '' : '$T('Glitter-unpauseUntilEmptyDisabled')' }">$T('Glitter-unpauseUntilEmpty')</a></li>
                     <!-- /ko -->
                 </ul>
                 <span class="btn btn-default navbar-btn navbar-timeleft" data-bind="text: timeLeft" data-toggle="dropdown">0:00</span>

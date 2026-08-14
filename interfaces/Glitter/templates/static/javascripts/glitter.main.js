@@ -626,6 +626,17 @@ function ViewModel() {
         }
     }
 
+    // Unpause until the queue is empty
+    self.unpauseUntilEmpty = function() {
+        // Ignored by the server when nothing is queued
+        if (!self.hasQueue()) return;
+        callAPI({
+            mode: 'config',
+            name: 'unpause_until_empty'
+        }).then(self.refresh);
+        self.downloadsPaused(false);
+    };
+
     // Update the warnings
     self.nrWarnings.subscribe(function(newValue) {
         // Really any change?
