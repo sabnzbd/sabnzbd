@@ -19,11 +19,18 @@
 tests.test_newsunpack - Tests of various functions in newspack
 """
 
+import datetime
 import glob
+import io
+import json
 import logging
 import os
 import os.path
 import shutil
+import stat
+import sys
+import tarfile
+from typing import Optional
 from unittest import mock
 from unittest.mock import call
 
@@ -33,8 +40,25 @@ import sabnzbd
 import sabnzbd.newsunpack as newsunpack
 from sabnzbd.constants import JOB_ADMIN
 from tests.testhelper import SAB_CACHE_DIR
-from sabnzbd.misc import format_time_string
-from sabnzbd.filesystem import long_path, create_all_dirs, listdir_full
+from sabnzbd.misc import format_time_string, SABRarFile
+from sabnzbd.filesystem import long_path, create_all_dirs, listdir_full, clip_path
+
+
+@pytest.fixture(autouse=True)
+def _isolate_newsunpack_globals(monkeypatch):
+    """Snapshot the module globals that these tests mutate so they can't leak into other
+    tests/modules on the same pytest-xdist worker"""
+    for name in (
+        "NICE_COMMAND",
+        "IONICE_COMMAND",
+        "PAR2_COMMAND",
+        "RAR_COMMAND",
+        "SEVENZIP_COMMAND",
+    ):
+        monkeypatch.setattr(newsunpack, name, getattr(newsunpack, name))
+    # PostProcessor is unset by default; raising=False lets monkeypatch delete it on teardown
+    monkeypatch.setattr(sabnzbd, "PostProcessor", getattr(sabnzbd, "PostProcessor", None), raising=False)
+    yield
 
 
 class TestNewsUnpackFunctions:
@@ -44,8 +68,11 @@ class TestNewsUnpackFunctions:
         assert not newsunpack.is_sfv_file("tests/data/only_comments.sfv")
         assert not newsunpack.is_sfv_file("tests/data/random.bin")
 
-    def test_is_sevenfile(self):
-        # False, because the command is not set
+    def test_is_sevenfile(self, monkeypatch):
+        # False, because the command is not set. Force it explicitly: SEVENZIP_COMMAND
+        # is a module global that another test in this class may have populated via
+        # find_programs(), and under pytest-xdist tests share no ordering guarantee.
+        monkeypatch.setattr(newsunpack, "SEVENZIP_COMMAND", None)
         assert not newsunpack.SEVENZIP_COMMAND
         assert not newsunpack.is_sevenfile("tests/data/test_7zip/testfile.7z")
 
@@ -58,6 +85,11 @@ class TestNewsUnpackFunctions:
         assert newsunpack.is_sevenfile("tests/data/test_7zip/testfile.7z")
 
     def test_sevenzip(self):
+        # Make the test self-sufficient: SEVENZIP_COMMAND is a module global and
+        # under pytest-xdist this test may land on a worker where no earlier test
+        # called find_programs(), leaving it None (SevenZip would then wrongly raise
+        # "File is not a 7zip file"). find_programs() is idempotent.
+        newsunpack.find_programs(".")
         testzip = newsunpack.SevenZip("tests/data/test_7zip/testfile.7z")
         assert testzip.namelist() == ["My_Test_Download.bin"]
         # Basic check that we can get data from the 7zip
@@ -285,7 +317,7 @@ class TestPar2Repair:
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestRarUnpack:
     @staticmethod
-    def _create_test_nzo(temp_dir, filename="test.nzb"):
+    def _create_test_nzo(temp_dir, filename: str = "test.nzb", password: Optional[str] = None):
         """Create a mock NZO object for testing"""
         nzo = mock.Mock()
         nzo.download_path = temp_dir
@@ -298,10 +330,10 @@ class TestRarUnpack:
         nzo.set_action_line = mock.Mock()
 
         # Mock password-related attributes
-        nzo.password = ""  # No password by default
+        nzo.password = password
         nzo.nzo_info = {}  # Empty nzo_info
         nzo.meta = {}  # Empty meta data
-        nzo.correct_password = ""  # No correct password found yet
+        nzo.correct_password = password
 
         return nzo
 
@@ -313,6 +345,7 @@ class TestRarUnpack:
         custom_temp_test_dir=None,
         custom_temp_complete_dir=None,
         custom_nzo_settings=None,
+        password=None,
     ):
         """Run rar_unpack with test data"""
         # Base
@@ -344,7 +377,7 @@ class TestRarUnpack:
         sabnzbd.PostProcessor = mock.Mock()
 
         # Create mock NZO
-        nzo = TestRarUnpack._create_test_nzo(temp_test_dir)
+        nzo = TestRarUnpack._create_test_nzo(temp_test_dir, password=password)
 
         # Apply custom NZO settings if provided
         if custom_nzo_settings:
@@ -406,14 +439,64 @@ class TestRarUnpack:
             extracted_files_set
         ), f"{expected_full_paths} should be in {extracted_files_set}"
 
-    def test_basic_rar_unpack(self):
-        """Test basic RAR unpacking functionality"""
-        test_dir = "tests/data/basic_rar5"
-        rar_files = ["testfile.rar"]
-        expected_files = {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"}
+    @pytest.mark.parametrize(
+        "test_dir, rar_files, expected_files, password",
+        [
+            (
+                "tests/data/basic_rar3",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                None,
+            ),
+            # RAR3 does not support header encryption
+            (
+                "tests/data/basic_rar3_64",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                "75f8c9f91969b42eaaadc389739df9ed65e8970f9ad333a146e4f73e3875b69a",
+            ),
+            (
+                "tests/data/basic_rar4_16_header",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                "75f8c9f91969b42e",
+            ),
+            # Long password triggers Rar3Sha1 slow path
+            (
+                "tests/data/basic_rar4_64_header",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                "75f8c9f91969b42eaaadc389739df9ed65e8970f9ad333a146e4f73e3875b69a",
+            ),
+            # Password truncated to 127
+            (
+                "tests/data/basic_rar4_128_header",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                "sgq6gxzcjupw6kmn3zk49dudy9iuwkuo4232zm3ygafo3me7wuj47grf3oap3sk6gfr7d7u6zobvjoxwo98xuuuqa78vqqmhxyxq7ego7modk49bhuw6cahfdqr7hyf",
+            ),
+            (
+                "tests/data/basic_rar5",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                None,
+            ),
+            (
+                "tests/data/basic_rar5_64_header_blake2",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                "75f8c9f91969b42eaaadc389739df9ed65e8970f9ad333a146e4f73e3875b69a",
+            ),
+        ],
+    )
+    def test_basic_rar_unpack(self, test_dir, rar_files, expected_files, password):
+        for rar_file in rar_files:
+            with SABRarFile(os.path.join(test_dir, rar_file), part_only=True) as zf:
+                zf.setpassword(password)
+                assert zf.namelist()
 
         error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
-            self._run_rar_unpack(test_dir, rar_files)
+            self._run_rar_unpack(test_dir, rar_files, password=password)
         )
 
         self._assert_successful_extraction(
@@ -632,3 +715,406 @@ class TestRarUnpack:
             should_delete_original=True,
             original_files=rar_files,
         )
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="tarfile extraction filter requires Python 3.12 or later")
+@pytest.mark.usefixtures("clean_cache_dir")
+class TestTarUnpack:
+    @staticmethod
+    def _run_tar_unpack(
+        test_dir,
+        tar_files,
+        one_folder=False,
+        custom_temp_test_dir=None,
+        custom_temp_complete_dir=None,
+        custom_nzo_settings=None,
+    ):
+        """Run tar_unpack with test data"""
+        # Base
+        temp_test_dir_base = temp_test_dir = long_path(os.path.join(SAB_CACHE_DIR, "tar_unpack_temp"))
+        temp_complete_dir_base = temp_complete_dir = long_path(os.path.join(SAB_CACHE_DIR, "tar_complete_temp"))
+
+        # Extend if needed
+        if custom_temp_test_dir:
+            temp_test_dir = os.path.join(temp_test_dir, custom_temp_test_dir)
+        if custom_temp_complete_dir:
+            temp_complete_dir = os.path.join(temp_complete_dir, custom_temp_complete_dir)
+
+        assert create_all_dirs(temp_test_dir), f"Failed to create {temp_test_dir}"
+        assert create_all_dirs(temp_complete_dir), f"Failed to create {temp_complete_dir}"
+
+        # Copy test files to temp directory
+        copied_tars = []
+        for tar_file in tar_files:
+            src_path = os.path.join(test_dir, tar_file)
+            if os.path.exists(src_path):
+                dst_path = os.path.join(temp_test_dir, tar_file)
+                shutil.copy(src_path, dst_path)
+                copied_tars.append(dst_path)
+
+        # Make sure all programs are found
+        newsunpack.find_programs(".")
+
+        # Mock PostProcessor that's needed for TAR extraction
+        sabnzbd.PostProcessor = mock.Mock()
+
+        # Create mock NZO
+        nzo = TestRarUnpack._create_test_nzo(temp_test_dir)
+
+        # Apply custom NZO settings if provided
+        if custom_nzo_settings:
+            for key, value in custom_nzo_settings.items():
+                setattr(nzo, key, value)
+
+        try:
+            # Run the tar_unpack function
+            error_code, extracted_files = newsunpack.tar_unpack(nzo, temp_complete_dir, one_folder, copied_tars)
+
+            # Get directory contents with full paths
+            complete_contents = listdir_full(temp_complete_dir) if os.path.exists(temp_complete_dir) else []
+            download_contents = os.listdir(temp_test_dir) if os.path.exists(temp_test_dir) else []
+
+            # Check nothing extracted is executable
+            if not sabnzbd.WINDOWS:
+                for file_path in complete_contents:
+                    assert not os.access(file_path, os.X_OK), "%s is executable" % file_path
+                    st = os.stat(file_path)
+                    assert st.st_mode & 0o777 == 0o666 & ~sabnzbd.ORG_UMASK
+                    assert st.st_uid == os.getuid(), "%s has wrong owner" % file_path
+                    assert st.st_gid == os.getgid(), "%s has wrong group" % file_path
+
+            return error_code, extracted_files, complete_contents, download_contents, nzo, temp_complete_dir
+
+        finally:
+            # Cleanup
+            shutil.rmtree(temp_test_dir_base)
+            shutil.rmtree(temp_complete_dir_base)
+
+    def _assert_successful_extraction(
+        self,
+        error_code,
+        extracted_files,
+        complete_contents,
+        download_contents,
+        temp_complete_dir,
+        expected_files,
+        should_delete_original=True,
+        original_files=None,
+    ):
+        """Helper method to assert common successful extraction conditions"""
+        # Check that extraction was successful
+        assert error_code == 0, "TAR extraction should succeed"
+        assert len(extracted_files) > 0, "Should have extracted files"
+        assert len(complete_contents) > 0, "Should have files in complete directory"
+
+        # Check file deletion behavior
+        if should_delete_original and original_files:
+            for original_file in original_files:
+                tar_still_exists = any(original_file in f for f in download_contents)
+                assert not tar_still_exists, f"Original TAR file {original_file} should be deleted after extraction"
+        elif not should_delete_original and original_files:
+            for original_file in original_files:
+                tar_still_exists = any(original_file in f for f in download_contents)
+                assert tar_still_exists, f"Original TAR file {original_file} should still exist when delete=False"
+
+        # Verify full paths, but since extracted_files also includes the in-between folders we use issubset
+        complete_contents_set = set(complete_contents)
+        extracted_files_set = set(extracted_files)
+        assert complete_contents_set.issubset(
+            extracted_files_set
+        ), f"{complete_contents_set} should be in {extracted_files_set}"
+
+        # Verify the expected files are present using full paths
+        expected_full_paths = {os.path.join(temp_complete_dir, filename) for filename in expected_files}
+        assert expected_full_paths.issubset(
+            extracted_files_set
+        ), f"{expected_full_paths} should be in {extracted_files_set}"
+
+    def test_basic_tar_unpack(self):
+        """Test basic TAR unpacking functionality"""
+        test_dir = "tests/data/test_tar"
+        tar_files = ["testfile.tar"]
+        expected_files = {"My_Test_Download.bin"}
+
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
+            self._run_tar_unpack(test_dir, tar_files)
+        )
+
+        self._assert_successful_extraction(
+            error_code,
+            extracted_files,
+            complete_contents,
+            download_contents,
+            temp_complete_dir,
+            expected_files,
+            should_delete_original=True,
+            original_files=tar_files,
+        )
+
+    def test_path_traversal_tar_unpack(self, tmp_path):
+        tar_path = tmp_path / "bad.tar"
+
+        # Create a tar containing a path traversal entry
+        with tarfile.open(tar_path, "w") as tar:
+            info = tarfile.TarInfo("../evil.txt")
+            info.size = 4
+            tar.addfile(info, io.BytesIO(b"evil"))
+
+        tar_files = ["bad.tar"]
+
+        error_code, extracted_files, _complete_contents, _download_contents, _nzo, _temp_complete_dir = (
+            self._run_tar_unpack(str(tmp_path), tar_files)
+        )
+
+        assert error_code == 1, "TAR extraction should fail"
+        assert not extracted_files
+
+    def test_owner_permissions_sanitized_tar_unpack(self, tmp_path):
+        tar_path = tmp_path / "owner.tar"
+
+        # Create a tar containing a file owned by root with read, write, and execute permissions for everyone
+        with tarfile.open(tar_path, "w") as tar:
+            info = tarfile.TarInfo("file.txt")
+            info.size = 4
+            info.uid = 0
+            info.gid = 0
+            info.uname = "root"
+            info.gname = "root"
+            info.mode = 0o777
+            tar.addfile(info, io.BytesIO(b"test"))
+
+        tar_files = ["owner.tar"]
+        expected_files = {"file.txt"}
+
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
+            self._run_tar_unpack(str(tmp_path), tar_files)
+        )
+
+        self._assert_successful_extraction(
+            error_code,
+            extracted_files,
+            complete_contents,
+            download_contents,
+            temp_complete_dir,
+            expected_files,
+            should_delete_original=True,
+            original_files=tar_files,
+        )
+
+    def test_one_folder_tar_unpack(self, tmp_path):
+        tar_path = tmp_path / "flatten.tar"
+
+        # Create a tar containing a file owned by root with read, write, and execute permissions for everyone
+        with tarfile.open(tar_path, "w") as tar:
+            for i in range(2):
+                info = tarfile.TarInfo(os.path.join(str(i), "file.txt"))
+                info.size = 4
+                tar.addfile(info, io.BytesIO(b"test"))
+
+        tar_files = ["flatten.tar"]
+        expected_files = {"file.txt", "file.1.txt"}
+
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
+            self._run_tar_unpack(str(tmp_path), tar_files, True)
+        )
+
+        self._assert_successful_extraction(
+            error_code,
+            extracted_files,
+            complete_contents,
+            download_contents,
+            temp_complete_dir,
+            expected_files,
+            should_delete_original=True,
+            original_files=tar_files,
+        )
+
+
+@pytest.mark.usefixtures("clean_cache_dir")
+class TestExternalProcessingEnv:
+    """Harness for the SAB_* environment variables passed to post-processing scripts.
+
+    external_processing() builds the environment (via create_env) and runs a user script.
+    These tests invoke a *real* receiving script that captures every SAB_* variable it sees
+    and echoes them back as JSON, so any SAB_* variable can be asserted on. The round-trip
+    proves the script decodes exactly the values SAB sent.
+
+    SAB_FILES gets extra attention because its value is itself a JSON list of the new files:
+    emojis, non-latin characters and characters that must be JSON-escaped (quotes,
+    backslashes, tabs, newlines, control chars) all have to survive the round-trip intact.
+    """
+
+    # Receiving script: capture every SAB_* variable and echo it back. SAB_FILES is the only
+    # variable SAB JSON-encodes, so it is the only one this script json-decodes; all other
+    # values are passed through as plain strings. The script deliberately has no shebang,
+    # so build_and_run_command() prepends the current interpreter (sys.executable) and it
+    # runs under the same Python as the test suite. The captured mapping is re-emitted as
+    # ASCII-safe JSON purely to ferry it back over stdout, independent of the console encoding.
+    RECEIVING_SCRIPT = (
+        "import os, json\n"
+        "env = {k: v for k, v in os.environ.items() if k.startswith('SAB_')}\n"
+        "if 'SAB_FILES' in env:\n"
+        "    env['SAB_FILES'] = json.loads(env['SAB_FILES'])\n"
+        "print(json.dumps(env))\n"
+    )
+
+    # Realistic defaults so every SAB_<field> derived from the NZO is a clean string unless
+    # a test overrides it. Keys mirror newsunpack.ENV_NZO_FIELDS.
+    NZO_DEFAULTS = {
+        "bytes": 1024,
+        "bytes_downloaded": 1024,
+        "bytes_tried": 1024,
+        "cat": "movies",
+        "correct_password": "",
+        "duplicate": False,
+        "duplicate_key": "",
+        "encrypted": 0,
+        "fail_msg": "",
+        "filename": "test.nzb",
+        "final_name": "Test Job",
+        "group": "alt.binaries.test",
+        "nzo_id": "SABnzbd_nzo_abc123",
+        "oversized": False,
+        "password": "",
+        "pp": 3,
+        "priority": 0,
+        "repair": True,
+        "script": "recv.py",
+        "status": "Completed",
+        "unpack": True,
+        "unwanted_ext": 0,
+        "url": "",
+    }
+
+    @staticmethod
+    def _write_receiving_script(directory: str) -> str:
+        """Write the receiving script and give it the execute bit post-proc scripts need."""
+        script_path = os.path.join(directory, "recv_sab_env.py")
+        with open(script_path, "w", encoding="utf-8") as script_file:
+            script_file.write(TestExternalProcessingEnv.RECEIVING_SCRIPT)
+        os.chmod(
+            script_path,
+            os.stat(script_path).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH,
+        )
+        return script_path
+
+    @classmethod
+    def _make_nzo(cls, admin_dir: str, overrides: dict):
+        """A mock NZO with clean string values for every field create_env reads."""
+        nzo = mock.Mock()
+        for field, value in {**cls.NZO_DEFAULTS, **overrides}.items():
+            setattr(nzo, field, value)
+        nzo.nzo_info = {}
+        nzo.admin_path = admin_dir
+        nzo.avg_bps_total = 0
+        nzo.avg_bps_freq = 0
+        nzo.avg_date = datetime.datetime(2026, 1, 1)
+        return nzo
+
+    def _run(self, filenames=None, status=0, nzo_overrides=None):
+        """Invoke external_processing with a real script.
+
+        Returns (sab_env, complete_dir, ret) where 'sab_env' is the dict of every SAB_*
+        variable exactly as the receiving script saw it.
+        """
+        base = long_path(os.path.join(SAB_CACHE_DIR, "sab_env"))
+        complete_dir = os.path.join(base, "complete")
+        admin_dir = os.path.join(base, JOB_ADMIN)
+        assert create_all_dirs(complete_dir), f"Failed to create {complete_dir}"
+        assert create_all_dirs(admin_dir), f"Failed to create {admin_dir}"
+
+        script_path = self._write_receiving_script(base)
+
+        # Full paths as external_processing receives them
+        newfiles = [os.path.join(complete_dir, name) for name in (filenames or [])]
+
+        nzo = self._make_nzo(admin_dir, nzo_overrides or {})
+        sabnzbd.PostProcessor = mock.Mock()
+        output, ret = newsunpack.external_processing(script_path, nzo, complete_dir, status, newfiles)
+
+        sab_env = json.loads(output)
+        return sab_env, clip_path(complete_dir), ret
+
+    def _run_files(self, filenames):
+        """SAB_FILES convenience wrapper: returns (decoded_files, expected, ret).
+
+        The receiving script already json-decodes SAB_FILES, so sab_env["SAB_FILES"] is the
+        list the script parsed out of the environment variable.
+        """
+        sab_env, complete_dir, ret = self._run(filenames=filenames)
+        decoded = sab_env["SAB_FILES"]
+        expected = sorted(os.path.relpath(os.path.join(complete_dir, name), complete_dir) for name in filenames)
+        return decoded, expected, ret
+
+    @pytest.mark.parametrize(
+        "filenames",
+        [
+            pytest.param(["movie.mkv", "sample.mkv", "readme.txt"], id="plain-ascii"),
+            pytest.param(
+                ['quote".mkv', "back\\slash.mkv", "tab\tchar.txt", "new\nline.txt", "control\x01.dat"],
+                id="json-escaped",
+            ),
+            pytest.param(["clip_🎬.mkv", "party_🎉🎉.mkv", "flag_🏴‍☠️.txt"], id="emoji"),
+            pytest.param(
+                ["naïve.txt", "Пример.mkv", "测试文件.mkv", "日本語のファイル.txt", "ملف.txt", "Ω_Δ.dat"],
+                id="non-latin",
+            ),
+            pytest.param(['Movie (2026) 🎬 — naïve 测试 "final".mkv'], id="mixed"),
+        ],
+    )
+    def test_sab_files_round_trip(self, filenames):
+        """The receiving script decodes SAB_FILES to exactly the filenames that went in."""
+        decoded, expected, ret = self._run_files(filenames)
+        assert ret == 0
+        assert decoded == expected
+
+    def test_sab_files_is_sorted(self):
+        """Unsorted input arrives at the script as a sorted list."""
+        decoded, expected, ret = self._run_files(["zebra.mkv", "apple.mkv", "Éclair.mkv", "mango.mkv"])
+        assert ret == 0
+        assert decoded == sorted(decoded)
+        assert decoded == expected
+
+    def test_sab_files_relative_paths(self):
+        """Files in subdirectories are made relative to the complete dir, no absolute leak."""
+        decoded, expected, ret = self._run_files([os.path.join("Season 1", "épisode 🎬.mkv"), "root.mkv"])
+        assert ret == 0
+        assert decoded == expected
+        assert all(not os.path.isabs(path) for path in decoded)
+
+    def test_sab_files_empty(self):
+        """No new files; SAB_FILES is an empty JSON list."""
+        decoded, expected, ret = self._run_files([])
+        assert ret == 0
+        assert decoded == []
+        assert expected == []
+
+    @pytest.mark.parametrize(
+        "field, value, env_var",
+        [
+            pytest.param("cat", "tv 📺", "SAB_CAT", id="cat-emoji"),
+            pytest.param("final_name", "Naïve.Show.测试.S01", "SAB_FINAL_NAME", id="final_name-non-latin"),
+            pytest.param("nzo_id", "SABnzbd_nzo_xyz789", "SAB_NZO_ID", id="nzo_id"),
+            pytest.param("group", 'alt."quoted".group', "SAB_GROUP", id="group-quotes"),
+        ],
+    )
+    def test_sab_nzo_field_round_trip(self, field, value, env_var):
+        """Any NZO-derived SAB_* variable arrives at the script unchanged."""
+        sab_env, _complete_dir, ret = self._run(nzo_overrides={field: value})
+        assert ret == 0
+        assert sab_env[env_var] == value
+
+    def test_sab_bool_field_is_normalised(self):
+        """Boolean NZO fields are passed as '1'/'0' (create_env's str(value * 1))."""
+        sab_env, _complete_dir, ret = self._run(nzo_overrides={"repair": True, "duplicate": False})
+        assert ret == 0
+        assert sab_env["SAB_REPAIR"] == "1"
+        assert sab_env["SAB_DUPLICATE"] == "0"
+
+    def test_sab_always_supplied_fields(self):
+        """The always-present SAB_* variables reflect the arguments and SAB globals."""
+        sab_env, complete_dir, ret = self._run(status=2)
+        assert ret == 0
+        assert sab_env["SAB_VERSION"] == sabnzbd.__version__
+        assert sab_env["SAB_COMPLETE_DIR"] == complete_dir
+        assert sab_env["SAB_PP_STATUS"] == "2"

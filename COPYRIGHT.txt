@@ -5,6 +5,7 @@ The SABnzbd-Team is:
 
 Active team:
     Safihre
+    mnightingale
     sanderjo
     jcfp
     inpheaux
@@ -17,21 +18,8 @@ Sleeping members:
 Honorary member (and original author):
     Gregor Kaufmann
 
-The main contributors and moderators of the translations:
-    Danish: Rene (nordjyden6), Scott
-    Dutch: ShyPike, Safihre
-    French: rAf, Fox Ace, Fred, Morback, Jih
-    German: Severin Heiniger, Tim Hartmann, DonPizza, Alex
-    Norwegian: Protx, mjelva, TomP, John
-    Romanian: nicusor
-    Serbian: Ozzii, Krišan Darko
-    Swedish: Malmis, Kim Joahnsson, Patrik-liind, Chris M
-    Spanish: Syquus, Adolfo Jayme
-    Portuguese (Brazil): lrrosa, diegosps
-    Russian: Pavel Maryanov
-    Polish: Tomasz 'Zen' Napierala
-    Chinese: XsLiDian
-    Finnish: Matti Ylönen
+The contributors and moderators of the translations are credited in the
+header of each translation file in the po/ directory.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -44,7 +32,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+along with this program; if not, see <https://www.gnu.org/licenses/>.
 
 See accompanying files GPL2.txt and GPL3.txt.

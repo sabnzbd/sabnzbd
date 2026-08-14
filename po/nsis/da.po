@@ -2,13 +2,13 @@
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2025
+# Safihre <safihre@sabnzbd.org>, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.1.0\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Danish (https://app.transifex.com/sabnzbd/teams/111101/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -42,6 +42,9 @@ msgid ""
 " only contains the regular version.\\nPress OK to continue or Cancel to "
 "exit."
 msgstr ""
+"En ARM-version af SABnzbd er tilgængelig på vores downloadside. Dette "
+"installationsprogram indeholder kun den almindelige version.\\nTryk på OK "
+"for at fortsætte eller Annuller for at afslutte."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Shutting down SABnzbd"

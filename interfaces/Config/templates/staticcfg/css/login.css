@@ -7,6 +7,8 @@
     --clr-text:       #000000;
     --clr-text-muted: #636363;
     --radius-lg:      8px;
+    --clr-toggle-active:   #f9ca33;
+    --clr-toggle-inactive: #aaaaaa;
 }
 
 body {
@@ -52,7 +54,6 @@ body {
     margin: 5px 0px;
 }
 
-
 .form-signin input {
     margin-top: 5px
 }
@@ -70,12 +71,43 @@ body {
     font-size: 1.2em;
 }
 
-input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    margin-top: 2px;
+/* Toggle switch — text on the left, switch on the right */
+label {
+    margin-top: 10px;
+    color: var(--clr-text-muted);
 }
 
-label {
-    color: var(--clr-text-muted);
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    top: 5px;
+    left: 5px;
+    width: 36px;
+    height: 20px;
+    background-color: var(--clr-toggle-inactive);
+    background-image:
+        radial-gradient(circle at 10px 10px, #ffffff 6.5px, rgba(255,255,255,0) 7px),
+        radial-gradient(circle at 11px 11px, rgba(0,0,0,0.30) 6.5px, transparent 9.5px);
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    background-position: 0px center;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, background-position 0.15s;
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--clr-toggle-active);
+    background-position: 16px center;
+    background-image:
+        radial-gradient(circle at 10px 10px, #ffffff 6.5px, rgba(255,255,255,0) 7px),
+        radial-gradient(circle at 10.5px 10.5px, rgba(0,0,0,0.30) 6.5px, transparent 9.5px);
+}
+
+input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--clr-toggle-active);
+    outline-offset: 2px;
+    border-radius: 10px;
 }

@@ -184,15 +184,15 @@ function HistoryListModel(parent) {
     // Clear searchterm
     self.clearSearchTerm = function(data, event) {
         // Was it escape key or click?
-        if(event.type === 'mousedown' || (event.keyCode && event.keyCode === 27)) {
+        if(event.type === 'click' || (event.keyCode && event.keyCode === 27)) {
             // Set the loader so it doesn't flicker and then switch
             self.isLoading(true)
             self.searchTerm('');
         }
         // Was it click and the field is empty? Then we focus on the field
-        if(event.type === 'mousedown' && self.searchTerm() === '') {
+        if(event.type === 'click' && self.searchTerm() === '') {
             $(event.target).parents('.search-box').find('input[type="text"]').focus()
-            return;
+            return false;
         }
         // Need to return true to allow typing
         return true;
@@ -638,11 +638,10 @@ function HistoryModel(parent, data) {
                 $(this).hide()
             } else {
                // Info in modal
-                $('#history-script-log .modal-body').load($(this).attr('href'), function(result) {
-                    // Set title and then remove it
-                    $('#history-script-log .modal-title').text($(this).find("h3").text())
-                    $(this).find("h3, title").remove()
-                    $('#history-script-log').modal('show');
+                $('#history-script-log .modal-body pre').load($(this).attr('href'), function(result) {
+                    var modal = $('#history-script-log');
+                    modal.find('.modal-title').text(self.historyStatus.name());
+                    modal.modal('show');
                 });
             }
             return false;

@@ -20,15 +20,18 @@ sabnzbd.database - Database Support
 """
 
 import os
+import tempfile
 import time
 import uuid
 import zlib
 import logging
+import queue
 import sys
 import threading
 import sqlite3
+from contextlib import contextmanager
 from sqlite3 import Connection, Cursor
-from typing import Optional, Sequence, Any
+from typing import Optional, Sequence, Any, Iterator
 
 import sabnzbd
 import sabnzbd.cfg
@@ -43,10 +46,12 @@ DB_LOCK = threading.Lock()
 
 
 class HistoryDB:
-    """Class to access the History database
-    Each class-instance will create an access channel that
-    can be used in one thread.
-    Each thread needs its own class-instance!
+    """Class to access the History database.
+    Each class-instance creates its own database connection.
+    Instances may move between threads (check_same_thread=False), but must
+    only ever be used by one thread at a time. Normal code should not create
+    instances directly but borrow one from sabnzbd.db_pool, which guarantees
+    exclusive use through checkout.
     """
 
     # These class attributes will be accessed directly because
@@ -67,10 +72,33 @@ class HistoryDB:
             HistoryDB.db_path = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DB_HISTORY_NAME)
         create_table = not HistoryDB.startup_done and not os.path.exists(HistoryDB.db_path)
 
-        self.connection = sqlite3.connect(HistoryDB.db_path)
+        # Remember which file this connection was opened against, so the pool
+        # can discard it when the database path changes
+        self.db_path_at_connect = HistoryDB.db_path
+
+        # check_same_thread=False so pooled connections can move between threads;
+        # exclusive use is guaranteed by HistoryDBPool checkout
+        self.connection = sqlite3.connect(HistoryDB.db_path, check_same_thread=False)
         self.connection.isolation_level = None  # autocommit attribute only introduced in Python 3.12
         self.connection.row_factory = sqlite3.Row
         self.cursor = self.connection.cursor()
+
+        try:
+            # Multiple readers can work simultaneously with one writer
+            self.cursor.execute("PRAGMA journal_mode = WAL")
+            # Sync to disk at critical moments, not every write
+            self.cursor.execute("PRAGMA synchronous = NORMAL")
+            # Wait for lock instead of failing at once
+            self.cursor.execute("PRAGMA busy_timeout = 5000")
+            # Keep up to ~4MiB in memory per connection
+            self.cursor.execute("PRAGMA cache_size = -4000")
+            # Stores temporary tables, indexes, and sorting operations in RAM
+            self.cursor.execute("PRAGMA temp_store = MEMORY")
+            # Reduce disk access
+            self.cursor.execute("PRAGMA mmap_size = 16777216")
+        except Exception:
+            # Can fail on a readonly database; writes will report the error later
+            logging.debug("Failed to set database pragmas", exc_info=True)
 
         # Perform initialization only once
         if not HistoryDB.startup_done:
@@ -153,7 +181,9 @@ class HistoryDB:
 
     def execute(self, command: str, args: Sequence = (), raise_on_error: bool = False) -> bool:
         """Wrapper for executing SQL commands"""
-        for tries in (4, 3, 2, 1, 0):
+        # Lock contention is normally handled by SQLite itself through the
+        # busy_timeout pragma; a single retry remains as a safety net
+        for tries in (1, 0):
             try:
                 self.cursor.execute(command, args)
                 return True
@@ -179,6 +209,10 @@ class HistoryDB:
                         pass
                     HistoryDB.startup_done = False
                     self.connect()
+                    # Sibling pooled connections hold handles to the deleted file;
+                    # mark them stale so they are discarded instead of reused
+                    if sabnzbd.db_pool:
+                        sabnzbd.db_pool.invalidate(reconnected=self)
                     if raise_on_error:
                         raise sqlite3.DatabaseError(error)
                     # Return False in case of "duplicate column" error
@@ -443,6 +477,20 @@ class HistoryDB:
 
         return items, total_items
 
+    def get_retryable_jobs(self) -> list[dict[str, Any]]:
+        """Return the nzo_id and path of all history items that can be retried,
+        failed jobs whose incomplete folder still exists and failed URL-fetches
+        """
+        jobs = []
+        if self.execute(
+            "SELECT nzo_id, path, report FROM history WHERE archive IS NULL AND (status = ? OR report = 'future')",
+            (Status.FAILED,),
+        ):
+            for item in self.cursor:
+                if item["report"] == "future" or (item["path"] and os.path.exists(item["path"])):
+                    jobs.append({"nzo_id": item["nzo_id"], "path": item["path"]})
+        return jobs
+
     def have_duplicate_key(self, duplicate_key: str) -> bool:
         """Check whether History contains this duplicate key"""
         if self.execute(
@@ -552,6 +600,142 @@ class HistoryDB:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """For context manager support, ignore any exception"""
         self.close()
+
+
+class HistoryDBPool:
+    """Bounded LIFO pool of HistoryDB connections, available as sabnzbd.db_pool.
+
+    Thread-safety comes from exclusive checkout: a connection is only ever used
+    by one borrower at a time. LIFO keeps hot connections hot, and since SQLite
+    serializes writers anyway a handful of connections is plenty. When the pool
+    is exhausted, checkout waits briefly and then falls back to a temporary
+    overflow connection (closed on check-in) so requests degrade instead of
+    deadlocking. Connections are created lazily, so the pool can be constructed
+    before the configuration (database path) is known.
+    """
+
+    def __init__(self, max_connections: int = 5, checkout_timeout: float = 10.0):
+        self.max_connections = max_connections
+        self.checkout_timeout = checkout_timeout
+        self._idle: queue.LifoQueue = queue.LifoQueue()
+        self._lock = threading.Lock()
+        self._created = 0
+        self._generation = 0
+        self._closed = False
+
+    @contextmanager
+    def connection(self) -> Iterator[HistoryDB]:
+        """Borrow a connection for exclusive use: with sabnzbd.db_pool.connection() as history_db"""
+        db, pooled = self._checkout()
+        try:
+            yield db
+        finally:
+            self._checkin(db, pooled)
+
+    def _new_connection(self) -> HistoryDB:
+        db = HistoryDB()
+        db.pool_generation = self._generation
+        return db
+
+    def _is_stale(self, db: HistoryDB) -> bool:
+        """Stale connections predate invalidate(), or hold handles to a
+        replaced database file or a since-changed database path"""
+        return getattr(db, "pool_generation", -1) != self._generation or db.db_path_at_connect != HistoryDB.db_path
+
+    def _discard(self, db: HistoryDB):
+        db.close()
+        with self._lock:
+            self._created -= 1
+
+    def _checkout(self) -> tuple[HistoryDB, bool]:
+        if self._closed:
+            # Shutting down: serve a temporary connection so late requests still work
+            return HistoryDB(), False
+
+        deadline = time.time() + self.checkout_timeout
+        while True:
+            # Prefer an idle pooled connection
+            try:
+                db = self._idle.get_nowait()
+            except queue.Empty:
+                db = None
+            if db is not None:
+                if self._is_stale(db):
+                    self._discard(db)
+                    continue
+                return db, True
+
+            # Nothing idle: create a new one if the pool is not full yet.
+            # Connect outside the pool lock: connecting can trigger schema
+            # migration or corruption recovery, which calls invalidate()
+            with self._lock:
+                create = self._created < self.max_connections
+                if create:
+                    self._created += 1
+            if create:
+                try:
+                    return self._new_connection(), True
+                except Exception:
+                    with self._lock:
+                        self._created -= 1
+                    raise
+
+            # Pool full: wait for a connection to be returned
+            timeout = deadline - time.time()
+            if timeout <= 0:
+                logging.debug("HistoryDB pool exhausted, using overflow connection")
+                return HistoryDB(), False
+            try:
+                db = self._idle.get(timeout=timeout)
+            except queue.Empty:
+                continue
+            if self._is_stale(db):
+                self._discard(db)
+                continue
+            return db, True
+
+    def _checkin(self, db: HistoryDB, pooled: bool):
+        if not pooled:
+            # Overflow connection, never pooled
+            db.close()
+        elif self._closed or self._is_stale(db):
+            self._discard(db)
+        else:
+            self._idle.put(db)
+
+    def invalidate(self, reconnected: Optional[HistoryDB] = None):
+        """Discard all pooled connections, e.g. after the database file was
+        replaced due to corruption. Connections currently checked out are
+        discarded on check-in. The connection that triggered the replacement
+        has already reconnected and stays valid."""
+        with self._lock:
+            self._generation += 1
+            generation = self._generation
+        if reconnected is not None:
+            reconnected.pool_generation = generation
+        # Drain the stale idle connections
+        while True:
+            try:
+                db = self._idle.get_nowait()
+            except queue.Empty:
+                break
+            if self._is_stale(db):
+                self._discard(db)
+            else:
+                self._idle.put(db)
+                break
+
+    def close(self):
+        """Close all idle connections; called at shutdown. Connections still
+        checked out are closed on check-in, later checkouts get temporary
+        overflow connections."""
+        self._closed = True
+        while True:
+            try:
+                db = self._idle.get_nowait()
+            except queue.Empty:
+                break
+            self._discard(db)
 
 
 def convert_search(search: Optional[str]) -> str:
@@ -697,5 +881,35 @@ def unpack_history_info(item: sqlite3.Row) -> dict[str, Any]:
 
 
 def scheduled_history_purge():
-    with HistoryDB() as history_db:
+    with sabnzbd.db_pool.connection() as history_db:
         history_db.auto_history_purge()
+
+
+def history_db_snapshot() -> Optional[bytes]:
+    """Return a consistent snapshot of the history database as bytes, for backups.
+
+    Under WAL the main database file alone misses any transactions that have not
+    been checkpointed yet, so a raw file copy would silently lose recent history
+    (and could even be inconsistent when copied mid-checkpoint). SQLite's online
+    backup API produces a consistent, checkpointed, single-file copy that is safe
+    to take while other connections are reading or writing.
+    """
+    snapshot_fd, snapshot_path = tempfile.mkstemp(suffix=".db")
+    os.close(snapshot_fd)
+    try:
+        with sabnzbd.db_pool.connection() as history_db:
+            snapshot_connection = sqlite3.connect(snapshot_path)
+            try:
+                history_db.connection.backup(snapshot_connection)
+            finally:
+                snapshot_connection.close()
+        with open(snapshot_path, "rb") as snapshot_data:
+            return snapshot_data.read()
+    except Exception:
+        logging.info("Failed to snapshot history database: ", exc_info=True)
+        return None
+    finally:
+        try:
+            remove_file(snapshot_path)
+        except Exception:
+            pass

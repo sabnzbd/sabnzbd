@@ -22,9 +22,9 @@ CONFIG_VERSION = 19
 
 QUEUE_VERSION = 10
 POSTPROC_QUEUE_VERSION = 3
+ONDISK_VERSION = 1
 
 REC_RAR_VERSION = 550
-RAR_MAX_PASSWORD = 127  #: Max number of utf-16 chars in passwords.
 
 ANFO = namedtuple("ANFO", "article_sum cache_size cache_limit")
 
@@ -48,11 +48,12 @@ FUTURE_Q_FOLDER = "future"
 JOB_ADMIN = "__ADMIN__"
 VERIFIED_FILE = "__verified__"
 RENAMES_FILE = "__renames__"
+ONDISK_FILE = "__ondisk__"
 ATTRIB_FILE = "SABnzbd_attrib"
 NZO_FILE = "SABnzbd_nzo_data"
 REPAIR_REQUEST = "repair-all.sab"
 
-SABCTOOLS_VERSION_REQUIRED = "9.4.0"
+SABCTOOLS_VERSION_REQUIRED = "9.6.3"
 
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = "history%s.db" % DB_HISTORY_VERSION
@@ -74,7 +75,7 @@ DEF_PORT = 8080
 DEF_WORKDIR = "sabnzbd"
 DEF_LOG_FILE = "sabnzbd.log"
 DEF_LOG_ERRFILE = "sabnzbd.error.log"
-DEF_LOG_CHERRY = "cherrypy.log"
+DEF_LOG_ACCESSFILE = "access.log"
 DEF_ARTICLE_CACHE_DEFAULT = "500M"
 DEF_ARTICLE_CACHE_MAX = "1G"
 DEF_DOWNLOAD_FREE = DEF_ARTICLE_CACHE_DEFAULT  # So we have at least space for the cache
@@ -113,6 +114,8 @@ NTTP_MAX_BUFFER_SIZE = int(10 * MEBI)
 DEF_PIPELINING_REQUESTS = 2
 # Article cache capacity factor to force a non-contiguous flush to disk
 ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE = 0.9
+# Memory left to the rest of the system when capping the article cache
+ARTICLE_CACHE_RESERVED_MEMORY = int(512 * MEBI)
 
 REPAIR_PRIORITY = 3
 FORCE_PRIORITY = 2

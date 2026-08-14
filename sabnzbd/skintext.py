@@ -110,6 +110,7 @@ SKIN_TEXT = {
     "or": TT("or"),
     "host": TT("Host"),
     "cancel": TT("Cancel"),
+    "close": TT("Close"),
     "login": TT("Log in"),
     "logout": TT("Log out"),
     "rememberme": TT("Remember me"),
@@ -274,7 +275,6 @@ SKIN_TEXT = {
     "opt-port": TT("SABnzbd Port"),
     "explain-port": TT("Port SABnzbd should listen on."),
     "opt-web_dir": TT("Web Interface Theme"),
-    "explain-web_dir": TT("Choose a theme."),
     "opt-web_username": TT("SABnzbd Username"),
     "explain-web_username": TT("Optional authentication username."),
     "opt-web_password": TT("SABnzbd Password"),
@@ -470,7 +470,9 @@ SKIN_TEXT = {
     "explain-auto_disconnect": TT("Disconnect from Usenet server(s) when queue is empty or paused."),
     "opt-auto_sort": TT("Automatically sort queue"),
     "explain-auto_sort": TT("Automatically sort jobs in the queue when a new job is added."),
-    "explain-auto_sort_remaining": TT("The queue will resort every 30 seconds if % downloaded is selected."),
+    "explain-auto_sort_remaining": TT(
+        "The queue will resort every 30 seconds if % downloaded or Remaining Size is selected."
+    ),
     "opt-direct_unpack": TT("Direct Unpack"),
     "explain-direct_unpack": TT(
         "Jobs will start unpacking during the downloading to reduce post-processing time. Only works for jobs that do not need repair."
@@ -626,6 +628,7 @@ SKIN_TEXT = {
     "rss-atmost": TT("At most"),  #: Config->RSS filter-type selection menu
     "rss-from": TT("From SxxEyy"),  #: Config->RSS filter-type selection menu "From Season/Episode"
     "rss-from-show": TT("From Show SxxEyy"),  #: Config->RSS filter-type selection menu "From Show Season/Episode"
+    "rss-age": TT("Age"),  #: Config->RSS filter-type selection menu (e.g. ">3d", "<12h")
     "rss-matched": TT("Matched"),  #: Config->RSS section header
     "rss-notMatched": TT("Not Matched"),  #: Config->RSS section header
     "rss-done": TT("Downloaded"),  #: Config->RSS section header
@@ -820,11 +823,15 @@ SKIN_TEXT = {
     "Glitter-unpause6h": TT("Unpause for 6 hours"),
     "Glitter-setMaxLinespeed": TT("You must set a maximum bandwidth before you can set a bandwidth limit"),
     "Glitter-left": TT("left"),
+    "Glitter-toggleNavigation": TT("Toggle SABnzbd navigation menu"),
+    "Glitter-mainMenu": TT("Open SABnzbd main menu"),
     "Glitter-free": TT("Free Space"),
     "Glitter-freeTemp": TT("Temp Folder"),
     "Glitter-search": TT("Search"),
+    "Glitter-clearSearch": TT("Clear search"),
     "Glitter-multiOperations": TT("Multi-Operations"),
     "Glitter-multiSelect": TT("Hold shift key to select a range"),
+    "Glitter-selectJob": TT("Select job"),
     "Glitter-checkAll": TT("Check all"),
     "Glitter-restartSab": TT("Restart SABnzbd"),
     "Glitter-onFinish": TT("On queue finish"),
@@ -847,6 +854,9 @@ SKIN_TEXT = {
     "Glitter-dateFormat": TT("Date format"),
     "Glitter-showExtraQueueColumn": TT("Extra queue columns"),
     "Glitter-showExtraHistoryColumn": TT("Extra history columns"),
+    "Glitter-progress": TT("Progress"),
+    "Glitter-actions": TT("Actions"),
+    "Glitter-result": TT("Result"),
     "Glitter-page": TT("page"),
     "Glitter-loading": TT("Loading"),
     "Glitter-articles": TT("articles"),
@@ -903,6 +913,7 @@ SKIN_TEXT = {
         "All usernames, passwords and API-keys are automatically removed from the log and the included copy of your settings."
     ),
     "Glitter-sortRemaining": TT("Sort by % downloaded <small>Most&rarr;Least</small>"),
+    "Glitter-sortRemainingBytesAsc": TT("Sort by Remaining Size <small>Smallest&rarr;Largest</small>"),
     "Glitter-sortAgeAsc": TT("Sort by Age <small>Oldest&rarr;Newest</small>"),
     "Glitter-sortAgeDesc": TT("Sort by Age <small>Newest&rarr;Oldest</small>"),
     "Glitter-sortNameAsc": TT("Sort by Name <small>A&rarr;Z</small>"),

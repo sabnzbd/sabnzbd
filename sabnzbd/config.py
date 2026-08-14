@@ -41,6 +41,7 @@ from sabnzbd.constants import (
     DEFAULT_PRIORITY,
     CONFIG_BACKUP_FILES,
     CONFIG_BACKUP_HTTPS,
+    DB_HISTORY_NAME,
     DEF_INI_FILE,
     DEF_SORTER_RENAME_SIZE,
     DEF_PIPELINING_REQUESTS,
@@ -48,16 +49,6 @@ from sabnzbd.constants import (
 )
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
-
-CONFIG_LOCK = threading.RLock()
-
-
-CFG_OBJ: configobj.ConfigObj  # Holds INI structure
-# during re-write this variable is global
-# to allow direct access to INI structure
-
-CFG_MODIFIED = False  # Signals a change in option dictionary
-# Should be reset after saving to settings file
 
 RE_PARAMFINDER = re.compile(r"""'.*?'|".*?"|[^'",\s][^,]*""")
 
@@ -119,14 +110,17 @@ class Option:
             except KeyError:
                 pass
 
+    def get_from_dict(self, values: dict[str, Any], kw: str) -> Any:
+        """Extract this option's value from a dict by key, raising KeyError if absent"""
+        return values[kw]
+
     def set(self, value: Any):
         """Set new value, no validation"""
-        global CFG_MODIFIED
         if value is not None:
             # Use get() to make sure we use default if nothing was set yet
             if isinstance(value, list) or isinstance(value, dict) or value != self.get():
                 self.__value = value
-                CFG_MODIFIED = True
+                CONFIG.modified = True
                 if self.__callback:
                     self.__callback()
 
@@ -145,6 +139,10 @@ class Option:
     def callback(self, callback: Callable):
         """Set callback function"""
         self.__callback = callback
+
+    def __call__(self) -> Any:
+        """get() replacement"""
+        return self.get()
 
 
 class OptionNumber(Option):
@@ -337,6 +335,14 @@ class OptionList(Option):
                 super().set(value)
         return error
 
+    def get_from_dict(self, values: dict[str, Any], kw: str) -> Any:
+        """Extract list value using getlist() for MultiDict sources, falling back to plain key access"""
+        if hasattr(values, "getlist"):
+            if lst := values.getlist(kw):
+                return lst
+            raise KeyError(kw)
+        return values[kw]
+
     def get_string(self) -> str:
         """Return the list as a comma-separated string"""
         return ", ".join(self.get())
@@ -397,14 +403,17 @@ class OptionPassword(Option):
     """Password class."""
 
     def __init__(self, section: str, keyword: str, default_val: str = "", add: bool = True):
-        self.get_string = self.get_stars
         super().__init__(section, keyword, default_val, add=add)
 
     def get(self) -> Optional[str]:
         """Return decoded password"""
         return decode_password(super().get(), self.keyword)
 
-    def get_stars(self) -> Optional[str]:
+    def get_string(self) -> str:
+        """Passwords are shown masked"""
+        return self.get_stars()
+
+    def get_stars(self) -> str:
         """Return non-descript asterisk string"""
         if self.get():
             return "*" * 10
@@ -490,8 +499,8 @@ class ConfigServer:
             "notes",
         ):
             try:
-                value = values[kw]
-                getattr(self, kw).set(value)
+                attr = getattr(self, kw)
+                attr.set(attr.get_from_dict(values, kw))
             except KeyError:
                 continue
         if not self.displayname():
@@ -556,8 +565,8 @@ class ConfigCat:
         """Set one or more fields, passed as dictionary"""
         for kw in ("order", "pp", "script", "dir", "newzbin", "priority"):
             try:
-                value = values[kw]
-                getattr(self, kw).set(value)
+                attr = getattr(self, kw)
+                attr.set(attr.get_from_dict(values, kw))
             except KeyError:
                 continue
 
@@ -600,8 +609,8 @@ class ConfigSorter:
         """Set one or more fields, passed as dictionary"""
         for kw in ("order", "min_size", "multipart_label", "sort_string", "sort_cats", "sort_type", "is_active"):
             try:
-                value = values[kw]
-                getattr(self, kw).set(value)
+                attr = getattr(self, kw)
+                attr.set(attr.get_from_dict(values, kw))
             except KeyError:
                 continue
 
@@ -712,8 +721,8 @@ class ConfigRSS:
         """Set one or more fields, passed as dictionary"""
         for kw in ("uri", "cat", "pp", "script", "priority", "enable"):
             try:
-                value = values[kw]
-                getattr(self, kw).set(value)
+                attr = getattr(self, kw)
+                attr.set(attr.get_from_dict(values, kw))
             except KeyError:
                 continue
         self.filters.set_dict(values)
@@ -751,369 +760,515 @@ class ConfigRSS:
 
 # Add typing to the options database-dict
 AllConfigTypes: TypeAlias = Option | ConfigCat | ConfigSorter | ConfigRSS | ConfigServer
-CFG_DATABASE: dict[str, dict[str, AllConfigTypes]] = {}
 
 
-@synchronized(CONFIG_LOCK)
+class SABnzbdConfig(configobj.ConfigObj):
+    """The parsed INI structure (this object) plus SABnzbd's option database and dirty flag.
+
+    Subclassing ConfigObj means the object *is* the INI structure, so it can be accessed
+    directly (CONFIG["misc"], CONFIG.filename, CONFIG.write()). The extra state and the
+    config-management behaviour that operates on it live here as methods. A single instance
+    is held in the module-global CONFIG; tests get a clean slate by replacing that instance.
+    """
+
+    # INI sections that hold multiple named sub-sections, each backed by a Config* class.
+    # Single source of truth for the "special" sections handled differently from flat options.
+    SPECIAL_SECTIONS: dict[str, type] = {
+        "categories": ConfigCat,
+        "rss": ConfigRSS,
+        "servers": ConfigServer,
+        "sorters": ConfigSorter,
+    }
+
+    def __init__(self, *args, **kwargs):
+        # SABnzbd always reads and writes the INI as UTF-8
+        kwargs.setdefault("encoding", "utf-8")
+        kwargs.setdefault("default_encoding", "utf-8")
+        super().__init__(*args, **kwargs)
+        # Single lock guarding all config access. The @synchronized() methods below
+        # lock on it; the module-level wrapper functions stay lock-free.
+        self.lock = threading.RLock()
+        # Holds all the Option/Config* objects, keyed by section and keyword
+        self.database: dict[str, dict[str, AllConfigTypes]] = {}
+        # Signals a change in the option database, reset after saving to the settings file
+        self.modified: bool = False
+
+    @synchronized()
+    def add_to_database(self, section: str, keyword: str, obj: AllConfigTypes):
+        """add object as section/keyword to INI database"""
+        if section not in self.database:
+            self.database[section] = {}
+        self.database[section][keyword] = obj
+
+    @synchronized()
+    def delete_from_database(self, section: str, keyword: str):
+        """Remove section/keyword from INI database"""
+        del self.database[section][keyword]
+        try:
+            del self[section][keyword]
+        except KeyError:
+            pass
+        self.modified = True
+
+    @synchronized()
+    def read_config(self, path: str, try_backup: bool = False) -> tuple[bool, str]:
+        """Read the complete INI file and check its version number.
+        If OK, re-parse it into this object in place (keeping the registered
+        option database) and pass the values to the config-database.
+        """
+        if try_backup or not os.path.exists(path):
+            # Not found, try backup
+            try:
+                shutil.copyfile(path + ".bak", path)
+                try_backup = True
+            except IOError:
+                pass
+
+        if not os.path.exists(path):
+            # No file found, create default INI file
+            try:
+                if not sabnzbd.WINDOWS:
+                    prev = os.umask(0o77)
+                with open(path, "w") as fp:
+                    fp.write("__version__=%s\n[misc]\n[logging]\n" % CONFIG_VERSION)
+                if not sabnzbd.WINDOWS:
+                    os.umask(prev)
+            except IOError:
+                return False, "Cannot create INI file %s" % path
+
+        # Validate the file parses before touching our own state, so a corrupt file
+        # leaves the current config (and filename) intact instead of being destroyed
+        # by reload() clearing us first.
+        try:
+            configobj.ConfigObj(infile=path, default_encoding="utf-8", encoding="utf-8")
+        except (IOError, configobj.ConfigObjError, UnicodeEncodeError) as strerror:
+            if try_backup:
+                # No luck!
+                return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
+            else:
+                # Try backup file
+                return self.read_config(path, True)
+
+        # The file parses, so re-parse it into this object in place, keeping our
+        # database/lock/modified state (reload() only touches the INI structure)
+        self.filename = path
+        self.reload()
+
+        try:
+            version = sabnzbd.misc.int_conv(self["__version__"])
+            if version > int(CONFIG_VERSION):
+                return False, "Incorrect version number %s in %s" % (version, path)
+        except (KeyError, ValueError):
+            pass
+
+        self["__encoding__"] = "utf-8"
+        self["__version__"] = str(CONFIG_VERSION)
+
+        # Use CFG data to set values for all static options
+        for section in self.database:
+            if section not in self.SPECIAL_SECTIONS:
+                for option in self.database[section]:
+                    config_option = self.database[section][option]
+                    try:
+                        config_option.set(self[config_option.section][config_option.keyword])
+                    except KeyError:
+                        pass
+
+        # Rebuild the special sections from scratch, each backed by its own Config* class.
+        # Clearing first drops entries from a previous read (e.g. restoring a backup) so
+        # they don't linger in the database and get written back.
+        for special_section, section_class in self.SPECIAL_SECTIONS.items():
+            if special_section in self.database:
+                self.database[special_section].clear()
+            if special_section in self:
+                for name in self[special_section]:
+                    section_class(name, self[special_section][name])
+
+        self.modified = False
+        return True, ""
+
+    @synchronized()
+    def save_config(self, force: bool = False) -> bool:
+        """Update Setup file with current option values"""
+        if not (self.modified or force):
+            return True
+
+        if not self.filename:
+            # Nothing has been read yet, so there is no INI file to write to
+            logging.error("Cannot save settings, no INI file has been read yet")
+            return False
+
+        if sabnzbd.cfg.configlock():
+            logging.warning(T("Configuration locked, cannot save settings"))
+            return False
+
+        for section in self.database:
+            if section in self.SPECIAL_SECTIONS:
+                if section not in self:
+                    self[section] = {}
+
+                for subsection in self.database[section]:
+                    if subsection not in self[section]:
+                        self[section][subsection] = {}
+                    self[section][subsection] = self.database[section][subsection].get_dict()
+            else:
+                for option in self.database[section]:
+                    config_option = self.database[section][option]
+                    if config_option.section not in self:
+                        self[config_option.section] = {}
+                    self[config_option.section][config_option.keyword] = self.database[section][option]()
+
+        res = False
+        filename = self.filename
+        bakname = filename + ".bak"
+
+        # Check if file is writable
+        if not is_writable(filename):
+            logging.error(T("Cannot write to INI file %s"), filename)
+            return res
+
+        # copy current file to backup
+        try:
+            shutil.copyfile(filename, bakname)
+            shutil.copymode(filename, bakname)
+        except Exception:
+            # Something wrong with the backup,
+            logging.error(T("Cannot create backup file for %s"), bakname)
+            logging.info("Traceback: ", exc_info=True)
+            return res
+
+        # Write new config file
+        try:
+            logging.info("Writing settings to INI file %s", filename)
+            self.write()
+            shutil.copymode(bakname, filename)
+            self.modified = False
+            res = True
+        except Exception:
+            logging.error(T("Cannot write to INI file %s"), filename)
+            logging.info("Traceback: ", exc_info=True)
+            try:
+                remove_file(filename)
+            except Exception:
+                pass
+            # Restore INI file from backup
+            renamer(bakname, filename)
+
+        return res
+
+    def create_config_backup(self) -> str | bool:
+        """Put config data in a zip file, returns path on success"""
+        admin_path = sabnzbd.cfg.admin_dir.get_path()
+        output_filename = "sabnzbd_backup_%s_%s.zip" % (sabnzbd.__version__, time.strftime("%Y.%m.%d_%H.%M.%S"))
+
+        # Check if there is a backup folder set, use complete otherwise
+        if sabnzbd.cfg.backup_dir():
+            backup_dir = sabnzbd.cfg.backup_dir.get_path()
+        else:
+            backup_dir = sabnzbd.cfg.complete_dir.get_path()
+        complete_path = os.path.join(backup_dir, output_filename)
+        logging.debug("Backing up %s + %s in %s", admin_path, self.filename, complete_path)
+
+        try:
+            with open(complete_path, "wb") as zip_buffer:
+                with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_ref:
+                    for filename in CONFIG_BACKUP_FILES:
+                        full_path = os.path.join(admin_path, filename)
+                        if not os.path.isfile(full_path):
+                            continue
+                        # A raw copy of the live database file misses un-checkpointed WAL
+                        # transactions and can be inconsistent while SABnzbd runs, so take
+                        # a snapshot through SQLite's online backup instead. Fall back to
+                        # a plain file copy if the snapshot fails.
+                        if filename == DB_HISTORY_NAME and (snapshot := sabnzbd.database.history_db_snapshot()):
+                            zip_ref.writestr(filename, snapshot)
+                        else:
+                            with open(full_path, "rb") as data:
+                                zip_ref.writestr(filename, data.read())
+                    for filename, setting in CONFIG_BACKUP_HTTPS.items():
+                        full_path = getattr(sabnzbd.cfg, setting).get_path()
+                        # Only accept HTTPS config files that were successfully loaded by cherrypy on
+                        # startup to protect against last-minute breaking config changes as well as
+                        # inclusion of unrelated files in the backup through manipulated settings.
+                        if full_path and os.path.isfile(full_path) and full_path in sabnzbd.CONFIG_BACKUP_HTTPS_OK:
+                            logging.debug("Adding %s file %s to backup", setting, full_path)
+                            with open(full_path, "rb") as data:
+                                # Add the https cert/key/chain files with a fixed relative filename,
+                                # regardless of where they are actually stored on the filesystem
+                                zip_ref.writestr(filename, data.read())
+                    with open(self.filename, "rb") as data:
+                        zip_ref.writestr(DEF_INI_FILE, data.read())
+            return clip_path(complete_path)
+        except Exception:
+            logging.info("Failed to create backup: ", exc_info=True)
+            return False
+
+    @staticmethod
+    def validate_config_backup(config_backup_data: bytes) -> bool:
+        """Check that the zip file contains a sabnzbd.ini"""
+        try:
+            with io.BytesIO(config_backup_data) as backup_ref:
+                with zipfile.ZipFile(backup_ref, "r") as zip_ref:
+                    # Will throw KeyError if not present
+                    zip_ref.getinfo(DEF_INI_FILE)
+                    return True
+        except Exception:
+            return False
+
+    @synchronized()
+    def restore_config_backup(self, config_backup_data: bytes):
+        """Restore configuration files from zip file"""
+        try:
+            with io.BytesIO(config_backup_data) as backup_ref:
+                with zipfile.ZipFile(backup_ref, "r") as zip_ref:
+                    # Write config file first and read it
+                    logging.debug("Writing backup of config-file to %s", self.filename)
+                    with open(self.filename, "wb") as destination_ref:
+                        destination_ref.write(zip_ref.read(DEF_INI_FILE))
+                    logging.debug("Loading settings from backup config-file")
+                    loaded, error = self.read_config(self.filename)
+                    if not loaded:
+                        # A corrupt backup left the current config intact; don't persist over it
+                        logging.warning(T("Could not restore backup"))
+                        logging.info("Restoring backup failed: %s", error)
+                        return
+
+                    # Write the rest of the admin files that we want to recover
+                    adminpath = sabnzbd.cfg.admin_dir.get_path()
+                    for filename in chain(CONFIG_BACKUP_FILES, CONFIG_RESTORE_FILES, CONFIG_BACKUP_HTTPS.keys()):
+                        try:
+                            zip_ref.getinfo(filename)
+                            destination_file = os.path.join(adminpath, filename)
+                            logging.debug("Writing backup of %s to %s", filename, destination_file)
+                            with open(destination_file, "wb") as destination_ref:
+                                destination_ref.write(zip_ref.read(filename))
+                            if filename == DB_HISTORY_NAME:
+                                # Remove any stale WAL sidecar files left by the replaced
+                                # database, so SQLite cannot try to recover the restored
+                                # database with the old write-ahead log
+                                for sidecar in (destination_file + "-wal", destination_file + "-shm"):
+                                    if os.path.isfile(sidecar):
+                                        logging.debug("Removing stale database sidecar %s", sidecar)
+                                        remove_file(sidecar)
+                            # For HTTPS config files, point the associated setting to the restored file
+                            if setting := CONFIG_BACKUP_HTTPS.get(filename):
+                                logging.debug("Setting value of %s to restored file %s", setting, filename)
+                                getattr(sabnzbd.cfg, setting).set(filename)
+                                self.modified = True
+                        except KeyError:
+                            # File not in archive
+                            pass
+                    self.save_config()
+        except Exception:
+            logging.warning(T("Could not restore backup"))
+            logging.info("Traceback: ", exc_info=True)
+
+    @synchronized()
+    def get_dconfig(self, section: str, keyword: Optional[str], nested: bool = False) -> dict:
+        """Return a config values dictionary,
+        Single item or slices based on 'section', 'keyword'
+        """
+        data = {}
+        if not section:
+            for section in self.database.keys():
+                conf = self.get_dconfig(section, None, True)
+                data.update(conf)
+
+        elif not keyword:
+            try:
+                sect = self.database[section]
+            except KeyError:
+                return {}
+
+            if section == "categories":
+                data[section] = get_ordered_categories()
+            elif section == "sorters":
+                data[section] = get_ordered_sorters()
+            elif section in self.SPECIAL_SECTIONS.keys() - {"categories", "sorters"}:
+                # The remaining special sections (servers, rss) serialize as a list
+                data[section] = []
+                for keyword in sect.keys():
+                    conf = self.get_dconfig(section, keyword, True)
+                    data[section].append(conf)
+            else:
+                data[section] = {}
+                for keyword in sect.keys():
+                    conf = self.get_dconfig(section, keyword, True)
+                    data[section].update(conf)
+
+        else:
+            try:
+                item = self.database[section][keyword]
+            except KeyError:
+                return {}
+            data = item.get_dict(for_public_api=True)
+            if not nested:
+                if section in self.SPECIAL_SECTIONS:
+                    data = {section: [data]}
+                else:
+                    data = {section: data}
+
+        return data
+
+    @synchronized()
+    def get_config(self, section: str, keyword: str) -> Optional[AllConfigTypes]:
+        """Return a config object, based on 'section', 'keyword'"""
+        try:
+            return self.database[section][keyword]
+        except KeyError:
+            logging.debug("Missing configuration item %s,%s", section, keyword)
+            return None
+
+    @synchronized()
+    def set_config(self, kwargs) -> bool:
+        """Set a config item, using values in dictionary"""
+        try:
+            item = self.database[kwargs.get("section")][kwargs.get("keyword")]
+        except KeyError:
+            return False
+        item.set_dict(kwargs)
+        return True
+
+    @synchronized()
+    def delete_config(self, section: str, keyword: str):
+        """Delete specific config item"""
+        try:
+            self.database[section][keyword].delete()
+        except KeyError:
+            return
+
+    @synchronized()
+    def get_servers(self) -> dict[str, ConfigServer]:
+        try:
+            return self.database["servers"]
+        except KeyError:
+            return {}
+
+    @synchronized()
+    def get_sorters(self) -> dict[str, ConfigSorter]:
+        try:
+            return self.database["sorters"]
+        except KeyError:
+            return {}
+
+    @synchronized()
+    def get_categories(self) -> dict[str, ConfigCat]:
+        """Return link to categories section.
+        This section will always contain special category '*'
+        """
+        if "categories" not in self.database:
+            self.database["categories"] = {}
+        cats = self.database["categories"]
+
+        # Add Default categories
+        if "*" not in cats:
+            ConfigCat("*", {"order": 0, "pp": "3", "script": "None", "priority": NORMAL_PRIORITY})
+            # Add some category suggestions
+            ConfigCat("movies", {"order": 1})
+            ConfigCat("tv", {"order": 2})
+            ConfigCat("audio", {"order": 3})
+            ConfigCat("software", {"order": 4})
+
+            # Save config for future use
+            save_config(True)
+        return cats
+
+    @synchronized()
+    def get_rss(self) -> dict[str, ConfigRSS]:
+        try:
+            # We have to remove non-separator commas by detecting if they are valid URL's
+            for feed_key in self.database["rss"]:
+                feed = self.database["rss"][feed_key]
+                # Only modify if we have to, to prevent repeated config-saving
+                have_new_uri = False
+                # Create a new corrected list
+                new_feed_uris = []
+                for feed_uri in feed.uri():
+                    if new_feed_uris and not urlparse(feed_uri).scheme and urlparse(new_feed_uris[-1]).scheme:
+                        # Current one has no scheme but previous one does, append to previous
+                        new_feed_uris[-1] += "," + feed_uri
+                        have_new_uri = True
+                        continue
+                    # Add full working URL
+                    new_feed_uris.append(feed_uri)
+                # Set new list
+                if have_new_uri:
+                    feed.uri.set(new_feed_uris)
+
+            return self.database["rss"]
+        except KeyError:
+            return {}
+
+
+# Holds INI structure, option database and dirty flag; always a real instance
+CONFIG = SABnzbdConfig()
+
+
 def add_to_database(section: str, keyword: str, obj: AllConfigTypes):
     """add object as section/keyword to INI database"""
-    global CFG_DATABASE
-    if section not in CFG_DATABASE:
-        CFG_DATABASE[section] = {}
-    CFG_DATABASE[section][keyword] = obj
+    CONFIG.add_to_database(section, keyword, obj)
 
 
-@synchronized(CONFIG_LOCK)
 def delete_from_database(section, keyword):
     """Remove section/keyword from INI database"""
-    global CFG_DATABASE, CFG_OBJ, CFG_MODIFIED
-    del CFG_DATABASE[section][keyword]
-    try:
-        del CFG_OBJ[section][keyword]
-    except KeyError:
-        pass
-    CFG_MODIFIED = True
+    CONFIG.delete_from_database(section, keyword)
 
 
-@synchronized(CONFIG_LOCK)
 def get_dconfig(section: str, keyword: Optional[str], nested: bool = False) -> dict:
     """Return a config values dictionary,
     Single item or slices based on 'section', 'keyword'
     """
-    data = {}
-    if not section:
-        for section in CFG_DATABASE.keys():
-            conf = get_dconfig(section, None, True)
-            data.update(conf)
-
-    elif not keyword:
-        try:
-            sect = CFG_DATABASE[section]
-        except KeyError:
-            return {}
-
-        if section == "categories":
-            data[section] = get_ordered_categories()
-        elif section == "sorters":
-            data[section] = get_ordered_sorters()
-        elif section in ("servers", "rss"):
-            data[section] = []
-            for keyword in sect.keys():
-                conf = get_dconfig(section, keyword, True)
-                data[section].append(conf)
-        else:
-            data[section] = {}
-            for keyword in sect.keys():
-                conf = get_dconfig(section, keyword, True)
-                data[section].update(conf)
-
-    else:
-        try:
-            item = CFG_DATABASE[section][keyword]
-        except KeyError:
-            return {}
-        data = item.get_dict(for_public_api=True)
-        if not nested:
-            if section in ("sorters", "servers", "categories", "rss"):
-                data = {section: [data]}
-            else:
-                data = {section: data}
-
-    return data
+    return CONFIG.get_dconfig(section, keyword, nested)
 
 
-@synchronized(CONFIG_LOCK)
 def get_config(section: str, keyword: str) -> Optional[AllConfigTypes]:
     """Return a config object, based on 'section', 'keyword'"""
-    try:
-        return CFG_DATABASE[section][keyword]
-    except KeyError:
-        logging.debug("Missing configuration item %s,%s", section, keyword)
-        return None
+    return CONFIG.get_config(section, keyword)
 
 
-@synchronized(CONFIG_LOCK)
-def set_config(kwargs):
+def set_config(kwargs) -> bool:
     """Set a config item, using values in dictionary"""
-    try:
-        item = CFG_DATABASE[kwargs.get("section")][kwargs.get("keyword")]
-    except KeyError:
-        return False
-    item.set_dict(kwargs)
-    return True
+    return CONFIG.set_config(kwargs)
 
 
-@synchronized(CONFIG_LOCK)
 def delete(section: str, keyword: str):
     """Delete specific config item"""
-    try:
-        CFG_DATABASE[section][keyword].delete()
-    except KeyError:
-        return
+    CONFIG.delete_config(section, keyword)
 
 
-##############################################################################
-# INI file support
-#
-# This does input and output of configuration to an INI file.
-# It translates this data structure to the config database.
-##############################################################################
-@synchronized(CONFIG_LOCK)
 def read_config(path):
     """Read the complete INI file and check its version number
     if OK, pass values to config-database
     """
-    return _read_config(path)
+    return CONFIG.read_config(path)
 
 
-def _read_config(path, try_backup=False):
-    """Read the complete INI file and check its version number
-    if OK, pass values to config-database
-    """
-    global CFG_OBJ, CFG_DATABASE, CFG_MODIFIED
-
-    if try_backup or not os.path.exists(path):
-        # Not found, try backup
-        try:
-            shutil.copyfile(path + ".bak", path)
-            try_backup = True
-        except IOError:
-            pass
-
-    if not os.path.exists(path):
-        # No file found, create default INI file
-        try:
-            if not sabnzbd.WINDOWS:
-                prev = os.umask(0o77)
-            with open(path, "w") as fp:
-                fp.write("__version__=%s\n[misc]\n[logging]\n" % CONFIG_VERSION)
-            if not sabnzbd.WINDOWS:
-                os.umask(prev)
-        except IOError:
-            return False, "Cannot create INI file %s" % path
-
-    try:
-        # Let configobj open the file
-        CFG_OBJ = configobj.ConfigObj(infile=path, default_encoding="utf-8", encoding="utf-8")
-    except (IOError, configobj.ConfigObjError, UnicodeEncodeError) as strerror:
-        if try_backup:
-            # No luck!
-            return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
-        else:
-            # Try backup file
-            return _read_config(path, True)
-
-    try:
-        version = sabnzbd.misc.int_conv(CFG_OBJ["__version__"])
-        if version > int(CONFIG_VERSION):
-            return False, "Incorrect version number %s in %s" % (version, path)
-    except (KeyError, ValueError):
-        pass
-
-    CFG_OBJ.filename = path
-    CFG_OBJ.encoding = "utf-8"
-    CFG_OBJ["__encoding__"] = "utf-8"
-    CFG_OBJ["__version__"] = str(CONFIG_VERSION)
-
-    # Use CFG data to set values for all static options
-    for section in CFG_DATABASE:
-        if section not in ("sorters", "servers", "categories", "rss"):
-            for option in CFG_DATABASE[section]:
-                config_option = CFG_DATABASE[section][option]
-                try:
-                    config_option.set(CFG_OBJ[config_option.section][config_option.keyword])
-                except KeyError:
-                    pass
-
-    # Define the special settings
-    if "categories" in CFG_OBJ:
-        for cat in CFG_OBJ["categories"]:
-            ConfigCat(cat, CFG_OBJ["categories"][cat])
-    if "rss" in CFG_OBJ:
-        for rss_feed in CFG_OBJ["rss"]:
-            ConfigRSS(rss_feed, CFG_OBJ["rss"][rss_feed])
-    if "servers" in CFG_OBJ:
-        for server in CFG_OBJ["servers"]:
-            ConfigServer(server, CFG_OBJ["servers"][server])
-    if "sorters" in CFG_OBJ:
-        for sorter in CFG_OBJ["sorters"]:
-            ConfigSorter(sorter, CFG_OBJ["sorters"][sorter])
-
-    CFG_MODIFIED = False
-    return True, ""
-
-
-@synchronized(CONFIG_LOCK)
 def save_config(force=False):
     """Update Setup file with current option values"""
-    global CFG_OBJ, CFG_DATABASE, CFG_MODIFIED
-
-    if not (CFG_MODIFIED or force):
-        return True
-
-    if sabnzbd.cfg.configlock():
-        logging.warning(T("Configuration locked, cannot save settings"))
-        return False
-
-    for section in CFG_DATABASE:
-        if section in ("sorters", "servers", "categories", "rss"):
-            if section not in CFG_OBJ:
-                CFG_OBJ[section] = {}
-
-            for subsection in CFG_DATABASE[section]:
-                if subsection not in CFG_OBJ[section]:
-                    CFG_OBJ[section][subsection] = {}
-                CFG_OBJ[section][subsection] = CFG_DATABASE[section][subsection].get_dict()
-        else:
-            for option in CFG_DATABASE[section]:
-                config_option = CFG_DATABASE[section][option]
-                if config_option.section not in CFG_OBJ:
-                    CFG_OBJ[config_option.section] = {}
-                CFG_OBJ[config_option.section][config_option.keyword] = CFG_DATABASE[section][option]()
-
-    res = False
-    filename = CFG_OBJ.filename
-    bakname = filename + ".bak"
-
-    # Check if file is writable
-    if not is_writable(filename):
-        logging.error(T("Cannot write to INI file %s"), filename)
-        return res
-
-    # copy current file to backup
-    try:
-        shutil.copyfile(filename, bakname)
-        shutil.copymode(filename, bakname)
-    except Exception:
-        # Something wrong with the backup,
-        logging.error(T("Cannot create backup file for %s"), bakname)
-        logging.info("Traceback: ", exc_info=True)
-        return res
-
-    # Write new config file
-    try:
-        logging.info("Writing settings to INI file %s", filename)
-        CFG_OBJ.write()
-        shutil.copymode(bakname, filename)
-        CFG_MODIFIED = False
-        res = True
-    except Exception:
-        logging.error(T("Cannot write to INI file %s"), filename)
-        logging.info("Traceback: ", exc_info=True)
-        try:
-            remove_file(filename)
-        except Exception:
-            pass
-        # Restore INI file from backup
-        renamer(bakname, filename)
-
-    return res
+    return CONFIG.save_config(force)
 
 
 def create_config_backup() -> str | bool:
     """Put config data in a zip file, returns path on success"""
-    admin_path = sabnzbd.cfg.admin_dir.get_path()
-    output_filename = "sabnzbd_backup_%s_%s.zip" % (sabnzbd.__version__, time.strftime("%Y.%m.%d_%H.%M.%S"))
-
-    # Check if there is a backup folder set, use complete otherwise
-    if sabnzbd.cfg.backup_dir():
-        backup_dir = sabnzbd.cfg.backup_dir.get_path()
-    else:
-        backup_dir = sabnzbd.cfg.complete_dir.get_path()
-    complete_path = os.path.join(backup_dir, output_filename)
-    logging.debug("Backing up %s + %s in %s", admin_path, CFG_OBJ.filename, complete_path)
-
-    try:
-        with open(complete_path, "wb") as zip_buffer:
-            with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_ref:
-                for filename in CONFIG_BACKUP_FILES:
-                    full_path = os.path.join(admin_path, filename)
-                    if os.path.isfile(full_path):
-                        with open(full_path, "rb") as data:
-                            zip_ref.writestr(filename, data.read())
-                for filename, setting in CONFIG_BACKUP_HTTPS.items():
-                    full_path = getattr(sabnzbd.cfg, setting).get_path()
-                    # Only accept HTTPS config files that were successfully loaded by cherrypy on
-                    # startup to protect against last-minute breaking config changes as well as
-                    # inclusion of unrelated files in the backup through manipulated settings.
-                    if full_path and os.path.isfile(full_path) and full_path in sabnzbd.CONFIG_BACKUP_HTTPS_OK:
-                        logging.debug("Adding %s file %s to backup", setting, full_path)
-                        with open(full_path, "rb") as data:
-                            # Add the https cert/key/chain files with a fixed relative filename,
-                            # regardless of where they are actually stored on the filesystem
-                            zip_ref.writestr(filename, data.read())
-                with open(CFG_OBJ.filename, "rb") as data:
-                    zip_ref.writestr(DEF_INI_FILE, data.read())
-        return clip_path(complete_path)
-    except Exception:
-        logging.info("Failed to create backup: ", exc_info=True)
-        return False
+    return CONFIG.create_config_backup()
 
 
 def validate_config_backup(config_backup_data: bytes) -> bool:
     """Check that the zip file contains a sabnzbd.ini"""
-    try:
-        with io.BytesIO(config_backup_data) as backup_ref:
-            with zipfile.ZipFile(backup_ref, "r") as zip_ref:
-                # Will throw KeyError if not present
-                zip_ref.getinfo(DEF_INI_FILE)
-                return True
-    except Exception:
-        return False
+    return CONFIG.validate_config_backup(config_backup_data)
 
 
 def restore_config_backup(config_backup_data: bytes):
     """Restore configuration files from zip file"""
-    global CFG_MODIFIED
-    try:
-        with io.BytesIO(config_backup_data) as backup_ref:
-            with zipfile.ZipFile(backup_ref, "r") as zip_ref:
-                # Write config file first and read it
-                logging.debug("Writing backup of config-file to %s", CFG_OBJ.filename)
-                with open(CFG_OBJ.filename, "wb") as destination_ref:
-                    destination_ref.write(zip_ref.read(DEF_INI_FILE))
-                logging.debug("Loading settings from backup config-file")
-                read_config(CFG_OBJ.filename)
-
-                # Write the rest of the admin files that we want to recover
-                adminpath = sabnzbd.cfg.admin_dir.get_path()
-                for filename in chain(CONFIG_BACKUP_FILES, CONFIG_RESTORE_FILES, CONFIG_BACKUP_HTTPS.keys()):
-                    try:
-                        zip_ref.getinfo(filename)
-                        destination_file = os.path.join(adminpath, filename)
-                        logging.debug("Writing backup of %s to %s", filename, destination_file)
-                        with open(destination_file, "wb") as destination_ref:
-                            destination_ref.write(zip_ref.read(filename))
-                        # For HTTPS config files, point the associated setting to the restored file
-                        if setting := CONFIG_BACKUP_HTTPS.get(filename):
-                            logging.debug("Setting value of %s to restored file %s", setting, filename)
-                            getattr(sabnzbd.cfg, setting).set(filename)
-                            CFG_MODIFIED = True
-                    except KeyError:
-                        # File not in archive
-                        pass
-                save_config()
-    except Exception:
-        logging.warning(T("Could not restore backup"))
-        logging.info("Traceback: ", exc_info=True)
+    CONFIG.restore_config_backup(config_backup_data)
 
 
-@synchronized(CONFIG_LOCK)
 def get_servers() -> dict[str, ConfigServer]:
-    global CFG_DATABASE
-    try:
-        return CFG_DATABASE["servers"]
-    except KeyError:
-        return {}
+    return CONFIG.get_servers()
 
 
-@synchronized(CONFIG_LOCK)
 def get_sorters() -> dict[str, ConfigSorter]:
-    global CFG_DATABASE
-    try:
-        return CFG_DATABASE["sorters"]
-    except KeyError:
-        return {}
+    return CONFIG.get_sorters()
 
 
 def get_ordered_sorters() -> list[dict]:
@@ -1126,28 +1281,11 @@ def get_ordered_sorters() -> list[dict]:
     return sorters
 
 
-@synchronized(CONFIG_LOCK)
 def get_categories() -> dict[str, ConfigCat]:
     """Return link to categories section.
     This section will always contain special category '*'
     """
-    global CFG_DATABASE
-    if "categories" not in CFG_DATABASE:
-        CFG_DATABASE["categories"] = {}
-    cats = CFG_DATABASE["categories"]
-
-    # Add Default categories
-    if "*" not in cats:
-        ConfigCat("*", {"order": 0, "pp": "3", "script": "None", "priority": NORMAL_PRIORITY})
-        # Add some category suggestions
-        ConfigCat("movies", {"order": 1})
-        ConfigCat("tv", {"order": 2})
-        ConfigCat("audio", {"order": 3})
-        ConfigCat("software", {"order": 4})
-
-        # Save config for future use
-        save_config(True)
-    return cats
+    return CONFIG.get_categories()
 
 
 def get_category(cat: str = "*") -> ConfigCat:
@@ -1178,37 +1316,12 @@ def get_ordered_categories() -> list[dict]:
     return categories
 
 
-@synchronized(CONFIG_LOCK)
 def get_rss() -> dict[str, ConfigRSS]:
-    global CFG_DATABASE
-    try:
-        # We have to remove non-separator commas by detecting if they are valid URL's
-        for feed_key in CFG_DATABASE["rss"]:
-            feed = CFG_DATABASE["rss"][feed_key]
-            # Only modify if we have to, to prevent repeated config-saving
-            have_new_uri = False
-            # Create a new corrected list
-            new_feed_uris = []
-            for feed_uri in feed.uri():
-                if new_feed_uris and not urlparse(feed_uri).scheme and urlparse(new_feed_uris[-1]).scheme:
-                    # Current one has no scheme but previous one does, append to previous
-                    new_feed_uris[-1] += "," + feed_uri
-                    have_new_uri = True
-                    continue
-                # Add full working URL
-                new_feed_uris.append(feed_uri)
-            # Set new list
-            if have_new_uri:
-                feed.uri.set(new_feed_uris)
-
-        return CFG_DATABASE["rss"]
-    except KeyError:
-        return {}
+    return CONFIG.get_rss()
 
 
 def get_filename():
-    global CFG_OBJ
-    return CFG_OBJ.filename
+    return CONFIG.filename
 
 
 def clean_section_name(section: str) -> str:

@@ -20,69 +20,47 @@
 sabnzbd.utils.rarvolinfo - Find out volume number and/or original extension of a rar file. Useful with obfuscated files
 """
 
-import os
 import rarfile
 
 
-def get_rar_extension(myrarfile):
+def get_rar_extension(myrarfile: str) -> tuple[int, str]:
     """
-    Find out original extension of a rar file. Returns "" in case of file problems
+    Find out original extension of a rar file. Returns -1 and "" in case of file problems
     So ... returns:     "part001.rar", ... "part005.rar"
     or old number scheme (can only happen for rar3/rar4 files): "rar", r00, ... r89
     """
     # When things go wrong
     volumenumber = -1
-    org_extension = False
+    org_extension = ""
 
     try:
-        rar_ver = rarfile.get_rar_version(myrarfile)
-        with open(myrarfile, "rb") as fh:
-            if rar_ver == rarfile.RAR_V3:
-                # As it's rar3, let's first find the numbering scheme: old (rNN) or new (partNN.rar)
-                mybuf = fh.read(100)  # first 100 bytes is enough
-                HEAD_FLAGS_LSB = mybuf[10]  # LSB = Least Significant Byte
-                newnumbering = HEAD_FLAGS_LSB & 0x10
+        # Let the rarfile parser do the work and collect all header blocks it finds
+        headers = []
+        rarfile.RarFile(myrarfile, part_only=True, info_callback=headers.append)
+        main = next(h for h in headers if h.type == rarfile.RAR_BLOCK_MAIN)
 
-                # For the volume number, At the end of the file, we need about 20 bytes
-                fh.seek(-20, os.SEEK_END)
-                mybuf = fh.read()
-                volumenumber = 1 + mybuf[-9] + 256 * mybuf[-8]
-
-                if newnumbering:
-                    org_extension = "part%02d.rar" % volumenumber
+        if main.extract_version >= 50:
+            # RAR5: volume number is in the main header, absent means first volume
+            volumenumber = (main.main_volume_number or 0) + 1
+            org_extension = "part%03d.rar" % volumenumber
+        else:
+            # RAR3/RAR4: volume number is in the end-of-archive block, if it's a multi-volume archive
+            if main.flags & rarfile.RAR_MAIN_VOLUME:
+                endarc = next(h for h in headers if h.type == rarfile.RAR_BLOCK_ENDARC)
+                volumenumber = endarc.endarc_volnr + 1
+            else:
+                volumenumber = 1
+            if main.flags & rarfile.RAR_MAIN_NEWNUMBERING:
+                org_extension = "part%02d.rar" % volumenumber
+            else:
+                # 1, 2, 3, 4 resp refers to .rar, .r00, .r01, .r02 ...
+                if volumenumber == 1:
+                    org_extension = "rar"
                 else:
-                    # 1, 2, 3, 4 resp refers to .rar, .r00, .r01, .r02 ...
-                    if volumenumber == 1:
-                        org_extension = "rar"
-                    else:
-                        org_extension = "r%02d" % (volumenumber - 2)
-
-            elif rar_ver == rarfile.RAR_V5:
-                mybuf = fh.read(100)  # first 100 bytes is enough
-
-                # Get (and skip) the first 8 + 4 bytes
-                rar5sig, newpos = rarfile.load_bytes(mybuf, 8, 0)  # Rar5 signature
-                crc32, newpos = rarfile.load_bytes(mybuf, 4, newpos)  # crc32
-
-                # Then get the VINT values (with variable size, so parse them all):
-                headersize, newpos = rarfile.load_vint(mybuf, newpos)
-                headertype, newpos = rarfile.load_vint(mybuf, newpos)
-                headerflags, newpos = rarfile.load_vint(mybuf, newpos)
-                extraareasize, newpos = rarfile.load_vint(mybuf, newpos)
-                archiveflags, newpos = rarfile.load_vint(mybuf, newpos)
-
-                # Now we're ready for the volume number:
-                if archiveflags & 2:
-                    value, newpos = rarfile.load_vint(mybuf, newpos)
-                    volumenumber = value + 1
-                else:
-                    # first volume, aka 1
-                    volumenumber = 1
-
-                # Combine into the extension
-                org_extension = "part%03d.rar" % volumenumber
+                    org_extension = "r%02d" % (volumenumber - 2)
     except Exception:
-        pass
+        volumenumber = -1
+        org_extension = ""
 
     return volumenumber, org_extension
 

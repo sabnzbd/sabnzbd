@@ -27,11 +27,17 @@ Method:
 Based on the following Specs:
 
 SSDP:
+Never standardized as an RFC; the original IETF draft has expired but is kept for reference.
 https://tools.ietf.org/html/draft-cai-ssdp-v1-03
+SSDP is now specified as part of the UPnP Device Architecture documents (see below).
 
 XML:
-UPnP™ Device Architecture 1.1, paragraph 2.3 Device description
-http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf
+UPnP(tm) Device Architecture, paragraph 2.3 Device description.
+The latest revision is 2.0, but a Basic:1 device still uses the device-1-0 schema
+(urn:schemas-upnp-org:device-1-0), which is what Windows expects for discovery.
+UPnP is now stewarded by the Open Connectivity Foundation (OCF); the upnp.org spec
+links redirect through openconnectivity.org.
+https://openconnectivity.org/developer/specifications/upnp-resources/upnp/
 
 
 """
@@ -41,10 +47,21 @@ import socket
 import uuid
 from threading import Thread, Condition, Lock
 from typing import Optional
+from xml.sax.saxutils import escape
 
 
 class SSDP(Thread):
-    def __init__(self, host, server_name, url, description, manufacturer, manufacturer_url, model, **kwargs):
+    def __init__(
+        self,
+        host: str,
+        server_name: str,
+        url: str,
+        description: str,
+        manufacturer: str,
+        manufacturer_url: str,
+        model: str,
+        ssdp_broadcast_interval: int = 15,
+    ):
         self.__host = host  # Note: this is the LAN IP address!
         self.__server_name = server_name
         self.__url = url
@@ -52,7 +69,7 @@ class SSDP(Thread):
         self.__manufacturer = manufacturer
         self.__manufacturer_url = manufacturer_url
         self.__model = model
-        self.__ssdp_broadcast_interval = kwargs.get("ssdp_broadcast_interval", 15)  # optional, default 15 seconds
+        self.__ssdp_broadcast_interval = ssdp_broadcast_interval
 
         self.__myhostname = socket.gethostname()
         # a steady uuid: stays the same as long as hostname and ip address stay the same:
@@ -72,26 +89,26 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
 """
         self.__mySSDPbroadcast = self.__mySSDPbroadcast.replace("\n", "\r\n").encode("utf-8")
 
-        # Create the XML info (description.xml)
+        # Create the XML info (description.xml). Escape all interpolated values so
+        # characters like & < > (common in URLs) cannot break the XML structure.
         self.__myxml = f"""<?xml version="1.0" encoding="UTF-8" ?>
 <root xmlns="urn:schemas-upnp-org:device-1-0">
 <specVersion>
 <major>1</major>
 <minor>0</minor>
 </specVersion>
-<URLBase>{self.__url}</URLBase>
+<URLBase>{escape(self.__url)}</URLBase>
 <device>
 <deviceType>urn:schemas-upnp-org:device:Basic:1</deviceType>
-<friendlyName>{self.__server_name} ({self.__myhostname})</friendlyName>
-<manufacturer>{self.__manufacturer}</manufacturer>
-<manufacturerURL>{self.__manufacturer_url}</manufacturerURL>
-<modelDescription>{self.__model} </modelDescription>
-<modelName>{self.__model}</modelName>
+<friendlyName>{escape(self.__server_name)} ({escape(self.__myhostname)})</friendlyName>
+<manufacturer>{escape(self.__manufacturer)}</manufacturer>
+<manufacturerURL>{escape(self.__manufacturer_url)}</manufacturerURL>
+<modelName>{escape(self.__model)}</modelName>
 <modelNumber> </modelNumber>
-<modelDescription>{self.__description}</modelDescription>
-<modelURL>{self.__manufacturer_url}</modelURL>
+<modelDescription>{escape(self.__description)}</modelDescription>
+<modelURL>{escape(self.__manufacturer_url)}</modelURL>
 <UDN>uuid:{self.__uuid}</UDN>
-<presentationURL>{self.__url}</presentationURL>
+<presentationURL>{escape(self.__url)}</presentationURL>
 </device>
 </root>"""
 
@@ -122,39 +139,48 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
                     sock.sendto(self.__mySSDPbroadcast, (MCAST_GRP, MCAST_PORT))
             except Exception:
                 # probably no network
-                pass
+                logging.debug("Failed to send SSDP broadcast", exc_info=True)
 
             # Wait until awoken or timeout is up
             with self.__condition:
                 self.__condition.wait(self.__ssdp_broadcast_interval)
 
-    def serve_xml(self):
+    def serve_xml(self) -> str:
         """Returns an XML-structure based on the information being
-        served by this service, returns nothing if not running"""
+        served by this service, returns empty if not running"""
         if self.__stop:
-            return
+            return ""
         return self.__myxml
 
 
-# Reserve class variable, to be started later
-__SSDP: Optional[SSDP] = None
+# Module-level singleton, started/stopped via the functions below
+_SSDP: Optional[SSDP] = None
 
 
-# Wrapper functions to be called by program
-def start_ssdp(*args, **kwargs):
-    global __SSDP
-    __SSDP = SSDP(*args, **kwargs)
-    __SSDP.start()
+# Wrapper functions to be called by program; they own the singleton and its lifecycle guards
+def start_ssdp(
+    host: str,
+    server_name: str,
+    url: str,
+    description: str,
+    manufacturer: str,
+    manufacturer_url: str,
+    model: str,
+    ssdp_broadcast_interval: int = 15,
+):
+    global _SSDP
+    _SSDP = SSDP(host, server_name, url, description, manufacturer, manufacturer_url, model, ssdp_broadcast_interval)
+    _SSDP.start()
 
 
 def stop_ssdp():
-    if __SSDP and __SSDP.is_alive():
-        __SSDP.stop()
-        __SSDP.join()
+    if _SSDP and _SSDP.is_alive():
+        _SSDP.stop()
+        _SSDP.join()
 
 
-def server_ssdp_xml():
+def server_ssdp_xml() -> str:
     """Returns the description.xml if the server is alive, empty otherwise"""
-    if __SSDP and __SSDP.is_alive():
-        return __SSDP.serve_xml()
+    if _SSDP and _SSDP.is_alive():
+        return _SSDP.serve_xml()
     return ""

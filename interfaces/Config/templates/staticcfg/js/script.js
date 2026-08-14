@@ -481,6 +481,8 @@ $(document).ready(function () {
     }
 
     // Add tooltips
+    // Render tooltips in the body, otherwise they get clipped by sections with overflow: hidden
+    jQuery.fn.tooltip.Constructor.DEFAULTS.container = 'body'
     jQuery('[title]').tooltip()
 });
 
@@ -501,16 +503,56 @@ var pagesContainer = new Array(arrPages.length);
 // Add trigger to focus on the field and load the results
 $(document).ready(function() {
     $('#search-menu').on('shown.bs.dropdown', function(event) {
+        setConfigSearchExpanded(true)
         // Focus so easy typing
         $('#search-box').focus()
         // Load things to search if we haven't yet
         if(!pagesContainer[0]) {
             $.each(arrPages, function(index, page) {
-                $.get(rootURL + 'config/' + page + '/', function(data) {
+                $.get(rootURL + 'config/' + page, function(data) {
                     pagesContainer[index] = $(data).find('label')
                 });
             });
         }
+    }).on('hidden.bs.dropdown', function(event) {
+        setConfigSearchExpanded(false)
+    });
+
+    $('#search-box').on('keydown', function(event) {
+        var key = event.key || event.which;
+        var isArrowDown = key === 'ArrowDown' || key === 40;
+        var isArrowUp = key === 'ArrowUp' || key === 38;
+        var isEscape = key === 'Escape' || key === 'Esc' || key === 27;
+
+        if(isArrowDown || isArrowUp) {
+            event.preventDefault();
+            event.stopPropagation();
+            focusConfigSearchResult(isArrowDown ? 1 : -1)
+        } else if(isEscape) {
+            event.preventDefault();
+            event.stopPropagation();
+            closeConfigSearch()
+        }
+    });
+
+    $('#search-dropdown').on('keydown', 'a.config-search-result', function(event) {
+        var key = event.key || event.which;
+        var isArrowDown = key === 'ArrowDown' || key === 40;
+        var isArrowUp = key === 'ArrowUp' || key === 38;
+        var isEscape = key === 'Escape' || key === 'Esc' || key === 27;
+
+        if(isArrowDown || isArrowUp) {
+            event.preventDefault();
+            event.stopPropagation();
+            focusConfigSearchResult(isArrowDown ? 1 : -1)
+        } else if(isEscape) {
+            event.preventDefault();
+            event.stopPropagation();
+            closeConfigSearch()
+        }
+    }).on('mouseenter focus', 'a.config-search-result', function() {
+        getConfigSearchResults().parent().removeClass('active')
+        $(this).parent().addClass('active')
     });
 
     // For the scrolling
@@ -536,11 +578,46 @@ $(document).ready(function() {
 
 // Don't go too fast
 var searchTimeout
+
+function getConfigSearchResults() {
+    return $('#search-dropdown').find('a.config-search-result')
+}
+
+function setConfigSearchExpanded(expanded) {
+    $('#search-menu > a[data-toggle="dropdown"]').attr('aria-expanded', expanded ? 'true' : 'false')
+}
+
+function closeConfigSearch() {
+    $('#search-menu').removeClass('open')
+    setConfigSearchExpanded(false)
+    $('#search-box').focus()
+}
+
+function focusConfigSearchResult(offset) {
+    var $results = getConfigSearchResults()
+    var activeIndex = $results.index(document.activeElement)
+    var nextIndex
+
+    if(!$results.length) return
+
+    if(activeIndex < 0) {
+        nextIndex = offset > 0 ? 0 : $results.length - 1
+    } else {
+        nextIndex = activeIndex + offset
+        if(nextIndex >= $results.length) nextIndex = 0
+        if(nextIndex < 0) nextIndex = $results.length - 1
+    }
+
+    getConfigSearchResults().parent().removeClass('active')
+    $results.eq(nextIndex).parent().addClass('active')
+    $results.eq(nextIndex).focus()
+}
+
 function doConfigSearch(value) {
     // Cancel previous
     clearTimeout(searchTimeout)
     // Build new search
-    var searchTerm = $(value).val().replace('"', '\"')
+    var searchTerm = $.trim($(value).val())
     var searchOutput = $('#search-dropdown')
 
     // Build new search
@@ -551,14 +628,24 @@ function doConfigSearch(value) {
         if (searchTerm.length < 2) return
         // Find some results!
         $.each(pagesContainer, function(page_index, results) {
+            if(!results) return
             // Get the matches
-            var subResults = results.filter(':contains("'+searchTerm+'")')
+            var subResults = results.filter(function() {
+                return $(this).text().toUpperCase().indexOf(searchTerm.toUpperCase()) >= 0
+            })
             if(subResults.length > 0) {
                 // Add the section
-                searchOutput.append('<li class="divider"></li>')
-                searchOutput.append('<li class="dropdown-header">'+configTranslate.searchPages[page_index]+'</li>')
+                searchOutput.append($('<li class="divider"></li>'))
+                searchOutput.append($('<li class="dropdown-header"></li>').text(configTranslate.searchPages[page_index]))
                 $.each(subResults, function(index, result) {
-                    searchOutput.append('<li><a href="'+rootURL + 'config/' + arrPages[page_index] +  '/#' + $(result).attr('for') +'">'+$(result).text()+'</a></li>')
+                    var resultUrl = rootURL + 'config/' + arrPages[page_index] +  '#' + $(result).attr('for')
+                    searchOutput.append(
+                        $('<li></li>').append(
+                            $('<a class="config-search-result"></a>')
+                                .attr('href', resultUrl)
+                                .text($(result).text())
+                        )
+                    )
                 })
             }
         })

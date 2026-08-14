@@ -24,7 +24,7 @@
 - Packaging/build  
   - `builder/`: platform build scripts (DMG/EXE specs, `package.py`, `release.py`).  
   - Platform folders `win/`, `macos/`, `linux/`, `snap/`: installer or platform-specific assets.  
-  - `admin/`, `builder/constants.py`, `licenses/`: release and licensing support files.
+  - `admin/`, `builder/common.py`, `licenses/`: release and licensing support files.
 
 - Documentation
   - Documentation website source is stored in the `sabnzbd.github.io` repo.

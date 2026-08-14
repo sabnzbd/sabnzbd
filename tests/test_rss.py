@@ -24,7 +24,6 @@ import uuid
 from typing import Optional
 import random
 
-import configobj
 import pytest
 from pytest_httpserver import HTTPServer
 from werkzeug import Response
@@ -134,12 +133,15 @@ class TestRSS:
             for n, f in enumerate(filters):
                 values[f"filter{n}"] = f
 
-        # Setup the config settings
-        sabnzbd.config.CFG_OBJ = configobj.ConfigObj()
+        # Setup the config settings. Clear the INI structure and drop the filename so
+        # the test can't write to disk: clear() alone keeps the filename from a
+        # previously-read INI, and save_config() would then rewrite that file.
+        sabnzbd.config.CONFIG.clear()
+        sabnzbd.config.CONFIG.filename = None
         sabnzbd.config.ConfigRSS(feed_name, values)
 
-        # Need to create the Default category
-        # Otherwise it will try to save the config
+        # Pre-create the default "*" category (and the ones the feeds use) so
+        # get_categories() doesn't seed the full default set on first access
         sabnzbd.config.ConfigCat("*", {})
         sabnzbd.config.ConfigCat("tv", {})
         sabnzbd.config.ConfigCat("movies", {})
@@ -284,6 +286,100 @@ class TestRSS:
                 0,
                 0,
                 {"rule": 1, "season": 0, "episode": 0},
+            ),
+            (  # age: minimum-age satisfied (feed item is well over a year old) -> falls through to accept
+                (None, None, None, None),
+                [("", "", "", "G", ">30d", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                {"rule": 1, "season": 0, "episode": 0},
+            ),
+            (  # age: hours unit, minimum-age satisfied -> accept
+                (None, None, None, None),
+                [("", "", "", "G", ">12h", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                {"rule": 1, "season": 0, "episode": 0},
+            ),
+            (  # age: years unit; feed item (May 2025) is over a year old -> min-age satisfied -> accept
+                (None, None, None, None),
+                [("", "", "", "G", ">1y", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                {"rule": 1, "season": 0, "episode": 0},
+            ),
+            (  # age: years unit; item older than 1y fails a max-age of 1y -> rejected
+                (None, None, None, None),
+                [("", "", "", "G", "<1y", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                {"rule": 0, "season": 0, "episode": 0, "state": RSSState.BAD},
+            ),
+            (  # age: >= comparator (inclusive alias of >) minimum-age satisfied -> accept
+                (None, None, None, None),
+                [("", "", "", "G", ">=1y", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                {"rule": 1, "season": 0, "episode": 0},
+            ),
+            (  # age: <= comparator (inclusive alias of <) maximum-age violated -> rejected
+                (None, None, None, None),
+                [("", "", "", "G", "<=30d", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                {"rule": 0, "season": 0, "episode": 0, "state": RSSState.BAD},
+            ),
+            (  # age: maximum-age violated (item older than 30d) -> rejected on the age rule
+                (None, None, None, None),
+                [("", "", "", "G", "<30d", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                {"rule": 0, "season": 0, "episode": 0, "state": RSSState.BAD},
+            ),
+            (  # age: bare value (no comparator) is treated as a maximum age -> rejected
+                (None, None, None, None),
+                [("", "", "", "G", "30d", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                {"rule": 0, "season": 0, "episode": 0, "state": RSSState.BAD},
+            ),
+            (  # age range via two rules: min 30d AND max 100y -> both pass, accept
+                (None, None, None, None),
+                [
+                    ("", "", "", "G", ">30d", "", "1"),
+                    ("", "", "", "G", "<36500d", "", "1"),
+                    ("", "", "", "A", "*", DEFAULT_PRIORITY, "1"),
+                ],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                {"rule": 2, "season": 0, "episode": 0},
             ),
             (
                 (None, None, None, None),
@@ -521,6 +617,80 @@ class TestRSS:
             actual = getattr(job, k, None)
             assert actual == expected, f"Expected {k!r}: {actual!r} == {expected!r}"
 
+    def test_from_feed_entry_age_defaults_to_none_without_date(self):
+        """A feed item with no parseable date has age None so age filters skip it."""
+        import feedparser
+
+        xml = (
+            '<?xml version="1.0" encoding="utf-8"?>'
+            '<rss version="2.0"><channel><title>f</title><link>http://x/</link>'
+            "<description>f</description>"
+            "<item><title>No Date Item</title><link>http://LINK</link>"
+            '<enclosure url="http://LINK" length="1000" type="application/x-nzb" />'
+            "</item></channel></rss>"
+        )
+        parsed = feedparser.parse(xml)
+        entry = ResolvedEntry.from_feed_entry("feed", parsed.entries[0])
+
+        assert entry is not None
+        assert entry.age is None
+
+        # An age filter must not apply (returns None -> "go to next filter")
+        age_rule = rss.FeedRule(type="G", value=">10d")
+        assert (
+            age_rule.matches(
+                title=entry.title, category=None, size=entry.size, season=0, episode=0, rule_index=0, age=entry.age
+            )
+            is None
+        )
+
+    def test_age_comparator_aliases(self):
+        """<=, >= and the reversed =<, => behave as inclusive aliases of < and >."""
+        now = datetime.datetime.now(datetime.timezone.utc)
+        old = now - datetime.timedelta(days=66)
+        recent = now - datetime.timedelta(days=2)
+
+        def matches(value, age):
+            return rss.FeedRule(type="G", value=value).matches(
+                title="T", category=None, size=0, season=0, episode=0, rule_index=0, age=age
+            )
+
+        # Minimum-age family: satisfied by the old item, violated by the recent one.
+        # A missing unit defaults to days, so ">30" behaves like ">30d".
+        for value in (">30d", ">=30d", "=>30d", ">30", ">=30", "=>30"):
+            assert matches(value, old) is None, value
+            assert matches(value, recent) is False, value
+
+        # Maximum-age family: satisfied by the recent item, violated by the old one.
+        # A bare value with no comparator or unit ("30") is an inclusive maximum age.
+        for value in ("<30d", "<=30d", "=<30d", "30d", "<30", "<=30", "=<30", "30"):
+            assert matches(value, recent) is None, value
+            assert matches(value, old) is False, value
+
+    def test_none_age_persists_as_fallback_and_round_trips(self, tmp_rss):
+        """The NOT NULL age column is satisfied by a fallback when age is unknown."""
+        repo, _reader = tmp_rss
+        entry = ResolvedEntry(
+            feed="feed",
+            link="http://example.test/no-age",
+            infourl=None,
+            category=None,
+            title="No age",
+            size=1000,
+            age=None,
+            season=0,
+            episode=0,
+            state=RSSState.GOOD,
+        )
+        repo.upsert(entry)
+
+        stored = repo.find_job_by_url("feed", "http://example.test/no-age")
+        assert stored is not None
+        # Persisted as a fallback (~seen_at) rather than NULL, so it reloads as a datetime.
+        # Storage is integer seconds, so compare at whole-second resolution.
+        assert stored.age is not None
+        assert int(stored.age.timestamp()) == int(entry.seen_at.timestamp())
+
     def test_rssstore_random_crud(self, tmp_rss):
         rnd = random.Random(123)
         repo, _reader = tmp_rss
@@ -606,8 +776,9 @@ class TestRSS:
         feed = "feed-remove"
 
         now = datetime.datetime.now(datetime.timezone.utc)
-        old_age = now - datetime.timedelta(days=4)
-        new_age = now - datetime.timedelta(days=1)
+        age = now - datetime.timedelta(weeks=52)
+        old_seen_at = now - datetime.timedelta(days=4)
+        new_seen_at = now - datetime.timedelta(days=1)
 
         # Old good item that should be kept because it is part of the new_urls set
         keep_url = "http://example.test/keep"
@@ -618,7 +789,8 @@ class TestRSS:
                 title="keep",
                 infourl=None,
                 size=10,
-                age=old_age,
+                age=age,
+                seen_at=old_seen_at,
                 season=1,
                 episode=1,
                 category=None,
@@ -635,7 +807,8 @@ class TestRSS:
                 title="old-g",
                 infourl=None,
                 size=20,
-                age=old_age,
+                age=age,
+                seen_at=old_seen_at,
                 season=1,
                 episode=1,
                 category=None,
@@ -652,11 +825,30 @@ class TestRSS:
                 title="old-x",
                 infourl=None,
                 size=30,
-                age=old_age,
+                age=age,
+                seen_at=old_seen_at,
                 season=1,
                 episode=1,
                 category=None,
                 state=RSSState.EXPIRED,
+            )
+        )
+
+        # Old D item should be purged directly
+        purge_old_d_url = "http://example.test/purge-old-d"
+        repo.upsert(
+            ResolvedEntry(
+                feed=feed,
+                link=purge_old_d_url,
+                title="old-d",
+                infourl=None,
+                size=30,
+                age=age,
+                seen_at=old_seen_at,
+                season=1,
+                episode=1,
+                category=None,
+                state=RSSState.DOWNLOADED,
             )
         )
 
@@ -669,7 +861,8 @@ class TestRSS:
                 title="young-x",
                 infourl=None,
                 size=40,
-                age=new_age,
+                age=age,
+                seen_at=new_seen_at,
                 season=1,
                 episode=1,
                 category=None,
@@ -677,8 +870,26 @@ class TestRSS:
             )
         )
 
+        # Recent D item should be kept
+        keep_d_url = "http://example.test/keep-young-d"
+        repo.upsert(
+            ResolvedEntry(
+                feed=feed,
+                link=keep_d_url,
+                title="young-d",
+                infourl=None,
+                size=40,
+                age=age,
+                seen_at=new_seen_at,
+                season=1,
+                episode=1,
+                category=None,
+                state=RSSState.DOWNLOADED,
+            )
+        )
+
         # Run remove_obsolete with only keep_url as the set of current URLs
-        repo.remove_obsolete(feed, {keep_url})
+        repo.remove_obsolete(feed, {keep_url}, purge_downloaded=True)
 
         jobs = {e.link: e for e in repo.get_feed_jobs(feed=feed)}
 
@@ -692,9 +903,16 @@ class TestRSS:
         # Old X should have been purged
         assert purge_old_x_url not in jobs
 
+        # Old D should have been purged
+        assert purge_old_d_url not in jobs
+
         # Young X should still exist
         assert keep_x_url in jobs
         assert jobs[keep_x_url].state is RSSState.EXPIRED
+
+        # Young D should still exist
+        assert keep_d_url in jobs
+        assert jobs[keep_d_url].state is RSSState.DOWNLOADED
 
     def test_rss_is_starred_persists_and_affects_later_runs(self, httpserver: HTTPServer, tmp_rss, mocker):
         """Initial scan should mark GOOD entries as starred and persist this across runs.

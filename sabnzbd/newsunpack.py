@@ -21,15 +21,18 @@ sabnzbd.newsunpack
 
 import os
 import sys
+import json
 import re
 import subprocess
 import logging
+import tarfile
 import time
 import io
 import shutil
 import functools
 import rarfile
 from typing import BinaryIO, Optional, Any
+from contextlib import suppress
 
 import sabnzbd
 from sabnzbd.encoding import correct_unknown_encoding, ubtou
@@ -65,6 +68,8 @@ from sabnzbd.filesystem import (
     is_size,
     get_basename,
     create_all_dirs,
+    UNWANTED_FILE_PERMISSIONS,
+    get_unique_filename,
 )
 from sabnzbd.nzb import NzbObject
 import sabnzbd.cfg as cfg
@@ -83,7 +88,6 @@ PAR2_FILENAME_RE = re.compile(r'"([^"]+)"')
 # Constants
 SEVENZIP_ID = b"7z\xbc\xaf'\x1c"
 PAR2_COMMAND = None
-MULTIPAR_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
 SEVENZIP_COMMAND = None
@@ -205,8 +209,11 @@ ENV_NZO_FIELDS = [
 ]
 
 
-def external_processing(extern_proc: str, nzo: NzbObject, complete_dir: str, status: int) -> tuple[str, int]:
+def external_processing(
+    extern_proc: str, nzo: NzbObject, complete_dir: str, status: int, newfiles: list[str]
+) -> tuple[str, int]:
     """Run a user postproc script, return console output and exit value"""
+    complete_dir = clip_path(complete_dir)
     failure_url = nzo.nzo_info.get("failure", "")
     # Items can be bool or null, causing POpen to fail
     command = [
@@ -233,6 +240,7 @@ def external_processing(extern_proc: str, nzo: NzbObject, complete_dir: str, sta
         "avg_bps": int(nzo.avg_bps_total / nzo.avg_bps_freq) if nzo.avg_bps_freq else 0,
         "age": calc_age(nzo.avg_date),
         "orig_nzb_gz": clip_path(nzb_paths[0]) if nzb_paths else "",
+        "files": json.dumps(sorted([os.path.relpath(clip_path(newfile), complete_dir) for newfile in newfiles])),
     }
 
     # Make sure that if we run a Python script it's output is unbuffered, so we can show it to the user
@@ -271,6 +279,7 @@ def unpacker(
     rars: list[str] = [],
     sevens: list[str] = [],
     ts: list[str] = [],
+    tars: list[str] = [],
     depth: int = 0,
 ) -> tuple[int | bool, list[str]]:
     """Do a recursive unpack from all archives in 'download_path' to 'workdir_complete'"""
@@ -283,9 +292,11 @@ def unpacker(
 
     if depth == 1:
         # First time, ignore anything in workdir_complete
-        xjoinables, xrars, xsevens, xts = build_filelists(nzo.download_path)
+        xjoinables, xrars, xsevens, xts, xtars = build_filelists(nzo.download_path)
     else:
-        xjoinables, xrars, xsevens, xts = build_filelists(nzo.download_path, workdir_complete, check_both=nzo.delete)
+        xjoinables, xrars, xsevens, xts, xtars = build_filelists(
+            nzo.download_path, workdir_complete, check_both=nzo.delete
+        )
 
     force_rerun = False
     newfiles = []
@@ -328,6 +339,15 @@ def unpacker(
                 newfiles.extend(newf)
             logging.info("TS Joining finished on %s", nzo.download_path)
 
+    if cfg.enable_tar():
+        new_tars = [tar for tar in xtars if tar not in tars]
+        if new_tars:
+            logging.info("Tar starting on %s", nzo.download_path)
+            error, newf = tar_unpack(nzo, workdir_complete, one_folder, new_tars)
+            if newf:
+                newfiles.extend(newf)
+            logging.info("Tar finished on %s", nzo.download_path)
+
     # Refresh history and set output
     nzo.set_action_line()
 
@@ -349,10 +369,10 @@ def unpacker(
     if rerun and nzo.delete and depth == 1 and any(build_filelists(nzo.download_path)):
         force_rerun = True
         # Clear lists to force re-scan of files
-        xjoinables, xrars, xsevens, xts = ([], [], [], [])
+        xjoinables, xrars, xsevens, xts, xtars = ([], [], [], [], [])
 
     if rerun and (cfg.enable_recursive() or new_ts or new_joins or force_rerun):
-        z, y = unpacker(nzo, workdir_complete, one_folder, xjoinables, xrars, xsevens, xts, depth)
+        z, y = unpacker(nzo, workdir_complete, one_folder, xjoinables, xrars, xsevens, xts, xtars, depth)
         if z:
             error = z
         if y:
@@ -539,7 +559,9 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: li
                 # Bump the file-lock in case it's stuck
                 with nzo.direct_unpacker.next_file_lock:
                     nzo.direct_unpacker.next_file_lock.notify()
-                time.sleep(2)
+
+                # Returns as soon as it is done
+                nzo.direct_unpacker.join(timeout=2)
 
                 # Did something change? Might be stuck
                 if last_stats == nzo.direct_unpacker.get_formatted_stats():
@@ -713,7 +735,7 @@ def rar_extract_core(
 
     # On Windows, UnRar uses a custom argument parser
     # See: https://github.com/sabnzbd/sabnzbd/issues/1043
-    p = build_and_run_command(command, windows_unrar_command=True)
+    p = build_and_run_command(command, windows_unrar_command=True, stdin=subprocess.PIPE)
     sabnzbd.PostProcessor.external_process = p
 
     nzo.set_action_line(T("Unpacking"), "00/%02d" % numrars)
@@ -726,130 +748,151 @@ def rar_extract_core(
     requires_kill = False
     inrecovery = False
     lines = []
+    linebuf = io.StringIO()
 
     while 1:
-        line = p.stdout.readline()
-        if not line:
+        while 1:
+            # Keep reading until reaching space or end of line
+            char = p.stdout.read(1)
+            linebuf.write(char)
+
+            if char in {" ", "\n", ""}:
+                break
+
+        # End of program
+        if not char:
             break
 
-        # Skip empty lines
-        line = line.strip()
-        if not line:
-            continue
-        lines.append(line)
+        line = linebuf.getvalue()
 
-        if line.startswith("Extracting from"):
-            filename = re.search(RAR_EXTRACTFROM_RE, line).group(1)
-            if filename not in rarfiles:
-                rarfiles.append(filename)
-            curr += 1
-            perc = (curr / numrars) * 100
-            nzo.set_action_line(T("Unpacking"), "%02d/%02d %s" % (curr, numrars, add_time_left(perc, start)))
+        # Handle whole lines
+        if char == "\n":
+            linebuf.truncate(0)
+            linebuf.seek(0)
+            # Skip empty lines
+            line = line[:-1]
+            if not line:
+                continue
+            lines.append(line)
+            if line.startswith("Extracting from"):
+                filename = re.search(RAR_EXTRACTFROM_RE, line).group(1)
+                if filename not in rarfiles:
+                    rarfiles.append(filename)
+                curr += 1
+                perc = (curr / numrars) * 100
+                nzo.set_action_line(T("Unpacking"), "%02d/%02d %s" % (curr, numrars, add_time_left(perc, start)))
 
-        elif line.find("recovery volumes found") > -1:
-            inrecovery = True  # and thus start ignoring "Cannot find volume" for a while
-            logging.debug("unrar recovery start: %s" % line)
-        elif line.startswith("Reconstruct"):
-            # end of reconstruction: 'Reconstructing... 100%' or 'Reconstructing... ' (both success), or 'Reconstruction impossible'
-            inrecovery = False
-            logging.debug("unrar recovery result: %s" % line)
+            elif line.find("recovery volumes found") > -1:
+                inrecovery = True  # and thus start ignoring "Cannot find volume" for a while
+                logging.debug("unrar recovery start: %s" % line)
+            elif line.startswith("Reconstruct"):
+                # end of reconstruction: 'Reconstructing... 100%' or 'Reconstructing... ' (both success), or 'Reconstruction impossible'
+                inrecovery = False
+                logging.debug("unrar recovery result: %s" % line)
 
-        elif line.startswith("Cannot find volume") and not inrecovery:
-            filename = os.path.basename(line[19:])
-            msg = T("Unpacking failed, unable to find %s") % filename
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Unpack", msg, setname)
-            fail = 1
+            elif line.startswith("Cannot find volume") and not inrecovery:
+                filename = os.path.basename(line[19:])
+                msg = T("Unpacking failed, unable to find %s") % filename
+                nzo.fail_msg = msg
+                nzo.set_unpack_info("Unpack", msg, setname)
+                fail = 1
 
-        elif line.endswith("- CRC failed"):
-            msg = T("Unpacking failed, CRC error")
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Unpack", msg, setname)
-            fail = 2  # Older unrar versions report a wrong password as a CRC error
+            elif line.endswith("- CRC failed"):
+                msg = T("Unpacking failed, CRC error")
+                nzo.fail_msg = msg
+                nzo.set_unpack_info("Unpack", msg, setname)
+                fail = 2  # Older unrar versions report a wrong password as a CRC error
 
-        elif line.startswith("File too large"):
-            msg = T("Unpacking failed, file too large for filesystem (FAT?)")
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Unpack", msg, setname)
-            fail = 1
+            elif line.startswith("File too large"):
+                msg = T("Unpacking failed, file too large for filesystem (FAT?)")
+                nzo.fail_msg = msg
+                nzo.set_unpack_info("Unpack", msg, setname)
+                fail = 1
 
-        elif line.startswith("Write error"):
-            msg = "%s %s" % (T("Unpacking failed, write error or disk is full?"), line[11:])
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Unpack", msg, setname)
-            fail = 1
+            elif line.startswith("Write error"):
+                msg = "%s %s" % (T("Unpacking failed, write error or disk is full?"), line[11:])
+                nzo.fail_msg = msg
+                nzo.set_unpack_info("Unpack", msg, setname)
+                fail = 1
 
-        elif line.startswith("There is not enough space on the disk"):
-            msg = T("Unpacking failed, disk full")
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Unpack", msg, setname)
-            fail = 1
-            # After this is a line that requires user input ([R]etry, [A]bort), which hangs, so we need a kill
-            requires_kill = True
+            elif line.startswith("There is not enough space on the disk"):
+                msg = T("Unpacking failed, disk full")
+                nzo.fail_msg = msg
+                nzo.set_unpack_info("Unpack", msg, setname)
+                fail = 1
+                # After this is a line that requires user input ([R]etry, [A]bort), which hangs, so we need a kill
+                requires_kill = True
 
-        elif line.startswith("Cannot create"):
-            # Check if maybe it can be salvaged
-            line = p.stdout.readline()
-            lines.append(line.strip())
-            # Error is different on Linux and Windows
-            if line.startswith(("Invalid argument", "The filename, directory name, or volume label syntax")):
-                # Read another line
+            elif line.startswith("Cannot create"):
+                # Check if maybe it can be salvaged
                 line = p.stdout.readline()
                 lines.append(line.strip())
-                # Will it try to correct?
-                if line.startswith("WARNING: Attempting to correct"):
-                    # Great! Let it try
-                    logging.info("Unrar detected invalid filename and is attempting to correct")
-                    continue
+                # Error is different on Linux and Windows
+                if line.startswith(("Invalid argument", "The filename, directory name, or volume label syntax")):
+                    # Read another line
+                    line = p.stdout.readline()
+                    lines.append(line.strip())
+                    # Will it try to correct?
+                    if line.startswith("WARNING: Attempting to correct"):
+                        # Great! Let it try
+                        logging.info("Unrar detected invalid filename and is attempting to correct")
+                        continue
 
+                msg = "%s %s" % (T("Unpacking failed, write error or disk is full?"), line)
+                nzo.fail_msg = msg
+                nzo.set_unpack_info("Unpack", msg, setname)
+                fail = 1
+                # Kill the process (can stay in endless loop on Windows Server)
+                requires_kill = True
+
+            elif line.startswith("ERROR: "):
+                nzo.fail_msg = line
+                nzo.set_unpack_info("Unpack", line, setname)
+                fail = 1
+
+            elif (
+                "The specified password is incorrect" in line
+                or "Incorrect password" in line
+                or ("ncrypted file" in line and (("CRC failed" in line) or ("Checksum error" in line)))
+            ):
+                # unrar 3.x: "Encrypted file: CRC failed in oLKQfrcNVivzdzSG22a2xo7t001.part1.rar (password incorrect ?)"
+                # unrar 4.x: "CRC failed in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
+                # unrar 5.x: "Checksum error in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
+                # unrar 5.01: "The specified password is incorrect."
+                # unrar 5.80: "Incorrect password for oLKQfrcNVivzdzSG22a2xo7t001.part1.rar"
+                msg = T("Unpacking failed, archive requires a password")
+                nzo.fail_msg = msg
+                nzo.set_unpack_info("Unpack", msg, setname)
+                fail = 2
+
+            elif "is not RAR archive" in line:
+                # Unrecognizable RAR file
+                msg = T("Unusable RAR file")
+                nzo.fail_msg = msg
+                nzo.set_unpack_info("Unpack", msg, setname)
+                fail = 3
+
+            elif "checksum error" in line or "Unexpected end of archive" in line:
+                # Corrupt archive or passworded, we can't know
+                # packed data checksum error in volume FILE
+                msg = T("Corrupt RAR file")
+                nzo.fail_msg = msg
+                nzo.set_unpack_info("Unpack", msg, setname)
+                fail = 3
+
+            elif m := re.search(RAR_EXTRACTED_RE, line):
+                # In case of flat-unpack, UnRar still prints the whole path (?!)
+                unpacked_file = m.group(2)
+                if cfg.flat_unpack():
+                    unpacked_file = os.path.basename(unpacked_file)
+                extracted.append(real_path(extraction_path, unpacked_file))
+        elif line.endswith("[R]etry, [A]bort "):
+            fail = 1
             msg = "%s %s" % (T("Unpacking failed, write error or disk is full?"), line)
             nzo.fail_msg = msg
             nzo.set_unpack_info("Unpack", msg, setname)
-            fail = 1
-            # Kill the process (can stay in endless loop on Windows Server)
-            requires_kill = True
-
-        elif line.startswith("ERROR: "):
-            nzo.fail_msg = line
-            nzo.set_unpack_info("Unpack", line, setname)
-            fail = 1
-
-        elif (
-            "The specified password is incorrect" in line
-            or "Incorrect password" in line
-            or ("ncrypted file" in line and (("CRC failed" in line) or ("Checksum error" in line)))
-        ):
-            # unrar 3.x: "Encrypted file: CRC failed in oLKQfrcNVivzdzSG22a2xo7t001.part1.rar (password incorrect ?)"
-            # unrar 4.x: "CRC failed in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
-            # unrar 5.x: "Checksum error in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
-            # unrar 5.01: "The specified password is incorrect."
-            # unrar 5.80: "Incorrect password for oLKQfrcNVivzdzSG22a2xo7t001.part1.rar"
-            msg = T("Unpacking failed, archive requires a password")
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Unpack", msg, setname)
-            fail = 2
-
-        elif "is not RAR archive" in line:
-            # Unrecognizable RAR file
-            msg = T("Unusable RAR file")
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Unpack", msg, setname)
-            fail = 3
-
-        elif "checksum error" in line or "Unexpected end of archive" in line:
-            # Corrupt archive or passworded, we can't know
-            # packed data checksum error in volume FILE
-            msg = T("Corrupt RAR file")
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Unpack", msg, setname)
-            fail = 3
-
-        elif m := re.search(RAR_EXTRACTED_RE, line):
-            # In case of flat-unpack, UnRar still prints the whole path (?!)
-            unpacked_file = m.group(2)
-            if cfg.flat_unpack():
-                unpacked_file = os.path.basename(unpacked_file)
-            extracted.append(real_path(extraction_path, unpacked_file))
+            with suppress(IOError):
+                p.stdin.write("A\n")
 
         if fail:
             if requires_kill:
@@ -1013,6 +1056,83 @@ def seven_extract_core(
 
 
 ##############################################################################
+# Tar Functions
+##############################################################################
+def tar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, tars: list[str]) -> tuple[bool, list[str]]:
+    """Unpack tar files from 'download_path' to 'workdir_complete.
+    When 'delete' is set, originals will be deleted.
+    """
+
+    untar_failed = False
+    new_files = []
+
+    # Unpack each tar
+    for tar_path in tars:
+        setname = setname_from_path(tar_path)
+        if sys.version_info < (3, 12):
+            msg = T("Unpacking skipped, TAR support requires Python 3.12 or later")
+            logging.info(msg)
+            nzo.set_unpack_info("Unpack", msg, setname)
+        else:
+            logging.info("Starting extract on tar file: %s ", tar_path)
+            nzo.set_action_line(T("Unpacking"), setname)
+
+            if workdir_complete and tar_path.startswith(nzo.download_path):
+                extraction_path = workdir_complete
+            else:
+                extraction_path = os.path.split(tar_path)[0]
+
+            res, new_files_set = tar_extract(nzo, tar_path, extraction_path, one_folder)
+            if res:
+                untar_failed = True
+            new_files.extend(new_files_set)
+
+    # Delete the old files if we have to
+    if not untar_failed and new_files and nzo.delete:
+        for tar_path in tars:
+            try:
+                remove_file(tar_path)
+            except Exception:
+                logging.warning(T("Deleting %s failed!"), tar_path)
+
+    return untar_failed, new_files
+
+
+def tar_extract(nzo: NzbObject, tar_path: str, extraction_path: str, one_folder: bool) -> tuple[int, list[str]]:
+    """Unpack single tar file to 'extraction_path'
+    Return fail==0(ok)/fail==1(error), new_files
+    """
+    ret = 0
+    new_files = []
+
+    def tar_filter(member: tarfile.TarInfo, path: str) -> Optional[tarfile.TarInfo]:
+        """Applies tarfile.data_filter, removes unwanted permissions and can prevent overwrites"""
+        member = tarfile.data_filter(member, path)
+        if member is not None and member.isreg():
+            member = member.replace(mode=member.mode & ~UNWANTED_FILE_PERMISSIONS)
+            if one_folder:
+                member = member.replace(name=os.path.basename(member.name))
+            if not cfg.overwrite_files():
+                member = member.replace(
+                    name=os.path.relpath(get_unique_filename(os.path.join(path, member.name)), path)
+                )
+            new_files.append(os.path.join(extraction_path, member.name))
+        return member
+
+    try:
+        with tarfile.open(tar_path) as tar:
+            tar.extractall(extraction_path, filter=tar_filter)
+    except (OSError, tarfile.TarError) as e:
+        ret = 1
+        msg = T("Unpacking failed, %s") % str(e)
+        logging.info(msg)
+        nzo.fail_msg = msg
+        nzo.set_unpack_info("Unpack", msg, tar_path)
+
+    return ret, new_files
+
+
+##############################################################################
 # PAR2 Functions
 ##############################################################################
 def par2_repair(nzo: NzbObject, setname: str) -> tuple[bool, bool]:
@@ -1065,7 +1185,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> tuple[bool, bool]:
             nzo.set_action_line(T("Repair"), T("Starting Repair"))
             logging.info('Scanning "%s"', parfile)
 
-            joinables, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
+            joinables, _, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
 
             finished, readd, used_joinables, used_for_repair = par2cmdline_verify(parfile, nzo, setname, joinables)
 

@@ -1,2 +1,27 @@
+# All sub-dependencies are listed below and installed with --no-dependencies for security
 PyGithub==2.9.1
-praw==7.8.1
+praw==8.0.2
+pefile==2024.8.26
+
+# PyGithub dependencies
+pynacl==1.6.2
+requests==2.34.2
+pyjwt==2.13.0
+typing-extensions==4.16.0
+urllib3==2.7.0
+
+# praw dependencies
+prawcore==4.0.0
+defusedxml==0.7.1
+update-checker==1.0.0
+websocket-client==1.9.0
+
+# requests dependencies
+charset_normalizer==3.4.9
+idna==3.18
+certifi==2026.7.22
+
+# cryptography (via pyjwt[crypto]) dependencies
+cryptography==49.0.0
+cffi==2.1.0
+pycparser==3.0

@@ -6,9 +6,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Setting PYTHONNODEBUGRANGES reduces binary size
 env:
+  # Setting PYTHONNODEBUGRANGES reduces binary size
   PYTHONNODEBUGRANGES: 1
+  # For macOS we download the official Python, because the GitHub one only support newer macOS 11+ versions
+  # We also use the specific pin for Windows release, so Renovate can update it all at once
+  PYTHON_VERSION: "3.14.6"
 
 jobs:
   build_windows:
@@ -26,11 +29,11 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 15
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
-        python-version: "3.14"
+        python-version: ${{ env.PYTHON_VERSION }}
         architecture: ${{ matrix.architecture }}
         cache: pip
         cache-dependency-path: "**/requirements.txt"
@@ -38,19 +41,21 @@ jobs:
       # Without dependencies to make sure everything is covered in the requirements.txt
       # Special settings:
       #   cryptography see https://github.com/pyca/cryptography/pull/14216
-      #   charset-normalizer see https://github.com/jawah/charset_normalizer/issues/714
       run: |
         python --version
         python -m pip install --upgrade pip wheel
-        pip install --upgrade -r requirements.txt --no-dependencies --only-binary=cryptography --no-binary charset-normalizer
-        pip install --upgrade -r builder/requirements.txt --no-dependencies
+        pip install -r requirements.txt --no-dependencies --only-binary=cryptography
+        pip install -r builder/requirements.txt --no-dependencies
     - name: Build Windows standalone binary
       id: windows_binary
       run: python builder/package.py binary
     - name: Upload Windows standalone binary (unsigned)
+      # When releasing, SignPath consumes this artifact directly and requires the
+      # zip-in-zip layout because they don't support the archive-flag
       uses: actions/upload-artifact@v7
       id: upload-unsigned-binary
       with:
+        archive: ${{ contains(github.ref, 'refs/tags/') }}
         path: "*-win*-bin.zip"
         name: Windows standalone binary (${{ matrix.architecture }})
     - name: Sign Windows standalone binary
@@ -66,11 +71,13 @@ jobs:
         wait-for-completion: true
         output-artifact-directory: "signed"
     - name: Upload Windows standalone binary (signed)
+      # The release file is a .zip, which download-artifact would extract if
+      # uploaded raw, so keep it archived and let the release job unpack it
       uses: actions/upload-artifact@v7
       if: contains(github.ref, 'refs/tags/')
       with:
         name: Windows standalone binary (${{ matrix.architecture }}, signed)
-        path: "signed"
+        path: "signed/*-win*-bin.zip"
     - name: Build Windows installer
       if: matrix.architecture == 'x64'
       run: python builder/package.py installer
@@ -79,6 +86,7 @@ jobs:
       uses: actions/upload-artifact@v7
       id: upload-unsigned-installer
       with:
+        archive: ${{ contains(github.ref, 'refs/tags/') }}
         path: "*-win-setup.exe"
         name: Windows installer (${{ matrix.architecture }})
     - name: Sign Windows installer
@@ -97,7 +105,7 @@ jobs:
       if: matrix.architecture == 'x64' && contains(github.ref, 'refs/tags/')
       uses: actions/upload-artifact@v7
       with:
-        name: Windows installer (${{ matrix.architecture }}, signed)
+        archive: false
         path: "signed/*-win-setup.exe"
 
   build_macos:
@@ -105,26 +113,24 @@ jobs:
     runs-on: macos-14
     timeout-minutes: 15
     env:
-      # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: "3.14.5"
       MACOSX_DEPLOYMENT_TARGET: "10.15"
       # We need to force compile for universal2 support
       CFLAGS: -arch x86_64 -arch arm64
       ARCHFLAGS: -arch x86_64 -arch arm64
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up Python
       # Only use this for the caching of pip packages!
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: "3.14"
         cache: pip
         cache-dependency-path: "**/requirements.txt"
     - name: Cache Python download
       id: cache-python-download
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: ~/python.pkg
         key: cache-macOS-Python-${{ env.PYTHON_VERSION }}
@@ -138,8 +144,8 @@ jobs:
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
-        pip3 install --upgrade -r requirements.txt --no-binary cffi,CT3,PyYAML,charset_normalizer --no-dependencies
-        pip3 install --upgrade -r builder/requirements.txt --no-dependencies
+        pip3 install -r requirements.txt --no-binary cffi,CT3,PyYAML,httptools --no-dependencies
+        pip3 install -r builder/requirements.txt --no-dependencies
     - name: Import macOS codesign certificates
       # Taken from https://github.com/Apple-Actions/import-codesign-certs/pull/27 (comments)
       env:
@@ -161,8 +167,8 @@ jobs:
     - name: Upload source distribution
       uses: actions/upload-artifact@v7
       with:
+        archive: false
         path: "*-src.tar.gz"
-        name: Source distribution
     - name: Build macOS binary
       env:
         SIGNING_AUTH: ${{ secrets.SIGNING_AUTH }}
@@ -173,8 +179,8 @@ jobs:
     - name: Upload macOS binary
       uses: actions/upload-artifact@v7
       with:
+        archive: false
         path: "*-macos.dmg"
-        name: macOS binary
 
   release:
     name: Prepare Release
@@ -183,30 +189,31 @@ jobs:
     if: contains(github.ref, 'refs/tags/')
     environment: release
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.14"
           cache: pip
           cache-dependency-path: "builder/release-requirements.txt"
-      - name: Download Source distribution artifact
+      - name: Download release artifacts
+        # The installer, source and macOS builds are uploaded with archive: false,
+        # so their artifact name is the release filename
         uses: actions/download-artifact@v8
         with:
-          name: Source distribution
-      - name: Download macOS artifact
+          pattern: "SABnzbd-*"
+          merge-multiple: true
+      - name: Download signed Windows binaries
+        # These stay archived (.zip release files), so download-artifact unpacks
+        # them back into the release .zip
         uses: actions/download-artifact@v8
         with:
-          name: macOS binary
-      - name: Download Windows artifacts
-        uses: actions/download-artifact@v8
-        with:
-          pattern: ${{ (contains(github.ref, 'refs/tags/')) && '*signed*' || '*Windows*' }}
+          pattern: "*signed*"
           merge-multiple: true
       - name: Prepare official release
         env:
           AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
           REDDIT_TOKEN: ${{ secrets.REDDIT_TOKEN }}
         run: |
-          pip3 install -r builder/release-requirements.txt
+          pip3 install -r builder/release-requirements.txt --no-dependencies
           python3 builder/release.py

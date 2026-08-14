@@ -22,6 +22,7 @@ sabnzbd.dirscanner - Scanner for Watched Folder
 import asyncio
 import os
 import logging
+import signal
 import threading
 from typing import Generator, Optional
 
@@ -66,8 +67,16 @@ class DirScanner(threading.Thread):
 
         # Create loop right away, so socks5 proxy doesn't break it
         self.loop = asyncio.new_event_loop()
+
+        # Creating a Proactor loop on the main thread registers its self-pipe as the
+        # process-wide signal wakeup fd. This loop is closed in the DirScanner thread,
+        # which leaves a stale fd behind and breaks signal delivery during shutdown.
+        # We never run the loop on the main thread, so undo the registration.
+        if threading.current_thread() is threading.main_thread():
+            signal.set_wakeup_fd(-1)
+
         self.scanner_task: Optional[asyncio.Task] = None
-        self.lock: Optional[asyncio.Lock] = None  # Prevents concurrent scans
+        self.lock = asyncio.Lock()  # Prevents concurrent scans
         self.error_reported = False  # Prevents multiple reporting of missing watched folder
         self.dirscan_dir = cfg.dirscan_dir.get_path()
         self.dirscan_speed = cfg.dirscan_speed()
@@ -119,8 +128,8 @@ class DirScanner(threading.Thread):
     def start_scanner(self):
         """Start the scanner if it is not already running"""
         with DIR_SCANNER_LOCK:
-            if not self.loop:
-                logging.debug("Can not start scanner because loop not found")
+            if not self.loop or self.loop.is_closed():
+                logging.debug("Can not start scanner because loop not found or closed")
                 return
 
             if not self.scanner_task or self.scanner_task.done():
@@ -222,9 +231,6 @@ class DirScanner(threading.Thread):
 
     async def scan_async(self, dirscan_dir: str):
         """Do one scan of the watched folder"""
-        with DIR_SCANNER_LOCK:
-            self.lock = asyncio.Lock()
-
         async with self.lock:
             if sabnzbd.PAUSED_ALL:
                 return

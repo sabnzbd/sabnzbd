@@ -1,8 +1,3 @@
-#if $pane == "Config"#
-    #set global $root = '../'#
-#else#
-    #set global $root = '../../'#
-#end if#
 <!DOCTYPE HTML>
 <html lang="$active_lang" #if $rtl#dir="rtl"#end if#>
 <head>
@@ -14,7 +9,7 @@
         #if $pane == "Switches" then $T('cmenu-switches') else ""#
         #if $pane == "Servers" then $T('cmenu-servers') else ""#
         #if $pane == "Scheduling" then $T('cmenu-scheduling') else ""#
-        #if $pane == "Email" then $T('cmenu-notif') else ""#
+        #if $pane == "Notify" then $T('cmenu-notif') else ""#
         #if $pane == "Categories" then $T('cmenu-cat') else ""#
         #if $pane == "Sorting" then $T('cmenu-sorting') else ""#
         #if $pane == "Special" then $T('cmenu-special') else ""#
@@ -25,20 +20,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1" />
     <meta name="apple-mobile-web-app-title" content="SABnzbd" />
 
-    <link rel="apple-touch-icon" sizes="76x76" href="${root}staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
-    <link rel="apple-touch-icon" sizes="120x120" href="${root}staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
-    <link rel="apple-touch-icon" sizes="152x152" href="${root}staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="${root}staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />
-    <link rel="apple-touch-icon" sizes="192x192" href="${root}staticcfg/ico/android-192x192.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="$url('staticcfg/ico/apple-touch-icon-76x76-precomposed.png')" />
+    <link rel="apple-touch-icon" sizes="120x120" href="$url('staticcfg/ico/apple-touch-icon-120x120-precomposed.png')" />
+    <link rel="apple-touch-icon" sizes="152x152" href="$url('staticcfg/ico/apple-touch-icon-152x152-precomposed.png')" />
+    <link rel="apple-touch-icon" sizes="180x180" href="$url('staticcfg/ico/apple-touch-icon-180x180-precomposed.png')" />
+    <link rel="apple-touch-icon" sizes="192x192" href="$url('staticcfg/ico/android-192x192.png')" />
 
-    <link rel="stylesheet" type="text/css" href="${root}staticcfg/bootstrap/css/bootstrap.min.css?v=$version" />
-    <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/chartist.min.css" />
-    <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/style.css?v=$version" />
+    <link rel="stylesheet" type="text/css" href="$url('staticcfg/bootstrap/css/bootstrap.min.css', v=$cache_buster)" />
+    <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/chartist.min.css', v=$cache_buster)" />
+    <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/style.css', v=$cache_buster)" />
     <!--#if $color_scheme not in ('Light', '') #-->
-    <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/${color_scheme}.css?v=$version"/>
+    <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/' + $color_scheme + '.css', v=$cache_buster)" />
     <!--#end if#-->
 
-    <link rel="shortcut icon" href="${root}staticcfg/ico/favicon.ico?v=$version" />
+    <link rel="shortcut icon" href="$url('staticcfg/ico/favicon.ico', v=$cache_buster)" />
 
     <script type="text/javascript">
         // Keeping track of the form state
@@ -47,9 +42,9 @@
 
         // Information we need
         var sabSession = '$apikey';
-        var rootURL = '${root}'
+        var rootURL = '$url()'
         var urlBase = '${url_base}'
-        var folderBrowseUrl = '${root}api?mode=browse&output=json&apikey=$apikey';
+        var folderBrowseUrl = "$url('api', mode='browse', output='json', apikey=$apikey)";
         var folderSeperator = '#if $os.sep == '\\' then '\\\\' else '/'#'
 
         // Translations
@@ -65,9 +60,9 @@
         configTranslate.confirmLeave = "$T('confirmWithoutSavingPrompt')";
         configTranslate.searchPages = ['$T('cmenu-general')', '$T('cmenu-folders')', '$T('cmenu-switches')', '$T('cmenu-sorting')', '$T('cmenu-notif')', '$T('cmenu-special')']
     </script>
-    <script type="text/javascript" src="${root}staticcfg/js/jquery-3.5.1.min.js?v=$version"></script>
-    <script type="text/javascript" src="${root}staticcfg/bootstrap/js/bootstrap.min.js?v=$version"></script>
-    <script type="text/javascript" src="${root}staticcfg/js/script.js?v=$version"></script>
+    <script type="text/javascript" src="$url('staticcfg/js/jquery-3.5.1.min.js', v=$cache_buster)"></script>
+    <script type="text/javascript" src="$url('staticcfg/bootstrap/js/bootstrap.min.js', v=$cache_buster)"></script>
+    <script type="text/javascript" src="$url('staticcfg/js/script.js', v=$cache_buster)"></script>
     <script type="text/javascript">
         // Set default functions for the autocomplete everywhere
 
@@ -92,62 +87,62 @@
                 <span class="icon-bar"></span>
             </button>
 
-            <a class="navbar-logo navbar-logo-small" href="${root}" title="$T('Home')" data-placement="bottom">
+            <a class="navbar-logo navbar-logo-small" href="$url()" title="$T('Home')" data-placement="bottom">
                 #include $webdir + "/staticcfg/images/logo-small.svg"#
             </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li>
-                    <a href="${root}config/general/" #if $pane == "General" then 'class="active"' else ""#>
+                    <a href="$url('config/general')" #if $pane == "General" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-cog"></span>
                         <strong>$T('cmenu-general')</strong>
                     </a>
                 </li>
                 <li>
-                    <a href="${root}config/folders/" #if $pane == "Folders" then 'class="active"' else ""#>
+                    <a href="$url('config/folders')" #if $pane == "Folders" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-folder-open"></span>
                         <strong>$T('cmenu-folders')</strong>
                     </a>
                 </li>
                 <li>
-                    <a href="${root}config/server/" #if $pane == "Servers" then 'class="active"' else ""#>
+                    <a href="$url('config/server')" #if $pane == "Servers" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-sort"></span>
                         <strong>$T('cmenu-servers')</strong>
                     </a>
                 </li>
                 <li>
-                    <a href="${root}config/categories/" #if $pane == "Categories" then 'class="active"' else ""#>
+                    <a href="$url('config/categories')" #if $pane == "Categories" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-tag"></span>
                         <strong>$T('cmenu-cat')</strong>
                     </a>
                 </li>
                 <li>
-                    <a href="${root}config/switches/" #if $pane == "Switches" then 'class="active"' else ""#>
+                    <a href="$url('config/switches')" #if $pane == "Switches" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-check"></span>
                         <strong>$T('cmenu-switches')</strong>
                     </a>
                 </li>
                 <li>
-                    <a href="${root}config/sorting/" #if $pane == "Sorting" then 'class="active"' else ""#>
+                    <a href="$url('config/sorting')" #if $pane == "Sorting" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-sort-by-alphabet"></span>
                         <strong>$T('cmenu-sorting')</strong>
                     </a>
                 </li>
                 <li>
-                    <a href="${root}config/notify/" #if $pane == "Email" then 'class="active"' else ""#>
+                    <a href="$url('config/notify')" #if $pane == "Notify" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-comment"></span>
                         <strong>$T('cmenu-notif')</strong>
                     </a>
                 </li>
                 <li>
-                    <a href="${root}config/scheduling/" #if $pane == "Scheduling" then 'class="active"' else ""#>
+                    <a href="$url('config/scheduling')" #if $pane == "Scheduling" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-time"></span>
                         <strong>$T('cmenu-scheduling')</strong>
                     </a>
                 </li>
                 <li>
-                    <a href="${root}config/rss/" #if $pane == "RSS" then 'class="active"' else ""#>
+                    <a href="$url('config/rss')" #if $pane == "RSS" then 'class="active"' else ""#>
                         <svg class="rss-icon-svg" viewBox="0 0 8 8">
                             <rect class="rss-button" width="8" height="8" />
                             <circle class="rss-symbol" cx="2" cy="6" r="1" />
@@ -158,7 +153,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="${root}config/special/" #if $pane == "Special" then 'class="active"' else ""#>
+                    <a href="$url('config/special')" #if $pane == "Special" then 'class="active"' else ""#>
                         <span class="glyphicon glyphicon-education"></span>
                         <strong>$T('cmenu-special')</strong>
                     </a>
@@ -170,14 +165,14 @@
                     </a>
                 </li>
                 <li class="dropdown" id="search-menu">
-                    <a data-toggle="dropdown" href="#">
+                    <a data-toggle="dropdown" href="#" aria-label="$T('cmenu-search')" aria-controls="search-dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="glyphicon glyphicon-search"></span>
                         <strong><span class="glyphicon glyphicon-search"></span></strong>
                     </a>
                     <ul class="dropdown-menu" id="search-dropdown">
                         <li>
                             <form onsubmit="return false">
-                                <input type="text" name="config-search" id="search-box" placeholder="$T('cmenu-search')" onkeyup="doConfigSearch(this)">
+                                <input type="text" name="config-search" id="search-box" placeholder="$T('cmenu-search')" aria-label="$T('cmenu-search')" aria-controls="search-dropdown" onkeyup="doConfigSearch(this)">
                             </form>
                         </li>
                     </ul>

@@ -7,13 +7,13 @@ from PyInstaller.building.build_main import Analysis
 from PyInstaller.building.osx import BUNDLE
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
-from builder.constants import EXTRA_FILES, EXTRA_FOLDERS, RELEASE_VERSION, RELEASE_VERSION_BASE, RELEASE_VERSION_TUPLE
+from builder.common import EXTRA_FILES, EXTRA_FOLDERS, RELEASE_VERSION, RELEASE_VERSION_BASE, RELEASE_VERSION_TUPLE
 
 # Add extra files in the PyInstaller-spec
 extra_pyinstaller_files = []
 
 # Add hidden imports
-extra_hiddenimports = ["Cheetah.DummyTransaction", "cheroot.ssl.builtin", "certifi"]
+extra_hiddenimports = ["Cheetah.DummyTransaction", "certifi"]
 extra_hiddenimports.extend(collect_submodules("apprise"))
 extra_hiddenimports.extend(collect_submodules("babelfish.converters"))
 extra_hiddenimports.extend(collect_submodules("guessit.data"))

@@ -228,6 +228,7 @@ class TestUuDecoder:
         [
             VALID_UU_LINES[-1][:10] + bytes("ваше здоровье", encoding="utf8") + VALID_UU_LINES[-1][-10:],  # Non-ascii
         ],
+        ids=["non_ascii"],
     )
     def test_broken_uu(self, bad_data):
         mock_nzf = mock.Mock()

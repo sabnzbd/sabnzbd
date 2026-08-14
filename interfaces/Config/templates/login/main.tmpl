@@ -7,44 +7,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1" />
     <meta name="apple-mobile-web-app-title" content="SABnzbd" />
 
-    <link rel="apple-touch-icon" sizes="76x76" href="../staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
-    <link rel="apple-touch-icon" sizes="120x120" href="../staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
-    <link rel="apple-touch-icon" sizes="152x152" href="../staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="../staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />
-    <link rel="apple-touch-icon" sizes="192x192" href="../staticcfg/ico/android-192x192.png" />
-    <link rel="shortcut icon" href="../staticcfg/ico/favicon.ico?v=$version" />
+    <link rel="apple-touch-icon" sizes="76x76" href="$url('staticcfg/ico/apple-touch-icon-76x76-precomposed.png')" />
+    <link rel="apple-touch-icon" sizes="120x120" href="$url('staticcfg/ico/apple-touch-icon-120x120-precomposed.png')" />
+    <link rel="apple-touch-icon" sizes="152x152" href="$url('staticcfg/ico/apple-touch-icon-152x152-precomposed.png')" />
+    <link rel="apple-touch-icon" sizes="180x180" href="$url('staticcfg/ico/apple-touch-icon-180x180-precomposed.png')" />
+    <link rel="apple-touch-icon" sizes="192x192" href="$url('staticcfg/ico/android-192x192.png')" />
+    <link rel="shortcut icon" href="$url('staticcfg/ico/favicon.ico', v=$cache_buster)" />
 
-    <link rel="stylesheet" type="text/css" href="../staticcfg/bootstrap/css/bootstrap.min.css?v=$version" />
-    <link rel="stylesheet" type="text/css" href="../staticcfg/css/login.css?v=$version" />
+    <link rel="stylesheet" type="text/css" href="$url('staticcfg/bootstrap/css/bootstrap.min.css', v=$cache_buster)" />
+    <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/login.css', v=$cache_buster)" />
     <!--#if $color_scheme not in ('Light', '') #-->
-    <link rel="stylesheet" type="text/css" href="../staticcfg/css/${color_scheme}.css?v=$version"/>
+    <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/' + $color_scheme + '.css', v=$cache_buster)" />
     <!--#end if#-->
 
-    <script type="text/javascript" src="../staticcfg/js/jquery-3.5.1.min.js?v=$version"></script>
-    <script type="text/javascript" src="../staticcfg/bootstrap/js/bootstrap.min.js?v=$version"></script>
+    <script type="text/javascript" src="$url('staticcfg/js/jquery-3.5.1.min.js', v=$cache_buster)"></script>
+    <script type="text/javascript" src="$url('staticcfg/bootstrap/js/bootstrap.min.js', v=$cache_buster)"></script>
 </head>
 <html>
     <body>
         <div class="account-wall">
             <div class="text-center logo-header">
                 <!--#include $webdir + "/staticcfg/images/logo-full.svg"#-->
-                <a href="https://sabnzbd.org/wiki/faq#why-login" target="_blank">
-                    <span class="glyphicon glyphicon-question-sign"></span>
+                <a href="https://sabnzbd.org/wiki/faq#why-login" target="_blank" aria-label="$T('menu-help')">
+                    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
                 </a>
             </div>
-            <form class="form-signin" action="./" method="post">
+            <form class="form-signin" action="./login" method="post">
                 <!--#if $error#-->
                 <div class="alert alert-danger" role="alert">$error</div>
                 <!--#end if#-->
 
-                <input type="text" class="form-control" name="username" placeholder="$T('srv-username')" autocomplete="username" required autofocus>
-                <input type="password" class="form-control" name="password" placeholder="$T('srv-password')" autocomplete="current-password" required>
+                <input type="text" class="form-control" name="username" placeholder="$T('srv-username')" aria-label="$T('srv-username')" autocomplete="username" required autofocus>
+                <input type="password" class="form-control" name="password" placeholder="$T('srv-password')" aria-label="$T('srv-password')" autocomplete="current-password" required>
 
                 <button class="btn btn-default"><span class="glyphicon glyphicon-circle-arrow-right"></span> $T('login') </button>
 
-                <div class="checkbox text-center" data-toggle="tooltip" data-placement="bottom" title="$T('explain-sessionExpire')">
+                <div class="text-center" data-toggle="tooltip" data-placement="bottom" title="$T('explain-sessionExpire')">
                     <label>
-                        <input type="checkbox" name="remember_me" value="1"> $T('rememberme')
+                        $T('rememberme') <input type="checkbox" name="remember_me" value="1">
                     </label>
                   </div>
             </form>

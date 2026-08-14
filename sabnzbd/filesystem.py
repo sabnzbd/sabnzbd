@@ -35,6 +35,7 @@ import stat
 import ctypes
 import random
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Any, Optional, BinaryIO
 
 try:
@@ -318,7 +319,7 @@ def sanitize_and_trim_path(path: str) -> str:
         new_path = "/"
     for part in parts:
         new_path = os.path.join(new_path, sanitize_foldername(part))
-    return os.path.abspath(os.path.normpath(new_path))
+    return os.path.abspath(new_path)
 
 
 def sanitize_files(folder: Optional[str] = None, filelist: Optional[list[str]] = None) -> list[str]:
@@ -493,16 +494,17 @@ SPLITFILE_RE = re.compile(r"\.(\d\d\d?\d$)", re.I)
 SEVENZIP_RE = re.compile(r"\.(zip|7z)$", re.I)
 SEVENMULTI_RE = re.compile(r"\.7z\.\d+$", re.I)
 TS_RE = re.compile(r"\.(\d+)\.(ts$)", re.I)
+TAR_RE = re.compile(r"\.(tar$)", re.I)
 
 
 def build_filelists(
     workdir: Optional[str], workdir_complete: Optional[str] = None, check_both: bool = False, check_rar: bool = True
-) -> tuple[list[str], list[str], list[str], list[str]]:
+) -> tuple[list[str], list[str], list[str], list[str], list[str]]:
     """Build filelists, if workdir_complete has files, ignore workdir.
     Optionally scan both directories.
     Optionally test content to establish RAR-ness
     """
-    sevens, joinables, rars, ts, filelist = ([], [], [], [], [])
+    sevens, joinables, rars, ts, filelist, tars = ([], [], [], [], [], [])
 
     if workdir_complete:
         filelist.extend(listdir_full(workdir_complete))
@@ -529,13 +531,17 @@ def build_filelists(
         elif TS_RE.search(file):
             # TS split files
             ts.append(file)
+        elif TAR_RE.search(file):
+            # TAR files
+            tars.append(file)
 
     logging.debug("build_filelists(): joinables: %s", joinables)
     logging.debug("build_filelists(): rars: %s", rars)
     logging.debug("build_filelists(): 7zips: %s", sevens)
     logging.debug("build_filelists(): ts: %s", ts)
+    logging.debug("build_filelists(): tars: %s", tars)
 
-    return joinables, rars, sevens, ts
+    return joinables, rars, sevens, ts, tars
 
 
 def safe_fnmatch(f: str, pattern: str) -> bool:
@@ -879,6 +885,23 @@ def cleanup_empty_directories(path: str):
             pass
 
 
+def remove_empty_parent_directories(base_dir: str, files: list[str]):
+    """Remove directories below 'base_dir' that are left empty
+    after 'files' were moved or removed. Other (unrelated) empty
+    directories and 'base_dir' itself are never removed."""
+    base_dir = os.path.normpath(base_dir)
+    for check_dir in {os.path.normpath(os.path.dirname(filepath)) for filepath in files}:
+        # Walk up towards base_dir, removing directories as long as they are empty
+        while check_dir != base_dir and check_dir.startswith(base_dir + os.path.sep):
+            try:
+                if os.listdir(check_dir):
+                    break
+                remove_dir(check_dir)
+            except OSError:
+                break
+            check_dir = os.path.dirname(check_dir)
+
+
 def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     """Rename file/folder with retries for Win32
     Optionally allows the creation of local directories if they don't exist yet
@@ -1011,12 +1034,18 @@ class Diskspace:
     free: float = 0.0
 
 
+def first_existing_path(path: str) -> str:
+    """Return the first folder level of the path that exists"""
+    x = "x"
+    while x and not os.path.exists(path):
+        path, x = os.path.split(path)
+    return path
+
+
 def diskspace_base(dir_to_check: str) -> Diskspace:
     """Return amount of free and used diskspace in GBytes"""
     # Find first folder level that exists in the path
-    x = "x"
-    while x and not os.path.exists(dir_to_check):
-        dir_to_check, x = os.path.split(dir_to_check)
+    dir_to_check = first_existing_path(dir_to_check)
 
     if sabnzbd.WINDOWS:
         # windows diskfree
@@ -1051,6 +1080,27 @@ def diskspace(force: bool = False, complete_dir: Optional[str] = None) -> tuple[
     if not complete_dir:
         complete_dir = sabnzbd.cfg.complete_dir.get_path()
     return diskspace_base(sabnzbd.cfg.download_dir.get_path()), diskspace_base(complete_dir)
+
+
+@lru_cache(maxsize=16)
+def same_device(path_a: str, path_b: str) -> bool:
+    """Determine if both paths are located on the same device, meaning a file can be moved
+    between them by renaming it, without requiring any additional free space.
+    The paths do not have to exist, the first existing folder level is used."""
+    path_a = first_existing_path(path_a)
+    path_b = first_existing_path(path_b)
+
+    # Different drive letters or UNC shares are never the same device. Checked separately
+    # because st_dev is not reliable for network locations on Windows
+    if os.path.splitdrive(path_a)[0].lower() != os.path.splitdrive(path_b)[0].lower():
+        return False
+
+    try:
+        return os.stat(path_a).st_dev == os.stat(path_b).st_dev
+    except OSError:
+        # Assume separate devices, so callers keep reserving space for a copy
+        logging.debug("Could not determine if %s and %s are on the same device", path_a, path_b)
+        return False
 
 
 def get_new_id(prefix: str, folder: str, check_list: Optional[list] = None) -> str:
@@ -1368,7 +1418,7 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
             path = os.path.dirname(path)
 
     # Fix up the path and find the parent
-    path = os.path.abspath(os.path.normpath(path))
+    path = os.path.abspath(path)
     parent_path = os.path.dirname(path)
 
     # If we're at the root then the next step is the meta-node showing our drive letters

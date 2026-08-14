@@ -1,19 +1,19 @@
 <nav class="navbar navbar-inverse main-navbar">
     <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-label="$T('Glitter-toggleNavigation')" aria-controls="navbar-collapse" aria-expanded="false">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-logo" href="./">
+        <a class="navbar-logo" href="$url()" aria-label="SABnzbd $T('menu-queue')">
             #include $webdir + "/../../Config/templates/staticcfg/images/logo-small.svg"#
         </a>
         <div class="btn-group">
             <div class="btn-group">
-                <button type="button" class="btn btn-default navbar-btn" data-bind="click: pauseToggle, attr: { 'title': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')' }">
+                <button type="button" class="btn btn-default navbar-btn" data-bind="click: pauseToggle, attr: { 'title': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')', 'aria-label': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')' }">
                     <span class="glyphicon" data-bind="css: { 'glyphicon-play' : downloadsPaused(), 'glyphicon-pause' : !downloadsPaused() }"></span>
                 </button>
-                <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown">
+                <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" aria-label="$T('pauseFor')" aria-haspopup="true" aria-expanded="false">
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
@@ -38,7 +38,7 @@
                     <li><a href="#" data-bind="click: openCustomUnpauseTime">$T('Glitter-custom')</a></li>
                     <!-- /ko -->
                 </ul>
-                <span class="btn btn-default navbar-btn navbar-timeleft" data-bind="text: timeLeft"  data-toggle="dropdown">0:00</span>
+                <span class="btn btn-default navbar-btn navbar-timeleft" data-bind="text: timeLeft" data-toggle="dropdown">0:00</span>
             </div>
         </div>
     </div>
@@ -49,18 +49,18 @@
             <li class="speedlimit-dropdown dropdown">
                 <div class="btn-group">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-default navbar-btn navbar-speed" data-toggle="dropdown">
+                        <button type="button" class="btn btn-default navbar-btn navbar-speed" data-toggle="dropdown" aria-haspopup="true">
                             <span data-bind="text: speedText">0 KB/s</span>
                         </button>
-                        <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" onclick="keepOpen(this)">
+                        <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" onclick="keepOpen(this)" aria-hidden="true" tabindex="-1">
                             <span class="caret"></span>
                         </button>
-                        <a href="#" class="max-speed-input-clear hover-button" data-bind="click: clearSpeedLimit, visible:(speedLimit() < 100 && speedLimit() > 0)" style="display: none;">
+                        <a href="#" class="max-speed-input-clear hover-button" aria-label="$T('button-clear')" data-bind="click: clearSpeedLimit, visible:(speedLimit() < 100 && speedLimit() > 0)" style="display: none;">
                             <span class="glyphicon glyphicon-link"></span>
                         </a>
                         <div class="dropdown-menu max-speed-input">
                             <div data-bind="visible: !bandwithLimit()">
-                                <a href="./config/general/#bandwidth_max_value">
+                                <a href="$url('config/general#bandwidth_max_value')">
                                     <span class="glyphicon glyphicon-cog"></span> $T('Glitter-setMaxLinespeed')
                                 </a>
                             </div>
@@ -73,14 +73,14 @@
                 </div>
             </li>
             <li data-tooltip="true" data-placement="bottom" title="$T('Glitter-addNZB')">
-                <a href="#modal-add-nzb" data-toggle="modal"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                <a href="#modal-add-nzb" data-toggle="modal" aria-label="$T('Glitter-addNZB')"><span class="glyphicon glyphicon-plus-sign"></span></a>
             </li>
             <li data-tooltip="true" data-placement="bottom" title="$T('Glitter-statusInterfaceOptions')" data-bind="click: loadStatusInfo">
-                <a href="#modal-options" data-toggle="modal"><span class="glyphicon glyphicon-wrench"></span></a>
+                <a href="#modal-options" data-toggle="modal" aria-label="$T('Glitter-statusInterfaceOptions')"><span class="glyphicon glyphicon-wrench"></span></a>
             </li>
             <!--#if $have_rss_defined#-->
             <li data-tooltip="true" data-placement="bottom" title="$T('cmenu-rss')">
-                <a href="./config/rss/">
+                <a href="$url('config/rss')" aria-label="$T('cmenu-rss')">
                     <svg class="rss-icon-svg" viewBox="0 0 8 8">
                         <rect class="rss-button" width="8" height="8" />
                         <circle class="rss-symbol" cx="2" cy="6" r="1" />
@@ -91,10 +91,10 @@
             </li>
             <!--#end if#-->
             <li data-tooltip="true" data-placement="bottom" title="SABnzbd $T('menu-config')">
-                <a href="./config/"><span class="glyphicon glyphicon-cog"></span></a>
+                <a href="$url('config')" aria-label="SABnzbd $T('menu-config')"><span class="glyphicon glyphicon-cog"></span></a>
             </li>
             <li class="dropdown main-menu-link" data-bind="css: { 'active-on-queue-finish-menu': finishaction()}">
-                <a href="#" data-toggle="dropdown"  onclick="keepOpen(this)">
+                <a href="#" data-toggle="dropdown"  onclick="keepOpen(this)" aria-label="$T('Glitter-mainMenu')" aria-haspopup="true" aria-expanded="false">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -103,18 +103,18 @@
                     <li><a href="#modal-help" data-toggle="modal"><span class="glyphicon glyphicon-question-sign"></span> $T('menu-help')</a></li>
                     <li><a href="https://sabnzbd.org/donate" target="_blank"><span class="glyphicon glyphicon-heart"></span> $T('menu-donate')</a></li>
                     <!--#if $have_logout or $have_quota or $have_rss_defined or $have_watched_dir or $pp_pause_event#--><li class="divider"></li><!--#end if#-->
-                    <!--#if $have_logout#--><li><a href="./login/?logout=1"><span class="glyphicon glyphicon-log-out"></span> $T('logout')</a></li><!--#end if#-->
+                    <!--#if $have_logout#--><li><a href="$url('logout')"><span class="glyphicon glyphicon-log-out"></span> $T('logout')</a></li><!--#end if#-->
                     <!--#if $have_quota#--><li><a href="#" data-bind="click: doQueueAction" data-mode="reset_quota">$T('link-resetQuota')</a></li><!--#end if#-->
                     <!--#if $have_rss_defined#--><li><a href="#" data-bind="click: doQueueAction" data-mode="rss_now">$T('button-rssNow')</a></li><!--#end if#-->
                     <!--#if $have_watched_dir#--><li><a href="#" data-bind="click: doQueueAction" data-mode="watched_now">$T('sch-scan_folder')</a></li><!--#end if#-->
                     <!--#if $pp_pause_event#--><li><a href="#" data-bind="click: doQueueAction" data-mode="resume_pp">$T('sch-resume_post')</a></li><!--#end if#-->
                     <li class="divider"></li>
-                    <li><a href="./shutdown/?apikey=$apikey&amp;pid=$pid" data-bind="click: shutdownSAB">$T('shutdownSab')</a></li>
+                    <li><a href="$url('shutdown', apikey=$apikey, pid=$pid)" data-bind="click: shutdownSAB">$T('shutdownSab')</a></li>
                     <li><a href="#" data-bind="click: restartSAB">$T('Glitter-restartSab')</a></li>
                     <li class="divider"></li>
                     <li class="dropdown-header"><span class="glyphicon glyphicon-off"></span> $T('Glitter-onFinish'):</li>
                     <li>
-                        <select data-bind="value: finishaction, event: { change: setOnQueueFinish }" class="form-control">
+                        <select data-bind="value: finishaction, event: { change: setOnQueueFinish }" class="form-control" aria-label="$T('Glitter-onFinish')">
                             <option value=""></option>
                             <option value="shutdown_program">$T('shutdownSab')</option>
                             <!--#if $power_options#-->

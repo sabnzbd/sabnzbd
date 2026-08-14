@@ -8,7 +8,7 @@
         <div class="padTable">
             <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <p>$T('explain-RSS')</p>
-            <form action="add_rss_feed" method="post" autocomplete="off">
+            <form data-form="add-rss-feed" action="$url('config/rss/add_rss_feed')" method="post" autocomplete="off">
                 <input type="hidden" name="apikey" value="$apikey" />
                 <table class="catTable addRssTable">
                     <tr>
@@ -38,7 +38,7 @@
     <!--#if $rss#-->
     <div class="section">
         <div class="padTable">
-            <form action="save_rss_feed" method="post" autocomplete="off">
+            <form action="$url('config/rss/save_rss_feed')" method="post" autocomplete="off">
                 <input type="hidden" name="apikey" value="$apikey" />
                 <table id="subscriptions">
                     <tbody>
@@ -75,7 +75,7 @@
             </form>
             <!--#if $feeds#-->
             <br/>
-            <form action="rss_now" method="post" autocomplete="off">
+            <form action="$url('config/rss/rss_now')" method="post" autocomplete="off">
                 <input type="hidden" name="apikey" value="$apikey" />
                 <button type="submit" class="btn btn-default readAll"><span class="glyphicon glyphicon-sort"></span> $T('button-rssNow')</button>
             </form>
@@ -84,7 +84,7 @@
     </div>
     <!--#end if#-->
     <div class="section">
-        <form action="save_rss_rate" method="post" autocomplete="off">
+        <form action="$url('config/rss/save_rss_rate')" method="post" autocomplete="off">
             <input type="hidden" name="apikey" value="$apikey" />
             <div class="col1">
                 <fieldset>
@@ -107,7 +107,7 @@
         <div class="padTable">
             <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <h2 class="nomargin activeRSS">
-                <a href="${root}config/rss/">$T('cmenu-rss')</a> &raquo;
+                <a href="$url('config/rss')">$T('cmenu-rss')</a> &raquo;
                 $active_feed
             </h2>
             <!--#if $error#-->
@@ -116,7 +116,7 @@
                 $error
             </div>
             <!--#end if#-->
-            <form action="upd_rss_feed" method="post">
+            <form action="$url('config/rss/upd_rss_feed')" method="post">
                 <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="feed" value="$active_feed" />
                 <input type="hidden" name="uri" value="$rss[$feed]['uris']" />
@@ -156,7 +156,8 @@
                                     <option value=">"> $T('rss-atleast')</option>
                                     <option value="<"> $T('rss-atmost')</option>
                                     <option value="F"> $T('rss-from')</option>
-                                    <option value="F"> $T('rss-from-show') ($T('rss-accept'))</option>
+                                    <option value="S"> $T('rss-from-show') ($T('rss-accept'))</option>
+                                    <option value="G"> $T('rss-age')</option>
                                 </select>
                             </td>
                             <td>
@@ -207,7 +208,7 @@
                 </table>
             </form>
             <!-- add new filter -->
-            <form action="upd_rss_filter" method="post">
+            <form data-form="update-rss-filter" action="$url('config/rss/upd_rss_filter')" method="post">
                 <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="index" value="$rss[$feed]['filtercount']" />
                 <input type="hidden" name="feed" value="$active_feed" />
@@ -230,6 +231,7 @@
                                     <option value="<"> $T('rss-atmost')</option>
                                     <option value="F"> $T('rss-from')</option>
                                     <option value="S"> $T('rss-from-show') ($T('rss-accept'))</option>
+                                    <option value="G"> $T('rss-age')</option>
                                 </select>
                             </td>
                             <td>
@@ -283,7 +285,7 @@
             <!--#set $fnum = 0#-->
             <!--#for $filter in $rss[$feed].filters#-->
                 <!--#set $odd = not $odd#-->
-                <form action="upd_rss_filter" method="post" autocomplete="off">
+                <form data-form="update-rss-filter" action="$url('config/rss/upd_rss_filter')" method="post" autocomplete="off">
                     <input type="hidden" name="apikey" value="$apikey" />
                     <input type="hidden" name="index" value="$fnum" />
                     <input type="hidden" name="feed" value="$active_feed" />
@@ -306,6 +308,7 @@
                                         <option value="<" <!--#if $filter[3]=="&lt;" then 'selected="selected"' else ""#-->> $T('rss-atmost')</option>
                                         <option value="F" <!--#if $filter[3]=="F" then 'selected="selected"' else ""#-->> $T('rss-from')</option>
                                         <option value="S" <!--#if $filter[3]=="S" then 'selected="selected"' else ""#-->> $T('rss-from-show') ($T('rss-accept'))</option>
+                                        <option value="G" <!--#if $filter[3]=="G" then 'selected="selected"' else ""#-->> $T('rss-age')</option>
                                     </select>
                                 </td>
                                 <td>
@@ -361,7 +364,7 @@
                 </form>
                 <!--#set $fnum = $fnum+1#-->
             <!--#end for#-->
-            <form action="download_rss_feed" method="post">
+            <form action="$url('config/rss/download_rss_feed')" method="post">
                 <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="feed" value="$active_feed" />
                 <div class="padding">
@@ -397,7 +400,7 @@
                     <!--#for $job in $matched#-->
                         <tr class="infoTableSeperator">
                             <td>
-                                <form action="download" method="get">
+                                <form data-form="download-rss-job" action="$url('config/rss/download')" method="post">
                                     <input type="hidden" value="$active_feed" name="feed" />
                                     <input type="hidden" name="apikey" value="$apikey" />
                                     <input type="hidden" name="url" value="$job['url']" />
@@ -441,7 +444,7 @@
                     <!--#for $job in $unmatched#-->
                         <tr class="infoTableSeperator">
                             <td>
-                                <form action="download" method="get">
+                                <form data-form="download-rss-job" action="$url('config/rss/download')" method="post">
                                     <input type="hidden" value="$active_feed" name="feed" />
                                     <input type="hidden" name="apikey" value="$apikey" />
                                     <input type="hidden" name="url" value="$job['url']" />
@@ -470,24 +473,32 @@
             </div>
             <div class="tab-pane padTable" id="rss-tab-done">
                 <!--#if $downloaded#-->
-                <form action="clean_rss_jobs" method="post">
+                <form action="$url('config/rss/clean_rss_jobs')" method="post">
                     <input type="hidden" value="$active_feed" name="feed" />
                     <input type="hidden" name="apikey" value="$apikey" />
                     <table class="catTable">
                         <thead>
                             <tr>
-                                <th class="default-sort">$T('rss-added')</th>
+                                <th class="no-sort">$T('link-download')</th>
                                 <th>$T('rss-filter')</th>
                                 <th>$T('size')</th>
                                 <th width="60%">$T('sort-title')</th>
                                 <th>$T('category')</th>
-                                <th>$T('nzo-age')</th>
+                                <th class="default-sort">$T('nzo-age')</th>
                                 <th>$T('source')</th>
                             </tr>
                         </thead>
-                        <!--#for $job in $downloaded#-->
+                        <!--#for $job in $matched#-->
                             <tr class="infoTableSeperator">
-                                <td data-sort-value="$job['time_downloaded_ms']">$job['time_downloaded']</td>
+                                <td>
+                                    <form action="$url('config/rss/download')" method="post">
+                                        <input type="hidden" value="$active_feed" name="feed" />
+                                        <input type="hidden" name="apikey" value="$apikey" />
+                                        <input type="hidden" name="url" value="$job['url']" />
+                                        <input type="hidden" name="nzbname" value="$job['nzbname']" />
+                                        <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
+                                    </form>
+                                </td>
                                 <td>$job['rule'] $job['skip']</td>
                                 <td data-sort-value="$job['size']">$job['size_units']</td>
                                 <td>$job['title']</td>
@@ -505,7 +516,7 @@
                     </table>
                 </form>
                 <!--#else#-->
-                    $T('none')
+                $T('none')
                 <!--#end if#-->
             </div>
             <!--#end if#-->
@@ -514,12 +525,12 @@
 </div>
 <!-- /colmask -->
 
-<form method="post" action="save_rss_feed" class="modal fade" id="rss_edit_modal">
+<form method="post" action="$url('config/rss/save_rss_feed')" class="modal fade" id="rss_edit_modal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="rss-edit-modal-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('Edit') <span id="feed_edit_name_label"></span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="rss-edit-modal-title">$T('Edit') <span id="feed_edit_name_label"></span></h4>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -542,7 +553,7 @@
     </div><!-- /.modal-dialog -->
 </form><!-- /.modal -->
 
-<script type="text/javascript" src="${root}staticcfg/js/jquery.tablesort.min.js"></script>
+<script type="text/javascript" src="$url('staticcfg/js/jquery.tablesort.min.js', v=$cache_buster)"></script>
 <script type="text/javascript">
 function urlencode(str) {
     return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
@@ -586,7 +597,7 @@ jQuery(document).ready(function(){
             var whichFeed = jQuery(this).attr("rel");
             jQuery.ajax({
                 type: "POST",
-                url: "del_rss_feed",
+                url: "$url('config/rss/del_rss_feed')",
                 data: {feed: whichFeed, apikey: "$apikey" }
             }).done(function( msg ) {
                 // Let us leave!
@@ -601,7 +612,7 @@ jQuery(document).ready(function(){
         var whichFeed = jQuery(this).attr("rel");
         jQuery.ajax({
             type: "POST",
-            url: "toggle_rss_feed",
+            url: "$url('config/rss/toggle_rss_feed')",
             data: {feed: whichFeed, apikey: "$apikey" }
         }).done(function() {
             // Let us leave!
@@ -612,7 +623,7 @@ jQuery(document).ready(function(){
     });
 
     // Only the Accept filter needs all the options
-    jQuery('form[action="upd_rss_filter"]').find('select[name="filter_type"]').change(function() {
+    jQuery('form[data-form="update-rss-filter"]').find('select[name="filter_type"]').change(function() {
         jQuery(this).parent().parent().find('select:not([name="filter_type"])').attr('disabled', jQuery(this).val() !== "A" && jQuery(this).val() !== "S")
     })
     // Trigger on-load for all
@@ -641,7 +652,7 @@ jQuery(document).ready(function(){
         var whichFeed = jQuery(this).attr("rel");
         jQuery.ajax({
             type: "POST",
-            url: "test_rss_feed",
+            url: "$url('config/rss/test_rss_feed')",
             data: {feed: whichFeed, apikey: "$apikey" }
         }).done(function( msg ) {
             // Let us leave!
@@ -654,15 +665,21 @@ jQuery(document).ready(function(){
     jQuery('.cleanFeed').click(function(){
         setActiveIcon(this)
         var theForm = jQuery(this).closest("form");
-        theForm.attr("action", "clean_rss_jobs").submit();
+        theForm.attr("action", "$url('config/rss/clean_rss_jobs')").submit();
+    });
+
+    jQuery('.evalFeed').click(function(){
+        setActiveIcon(this)
+        var theForm = jQuery(this).closest("form");
+        theForm.attr("action", "$url('config/rss/eval_rss_feed')").submit();
     });
 
     jQuery('.delFilter').click(function(){
         var theForm = jQuery(this).closest("form");
-        theForm.attr("action", "del_rss_filter").submit();
+        theForm.attr("action", "$url('config/rss/del_rss_filter')").submit();
     });
 
-    jQuery('form[action="download"]').ajaxForm({
+    jQuery('form[data-form="download-rss-job"]').ajaxForm({
         datatype: 'json',
         beforeSubmit: function (_, form) {
             jQuery(form).find('button').attr("disabled", "disabled")

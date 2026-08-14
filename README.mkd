@@ -1,64 +1,53 @@
-Release Notes - SABnzbd 5.0.0 Release Candidate 3
+Release Notes - SABnzbd 5.1.0 Release Candidate 2
 =========================================================
 
-This is the third (and hopefully final) release candidate of version 5.0.
-Please note the breaking changes described below!
+This is the second release candidate of version 5.1.
 
-## New features in 5.0.0
+## New features in 5.1.0
 
-* Added support for NNTP Pipelining which eliminates idle waiting between
-  requests, significantly improving speeds on high-latency connections.
-  Read more here: https://sabnzbd.org/wiki/advanced/nntp-pipelining
-  New servers will have `Articles per request` set to `2` by default.
-* Implemented Direct Write to optimize assembly of downloaded files.
-  Read more here: https://sabnzbd.org/wiki/advanced/direct-write
-* Post-processing scripts will always be executed, even for failed jobs.
-  Make sure to check the status of the job in your scripts!
-* Removed Special setting `empty_postproc` as it is no longer needed.
-* Complete redesign of article cache.
-* Improved disk speed measurement in Status window.
-* Reduce delays between jobs during post-processing.
-* Improve handling of disks getting full.
-* Diskspace check will now included Category-specific folders.
-* If a download only has `.nzb` files inside, the new downloads
-  will include the name of the original download.
-* No longer show tracebacks in the browser, only in the logs.
-* Dropped support for Python 3.8.
-* Windows: Added Windows ARM (portable) release.
-* Windows and macOS: Added HTML version of the Release Notes.
-* Windows and macOS: Update Python to 3.14.4, Unrar to 7.20,
-  par2cmdline-turbo to 1.4 and 7zip to 26.00.
+* Refreshed the interface.
+* When Retrying a job, only the actually missing articles are tried again.
+  This only works for jobs downloaded in 5.1.0 (or newer).
+* RSS items are now stored in the database instead of on disk.
+* New RSS `Age` rule to filter jobs based on their age.
+* Downloaded RSS items are cleared from the RSS database after 3 days.
+* Added support for filename and path pattern matching to the `Cleanup List`.
+* `Unwanted extensions` will also be removed after unpacking.
+* Allow job setting changes directly from `Extra queue columns`.
+* Added support for unpacking `.tar` files during post-processing.
+* Improved anonymization of the logs when using `Show Logging`.
+* Added `SAB_FILES` environment variable to Post-processing scripts,
+  listing all files that resulted from the job.
+* New Servers will default to 16 connections instead of 8.
+* Use media duration as part of `Ignore Samples` detection.
+* Added option to (auto) sort the queue by Remaining Percentage.
+* Improved support for screen readers.
+* Parsing of header-encrypted RARs will use significantly fewer resources.
+* Add Ayatana AppIndicator tray support on GNOME.
+* Removed redundant `INSTALL.txt` file.
+* Dropped support for Python 3.9.
+* Windows and macOS: Updated Python to 3.14.6, Unrar to 7.23 and 7zip to 26.02.
 
-## Bug fixes in 5.0.0
+## Bug fixes in 5.1.0
 
-* `Check before download` could get stuck or fail to reject.
-* Several stability changes for the core download process.
-* If only par2 files were missing, jobs could get incorrectly aborted.
-* No error was shown in case NZB upload failed.
-* Correct mobile layout if `Full Width` is enabled.
-* Handle passwords that exceed Unrar's password limit.
-* Aborted Direct Unpack could result in no files being unpacked.
-* Encrypted RAR detection could sometimes fail.
-* Unwanted Extension check was unreliable on passworded downloads.
-* No longer exclusively lock all directory operations.
-* Improved handling of non-NFC unicode filenames.
-* Sorting of files inside jobs was inconsistent.
-* Linux: No longer break test-data in release package.
-* Windows: Tray icon disappears after Explorer restart.
-* macOS: Slow to start on some network setups.
-
-## Changes to default settings for new installations in 5.0.0
-
-* Default `Minimum Free Space for Temporary Download Folder` set to `500M`.
-* Enabled `verify_xff_header` setting by default.
-
+* Prevent incorrect warnings about non-writeable directories.
+* Files unrelated to job could get removed by the `Cleanup List` logic.
+* Prevent path traversal in orphaned job APIs.
+* `Disk Full` errors from unrar were not handled gracefully during unpacking.
+* Memory leak could occur during article decoding.
+* In containers (like Docker), the Article Cache could exceed the memory limit.
+* Diskspace checks would be too strict when unpacking to different disk.
+* Prevent deadlock when a second signal arrives during shutdown procedure.
+* Verification using SFV-checks could fail, even though files were correct.
+* Windows: Uninstall would not remove Settings or Windows Service.
+* Windows: Warn for OS-limit if more than 1024 connections are configured.
+* macOS: AppleDouble files could result in failures in `Moving` stage.
+* macOS: Restarting the application resulted in Terminal window.
 
 ## Upgrade notices
 
 * You can directly upgrade from version 3.0.0 and newer.
 * Upgrading from older versions will require performing a `Queue repair`.
-* Downgrading from version 4.2.0 or newer to 3.7.2 or older will require
-  performing a `Queue repair` due to changes in the internal data format.
 
 ## Known problems and solutions
 

@@ -21,20 +21,23 @@
     {
       "customType": "regex",
       "fileMatch": ["^\\.github/workflows/build_release\\.yml$"],
-      "matchStrings": [
-        "PYTHON_VERSION:\\s*\"(?<currentValue>.*?)\""
-      ],
+      "matchStrings": ["PYTHON_VERSION:\\s*\"(?<currentValue>.*?)\""],
       "datasourceTemplate": "python-version",
       "depNameTemplate": "python"
     },
     {
       "customType": "regex",
       "fileMatch": ["^sabnzbd/constants\\.py$"],
-      "matchStrings": [
-        "SABCTOOLS_VERSION_REQUIRED\\s*=\\s*\"(?<currentValue>.*?)\""
-      ],
+      "matchStrings": ["SABCTOOLS_VERSION_REQUIRED\\s*=\\s*\"(?<currentValue>.*?)\""],
       "datasourceTemplate": "pypi",
       "depNameTemplate": "sabctools"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^\\.github/workflows/translations\\.yml$"],
+      "matchStrings": ["TX_VERSION=\"(?<currentValue>.*?)\""],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "transifex/cli"
     }
   ],
   "ignorePaths": [],
@@ -43,7 +46,7 @@
     "jaraco.context",
     "jaraco.collections",
     "tempora",
-    "paho-mqtt"
+    "cryptography"
   ],
   "packageRules": [
     {

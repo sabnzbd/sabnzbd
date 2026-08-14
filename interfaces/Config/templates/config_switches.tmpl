@@ -8,9 +8,8 @@
             <input type="checkbox" id="advanced-settings-button" name="advanced-settings-button"> $T('button-advanced')
         </label>
     </div>
-    <form action="saveSwitches" method="post" name="fullform" class="fullform" autocomplete="off">
+    <form action="$url('config/switches/save')" method="post" class="fullform" autocomplete="off">
         <input type="hidden" id="apikey" name="apikey" value="$apikey" />
-        <input type="hidden" id="ajax" name="ajax" value="1" />
         <input type="hidden" name="output" value="json" />
         <div class="section advanced-settings">
             <div class="col2">
@@ -152,6 +151,7 @@
                         <select name="auto_sort" id="auto_sort">
                             <option value="">$T('default')</option>
                             <option value="remaining asc" <!--#if $auto_sort == "remaining asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortRemaining')</option>
+                            <option value="remaining_bytes asc" <!--#if $auto_sort == "remaining_bytes asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortRemainingBytesAsc')</option>
                             <option value="avg_age desc" <!--#if $auto_sort == "avg_age desc" then 'selected="selected"' else ""#--> >$T('Glitter-sortAgeAsc')</option>
                             <option value="avg_age asc" <!--#if $auto_sort == "avg_age asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortAgeDesc')</option>
                             <option value="name asc" <!--#if $auto_sort == "name asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortNameAsc')</option>
@@ -261,7 +261,7 @@
                     <div class="field-pair">
                         <label class="config" for="history_retention_option">$T('opt-history_retention')</label>
                         <select name="history_retention_option" id="history_retention_option">
-                            <option value="all" <!--#if $auto_sort == "all" then 'selected="selected"' else ""#-->>$T('history_retention-all')</option>
+                            <option value="all" <!--#if $history_retention_option == "all" then 'selected="selected"' else ""#-->>$T('history_retention-all')</option>
                             <option value="number-archive" <!--#if $history_retention_option == "number-archive" then 'selected="selected"' else ""#-->>$T('history_retention-number-archive')</option>
                             <option value="number-delete" <!--#if $history_retention_option == "number-delete" then 'selected="selected"' else ""#-->>$T('history_retention-number-delete')</option>
                             <option value="days-archive" <!--#if $history_retention_option == "days-archive" then 'selected="selected"' else ""#-->>$T('history_retention-days-archive')</option>
@@ -395,7 +395,7 @@ jQuery(document).ready(function() {
         // Send request
         jQuery.ajax({
             type: "GET",
-            url: "../../api",
+            url: "$url('api')",
             data: "mode=set_config_default&apikey=${apikey}&output=json&keyword=" + key_container.join('&keyword=')
         }).then(function(data) {
             // Reload page

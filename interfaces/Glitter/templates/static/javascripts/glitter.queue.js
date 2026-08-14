@@ -204,14 +204,14 @@ function QueueListModel(parent) {
     // Clear searchterm
     self.clearSearchTerm = function(data, event) {
         // Was it escape key or click?
-        if(event.type === 'mousedown' || (event.keyCode && event.keyCode === 27)) {
+        if(event.type === 'click' || (event.keyCode && event.keyCode === 27)) {
             self.isLoading(true)
             self.searchTerm('');
         }
         // Was it click and the field is empty? Then we focus on the field
-        if(event.type === 'mousedown' && self.searchTerm() === '') {
+        if(event.type === 'click' && self.searchTerm() === '') {
             $(event.target).parents('.search-box').find('input[type="text"]').focus()
-            return;
+            return false;
         }
         // Need to return true to allow typing
         return true;
@@ -226,6 +226,10 @@ function QueueListModel(parent) {
         switch($(event.currentTarget).data('action')) {
             case 'sortRemainingAsc':
                 sort = 'remaining';
+                dir = 'asc';
+                break;
+            case 'sortRemainingBytesAsc':
+                sort = 'remaining_bytes';
                 dir = 'asc';
                 break;
             case 'sortAgeAsc':
@@ -782,39 +786,39 @@ function QueueModel(parent, data) {
     }
 
     // Change of settings
-    self.changeCat = function(item, event) {
+    self.changeCat = function() {
         callAPI({
             mode: 'change_cat',
-            value: item.id,
-            value2: item.category()
+            value: self.id,
+            value2: self.category()
         }).then(function() {
             // Hide all tooltips before we refresh
             $('.queue-item-settings li').filter('[data-tooltip="true"]').tooltip('hide')
             self.parent.parent.refresh()
         })
     }
-    self.changeScript = function(item) {
+    self.changeScript = function() {
         callAPI({
             mode: 'change_script',
-            value: item.id,
-            value2: item.script()
+            value: self.id,
+            value2: self.script()
         })
     }
-    self.changeProcessing = function(item) {
+    self.changeProcessing = function() {
         callAPI({
             mode: 'change_opts',
-            value: item.id,
-            value2: item.unpackopts()
+            value: self.id,
+            value2: self.unpackopts()
         })
     }
-    self.changePriority = function(item, event) {
+    self.changePriority = function() {
         // Not if we are fetching extra blocks for repair!
-        if(item.isFetchingBlocks) return
+        if(self.isFetchingBlocks) return
         callAPI({
             mode: 'queue',
             name: 'priority',
-            value: item.id,
-            value2: item.priority()
+            value: self.id,
+            value2: self.priority()
         }).then(function() {
             // Hide all tooltips before we refresh
             $('.queue-item-settings li').filter('[data-tooltip="true"]').tooltip('hide')

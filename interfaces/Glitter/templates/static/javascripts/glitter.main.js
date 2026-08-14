@@ -10,6 +10,7 @@ function ViewModel() {
 
     // Set status varibales
     self.isRestarting = ko.observable(false);
+    self.isLoaded = ko.observable(false); // Becomes true after the first queue response
     self.useGlobalOptions = ko.observable(true).extend({ persist: 'useGlobalOptions' });
     self.refreshRate = ko.observable(1).extend({ persist: 'pageRefreshRate' });
     self.dateFormat = ko.observable('fromNow').extend({ persist: 'pageDateFormat' });
@@ -1227,7 +1228,6 @@ function ViewModel() {
             })
         }
 
-
         // Already set if we are using a proxy
         if (response.config.misc.socks5_proxy_url) self.statusInfo.active_socks5_proxy(true)
 
@@ -1284,6 +1284,9 @@ function ViewModel() {
                 }
             });
         }
+
+        // First refresh has completed (success or failure): fade in the UI
+        self.isLoaded(true);
     })
 
     // Orphaned folder check - Not for 5 days if user ignored it
@@ -1340,7 +1343,7 @@ function ViewModel() {
             }
         });
         $(document).bind('keydown', 'c', function(e) {
-            window.location.href = './config/';
+            window.location.href = './config';
         });
         $(document).bind('keydown', 's', function(e) {
             // Update the data
@@ -1352,41 +1355,41 @@ function ViewModel() {
         });
         $(document).bind('keydown', 'shift+left', function(e) {
             if($("body").hasClass("container-tabbed")) {
-                $('#history-tab.active > ul.pagination li.active').prev().click();
-                $('#queue-tab.active > ul.pagination li.active').prev().click();
+                $('#history-tab.active > ul.pagination li.active').prev().children('a').click();
+                $('#queue-tab.active > ul.pagination li.active').prev().children('a').click();
             } else {
-                $('#history-tab > ul.pagination li.active').prev().click();
-                $('#queue-tab > ul.pagination li.active').prev().click();
+                $('#history-tab > ul.pagination li.active').prev().children('a').click();
+                $('#queue-tab > ul.pagination li.active').prev().children('a').click();
             }
             e.preventDefault();
         });
         $(document).bind('keydown', 'shift+right', function(e) {
             if($("body").hasClass("container-tabbed")) {
-                $('#history-tab.active > ul.pagination li.active').next().click();
-                $('#queue-tab.active > ul.pagination li.active').next().click();
+                $('#history-tab.active > ul.pagination li.active').next().children('a').click();
+                $('#queue-tab.active > ul.pagination li.active').next().children('a').click();
             } else {
-                $('#history-tab > ul.pagination li.active').next().click();
-                $('#queue-tab > ul.pagination li.active').next().click();
+                $('#history-tab > ul.pagination li.active').next().children('a').click();
+                $('#queue-tab > ul.pagination li.active').next().children('a').click();
             }
             e.preventDefault();
         });
         $(document).bind('keydown', 'shift+up', function(e) {
             if($("body").hasClass("container-tabbed")) {
-                $('#history-tab.active > ul.pagination li').first().click();
-                $('#queue-tab.active > ul.pagination li').first().click();
+                $('#history-tab.active > ul.pagination li').first().children('a').click();
+                $('#queue-tab.active > ul.pagination li').first().children('a').click();
             } else {
-                $('#history-tab > ul.pagination li').first().click();
-                $('#queue-tab > ul.pagination li').first().click();
+                $('#history-tab > ul.pagination li').first().children('a').click();
+                $('#queue-tab > ul.pagination li').first().children('a').click();
             }
             e.preventDefault();
         });
         $(document).bind('keydown', 'shift+down', function(e) {
             if($("body").hasClass("container-tabbed")) {
-                $('#history-tab.active > ul.pagination li').last().click();
-                $('#queue-tab.active > ul.pagination li').last().click();
+                $('#history-tab.active > ul.pagination li').last().children('a').click();
+                $('#queue-tab.active > ul.pagination li').last().children('a').click();
             } else {
-                $('#history-tab > ul.pagination li').last().click();
-                $('#queue-tab > ul.pagination li').last().click();
+                $('#history-tab > ul.pagination li').last().children('a').click();
+                $('#queue-tab > ul.pagination li').last().children('a').click();
             }
             e.preventDefault();
         });

@@ -27,6 +27,7 @@ import unicodedata
 from pathlib import Path
 import tempfile
 from random import choice, randint
+from unittest import mock
 
 import pytest
 from pyfakefs.helpers import set_uid
@@ -440,6 +441,43 @@ class TestSameDirectory:
         assert 0 == filesystem.same_directory("/test", "/Test")
         assert 0 == filesystem.same_directory("tesT", "Test")
         assert 0 == filesystem.same_directory("/test/../Home", "/home")
+
+
+class TestFirstExistingPath:
+    def test_existing_path(self, tmp_path):
+        assert filesystem.first_existing_path(str(tmp_path)) == str(tmp_path)
+
+    def test_walks_up_to_existing_parent(self, tmp_path):
+        assert filesystem.first_existing_path(str(tmp_path / "not" / "created" / "yet")) == str(tmp_path)
+
+
+class TestSameDevice:
+    def test_same_path(self, tmp_path):
+        assert filesystem.same_device(str(tmp_path), str(tmp_path)) is True
+
+    def test_sibling_folders(self, tmp_path):
+        download_dir = tmp_path / "download"
+        complete_dir = tmp_path / "complete"
+        download_dir.mkdir()
+        complete_dir.mkdir()
+        assert filesystem.same_device(str(download_dir), str(complete_dir)) is True
+
+    def test_folders_not_created_yet(self, tmp_path):
+        """Falls back on the first existing parent, so both resolve to tmp_path"""
+        assert filesystem.same_device(str(tmp_path / "download"), str(tmp_path / "complete" / "sub")) is True
+
+    @pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Relies on /proc being its own filesystem")
+    def test_separate_devices(self, tmp_path):
+        assert filesystem.same_device(str(tmp_path), "/proc") is False
+
+    @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows only has drive letters")
+    def test_different_drives_win(self):
+        assert filesystem.same_device("C:\\downloads", "D:\\complete") is False
+
+    def test_undeterminable_path(self, tmp_path):
+        """Fall back on separate devices, so the caller keeps reserving space for a copy"""
+        with mock.patch("os.stat", side_effect=OSError):
+            assert filesystem.same_device(str(tmp_path / "a"), str(tmp_path / "b")) is False
 
 
 class TestClipLongPath:

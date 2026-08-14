@@ -19,6 +19,7 @@
 tests.test_functional_downloads - Test the downloading flow
 """
 
+import sys
 import pytest
 
 from tests.testhelper import DownloadFlowBasics
@@ -33,6 +34,10 @@ class TestDownloadFlow(DownloadFlowBasics):
 
     def test_download_7zip(self):
         self.download_nzb("test_7zip", ["My_Test_Download.bin"])
+
+    @pytest.mark.skipif(sys.version_info < (3, 12), reason="tarfile extraction filter requires Python 3.12 or later")
+    def test_download_tar(self):
+        self.download_nzb("test_tar", ["My_Test_Download.bin"])
 
     def test_download_passworded(self):
         self.download_nzb("test_passworded{{secret}}", ["My_Test_Download.bin"])

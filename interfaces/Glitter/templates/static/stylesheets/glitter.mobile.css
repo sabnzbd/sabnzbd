@@ -75,6 +75,10 @@ h2 {
     QUEUE & HISTORY
 **/
 
+.history-queue-swicher {
+    margin-bottom: 0;
+}
+
 .info-container {
     margin-top: 0px;
     margin-bottom: 10px;
@@ -145,6 +149,9 @@ tr.queue-item>td:first-child>a {
 
 .queue-table td.name .name-options {
     display: inline-block;
+    opacity: 1;
+    pointer-events: auto;
+    position: static;
 }
 
 .queue-table td.name .name-options small {

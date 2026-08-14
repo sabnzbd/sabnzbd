@@ -657,6 +657,7 @@ class TestQueueApi(ApiTestFunctions):
             ("name", "filename", "desc"),
             ("size", "size", "asc"),  # Issue #1666, incorrect (reversed) sort order for avg_age
             ("size", "size", "desc"),
+            ("remaining_bytes", "sizeleft", "asc"),
         ],
     )
     def test_api_queue_sort(self, sort_by, slot_name, sort_order):
@@ -698,7 +699,7 @@ class TestQueueApi(ApiTestFunctions):
         key = None
         if sort_by == "avg_age":
             key = age_in_minutes
-        elif sort_by == "size":
+        elif sort_by in ("size", "remaining_bytes"):
             key = size_in_bytes
         original_order.sort(reverse=(sort_order == "desc"), key=key)
 
@@ -706,8 +707,14 @@ class TestQueueApi(ApiTestFunctions):
         new_order = list(filter((geriatric_entry).__ne__, new_order))
         original_order = list(filter((geriatric_entry).__ne__, original_order))
 
-        # Verify the result
-        assert new_order == original_order
+        # Verify the result. The api sorts on the exact values, while the slots only
+        # report them rounded to the nearest display unit ("1024 KB" and "1.0 MB" both
+        # mean 1MiB). Comparing at that lower resolution avoids failing on entries that
+        # are indistinguishable in the api output but not to the actual sort.
+        if key:
+            assert [key(entry) for entry in new_order] == [key(entry) for entry in original_order]
+        else:
+            assert new_order == original_order
 
     @pytest.mark.parametrize(
         "queue_size, index_from, index_to, value2_is_nzo_id",

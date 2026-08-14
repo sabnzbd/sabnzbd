@@ -21,14 +21,14 @@ tests.test_utils.test_check_dir - Testing SABnzbd checkdir util
 
 import socket
 
-from sabnzbd.cfg import selftest_host
+import sabnzbd.cfg as cfg
 from sabnzbd.getipaddress import addresslookup4, public_ipv4, local_ipv4, public_ipv6
 from sabnzbd.misc import is_ipv4_addr, is_ipv6_addr
 
 
 class TestGetIpAddress:
     def test_addresslookup4(self):
-        address = addresslookup4(selftest_host())
+        address = addresslookup4(cfg.selftest_host())
         assert address
         for item in address:
             assert isinstance(item[0], type(socket.AF_INET))

@@ -1,5 +1,5 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
-<form action="./two" method="post" autocomplete="off">
+<form action="$url('wizard/two')" method="post" autocomplete="off">
     <div class="container">
         <div id="inner">
             <div id="content" class="bigger">
@@ -65,7 +65,7 @@
                             <div class="form-group">
                                 <label for="connections" class="col-sm-4 control-label">$T('srv-connections')</label>
                                 <div class="col-sm-8">
-                                    <input type="number" class="form-control" name="connections" id="connections" value="<!--#if $connections then $connections else '8'#-->" min="1" max="500" data-toggle="tooltip" data-placement="right" title="$T('wizard-server-con-explain') $T('wizard-server-con-eg')" required />
+                                    <input type="number" class="form-control" name="connections" id="connections" value="<!--#if $connections then $connections else '16'#-->" min="1" max="500" data-toggle="tooltip" data-placement="right" title="$T('wizard-server-con-explain') $T('wizard-server-con-eg')" required />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -102,12 +102,13 @@
                         <iframe style="float: right; width: 325px; height: 325px;" frameborder="0" src="https://sabnzbd.org/wizard#$active_lang"></iframe>
                     </div>
                 </div>
+                <input type="hidden" name="enable" value="1">
                 <input type="hidden" name="apikey" value="$apikey" />
             </div>
             <hr />
             <div class="row">
                 <div class="col-xs-4 text-center">
-                    <a class="btn btn-default" href="./index"><span class="glyphicon glyphicon-chevron-left"></span> $T('wizard-previous')</a>
+                    <a class="btn btn-default" href="$url('wizard')"><span class="glyphicon glyphicon-chevron-left"></span> $T('wizard-previous')</a>
                 </div>
                 <div class="col-xs-4 text-center">
                 </div>

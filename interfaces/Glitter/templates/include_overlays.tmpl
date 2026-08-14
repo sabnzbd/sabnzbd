@@ -72,13 +72,13 @@
 </div>
 
 <!-- Modals -->
-<div id="modal-options" class="modal fade" tabindex="-1">
+<div id="modal-options" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-options-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
                 <a href="#" data-bind="click: loadStatusInfo, css: { 'rotate-refresh': !hasStatusInfo() }" title="$T('Glitter-interfaceRefresh')"><span class="glyphicon glyphicon-repeat"></span></a>
-                <h4 class="modal-title">$T('Glitter-statusInterfaceOptions')</h4>
+                <h4 class="modal-title" id="modal-options-title">$T('Glitter-statusInterfaceOptions')</h4>
             </div>
             <div class="modal-body">
                 <ul class="nav nav-tabs">
@@ -197,7 +197,7 @@
                         </div>
                         <div class="row options-function-box">
                             <div class="col-sm-6">
-                                <a href="./api?mode=showlog&apikey=$apikey" target="_blank" class="btn btn-default" data-tooltip="true" data-placement="top" title="$T('Glitter-logText')">
+                                <a href="$url('api', mode='showlog', apikey=$apikey)" target="_blank" class="btn btn-default" data-tooltip="true" data-placement="top" title="$T('Glitter-logText')">
                                     <span class="glyphicon glyphicon-file"></span> $T('link-showLog')
                                 </a>
                             </div>
@@ -274,7 +274,7 @@
                                 </div>
 
                                 <!-- ko if: serverconnections().length > 0 -->
-                                <table class="table table-hover table-server-connections" data-bind="visible: \$root.showActiveConnections()">
+                                <table class="table table-hover table-server-connections" aria-label="$T('connections')" data-bind="visible: \$root.showActiveConnections()">
                                     <thead>
                                         <tr>
                                             <th><strong>$T('article-id')</strong></th>
@@ -304,7 +304,7 @@
                         <a href="#" class="hover-button process-all-orphaned" data-bind="click: removeAllOrphaned">$T('Glitter-purgeOrphaned') <span class="glyphicon glyphicon-trash"></span></a>
                         <a href="#" class="hover-button process-all-orphaned" data-bind="click: addAllOrphaned">$T('Glitter-retryAllOrphaned') <span class="glyphicon glyphicon-plus-sign"></span></a>
                         <div class="clearfix"></div>
-                        <table class="table table-hover table-striped">
+                        <table class="table table-hover table-striped" aria-label="$T('Glitter-orphanedJobs')">
                             <thead>
                                 <tr>
                                     <th style="width: 30px;"></th>
@@ -333,7 +333,7 @@
                                 </label>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-6 control-label">$T('Glitter-interfaceRefresh')</label>
+                                <label class="col-sm-6 control-label" for="refreshRate-option">$T('Glitter-interfaceRefresh')</label>
                                 <div class="col-sm-4">
                                     <select id="refreshRate-option" class="form-control" data-bind="value: refreshRate">
                                         <option value="1">1 $T('second')</option>
@@ -351,9 +351,9 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-6 control-label">$T('Glitter-queueItemLimit')</label>
+                                <label class="col-sm-6 control-label" for="queue-pagination-limit">$T('Glitter-queueItemLimit')</label>
                                 <div class="col-sm-4">
-                                    <select name="queue-pagination-limit" class="form-control" data-bind="value: queue.paginationLimit">
+                                    <select name="queue-pagination-limit" id="queue-pagination-limit" class="form-control" data-bind="value: queue.paginationLimit">
                                         <option value="5">5 / $T('Glitter-page')</option>
                                         <option value="10">10 / $T('Glitter-page')</option>
                                         <option value="20">20 / $T('Glitter-page')</option>
@@ -366,9 +366,9 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-6 control-label">$T('Glitter-historyItemLimit')</label>
+                                <label class="col-sm-6 control-label" for="history-pagination-limit">$T('Glitter-historyItemLimit')</label>
                                 <div class="col-sm-4">
-                                    <select name="history-pagination-limit" class="form-control" data-bind="value: history.paginationLimit">
+                                    <select name="history-pagination-limit" id="history-pagination-limit" class="form-control" data-bind="value: history.paginationLimit">
                                         <option value="5">5 / $T('Glitter-page')</option>
                                         <option value="10">10 / $T('Glitter-page')</option>
                                         <option value="20">20 / $T('Glitter-page')</option>
@@ -381,9 +381,9 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-6 control-label">$T('Glitter-dateFormat')</label>
+                                <label class="col-sm-6 control-label" for="general-date-format">$T('Glitter-dateFormat')</label>
                                 <div class="col-sm-4">
-                                    <select name="general-date-format" class="form-control" data-bind="value: dateFormat">
+                                    <select name="general-date-format" id="general-date-format" class="form-control" data-bind="value: dateFormat">
                                         <option value="DD/MM/YYYY HH:mm"></option>
                                         <option value="DD/MM/YYYY h:mma"></option>
                                         <option value="MM/DD/YYYY HH:mm"></option>
@@ -399,12 +399,12 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-6 control-label">
+                                <label class="col-sm-6 control-label" for="general-extra-queue-columns">
                                     $T('Glitter-showExtraQueueColumn')<br />
                                     <span class="label label-warning">&gt; 1200 pixels</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <select name="general-extra-column" class="form-control-multiselect form-control" data-bind="selectedOptions: extraQueueColumns" multiple="true">
+                                    <select name="general-extra-column" id="general-extra-queue-columns" class="form-control-multiselect form-control" data-bind="selectedOptions: extraQueueColumns" multiple="true">
                                         <option value="category">$T('category')</option>
                                         <option value="priority">$T('priority')</option>
                                         <option value="processing">$T('swtag-pp')</option>
@@ -414,12 +414,12 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-6 control-label">
+                                <label class="col-sm-6 control-label" for="general-extra-history-columns">
                                     $T('Glitter-showExtraHistoryColumn')<br />
                                     <span class="label label-warning">&gt; 1200 pixels</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <select name="general-extra-column" class="form-control-multiselect form-control" data-bind="selectedOptions: extraHistoryColumns" multiple="true">
+                                    <select name="general-extra-column" id="general-extra-history-columns" class="form-control-multiselect form-control" data-bind="selectedOptions: extraHistoryColumns" multiple="true">
                                         <option value="category">$T('category')</option>
                                         <option value="size">$T('size')</option>
                                         <option value="speed">$T('Glitter-speed')</option>
@@ -427,53 +427,53 @@
                                 </div>
                             </div>
                             <div class="form-group form-checkbox">
-                                <label class="col-sm-6 control-label">
+                                <label class="col-sm-6 control-label" for="displayCompact">
                                     $T("Glitter-displayCompact")
                                 </label>
                                 <div class="col-sm-4">
-                                    <input type="checkbox" name="displayCompact" value="true" data-bind="checked: displayCompact" />
+                                    <input type="checkbox" name="displayCompact" id="displayCompact" value="true" data-bind="checked: displayCompact" />
                                 </div>
                             </div>
                             <div class="form-group form-checkbox">
-                                <label class="col-sm-6 control-label">
+                                <label class="col-sm-6 control-label" for="displayFullWidth">
                                     $T("Glitter-displayFullWidth")
                                 </label>
                                 <div class="col-sm-4">
-                                    <input type="checkbox" name="displayFullWidth" value="true" data-bind="checked: displayFullWidth" />
+                                    <input type="checkbox" name="displayFullWidth" id="displayFullWidth" value="true" data-bind="checked: displayFullWidth" />
                                 </div>
                             </div>
                             <div class="form-group form-checkbox">
-                                <label class="col-sm-6 control-label">
+                                <label class="col-sm-6 control-label" for="displayTabbed">
                                     $T("Glitter-displayTabbed")
                                 </label>
                                 <div class="col-sm-4">
-                                    <input type="checkbox" name="displayTabbed" value="true" data-bind="checked: displayTabbed" />
+                                    <input type="checkbox" name="displayTabbed" id="displayTabbed" value="true" data-bind="checked: displayTabbed" />
                                 </div>
                             </div>
                             <div class="form-group form-checkbox">
-                                <label class="col-sm-6 control-label">
+                                <label class="col-sm-6 control-label" for="confirmDeleteQueue">
                                     $T("Glitter-confirmDeleteQueue")
                                 </label>
                                 <div class="col-sm-4">
-                                    <input type="checkbox" name="confirmDeleteQueue" value="true" data-bind="checked: confirmDeleteQueue" />
+                                    <input type="checkbox" name="confirmDeleteQueue" id="confirmDeleteQueue" value="true" data-bind="checked: confirmDeleteQueue" />
                                 </div>
                             </div>
                             <div class="form-group form-checkbox">
-                                <label class="col-sm-6 control-label">
+                                <label class="col-sm-6 control-label" for="confirmDeleteHistory">
                                     $T("Glitter-confirmDeleteHistory")
                                 </label>
                                 <div class="col-sm-4">
-                                    <input type="checkbox" name="confirmDeleteHistory" value="true" data-bind="checked: confirmDeleteHistory" />
+                                    <input type="checkbox" name="confirmDeleteHistory" id="confirmDeleteHistory" value="true" data-bind="checked: confirmDeleteHistory" />
                                 </div>
                             </div>
                             <div class="form-group form-checkbox">
-                                <label class="col-sm-6 control-label">
+                                <label class="col-sm-6 control-label" for="keyboardShortcuts">
                                     $T("Glitter-keyboardShortcuts")
                                     <span class="glyphicon glyphicon-question-sign" data-tooltip="true" data-placement="top" data-html="true"
                                         data-original-title="P: $T('link-pause')<br>A: $T('Glitter-addNZB')<br>S: $T('Glitter-statusInterfaceOptions')<br>C: $T('menu-config')<br>$T('Glitter-keyboardShortcuts-arrows')"></span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <input type="checkbox" name="keyboardShortcuts" value="true" data-bind="checked: keyboardShortcuts" />
+                                    <input type="checkbox" name="keyboardShortcuts" id="keyboardShortcuts" value="true" data-bind="checked: keyboardShortcuts" />
                                 </div>
                             </div>
                         </form>
@@ -485,12 +485,12 @@
     </div>
 </div>
 
-<div id="modal-add-nzb" class="modal fade" tabindex="-1">
+<div id="modal-add-nzb" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-add-nzb-title">
     <div class="modal-dialog">
         <form class="modal-content" data-bind="submit: addNZB">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('Glitter-addNZB')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-add-nzb-title">$T('Glitter-addNZB')</h4>
             </div>
             <div class="modal-body form-horizontal">
                 <div class="row">
@@ -524,29 +524,29 @@
                 <div class="clearfix"></div>
                 <hr />
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">$T('name')</label>
+                    <label class="col-sm-4 control-label" for="nzbname">$T('name')</label>
                     <div class="col-sm-6">
                         <input type="text" name="nzbname" id="nzbname" placeholder="$T('Glitter-addnzbFilename')" class="form-control" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">$T('srv-password')</label>
+                    <label class="col-sm-4 control-label" for="password">$T('srv-password')</label>
                     <div class="col-sm-6">
                         <input type="text" name="password" id="password" placeholder="$T('srv-optional')" class="form-control" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">$T('category')</label>
+                    <label class="col-sm-4 control-label" for="add-nzb-category">$T('category')</label>
                     <div class="col-sm-6">
-                        <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsValue: 'catValue', optionsText: 'catText', optionsCaption: ''"></select>
+                        <select name="Category" id="add-nzb-category" class="form-control" data-bind="options: queue.categoriesList, optionsValue: 'catValue', optionsText: 'catText', optionsCaption: ''"></select>
                         <span class="glyphicon glyphicon-tag"></span>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">$T('priority')</label>
+                    <label class="col-sm-4 control-label" for="add-nzb-priority">$T('priority')</label>
                     <div class="col-sm-6">
                         <!-- This list is different from the one during download! -->
-                        <select name="Priority" class="form-control">
+                        <select name="Priority" id="add-nzb-priority" class="form-control">
                             <option value=""></option>
                             <option value="2">$T('pr-force')</option>
                             <option value="1">$T('pr-high')</option>
@@ -558,16 +558,16 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">$T('swtag-pp')</label>
+                    <label class="col-sm-4 control-label" for="add-nzb-processing">$T('swtag-pp')</label>
                     <div class="col-sm-6">
-                        <select name="Processing" class="form-control" data-bind="options: queue.processingOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: ''"></select>
+                        <select name="Processing" id="add-nzb-processing" class="form-control" data-bind="options: queue.processingOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: ''"></select>
                         <span class="glyphicon glyphicon-check"></span>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">$T('eoq-scripts')</label>
+                    <label class="col-sm-4 control-label" for="add-nzb-script">$T('eoq-scripts')</label>
                     <div class="col-sm-6">
-                        <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '', optionsValue: 'scriptValue', optionsText: 'scriptText', enable: (queue.scriptsList().length > 1)"></select>
+                        <select name="Post-processing" id="add-nzb-script" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '', optionsValue: 'scriptValue', optionsText: 'scriptText', enable: (queue.scriptsList().length > 1)"></select>
                         <span class="glyphicon glyphicon-flash"></span>
                     </div>
                 </div>
@@ -577,12 +577,12 @@
     </div>
 </div>
 
-<div id="modal-item-files" class="modal fade" tabindex="-1">
+<div id="modal-item-files" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-item-files-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title row-wrap-text" data-bind="text: filelist.filelist_name">$T('Glitter-loading')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title row-wrap-text" id="modal-item-files-title" data-bind="text: filelist.filelist_name">$T('Glitter-loading')</h4>
             </div>
             <div class="modal-body">
                 <div id="modal-item-filelist">
@@ -645,12 +645,12 @@
     </div>
 </div>
 
-<div id="modal-delete-queue-job" class="modal modal-delete-job fade" tabindex="-1">
+<div id="modal-delete-queue-job" class="modal modal-delete-job fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-delete-queue-job-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title row-wrap-text">$T('removeNZB-Files')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title row-wrap-text" id="modal-delete-queue-job-title">$T('removeNZB-Files')</h4>
             </div>
             <form data-bind="submit: queue.removeDownloads">
                 <div class="modal-body">
@@ -669,12 +669,12 @@
     </div>
 </div>
 
-<div id="modal-delete-history-job" class="modal modal-delete-job fade" tabindex="-1">
+<div id="modal-delete-history-job" class="modal modal-delete-job fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-delete-history-job-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title row-wrap-text">$T('nzo-delete')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title row-wrap-text" id="modal-delete-history-job-title">$T('nzo-delete')</h4>
             </div>
             <form data-bind="submit: history.removeDownloads">
                 <div class="modal-body">
@@ -698,12 +698,12 @@
     </div>
 </div>
 
-<div id="modal-retry-job" class="modal modal-small fade" tabindex="-1">
+<div id="modal-retry-job" class="modal modal-small fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-retry-job-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('Glitter-retryJob')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-retry-job-title">$T('Glitter-retryJob')</h4>
             </div>
             <form id="retry-job-form" data-bind="submit: history.retryJob">
                 <div class="modal-body">
@@ -740,24 +740,24 @@
     </div>
 </div>
 
-<div id="history-script-log" class="modal fade" tabindex="-1">
+<div id="history-script-log" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="history-script-log-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('Glitter-scriptLog')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="history-script-log-title">$T('Glitter-scriptLog')</h4>
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body"><pre></pre></div>
         </div>
     </div>
 </div>
 
-<div id="modal-help" class="modal fade">
+<div id="modal-help" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-help-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('menu-help')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-help-title">$T('menu-help')</h4>
             </div>
             <div class="modal-body">
                 #include $webdir + "/../../Config/templates/staticcfg/images/logo-full.svg"#
@@ -790,12 +790,12 @@
     </div>
 </div>
 
-<div id="modal-purge-history" class="modal modal-small fade" tabindex="-1">
+<div id="modal-purge-history" class="modal modal-small fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-purge-history-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('Glitter-clearHistory')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-purge-history-title">$T('Glitter-clearHistory')</h4>
             </div>
             <div class="modal-body">
                 <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purge-failed"><span class="glyphicon glyphicon-floppy-remove"></span> $T('purgeFailed')</button>
@@ -814,12 +814,12 @@
     </div>
 </div>
 
-<div id="modal-custom-pause" class="modal modal-small fade" tabindex="-1">
+<div id="modal-custom-pause" class="modal modal-small fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-custom-pause-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('Glitter-pauseFor')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-custom-pause-title">$T('Glitter-pauseFor')</h4>
             </div>
             <div class="modal-body">
                 <form data-bind="submit: saveCustomPause">

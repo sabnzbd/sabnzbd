@@ -29,10 +29,12 @@ import pytest
 
 import sabnzbd
 import sabnzbd.cfg
+import sabnzbd.database
 from sabnzbd import config, filesystem
 from sabnzbd.constants import (
     CONFIG_BACKUP_FILES,
     CONFIG_BACKUP_HTTPS,
+    DB_HISTORY_NAME,
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
     DEF_INI_FILE,
@@ -41,6 +43,12 @@ from sabnzbd.filesystem import long_path
 from tests.testhelper import SAB_CACHE_DIR, SAB_COMPLETE_DIR, SAB_DATA_DIR
 
 DEF_CHAIN_FILE = "server.chain"
+
+# Stand-in for the SQLite online backup of the history database. This test only
+# fabricates history1.db as a file, while a real snapshot needs a live database
+# and connection pool, so history_db_snapshot is patched to return these bytes.
+# The snapshot itself is tested in tests/test_database.py.
+FAKE_HISTORY_SNAPSHOT = b"fake history database snapshot"
 
 
 class TestOptions:
@@ -51,11 +59,9 @@ class TestOptions:
         test_option = config.Option(self.test_section, self.test_keyword)
         assert test_option.section == self.test_section
         assert test_option.keyword == self.test_keyword
-        assert test_option.section in config.CFG_DATABASE
-        assert test_option.keyword in config.CFG_DATABASE[test_option.section]
-        assert config.CFG_DATABASE[test_option.section][test_option.keyword] == test_option
-        # Reset database
-        config.CFG_DATABASE = {}
+        assert test_option.section in config.CONFIG.database
+        assert test_option.keyword in config.CONFIG.database[test_option.section]
+        assert config.CONFIG.database[test_option.section][test_option.keyword] == test_option
 
     @pytest.mark.xfail(reason="These tests should be added")
     def test_all(self):
@@ -75,9 +81,6 @@ class TestOptions:
         test_option = config.OptionPassword(self.test_section, self.test_keyword, default_val="test_password")
         assert test_option.get_dict() == {self.test_keyword: "test_password"}
         assert test_option.get_dict(for_public_api=True) == {self.test_keyword: "**********"}
-
-        # Reset database
-        config.CFG_DATABASE = {}
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
@@ -106,6 +109,9 @@ class TestConfig:
             with zipfile.ZipFile(fp, "r") as zip:
                 for basename in must_haves:
                     assert zip.getinfo(basename)
+                # The history database is stored as an online snapshot, not a raw file copy
+                if DB_HISTORY_NAME in must_haves:
+                    assert zip.read(DB_HISTORY_NAME) == FAKE_HISTORY_SNAPSHOT
                 # Make sure there's nothing else in the zip
                 assert (zip_len := len(zip.filelist)) == len(must_haves)
 
@@ -181,8 +187,11 @@ class TestConfig:
             "complete_dir": os.path.join(SAB_COMPLETE_DIR, "test_config_backup"),
         }
     )
-    def test_config_backup(self):
+    def test_config_backup(self, monkeypatch):
         """Combined tests for the config.{create,validate,restore}_config_backup functions"""
+        monkeypatch.setattr(sabnzbd, "CONFIG_BACKUP_HTTPS_OK", [])
+        monkeypatch.setattr(sabnzbd.database, "history_db_snapshot", lambda: FAKE_HISTORY_SNAPSHOT)
+
         # Prepare the basics
         admin_dir = sabnzbd.cfg.admin_dir.get_path()
         sabnzbd.cfg.set_root_folders2()

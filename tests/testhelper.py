@@ -19,8 +19,10 @@
 tests.testhelper - Basic helper functions
 """
 
+import copy
 import io
 import os
+import socket
 import time
 import uuid
 from http.client import RemoteDisconnected
@@ -33,6 +35,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from string import ascii_lowercase, digits
 from unittest import mock
 from urllib3.exceptions import ProtocolError
@@ -44,10 +47,12 @@ from pyfakefs.fake_filesystem import OSType
 
 import sabnzbd
 import sabnzbd.cfg as cfg
+from sabnzbd.config import Option
 from sabnzbd.constants import (
     DEF_INI_FILE,
     Status,
     PP_LOOKUP,
+    NORMAL_PRIORITY,
 )
 import sabnzbd.database as db
 from sabnzbd.misc import pp_to_opts
@@ -56,20 +61,56 @@ import sabnzbd.filesystem as filesystem
 import tests.sabnews
 
 SAB_HOST = "127.0.0.1"
-SAB_PORT = randint(4200, 4299)
+SAB_NEWSSERVER_HOST = "127.0.0.1"
+
+# Each pytest-xdist worker runs in its own process and imports its own copy of
+# these module-level constants. Many test modules capture them with
+# `from tests.testhelper import SAB_PORT, SAB_CACHE_DIR, ...`, so the values must
+# be settled here at import time and never mutated afterwards. To let workers run
+# in parallel (-n auto) without colliding on the shared cache dir or on fixed TCP
+# ports, derive a per-worker suffix and bind free ports once, right here.
+#
+# For a normal single-process run PYTEST_XDIST_WORKER is unset, so the suffix is
+# empty and the cache dir keeps its historical "tests/cache" path.
+_XDIST_WORKER = os.environ.get("PYTEST_XDIST_WORKER", "")
+_WORKER_SUFFIX = ("_" + _XDIST_WORKER) if _XDIST_WORKER else ""
+
+
+def _find_free_port(host: str = SAB_HOST) -> int:
+    """Ask the OS for a currently-unused TCP port and return it."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.bind((host, 0))
+        return sock.getsockname()[1]
+
+
+SAB_PORT = _find_free_port()
 SAB_APIKEY = "apikey"
 SAB_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SAB_CACHE_DIR = os.path.join(SAB_BASE_DIR, "cache")
+SAB_CACHE_DIR = os.path.join(SAB_BASE_DIR, "cache" + _WORKER_SUFFIX)
 SAB_DATA_DIR = os.path.join(SAB_BASE_DIR, "data")
 SAB_INCOMPLETE_DIR = os.path.join(SAB_CACHE_DIR, "Downloads", "incomplete")
 SAB_COMPLETE_DIR = os.path.join(SAB_CACHE_DIR, "Downloads", "complete")
-SAB_NEWSSERVER_HOST = "127.0.0.1"
-SAB_NEWSSERVER_PORT = 8888
+SAB_NEWSSERVER_PORT = _find_free_port(SAB_NEWSSERVER_HOST)
 
 
 @pytest.fixture(autouse=True)
 def config_env(monkeypatch, request):
     """Change config-values on the fly, per test"""
+    monkeypatch.setattr(sabnzbd.config, "CONFIG", sabnzbd.config.SABnzbdConfig())
+
+    # Add default categories
+    sabnzbd.config.ConfigCat("*", {"order": 0, "pp": "3", "script": "None", "priority": NORMAL_PRIORITY})
+    sabnzbd.config.ConfigCat("movies", {"order": 1})
+    sabnzbd.config.ConfigCat("tv", {"order": 2})
+    sabnzbd.config.ConfigCat("audio", {"order": 3})
+    sabnzbd.config.ConfigCat("software", {"order": 4})
+
+    for attr in dir(cfg):
+        if isinstance(getattr(cfg, attr), Option):
+            option = copy.copy(getattr(cfg, attr))
+            monkeypatch.setattr(cfg, attr, option)
+            sabnzbd.config.add_to_database(option.section, option.keyword, option)
+
     marker = request.node.get_closest_marker("config")
     if marker is None:
         # No config changes for this test
@@ -91,17 +132,10 @@ def config_env(monkeypatch, request):
             raise RuntimeError("Missing 'config' param for @pytest.mark.config")
 
     # Setting up as requested
-    originals = {}
     for item, val in config.items():
-        cfg_item = getattr(cfg, item)
-        originals[item] = cfg_item.get()
-        cfg_item.set(val)
+        getattr(cfg, item).set(val)
 
     yield
-
-    # Restore values
-    for item, val in originals.items():
-        getattr(cfg, item).set(val)
 
 
 @pytest.mark.parametrize("config", [{"web_host": "0.0.0.0"}, {"web_host": "::1"}])
@@ -313,52 +347,78 @@ class FakeHistoryDB(db.HistoryDB):
     ]
 
     def __init__(self, db_path):
-        db.HistoryDB.db_path = db_path
+        self._monkeypatch = pytest.MonkeyPatch()
+        self._monkeypatch.setattr(db.HistoryDB, "db_path", db_path)
+        self._monkeypatch.setattr(db.HistoryDB, "startup_done", False)
         super().__init__()
+
+    def close(self):
+        """Close the connection and restore the class attributes patched on creation"""
+        try:
+            super().close()
+        finally:
+            self._monkeypatch.undo()
+
+    def add_fake_history_job(
+        self,
+        name: str,
+        status: str = Status.COMPLETED,
+        category: str = "*",
+        password: str = "",
+        path: Optional[str] = None,
+        futuretype: bool = False,
+        archive: bool = False,
+        completed: Optional[float] = None,
+    ) -> str:
+        """Add a single history entry, with random values for anything not specified"""
+        nzo = mock.Mock()
+
+        nzo.password = password
+        nzo.correct_password = "secret"
+        nzo.final_name = name
+        nzo.filename = "%s%s.nzb" % (name, "{{" + password + "}}" if password else "")
+        nzo.cat = category
+        nzo.script = "placeholder_script"
+        nzo.url = "placeholder_url"
+        nzo.status = status
+        nzo.fail_msg = "Failure" if status == Status.FAILED else ""
+        nzo.nzo_id = str(uuid.uuid4())
+        nzo.bytes_downloaded = randint(1024, 1024**4)
+        nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
+        nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))  # for "pp"
+        nzo.nzo_info = {"download_time": randint(1, 10**4)}
+        nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
+        nzo.duplicate_key = "show/season/episode"
+        nzo.time_added = int(time.time())
+        nzo.futuretype = futuretype  # for "report", only True when fetching an URL
+        if path is None:
+            path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
+        nzo.download_path = path
+
+        # Mock time when calling add_history_db() to randomize completion times
+        almost_time = mock.Mock(return_value=completed if completed is not None else time.time() - randint(0, 10**8))
+        with mock.patch("time.time", almost_time):
+            self.add_history_db(
+                nzo,
+                storage=os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_workdir"),
+                postproc_time=randint(1, 10**3),
+                script_output="",
+                script_line="",
+            )
+        if archive:
+            self.archive(nzo.nzo_id)
+
+        return nzo.nzo_id
 
     def add_fake_history_jobs(self, number_of_entries=1):
         """Generate a history db with any number of fake entries"""
-
         for _ in range(0, number_of_entries):
-            nzo = mock.Mock()
-
-            # Mock all input build_history_info() needs
-            distro_choice = choice(self.distro_names)
-            distro_random = random_name()
-            nzo.password = choice(["secret", ""])
-            nzo.correct_password = "secret"
-            nzo.final_name = "%s.%s.Linux.ISO-Usenet" % (distro_choice, distro_random)
-            nzo.filename = "%s.%s.Linux-Usenet%s.nzb" % (
-                (distro_choice, distro_random, "{{" + nzo.password + "}}")
-                if nzo.password
-                else (distro_choice, distro_random, "")
+            self.add_fake_history_job(
+                name="%s.%s.Linux.ISO-Usenet" % (choice(self.distro_names), random_name()),
+                status=choice([Status.COMPLETED, choice(self.status_options)]),
+                category=choice(self.category_options),
+                password=choice(["secret", ""]),
             )
-            nzo.cat = choice(self.category_options)
-            nzo.script = "placeholder_script"
-            nzo.url = "placeholder_url"
-            nzo.status = choice([Status.COMPLETED, choice(self.status_options)])
-            nzo.fail_msg = "¡Fracaso absoluto!" if nzo.status == Status.FAILED else ""
-            nzo.nzo_id = str(uuid.uuid4())
-            nzo.bytes_downloaded = randint(1024, 1024**4)
-            nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
-            nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))  # for "pp"
-            nzo.nzo_info = {"download_time": randint(1, 10**4)}
-            nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
-            nzo.duplicate_key = "show/season/episode"
-            nzo.time_added = int(time.time())
-            nzo.futuretype = False  # for "report", only True when fetching an URL
-            nzo.download_path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
-
-            # Mock time when calling add_history_db() to randomize completion times
-            almost_time = mock.Mock(return_value=time.time() - randint(0, 10**8))
-            with mock.patch("time.time", almost_time):
-                self.add_history_db(
-                    nzo,
-                    storage=os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_workdir"),
-                    postproc_time=randint(1, 10**3),
-                    script_output="",
-                    script_line="",
-                )
 
 
 @pytest.mark.usefixtures("run_sabnzbd", "run_sabnews_and_selenium")
@@ -381,6 +441,45 @@ class SABnzbdBaseTest:
             wait.until(lambda driver_wait: self.driver.execute_script("return window.scrollY") == 0)
         except RemoteDisconnected:
             pass
+
+    def wait_for_alert(self, timeout=15):
+        """Wait for a JS confirm()/alert dialog and return it.
+
+        Selenium's click() can return before a dialog opened synchronously in the
+        click handler is registered, and a confirm() raised from an AJAX success
+        callback only appears once the request settles. Waiting explicitly avoids
+        both races. Use this only where a dialog is guaranteed."""
+        WebDriverWait(self.driver, timeout).until(EC.alert_is_present())
+        return self.driver.switch_to.alert
+
+    def dismiss_restart_prompt(self, timeout=15):
+        """Dismiss the "restart required" confirmation raised after saving.
+
+        Changing username/password (and other guarded options) sets RESTART_REQ,
+        so the save callback always pops a confirm() dialog. Cancel it (= no
+        restart). The alert is guaranteed here, so wait for it deterministically."""
+        self.wait_for_alert(timeout).dismiss()
+
+    def dismiss_alert_if_present(self, timeout=15):
+        """Wait until a submitted save settles, dismissing a restart-request
+        confirm() only if one is raised.
+
+        Use where the dialog is conditional (a save that may or may not change a
+        guarded option), so its absence must not fail the test. The alert, if any,
+        is popped in the same JS turn that completes the request, so poll for either
+        terminal state and return as soon as one is reached."""
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            if EC.alert_is_present()(self.driver):
+                self.driver.switch_to.alert.dismiss()
+                return
+            try:
+                if self.driver.execute_script("return jQuery.active") == 0:
+                    return
+            except (RemoteDisconnected, ProtocolError):
+                return
+            time.sleep(0.1)
+        pytest.fail("Config save did not settle within %s seconds" % timeout)
 
     def wait_for_ajax(self):
         # We catch common nonsense errors from Selenium

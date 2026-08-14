@@ -94,6 +94,7 @@ ArticleSaver = (
     "data_begin",
     "data_size",
     "on_disk",
+    "failed",
     "nzf",
     "crc32",
     "decoded_size",
@@ -121,6 +122,7 @@ class Article(TryList):
         self.data_size: Optional[int] = None
         self.decoded_size: Optional[int] = None  # Size of the decoded article
         self.on_disk: bool = False
+        self.failed: bool = False  # Download failed, assembler should skip this article
         self.crc32: Optional[int] = None
         self.nzf: sabnzbd.nzb.NzbFile = nzf  # NzbFile reference
         # Share NzbFile lock for file-wide atomicity of try-list ops

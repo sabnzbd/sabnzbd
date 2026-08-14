@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-5.1.0\n"
+"Project-Id-Version: SABnzbd-5.2.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
@@ -116,7 +116,6 @@ msgstr "SABnzbd %s 已启动"
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd 关闭完成"
 
-#. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "捕捉到 %s 信号，正在保存并退出..."
@@ -143,7 +142,7 @@ msgstr "当前 umask (%o) 可能会拒绝 SABnzbd 访问其创建的文件和文
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
-msgstr ""
+msgstr "我们的下载页面提供 SABnzbd 的 Windows ARM 版本！"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -253,6 +252,14 @@ msgstr "身份认证失败，请检查用户名/密码。"
 #: sabnzbd/api.py
 msgid "Too many connections, please pause downloading or try again later"
 msgstr "连接数过多，请先暂停下载或稍后再试"
+
+#. Warning message
+#: sabnzbd/api.py
+msgid ""
+"Server %s took %d ms to respond. On high-latency connections, increasing "
+"'Articles per request' to a value between 5 and 10 can improve download "
+"speed. See: https://sabnzbd.org/wiki/advanced/nntp-pipelining"
+msgstr ""
 
 #: sabnzbd/api.py
 msgid "Resolving address"
@@ -517,8 +524,8 @@ msgid "Resuming"
 msgstr "恢复中"
 
 #. PP status - Priority pick list
-#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Paused"
 msgstr "已暂停"
 
@@ -579,7 +586,7 @@ msgstr "连接 %s@%s 失败，消息=%s"
 msgid ""
 "Total number of configured connections (%d) is greater than the operating "
 "system limit (512), downloading will crash if all connections become active"
-msgstr ""
+msgstr "已配置的连接总数 (%d) 超过操作系统限制 (512)，如果所有连接都变为活动状态，下载将会崩溃"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -745,6 +752,8 @@ msgid ""
 "files. For details and possible solutions, see: "
 "https://sabnzbd.org/wiki/advanced/direct-write"
 msgstr ""
+"Direct Write 模式已被禁用，因为 %s "
+"不支持稀疏文件。有关详细信息和可能的解决方案，请参阅：https://sabnzbd.org/wiki/advanced/direct-write"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -765,15 +774,6 @@ msgid ""
 "API Key incorrect, Use the api key from Config->General in your 3rd party "
 "program:"
 msgstr "API Key 不正确，请在第三方程序中使用“配置”->“常规”中的 api key:"
-
-#: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr "用户已在 web 界面登录"
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr "用户已登录"
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -834,27 +834,19 @@ msgid ""
 "Category folder cannot be a subfolder of the Temporary Download Folder."
 msgstr "类别文件夹不能是临时下载文件夹的子文件夹。"
 
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "错误:"
-
-#: sabnzbd/interface.py
-msgid "Back"
-msgstr "返回"
-
 #. Warning message
 #: sabnzbd/internetspeed.py
 msgid ""
 "Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
 " %f MB/s"
-msgstr ""
+msgstr "IPv4 的互联网带宽与 IPv6 明显不同：%f MB/s 对比 %f MB/s"
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Warnings"
 msgstr "警告信息"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Idle"
 msgstr "空闲"
@@ -885,8 +877,8 @@ msgstr "限速"
 
 #. Notification - Pause downloading - Four way switch for duplicates -
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Pause"
 msgstr "暂停"
 
@@ -896,8 +888,8 @@ msgid "min"
 msgstr "分钟"
 
 #. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Resume"
 msgstr "续传"
 
@@ -906,7 +898,7 @@ msgstr "续传"
 msgid "Scan watched folder"
 msgstr "扫描监视文件夹"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Read all RSS feeds"
 msgstr "读取所有 RSS feed"
 
@@ -918,17 +910,17 @@ msgstr "完成文件夹"
 msgid "Incomplete Folder"
 msgstr "未完成文件夹"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Troubleshoot"
 msgstr "疑难解决"
 
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Restart"
 msgstr "重启"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Restart without login"
 msgstr "清除登录身份凭据设置并重新启动"
 
@@ -1122,6 +1114,10 @@ msgid "see logfile"
 msgstr "查看日志文件"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking skipped, TAR support requires Python 3.12 or later"
+msgstr "已跳过解压，TAR 支持需要 Python 3.12 或更高版本"
+
+#: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "快速检查"
 
@@ -1285,6 +1281,11 @@ msgstr "队列已完成"
 
 #. Notification
 #: sabnzbd/notifier.py
+msgid "User logged in"
+msgstr "用户已登录"
+
+#. Notification
+#: sabnzbd/notifier.py
 msgid "Other Messages"
 msgstr "其他信息"
 
@@ -1294,7 +1295,7 @@ msgid "Open folder"
 msgstr "打开文件夹"
 
 #. Notification action
-#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/notifier.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Open complete folder"
 msgstr "打开完成文件夹"
 
@@ -1433,7 +1434,8 @@ msgstr "传播延迟生效，等待 %s 分钟"
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "已下载，耗时 %s，平均速度 %sB/s"
 
-#. Job details page, file age column header
+#. Config->RSS filter-type selection menu (e.g. ">3d", "<12h") - Job details
+#. page, file age column header
 #: sabnzbd/nzb/object.py, sabnzbd/skintext.py
 msgid "Age"
 msgstr "发布时间"
@@ -1528,6 +1530,23 @@ msgstr "如果您再次收到本错误信息，请尝试其他数字。<br>"
 #: sabnzbd/panic.py
 msgid ""
 "\n"
+"    SABnzbd is not allowed to use port %s on %s.<br>\n"
+"    Low port numbers are reserved for privileged processes on most systems,\n"
+"    so the port itself is available but cannot be claimed.<br>\n"
+"    <br>\n"
+"    Either run SABnzbd with the privileges needed for that port, or restart it\n"
+"    with a port number of 1024 or higher."
+msgstr ""
+
+#: sabnzbd/panic.py
+msgid ""
+"To keep using the low port, put a reverse proxy in front of SABnzbd "
+"instead.<br>"
+msgstr ""
+
+#: sabnzbd/panic.py
+msgid ""
+"\n"
 "    SABnzbd needs a valid host address for its internal web server.<br>\n"
 "    You have specified an invalid address.<br>\n"
 "    Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>\n"
@@ -1611,18 +1630,15 @@ msgid ""
 "SABnzbd is already running."
 msgstr "绑定端口 %s 在 %s 上失败。其它的程序正在使用此端口或者说 SABnzbd 正在运行。"
 
+#: sabnzbd/panic.py
+msgid ""
+"Not allowed to bind to port %s on %s. Low ports need elevated privileges."
+msgstr ""
+
 #. Warning message
 #: sabnzbd/panic.py
 msgid "Cannot launch the browser, probably not found"
 msgstr "无法启动浏览器，可能未找到"
-
-#: sabnzbd/panic.py
-msgid "Access denied"
-msgstr "访问被拒绝"
-
-#: sabnzbd/panic.py
-msgid "Error %s: You need to provide a valid username and password."
-msgstr "错误 %s: 您需要提供有效的用户名与密码。"
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -1752,6 +1768,10 @@ msgstr "%s 没有匹配的早期 rar 文件"
 msgid "Removing %s failed"
 msgstr "移除 %s 失败"
 
+#: sabnzbd/postproc.py
+msgid "Removed %s files with unwanted extensions"
+msgstr ""
+
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Failed to hibernate system"
@@ -1805,51 +1825,51 @@ msgstr "RSS Feed %s 为空"
 msgid "Incompatible feed"
 msgstr "feed 不兼容"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Show interface"
-msgstr "显示界面"
-
-#. Queue page button or entry box
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for"
-msgstr "暂停"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 5 minutes"
-msgstr "暂停 5 分钟"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 15 minutes"
-msgstr "暂停 15 分钟"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 30 minutes"
-msgstr "暂停 30 分钟"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 1 hour"
-msgstr "暂停 1 小时"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 3 hours"
-msgstr "暂停 3 小时"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 6 hours"
-msgstr "暂停 6 小时"
-
-#. Config->Scheduling
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Shutdown"
-msgstr "关闭"
-
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Remaining"
 msgstr "剩余"
 
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Add NZB"
 msgstr "添加 NZB"
+
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
+msgid "Show interface"
+msgstr "显示界面"
+
+#. Config->Scheduling
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Shutdown"
+msgstr "关闭"
+
+#. Queue page button or entry box
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for"
+msgstr "暂停"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 5 minutes"
+msgstr "暂停 5 分钟"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 15 minutes"
+msgstr "暂停 15 分钟"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 30 minutes"
+msgstr "暂停 30 分钟"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 1 hour"
+msgstr "暂停 1 小时"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 3 hours"
+msgstr "暂停 3 小时"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 6 hours"
+msgstr "暂停 6 小时"
 
 #. Warning message
 #: sabnzbd/scheduler.py
@@ -2185,6 +2205,10 @@ msgstr "主机"
 #: sabnzbd/skintext.py
 msgid "Cancel"
 msgstr "取消"
+
+#: sabnzbd/skintext.py
+msgid "Close"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Log in"
@@ -2758,10 +2782,6 @@ msgid "Web Interface Theme"
 msgstr "Web 界面主题"
 
 #: sabnzbd/skintext.py
-msgid "Choose a theme."
-msgstr "选择一个主题。"
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Username"
 msgstr "SABnzbd 用户名"
 
@@ -2898,6 +2918,8 @@ msgid ""
 "download.<br />Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> "
 "(filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
 msgstr ""
+"下载后应删除的文件扩展名、文件名或通配符模式的列表。<br />示例：<b>nfo, sfv</b>（扩展名）或 "
+"<b>thumbs.db</b>（文件名）或 <b>*.tmp, images/*, */test.jpg</b>（通配符模式）。"
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
@@ -3243,7 +3265,7 @@ msgid ""
 "Only try to unpack jobs that passed the verification stage. If turned off, "
 "all jobs will be marked as Completed and moved to the Complete folder even "
 "if they are incomplete."
-msgstr ""
+msgstr "仅尝试解压通过验证阶段的任务。如果关闭，所有任务都将被标记为“完成”并移至完成文件夹，即使它们并不完整。"
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
@@ -3331,7 +3353,7 @@ msgstr "启用基于 SFV 的检查"
 #: sabnzbd/skintext.py
 msgid ""
 "If no par2 files are available, use sfv files (if present) to verify files"
-msgstr ""
+msgstr "如果没有可用的 par2 文件，则使用 sfv 文件（如果存在）来验证文件"
 
 #: sabnzbd/skintext.py
 msgid "User script can flag job as failed"
@@ -3402,8 +3424,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr "添加新作业时自动对队列中的作业进行排序。"
 
 #: sabnzbd/skintext.py
-msgid "The queue will resort every 30 seconds if % downloaded is selected."
-msgstr "如果选择了下载百分比，队列将每 30 秒重新排序一次。"
+msgid ""
+"The queue will resort every 30 seconds if % downloaded or Remaining Size is "
+"selected."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Propagation delay"
@@ -3719,14 +3743,14 @@ msgstr "启用"
 
 #: sabnzbd/skintext.py
 msgid "Articles per request"
-msgstr ""
+msgstr "每次请求的文章数"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Request multiple articles per connection without waiting for each response "
 "first.<br />This can improve download speeds, especially on connections with"
 " higher latency."
-msgstr ""
+msgstr "每个连接请求多篇文章，而不必先等待每个响应。<br />这可以提高下载速度，尤其是在延迟较高的连接上。"
 
 #. Button: Remove server
 #: sabnzbd/skintext.py
@@ -4477,6 +4501,14 @@ msgid "Filename"
 msgstr "文件名"
 
 #: sabnzbd/skintext.py
+msgid "Toggle SABnzbd navigation menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Open SABnzbd main menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "剩余空间"
 
@@ -4485,12 +4517,20 @@ msgid "Temp Folder"
 msgstr "临时文件夹"
 
 #: sabnzbd/skintext.py
+msgid "Clear search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "多选操作"
 
 #: sabnzbd/skintext.py
 msgid "Hold shift key to select a range"
 msgstr "按 shift 键可选择范围"
+
+#: sabnzbd/skintext.py
+msgid "Select job"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Check all"
@@ -4523,6 +4563,10 @@ msgstr "SABnzbd 重启后本画面将自动消失!"
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "警告:"
+
+#: sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "错误:"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"
@@ -4559,6 +4603,14 @@ msgstr "额外的队列列"
 #: sabnzbd/skintext.py
 msgid "Extra history columns"
 msgstr "额外的历史记录列"
+
+#: sabnzbd/skintext.py
+msgid "Progress"
+msgstr "进度"
+
+#: sabnzbd/skintext.py
+msgid "Actions"
+msgstr "操作"
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4727,6 +4779,10 @@ msgstr "所有用户名、密码和 API 密钥都会自动从日志和包含的�
 #: sabnzbd/skintext.py
 msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
 msgstr "按下载百分比排序 <small>最多&rarr;最少</small>"
+
+#: sabnzbd/skintext.py
+msgid "Sort by Remaining Size <small>Smallest&rarr;Largest</small>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"

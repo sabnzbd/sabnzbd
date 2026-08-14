@@ -1,0 +1,202 @@
+name: Update bundled tools
+
+on:
+  schedule:
+    # Nightly check for new releases of the bundled tools
+    - cron: "30 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  unrar:
+    name: Update unrar
+    if: github.repository == 'sabnzbd/sabnzbd'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BRANCH: automation/update-unrar
+    steps:
+      - uses: actions/checkout@v7
+      - name: Determine latest unrar version
+        id: version
+        run: |
+          RAW_VERSION=$(curl -fsSL --retry 3 https://www.rarlab.com/download.htm -o- | sed -n 's%.*/rarmacos-x64-\([0-9]\+\)\.tar\.gz.*%\1%p' | head -1)
+          if [ -z "$RAW_VERSION" ]; then
+            echo "Could not determine the latest unrar version from the rarlab download page"
+            exit 1
+          fi
+          # Version is encoded without separator, e.g. 723 = 7.23
+          VERSION="${RAW_VERSION%??}.${RAW_VERSION: -2}"
+          echo "Latest unrar version: $VERSION"
+          echo "raw_version=$RAW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Download and extract new binaries
+        env:
+          RAW_VERSION: ${{ steps.version.outputs.raw_version }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/unrar"
+          cd "$RUNNER_TEMP/unrar"
+          for FILE in "rarmacos-x64-$RAW_VERSION.tar.gz" "rarmacos-arm-$RAW_VERSION.tar.gz" "winrar-x64-$RAW_VERSION.exe"; do
+            curl -fsSL --retry 3 -o "$FILE" "https://www.rarlab.com/rar/$FILE"
+          done
+          mkdir macos-x64 macos-arm64 windows
+          tar -xzf "rarmacos-x64-$RAW_VERSION.tar.gz" -C macos-x64
+          tar -xzf "rarmacos-arm-$RAW_VERSION.tar.gz" -C macos-arm64
+          # Unpack UnRAR.exe from the WinRAR installer, which is a self-extracting
+          # RAR archive that the preinstalled 7-Zip can read
+          7z x -y -owindows "winrar-x64-$RAW_VERSION.exe" UnRAR.exe > /dev/null
+      - name: Copy binaries into the repository
+        run: |
+          install -m 755 "$RUNNER_TEMP/unrar/macos-x64/rar/unrar" macos/unrar/unrar
+          install -m 755 "$RUNNER_TEMP/unrar/macos-arm64/rar/unrar" macos/unrar/arm64/unrar
+          install -m 755 "$RUNNER_TEMP/unrar/windows/UnRAR.exe" win/unrar/UnRAR.exe
+      - name: Create pull request
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if git diff --quiet; then
+            echo "Bundled unrar is already at version $VERSION"
+            exit 0
+          fi
+          git config user.name "SABnzbd Automation"
+          git config user.email "bugs@sabnzbd.org"
+          git add macos/unrar win/unrar
+          git commit -m "unrar $VERSION"
+          # Skip the push if an open PR already contains these exact binaries
+          OPEN_PRS=$(gh pr list --head "$BRANCH" --state open --json number --jq length)
+          if [ "$OPEN_PRS" != "0" ] && git fetch origin "$BRANCH" && git diff --quiet FETCH_HEAD HEAD -- macos/unrar win/unrar; then
+            echo "Existing pull request already updates unrar to $VERSION"
+            exit 0
+          fi
+          git push --force origin "HEAD:refs/heads/$BRANCH"
+          if [ "$OPEN_PRS" = "0" ]; then
+            gh pr create --head "$BRANCH" --title "unrar $VERSION" --body "Automated update of the bundled unrar binaries to version $VERSION.
+
+          [Changelog](https://www.rarlab.com/rarnew.htm)"
+          fi
+
+  sevenzip:
+    name: Update 7-Zip
+    if: github.repository == 'sabnzbd/sabnzbd'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BRANCH: automation/update-7zip
+    steps:
+      - uses: actions/checkout@v7
+      - name: Determine latest 7-Zip version
+        id: version
+        run: |
+          VERSION=$(gh api repos/ip7z/7zip/releases/latest --jq .tag_name)
+          # Assets are named without separator, e.g. 7z2602-extra.7z for 26.02
+          RAW_VERSION="${VERSION//./}"
+          echo "Latest 7-Zip version: $VERSION"
+          echo "raw_version=$RAW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Download and extract new binaries
+        env:
+          RAW_VERSION: ${{ steps.version.outputs.raw_version }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/7zip"
+          cd "$RUNNER_TEMP/7zip"
+          gh release download "$VERSION" --repo ip7z/7zip \
+            --pattern "7z$RAW_VERSION-extra.7z" --pattern "7z$RAW_VERSION-mac.tar.xz"
+          mkdir macos windows
+          tar -xJf "7z$RAW_VERSION-mac.tar.xz" -C macos
+          # The preinstalled 7-Zip unpacks the extra package that contains
+          # the standalone Windows console version
+          7z x -y -owindows "7z$RAW_VERSION-extra.7z" 7za.exe > /dev/null
+      - name: Copy binaries into the repository
+        run: |
+          install -m 644 "$RUNNER_TEMP/7zip/windows/7za.exe" win/7zip/7za.exe
+          install -m 755 "$RUNNER_TEMP/7zip/macos/7zz" macos/7zip/7zz
+      - name: Create pull request
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if git diff --quiet; then
+            echo "Bundled 7-Zip is already at version $VERSION"
+            exit 0
+          fi
+          git config user.name "SABnzbd Automation"
+          git config user.email "bugs@sabnzbd.org"
+          git add macos/7zip win/7zip
+          git commit -m "7-Zip $VERSION"
+          # Skip the push if an open PR already contains these exact binaries
+          OPEN_PRS=$(gh pr list --head "$BRANCH" --state open --json number --jq length)
+          if [ "$OPEN_PRS" != "0" ] && git fetch origin "$BRANCH" && git diff --quiet FETCH_HEAD HEAD -- macos/7zip win/7zip; then
+            echo "Existing pull request already updates 7-Zip to $VERSION"
+            exit 0
+          fi
+          git push --force origin "HEAD:refs/heads/$BRANCH"
+          if [ "$OPEN_PRS" = "0" ]; then
+            gh pr create --head "$BRANCH" --title "7-Zip $VERSION" --body "Automated update of the bundled 7-Zip binaries to version $VERSION.
+
+          [Release notes](https://github.com/ip7z/7zip/releases/tag/$VERSION)"
+          fi
+
+  par2:
+    name: Update par2cmdline-turbo
+    if: false
+    # if: github.repository == 'sabnzbd/sabnzbd'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BRANCH: automation/update-par2
+    steps:
+      - uses: actions/checkout@v7
+      - name: Determine latest par2cmdline-turbo version
+        id: version
+        run: |
+          TAG=$(gh api repos/animetosho/par2cmdline-turbo/releases/latest --jq .tag_name)
+          # Assets are named without the leading v, e.g. par2cmdline-turbo-1.4.0-win-x64.zip for tag v1.4.0
+          VERSION="${TAG#v}"
+          echo "Latest par2cmdline-turbo version: $VERSION"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Download and extract new binaries
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/par2"
+          cd "$RUNNER_TEMP/par2"
+          for ARCH in win-x64 win-arm64 macos-universal; do
+            gh release download "$TAG" --repo animetosho/par2cmdline-turbo \
+              --pattern "par2cmdline-turbo-$VERSION-$ARCH.zip"
+            unzip -q -d "$ARCH" "par2cmdline-turbo-$VERSION-$ARCH.zip"
+          done
+      - name: Copy binaries into the repository
+        run: |
+          install -m 644 "$RUNNER_TEMP/par2/win-x64/par2.exe" win/par2/par2.exe
+          install -m 644 "$RUNNER_TEMP/par2/win-arm64/par2.exe" win/par2/arm64/par2.exe
+          install -m 755 "$RUNNER_TEMP/par2/macos-universal/par2" macos/par2/par2
+      - name: Create pull request
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if git diff --quiet; then
+            echo "Bundled par2cmdline-turbo is already at version $VERSION"
+            exit 0
+          fi
+          git config user.name "SABnzbd Automation"
+          git config user.email "bugs@sabnzbd.org"
+          git add macos/par2 win/par2
+          git commit -m "par2cmdline-turbo $VERSION"
+          # Skip the push if an open PR already contains these exact binaries
+          OPEN_PRS=$(gh pr list --head "$BRANCH" --state open --json number --jq length)
+          if [ "$OPEN_PRS" != "0" ] && git fetch origin "$BRANCH" && git diff --quiet FETCH_HEAD HEAD -- macos/par2 win/par2; then
+            echo "Existing pull request already updates par2cmdline-turbo to $VERSION"
+            exit 0
+          fi
+          git push --force origin "HEAD:refs/heads/$BRANCH"
+          if [ "$OPEN_PRS" = "0" ]; then
+            gh pr create --head "$BRANCH" --title "par2cmdline-turbo $VERSION" --body "Automated update of the bundled par2cmdline-turbo binaries to version $VERSION.
+
+          [Release notes](https://github.com/animetosho/par2cmdline-turbo/releases/tag/$TAG)"
+          fi

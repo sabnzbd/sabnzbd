@@ -18,6 +18,7 @@ stages:
       headers:
         content-type: !re_match "application/json"
         content-type: !re_search "charset=(UTF|utf)-8"
+        cache-control: "no-store"
         pragma: "no-cache"
         access-control-allow-origin: "*"
       json:
@@ -51,6 +52,7 @@ stages:
       headers:
         content-type: !re_match "text/xml"
         content-type: !re_search "charset=(UTF|utf)-8"
+        cache-control: "no-store"
         pragma: "no-cache"
         access-control-allow-origin: "*"
         content-length: !re_match "[0-9]+"

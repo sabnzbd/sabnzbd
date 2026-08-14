@@ -553,7 +553,7 @@ def send_windows(title: str, msg: str, notification_type: str, actions: Optional
 
             notification_sender.show_toast(toast_notification)
         elif sabnzbd.WINTRAY and not sabnzbd.WINTRAY.terminate:
-            sabnzbd.WINTRAY.sendnotification(title, msg)
+            sabnzbd.WINTRAY.send_notification(title, msg)
     except Exception:
         logging.info(T("Failed to send Windows notification"))
         logging.debug("Traceback: ", exc_info=True)

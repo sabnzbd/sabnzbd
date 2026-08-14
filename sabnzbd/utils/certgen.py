@@ -5,18 +5,20 @@ Adapted from the docs of cryptography
 Creates a key and self-signed certificate for local use
 """
 
+import datetime
+import ipaddress
+import socket
+
+from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography import x509
 from cryptography.x509.oid import NameOID
-import datetime
-import socket
 
 from sabnzbd.getipaddress import local_ipv4
 
 
-def generate_key(key_size=2048, output_file="key.pem"):
+def generate_key(key_size: int = 2048, output_file: str = "key.pem") -> rsa.RSAPrivateKey:
     """Generate the private-key file for the self-signed certificate
     Ported from cryptography docs/x509/tutorial.rst (set with no encryption)
     """
@@ -36,7 +38,13 @@ def generate_key(key_size=2048, output_file="key.pem"):
     return private_key
 
 
-def generate_local_cert(private_key, days_valid=3560, output_file="cert.cert", LN="SABnzbd", ON="SABnzbd"):
+def generate_local_cert(
+    private_key: rsa.RSAPrivateKey,
+    days_valid: int = 3560,
+    output_file: str = "cert.cert",
+    LN: str = "SABnzbd",
+    ON: str = "SABnzbd",
+) -> x509.Certificate:
     """Generate a certificate, using basic information.
     Ported from cryptography docs/x509/tutorial.rst
     """
@@ -46,38 +54,36 @@ def generate_local_cert(private_key, days_valid=3560, output_file="cert.cert", L
         [
             x509.NameAttribute(NameOID.LOCALITY_NAME, LN),
             x509.NameAttribute(NameOID.ORGANIZATION_NAME, ON),
-            # x509.NameAttribute(NameOID.COMMON_NAME, CN),
         ]
     )
 
-    # build Subject Alternate Names (aka SAN) list
-    # First the host names, add with x509.DNSName():
-    san_list = [x509.DNSName("localhost"), x509.DNSName(str(socket.gethostname()))]
+    # Build the Subject Alternative Names (aka SAN) list.
+    # First the host names, added with x509.DNSName(), then the loopback addresses.
+    san_list = [
+        x509.DNSName("localhost"),
+        x509.DNSName(socket.gethostname()),
+        x509.IPAddress(ipaddress.IPv4Address("127.0.0.1")),
+        x509.IPAddress(ipaddress.IPv6Address("::1")),
+    ]
 
-    # Then the host IP addresses, add with x509.IPAddress()
-    # Inside a try-except, just to be sure
-    try:
-        import ipaddress
+    # Then the local LAN IPv4 address, if we can determine it
+    if mylocalipv4 := local_ipv4():
+        try:
+            san_list.append(x509.IPAddress(ipaddress.IPv4Address(mylocalipv4)))
+        except ValueError:
+            pass
 
-        san_list.append(x509.IPAddress(ipaddress.IPv4Address("127.0.0.1")))
-        san_list.append(x509.IPAddress(ipaddress.IPv6Address("::1")))
-
-        # append local v4 ip
-        mylocalipv4 = local_ipv4()
-        if mylocalipv4:
-            san_list.append(x509.IPAddress(ipaddress.IPv4Address(str(mylocalipv4))))
-    except Exception:
-        pass
-
+    now = datetime.datetime.now(datetime.timezone.utc)
     cert = (
         x509.CertificateBuilder()
         .subject_name(subject)
         .issuer_name(issuer)
         .public_key(private_key.public_key())
-        .not_valid_before(datetime.datetime.now(datetime.timezone.utc))
-        .not_valid_after(datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=days_valid))
+        .not_valid_before(now)
+        .not_valid_after(now + datetime.timedelta(days=days_valid))
         .serial_number(x509.random_serial_number())
-        .add_extension(x509.SubjectAlternativeName(san_list), critical=True)
+        .add_extension(x509.SubjectAlternativeName(san_list), critical=False)
+        .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
         .sign(private_key, hashes.SHA256(), default_backend())
     )
 

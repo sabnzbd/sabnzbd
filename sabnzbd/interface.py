@@ -20,8 +20,9 @@ sabnzbd.interface - webinterface
 """
 
 import os
+import secrets
+import threading
 import time
-import cherrypy
 import logging
 import urllib.parse
 import re
@@ -31,9 +32,20 @@ import ssl
 import functools
 import copy
 from random import randint
-from xml.sax.saxutils import escape
+
+import uvicorn
+from starlette.applications import Starlette
+from starlette.concurrency import run_in_threadpool
+from starlette.datastructures import Address, MultiDict, MutableHeaders, QueryParams
+from starlette.requests import Request
+from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse, Response, FileResponse
+from starlette.middleware import Middleware
+from starlette.middleware.gzip import GZipMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.routing import Mount, Route
+from starlette.staticfiles import StaticFiles
 from Cheetah.Template import Template
-from typing import Optional, Callable, Any
+from typing import Optional, Callable, Any, Collection
 from guessit.api import properties as guessit_properties
 
 import sabnzbd
@@ -52,9 +64,7 @@ from sabnzbd.misc import (
     recursive_html_escape,
     is_none,
     get_cpu_name,
-    clean_comma_separated_list,
 )
-from sabnzbd.get_addrinfo import get_fastest_addrinfo
 from sabnzbd.filesystem import (
     real_path,
     globber,
@@ -63,12 +73,12 @@ from sabnzbd.filesystem import (
     same_directory,
     setname_from_path,
 )
-from sabnzbd.encoding import xml_name, utob
+from sabnzbd.encoding import utob
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.notifier as notifier
 import sabnzbd.newsunpack
 import sabnzbd.utils.ssdp
+from sabnzbd.get_addrinfo import get_fastest_addrinfo
 from sabnzbd.constants import (
     DEF_STD_CONFIG,
     DEFAULT_PRIORITY,
@@ -80,15 +90,19 @@ from sabnzbd.constants import (
     VALID_NZB_FILES,
     VALID_ARCHIVES,
     DEF_NETWORKING_TEST_TIMEOUT,
-    DEF_PIPELINING_REQUESTS,
 )
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
+    report,
     list_scripts,
     list_cats,
     del_from_section,
     api_handler,
+    halt_and_shutdown,
     build_header,
+    url_for,
+    url_origin,
+    url_netloc,
     Ttemplate,
 )
 from sabnzbd.nzb import NzoInfo
@@ -104,98 +118,61 @@ _MSG_MISSING_AUTH = "Missing authentication"
 _MSG_APIKEY_REQUIRED = "API Key Required"
 _MSG_APIKEY_INCORRECT = "API Key Incorrect"
 
+INTERFACE_ROUTES: list[Route | Mount] = []
+
 
 def secured_expose(
     wrap_func: Optional[Callable] = None,
+    route: Optional[str] = None,
     check_configlock: bool = False,
     check_for_login: bool = True,
     check_api_key: bool = False,
     access_type: int = 4,
-) -> Callable | str:
-    """Wrapper for both cherrypy.expose and login/access check"""
+    methods: Collection = ("GET", "POST"),
+) -> Callable:
+    """Register a handler as a Starlette route and attach its access controls"""
     if not wrap_func:
         return functools.partial(
             secured_expose,
+            route=route,
             check_configlock=check_configlock,
             check_for_login=check_for_login,
             check_api_key=check_api_key,
             access_type=access_type,
+            methods=methods,
         )
 
-    # Expose to cherrypy
-    wrap_func.exposed = True
-
-    @functools.wraps(wrap_func)
-    def internal_wrap(*args, **kwargs):
-        # Label for logging in this and other functions, handling X-Forwarded-For
-        # The cherrypy.request object allows adding custom attributes
-        if cherrypy.request.headers.get("X-Forwarded-For"):
-            cherrypy.request.remote_label = "%s (X-Forwarded-For: %s) [%s]" % (
-                cherrypy.request.remote.ip,
-                cherrypy.request.headers.get("X-Forwarded-For"),
-                cherrypy.request.headers.get("User-Agent"),
+    if route:
+        INTERFACE_ROUTES.append(
+            Route(
+                route,
+                endpoint=wrap_func,
+                methods=methods,
+                middleware=[
+                    Middleware(ParamsMiddleware, merge_query=check_api_key),
+                    Middleware(
+                        SecurityMiddleware,
+                        check_configlock=check_configlock,
+                        check_for_login=check_for_login,
+                        check_api_key=check_api_key,
+                        access_type=access_type,
+                    ),
+                ],
             )
-        else:
-            cherrypy.request.remote_label = "%s [%s]" % (
-                cherrypy.request.remote.ip,
-                cherrypy.request.headers.get("User-Agent"),
-            )
+        )
 
-        # Log all requests
-        if cfg.api_logging():
-            logging.debug(
-                "Request %s %s from %s %s",
-                cherrypy.request.method,
-                cherrypy.request.path_info,
-                cherrypy.request.remote_label,
-                kwargs,
-            )
-
-        # Add X-Frame-Headers headers to page-requests
-        if cfg.x_frame_options():
-            cherrypy.response.headers["X-Frame-Options"] = "SameOrigin"
-
-        # Check if config is locked
-        if check_configlock and cfg.configlock():
-            cherrypy.response.status = 403
-            if cfg.api_warnings():
-                return _MSG_ACCESS_DENIED_CONFIG_LOCK
-            return
-
-        # Check if external access and if it's allowed
-        if not check_access(access_type=access_type, warn_user=True):
-            cherrypy.response.status = 403
-            if cfg.api_warnings():
-                return _MSG_ACCESS_DENIED
-            return
-
-        # Verify login status, only for non-key pages
-        if check_for_login and not check_api_key and not check_login():
-            raise Raiser("/login/")
-
-        # Verify host used for the visit
-        if not check_hostname():
-            cherrypy.response.status = 403
-            if cfg.api_warnings():
-                return _MSG_ACCESS_DENIED_HOSTNAME
-            return
-
-        # Some pages need correct API key
-        if check_api_key:
-            if msg := check_apikey(kwargs):
-                cherrypy.response.status = 403
-                if cfg.api_warnings():
-                    return msg
-                return
-
-        # All good, cool!
-        return wrap_func(*args, **kwargs)
-
-    return internal_wrap
+    return wrap_func
 
 
-def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
-    """Check if external address is allowed given access_type:
+def client_address(request: Request) -> Address:
+    """Safe access to request.client, which can be None (e.g. when serving on a
+    unix socket, or with some test clients). Treated as an unknown, non-local
+    client, so access checks fail closed."""
+    return request.client or Address("", 0)
+
+
+def check_access(request: Request, access_type: int = 4, warn_user: bool = False) -> bool:
+    """Check if external address is allowed given access_type (Starlette version):
     1=nzb
     2=api
     3=full_api
@@ -206,28 +183,22 @@ def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
     if access_type <= cfg.inet_exposure():
         return True
 
-    remote_ip = cherrypy.request.remote.ip
+    # X-Forwarded-For is resolved by uvicorn's ProxyHeadersMiddleware (see the
+    # uvicorn.Config in SABnzbd.py): when verify_xff_header is enabled and the
+    # connecting peer is a trusted local proxy, request.client already holds the
+    # effective client address taken from the XFF chain.
+    remote_ip = client_address(request).host
 
     # Check if the client IP is a loopback address or considered local
     is_allowed = is_loopback_addr(remote_ip) or is_local_addr(remote_ip)
 
-    # Never check the XFF header unless access would have been granted based on the remote IP alone!
-    if (
-        is_allowed
-        and cfg.verify_xff_header()
-        and (xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For")))
-    ):
-        is_allowed = all(is_local_addr(ip) or is_loopback_addr(ip) for ip in xff_ips)
-        if not is_allowed:
-            logging.debug("Denying access based on X-Forwarded-For IPs '%s'", xff_ips)
-
     if not is_allowed and warn_user:
-        log_warning_and_ip(T("Refused connection from:"))
+        log_warning_and_ip(request, T("Refused connection from:"))
     return is_allowed
 
 
-def check_hostname():
-    """Check if hostname is allowed, to mitigate DNS-rebinding attack.
+def check_hostname(request: Request) -> bool:
+    """Check if hostname is allowed, to mitigate DNS-rebinding attack (Starlette version).
     Similar to CVE-2019-5702, we need to add protection even
     if only allowed to be accessed via localhost.
     """
@@ -236,7 +207,7 @@ def check_hostname():
         return True
 
     # Don't allow requests without Host
-    host = cherrypy.request.headers.get("Host")
+    host = request.headers.get("Host")
     if not host:
         return False
 
@@ -258,127 +229,123 @@ def check_hostname():
         return True
 
     # Ohoh, bad
-    log_warning_and_ip(T('Refused connection with hostname "%s" from:') % host)
+    log_warning_and_ip(request, T('Refused connection with hostname "%s" from:') % host)
     return False
 
 
 # Create a more unique ID for each instance
 COOKIE_SECRET = str(randint(1000, 100000) * os.getpid())
+COOKIE_SESSION = "sabnzbd_session"
 
 
-def remote_ip_from_xff(xff_ips: list[str]) -> str:
-    # Per MDN docs, the first non-local/non-trusted IP (rtl) is our "client"
-    # However, it's possible that all IPs are local/trusted, so we may also
-    # return the first ip in the list as it "should" be the client
-    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For#selecting_an_ip_address
-    for ip in reversed(xff_ips):
-        if not is_local_addr(ip) and not is_loopback_addr(ip):
-            return ip
-    else:
-        # If no non-local/non-trusted IPs found, return the first IP in the list
-        return xff_ips[0]
+def use_secure_cookies(request: Request) -> bool:
+    """Whether cookies for this request should carry the Secure attribute"""
+    return request.url.scheme == "https" or bool(cfg.enable_https())
 
 
-def set_login_cookie(remove=False, remember_me=False):
-    """We try to set a cookie as unique as possible
+def set_login_cookie(request: Request, response: Response, remove=False, remember_me=False):
+    """Set login cookie for Starlette (updated version)
+    We try to set a cookie as unique as possible
     to the current user. Based on it's IP and the
     current process ID of the SAB instance and a random
     number, so cookies cannot be re-used
     """
     salt = randint(1, 1000)
 
-    # If we are using XFF headers, get remote IP from XFF if possible
-    if cfg.verify_xff_header() and (
-        xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For"))
-    ):
-        remote_ip = remote_ip_from_xff(xff_ips)
-    else:
-        remote_ip = cherrypy.request.remote.ip
+    # request.client is the effective client: uvicorn resolves the XFF header
+    # from trusted proxies when verify_xff_header is enabled
+    cookie_str = utob(str(salt) + client_address(request).host + COOKIE_SECRET)
+    cookie_value = hashlib.sha1(cookie_str).hexdigest()
 
-    cookie_str = utob(str(salt) + remote_ip + COOKIE_SECRET)
-    cherrypy.response.cookie["login_cookie"] = hashlib.sha1(cookie_str).hexdigest()
-    cherrypy.response.cookie["login_cookie"]["path"] = "/"
-    cherrypy.response.cookie["login_cookie"]["httponly"] = 1
-    cherrypy.response.cookie["login_salt"] = salt
-    cherrypy.response.cookie["login_salt"]["path"] = "/"
-    cherrypy.response.cookie["login_salt"]["httponly"] = 1
-
-    # If we want to be remembered
-    if remember_me:
-        cherrypy.response.cookie["login_cookie"]["max-age"] = 3600 * 24 * 14
-        cherrypy.response.cookie["login_salt"]["max-age"] = 3600 * 24 * 14
-
-    # To remove
+    secure = use_secure_cookies(request)
     if remove:
-        cherrypy.response.cookie["login_cookie"]["expires"] = 0
-        cherrypy.response.cookie["login_salt"]["expires"] = 0
-
-
-def check_login_cookie():
-    # Do we have everything?
-    if "login_cookie" not in cherrypy.request.cookie or "login_salt" not in cherrypy.request.cookie:
-        return False
-
-    # If we are using XFF headers, get remote IP from XFF if possible
-    if cfg.verify_xff_header() and (
-        xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For"))
-    ):
-        remote_ip = remote_ip_from_xff(xff_ips)
+        # Remove cookies
+        response.set_cookie(
+            "login_cookie",
+            "",
+            path="/",
+            httponly=True,
+            secure=secure,
+            samesite="strict",
+            expires="Thu, 01 Jan 1970 00:00:00 GMT",
+        )
+        response.set_cookie(
+            "login_salt",
+            "",
+            path="/",
+            httponly=True,
+            secure=secure,
+            samesite="strict",
+            expires="Thu, 01 Jan 1970 00:00:00 GMT",
+        )
     else:
-        remote_ip = cherrypy.request.remote.ip
+        # Set cookies
+        max_age = None
+        if remember_me:
+            max_age = 3600 * 24 * 14  # 14 days
 
-    cookie_str = utob(str(cherrypy.request.cookie["login_salt"].value) + remote_ip + COOKIE_SECRET)
-    return cherrypy.request.cookie["login_cookie"].value == hashlib.sha1(cookie_str).hexdigest()
+        response.set_cookie(
+            "login_cookie",
+            cookie_value,
+            path="/",
+            httponly=True,
+            secure=secure,
+            samesite="strict",
+            max_age=max_age,
+        )
+        response.set_cookie(
+            "login_salt",
+            str(salt),
+            path="/",
+            httponly=True,
+            secure=secure,
+            samesite="strict",
+            max_age=max_age,
+        )
 
 
-def check_login():
-    # Not when no authentication required or basic-auth is on
-    if not cfg.html_login() or not cfg.username() or not cfg.password():
+def check_login(request: Request) -> bool:
+    """Check if user is logged in (Starlette version)"""
+    # No authentication required when no username/password is set
+    if not cfg.username() or not cfg.password():
         return True
 
     # If we show login for external IP, by using access_type=6 we can check if IP match
-    if cfg.inet_exposure() == 5 and check_access(access_type=6):
+    if cfg.inet_exposure() == 5 and check_access(request, access_type=6):
         return True
 
     # Check the cookie
-    return check_login_cookie()
+    return check_login_cookie(request)
 
 
-def check_basic_auth(_, username, password):
-    """CherryPy basic authentication validation"""
-    return username == cfg.username() and password == cfg.password()
+def check_login_cookie(request: Request) -> bool:
+    """Check login cookie validity (Starlette version)"""
+    # Do we have everything?
+    login_cookie = request.cookies.get("login_cookie")
+    login_salt = request.cookies.get("login_salt")
+    if not login_cookie or not login_salt:
+        return False
+
+    # request.client is the effective client: uvicorn resolves the XFF header
+    # from trusted proxies when verify_xff_header is enabled
+    cookie_str = utob(str(login_salt) + client_address(request).host + COOKIE_SECRET)
+    return login_cookie == hashlib.sha1(cookie_str).hexdigest()
 
 
-def set_auth(conf):
-    """Set the authentication for CherryPy"""
-    if cfg.username() and cfg.password() and not cfg.html_login():
-        conf.update(
-            {
-                "tools.auth_basic.on": True,
-                "tools.auth_basic.realm": "SABnzbd",
-                "tools.auth_basic.checkpassword": check_basic_auth,
-            }
-        )
-        conf.update(
-            {
-                "/api": {"tools.auth_basic.on": False},
-                "%s/api" % cfg.url_base(): {"tools.auth_basic.on": False},
-            }
-        )
-    else:
-        conf.update({"tools.auth_basic.on": False})
-
-
-def check_apikey(kwargs):
-    """Check API-key or NZB-key
+def check_apikey(request: Request) -> Optional[str]:
+    """Check API-key or NZB-key (Starlette version)
     Return None when OK, otherwise an error message
     """
-    mode = kwargs.get("mode", "")
-    name = kwargs.get("name", "")
+    mode = request_params(request).get("mode", "")
 
-    # Lookup required access level for the specific api-call
-    req_access = sabnzbd.api.api_level(mode, name)
-    if not check_access(req_access, warn_user=True):
+    # Resolve the call once here and stash it on the request, so the /api route can
+    # dispatch through api_handler without consulting the api table a second time.
+    entry, argument = sabnzbd.api.resolve_api_call(request_params(request))
+    request.state.api_call = (entry, argument)
+
+    # The entry carries the access level required for this specific api-call
+    req_access = entry.access_level
+    if not check_access(request, access_type=req_access, warn_user=True):
         return _MSG_ACCESS_DENIED
 
     # Skip for auth and version calls
@@ -386,10 +353,10 @@ def check_apikey(kwargs):
         return None
 
     # First check API-key, if OK that's sufficient
-    key = kwargs.get("apikey")
+    key = request_params(request).get("apikey")
     if not key:
         log_warning_and_ip(
-            T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
+            request, T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
         )
         return _MSG_APIKEY_REQUIRED
     elif req_access == 1 and key == cfg.nzb_key():
@@ -397,7 +364,9 @@ def check_apikey(kwargs):
     elif key == cfg.api_key():
         return None
     else:
-        log_warning_and_ip(T("API Key incorrect, Use the api key from Config->General in your 3rd party program:"))
+        log_warning_and_ip(
+            request, T("API Key incorrect, Use the api key from Config->General in your 3rd party program:")
+        )
         return _MSG_APIKEY_INCORRECT
 
 
@@ -407,210 +376,346 @@ def template_filtered_response(file: str, search_list: dict[str, Any]):
     search_list_copy = copy.deepcopy(search_list)
     # 'filters' is excluded because the RSS-filters are listed twice
     recursive_html_escape(search_list_copy, exclude_items=("webdir", "filters"))
-    return Template(file=file, searchList=[search_list_copy], compilerSettings=CHEETAH_DIRECTIVES).respond()
+    return HTMLResponse(
+        Template(file=file, searchList=[search_list_copy], compilerSettings=CHEETAH_DIRECTIVES).respond()
+    )
 
 
-def log_warning_and_ip(txt):
-    """Include the IP and the Proxy-IP for warnings"""
+def log_warning_and_ip(request: Request, txt: str):
+    """Include the IP and the Proxy-IP for warnings (Starlette version)"""
     if cfg.api_warnings():
-        logging.warning("%s %s", txt, cherrypy.request.remote_label)
+        remote_info = "%s:%s" % client_address(request)
+        if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
+            remote_info += f" (X-Forwarded-For: {xff_ips})"
+        logging.warning("%s %s", txt, remote_info)
+
+
+# CherryPy collapsed these API routing/scalar keys to their first value when a key
+# was supplied more than once (e.g. ?mode=queue&mode=version resolved to "queue"),
+# whereas Starlette's .get() would otherwise return the last. Dispatch and the
+# handlers still assume a single value, so the merged API routes reproduce this.
+# Genuinely multi-valued keys (keyword, file uploads) are left alone so getlist()
+# still sees every value.
+API_FIRST_WINS_KEYS = ("mode", "name", "value", "value2", "value3", "start", "limit", "search")
+
+
+def is_form_post(request: Request) -> bool:
+    return request.method == "POST" and request.headers.get("content-type", "").startswith(
+        ("application/x-www-form-urlencoded", "multipart/form-data")
+    )
+
+
+async def get_request_params(request: Request, merge_query: bool = False) -> MultiDict | QueryParams:
+    """Parse the request's parameters.
+
+    A page GET renders a page and never changes state, so only the URL query
+    string is used, returned as the request's immutable QueryParams. A page POST
+    reads the form body only (urlencoded or multipart, with file uploads kept as
+    UploadFile objects) into a mutable MultiDict; the query string is ignored, so
+    parameters cannot be smuggled into form handlers via the URL. A POST without a
+    form body yields an empty MultiDict.
+
+    The merged API routes (merge_query, i.e. /api and the api-key protected
+    *_save routes) keep the CherryPy behavior instead: 3rd-party clients
+    traditionally POST an NZB as a multipart body while passing mode/apikey/output
+    in the query string, so the form body and query string are merged into a
+    mutable MultiDict, the body winning per key. A key supplied only in the query
+    string keeps all of its values. GET, form POST and bodyless POST all take this
+    same path, so a duplicated key resolves identically regardless of method, and
+    the API scalar keys collapse to their first value exactly as CherryPy did.
+
+    ParamsMiddleware stores the result on request.state.params so that
+    request_params(request) returns it in every handler without an extra await.
+    """
+    if not merge_query:
+        if is_form_post(request):
+            return MultiDict(await request.form())
+        return MultiDict() if request.method == "POST" else request.query_params
+
+    # Start from the form body (if any) so it wins per key, then add query-string
+    # values for keys the body did not set.
+    params = MultiDict(await request.form()) if is_form_post(request) else MultiDict()
+    body_keys = set(params.keys())
+    for key, value in request.query_params.multi_items():
+        if key not in body_keys:
+            params.append(key, value)
+
+    # Collapse the API scalar keys to their first value
+    for key in API_FIRST_WINS_KEYS:
+        if len(values := params.getlist(key)) > 1:
+            params[key] = values[0]
+    return params
+
+
+def request_params(request: Request) -> MultiDict | QueryParams:
+    """The request's parameters, parsed once by ParamsMiddleware: the query
+    string for a page GET, the form body for a page POST, or the form body
+    merged with the query string for the API routes. See get_request_params
+    for the exact rules and the returned types."""
+    return request.state.params
+
+
+class ParamsMiddleware:
+    """Parse a request's parameters onto request.state.params before the handler
+    runs, so request_params(request) returns them without a further await. Attached
+    per route by secured_expose because the merge behavior is route-specific:
+    merge_query follows check_api_key (the /api and *_save routes that accept
+    mode/apikey in the query string alongside a form body). Pure ASGI, and the
+    request body is read once here; handlers only ever read the parsed params."""
+
+    def __init__(self, app, merge_query: bool = False):
+        self.app = app
+        self.merge_query = merge_query
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            request = Request(scope, receive)
+            request.state.params = await get_request_params(request, merge_query=self.merge_query)
+        await self.app(scope, receive, send)
+
+
+class SecurityMiddleware:
+    """Enforce a route's access rules before its handler runs: config lock, local vs
+    external access, login, and API key. Attached per route by secured_expose with
+    that route's flags, and ordered after ParamsMiddleware so the API-key check can
+    read the parsed request_params. Pure ASGI; a failed check answers with a 403 (or
+    a redirect to /login) without ever invoking the handler."""
+
+    def __init__(
+        self,
+        app,
+        check_configlock: bool = False,
+        check_for_login: bool = True,
+        check_api_key: bool = False,
+        access_type: int = 4,
+    ):
+        self.app = app
+        self.check_configlock = check_configlock
+        self.check_for_login = check_for_login
+        self.check_api_key = check_api_key
+        self.access_type = access_type
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http" and (response := self.denied_response(Request(scope, receive))):
+            return await response(scope, receive, send)
+        await self.app(scope, receive, send)
+
+    def denied_response(self, request: Request) -> Optional[Response]:
+        """Return the response to send when a check fails, or None when allowed."""
+        # Check if config is locked
+        if self.check_configlock and cfg.configlock():
+            return PlainTextResponse(_MSG_ACCESS_DENIED_CONFIG_LOCK if cfg.api_warnings() else "", status_code=403)
+
+        # Check if external access and if it's allowed
+        if not check_access(request, access_type=self.access_type, warn_user=True):
+            return PlainTextResponse(_MSG_ACCESS_DENIED if cfg.api_warnings() else "", status_code=403)
+
+        # Verify login status, only for non-key pages
+        if self.check_for_login and not self.check_api_key and not check_login(request):
+            return base_redirect_response("/login")
+
+        # Some pages need the correct API key
+        if self.check_api_key and (msg := check_apikey(request)):
+            return PlainTextResponse(msg if cfg.api_warnings() else "", status_code=403)
+
+        return None
+
+
+def forbidden(message: str) -> PlainTextResponse:
+    """403 response, carrying the reason only when api_warnings is enabled."""
+    return PlainTextResponse(message if cfg.api_warnings() else "", status_code=403)
+
+
+# Disable over-active logging for the form parser
+logging.getLogger("python_multipart.multipart").setLevel(logging.WARNING)
 
 
 ##############################################################################
-# Helper raiser functions
+# Helper redirect functions
 ##############################################################################
-def Raiser(root: str = "", **kwargs):
-    # Add extras
-    if kwargs:
-        root = "%s?%s" % (root, urllib.parse.urlencode(kwargs))
 
-    # Add the leading /sabnzbd/ (or what the user set)
-    root = cfg.url_base() + root
 
-    # Log the redirect
+def base_redirect_response(root: str = "", **kwargs) -> RedirectResponse:
+    """Create a Starlette RedirectResponse with SABnzbd URL base and query parameters"""
+    # Shares url_for with the templates so redirect targets and links stay in step.
+    # Root-relative on purpose: a Location header should send the client back to the
+    # host it just used, not to whatever origin this process thinks it is on.
+    url = url_for(root, absolute=False, **kwargs)
+
+    # Log the redirect if API logging is enabled
     if cfg.api_logging():
-        logging.debug("Request %s %s redirected to %s", cherrypy.request.method, cherrypy.request.path_info, root)
+        logging.debug("Redirecting to %s", url)
 
-    # Send the redirect
-    return cherrypy.HTTPRedirect(root)
-
-
-def rssRaiser(root, kwargs):
-    return Raiser(root, feed=kwargs.get("feed"))
+    return RedirectResponse(url=url, status_code=302)
 
 
 ##############################################################################
-# Page definitions
+# Page definitions - Main
 ##############################################################################
-class MainPage:
-    def __init__(self):
-        self.__root = "/"
 
-        # Add all sub-pages
-        self.login = LoginPage()
-        self.config = ConfigPage("/config/")
-        self.wizard = Wizard("/wizard/")
 
-    @secured_expose
-    def index(self, **kwargs):
-        # Redirect to wizard if no servers are set
-        if kwargs.get("skip_wizard") or config.get_servers():
-            info = build_header()
+@secured_expose(route="/", methods=["GET"])
+def main_index(request: Request):
+    # Redirect to wizard if no servers are set
+    if request_params(request).get("skip_wizard") or config.get_servers():
+        info = build_header(request=request)
 
-            info["have_rss_defined"] = bool(config.get_rss())
-            info["have_watched_dir"] = bool(cfg.dirscan_dir())
+        info["have_rss_defined"] = bool(config.get_rss())
+        info["have_watched_dir"] = bool(cfg.dirscan_dir())
+        info["cpumodel"] = get_cpu_name()
+        info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
+        info["platform"] = sabnzbd.PLATFORM
 
-            info["cpumodel"] = get_cpu_name()
-            info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
-            info["platform"] = sabnzbd.PLATFORM
+        # Have logout only if inet=5, only when we are external
+        info["have_logout"] = (
+            cfg.username()
+            and cfg.password()
+            and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(request, access_type=6)))
+        )
 
-            # Have logout only with HTML and if inet=5, only when we are external
-            info["have_logout"] = (
-                cfg.username()
-                and cfg.password()
-                and (
-                    cfg.html_login()
-                    and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(access_type=6)))
-                )
-            )
+        bytespersec_list = sabnzbd.BPSMeter.get_bps_list()
+        info["bytespersec_list"] = ",".join([str(bps) for bps in bytespersec_list])
 
-            bytespersec_list = sabnzbd.BPSMeter.get_bps_list()
-            info["bytespersec_list"] = ",".join([str(bps) for bps in bytespersec_list])
+        return template_filtered_response(file=os.path.join(sabnzbd.WEB_DIR, "main.tmpl"), search_list=info)
+    else:
+        # Redirect to the setup wizard
+        return base_redirect_response("/wizard")
 
-            return template_filtered_response(file=os.path.join(sabnzbd.WEB_DIR, "main.tmpl"), search_list=info)
-        else:
-            # Redirect to the setup wizard
-            raise cherrypy.HTTPRedirect("%s/wizard/" % cfg.url_base())
 
-    @secured_expose(check_api_key=True)
-    def shutdown(self, **kwargs):
-        # Check for PID
-        pid_in = kwargs.get("pid")
-        if pid_in and int(pid_in) != os.getpid():
-            return "Incorrect PID for this instance, remove PID from URL to initiate shutdown."
+@secured_expose(route="/shutdown", check_api_key=True)
+async def shutdown(request: Request):
+    # Check for PID
+    pid_in = request_params(request).get("pid")
+    if pid_in and int_conv(pid_in) != os.getpid():
+        return PlainTextResponse("Incorrect PID for this instance, remove PID from URL to initiate shutdown.")
 
-        sabnzbd.shutdown_program()
-        return T("SABnzbd shutdown finished")
+    await halt_and_shutdown()
+    return PlainTextResponse(T("SABnzbd shutdown finished"))
 
-    @secured_expose(check_api_key=True, access_type=1)
-    def api(self, **kwargs):
-        """Redirect to API-handler, we check the access_type in the API-handler"""
-        return api_handler(kwargs)
 
-    @secured_expose
-    def scriptlog(self, **kwargs):
-        """Needed for all skins, URL is fixed due to postproc"""
-        # No session key check, due to fixed URLs
-        if name := kwargs.get("name"):
-            history_db = sabnzbd.get_db_connection()
-            return ShowString(history_db.get_name(name), history_db.get_script_log(name))
-        else:
-            raise Raiser(self.__root)
+@secured_expose(route="/api", check_api_key=True, access_type=1)
+async def api(request: Request):
+    """Redirect to API-handler, we check the access_type in the API-handler"""
+    return await api_handler(request_params(request), request.state.api_call)
 
-    @secured_expose
-    def robots_txt(self, **kwargs):
-        """Keep web crawlers out"""
-        cherrypy.response.headers["Content-Type"] = "text/plain"
-        return "User-agent: *\nDisallow: /\n"
 
-    @secured_expose
-    def description_xml(self, **kwargs):
-        """Provide the description.xml which was broadcast via SSDP"""
-        if is_lan_addr(cherrypy.request.remote.ip):
-            cherrypy.response.headers["Content-Type"] = "application/xml"
-            return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
-        else:
-            return None
+@secured_expose(route="/scriptlog", methods=["GET"])
+def scriptlog(request: Request):
+    """Needed for all skins, URL is fixed due to postproc"""
+    # No session key check, due to fixed URLs in history database
+    if name := request_params(request).get("name"):
+        with sabnzbd.db_pool.connection() as history_db:
+            return PlainTextResponse(history_db.get_script_log(name))
+    return PlainTextResponse("")
+
+
+@secured_expose(route="/robots.txt", check_for_login=False, methods=["GET"])
+def robots_txt(request: Request):
+    """Keep web crawlers out"""
+    return PlainTextResponse("User-agent: *\nDisallow: /\n")
+
+
+@secured_expose(route="/description.xml", check_for_login=False, methods=["GET"])
+def description_xml(request: Request):
+    """Provide the description.xml which was broadcast via SSDP"""
+    if is_lan_addr(client_address(request).host):
+        response = Response(content=sabnzbd.utils.ssdp.server_ssdp_xml(), media_type="application/xml")
+        return response
+    else:
+        return Response(status_code=404)
+
+
+@secured_expose(route="/favicon.ico", check_for_login=False, methods=["GET"])
+def favicon_ico(request: Request):
+    """Provide the favicon.ico"""
+    return FileResponse(os.path.join(sabnzbd.WEB_DIR_CONFIG, "staticcfg", "ico", "favicon.ico"))
 
 
 ##############################################################################
-class Wizard:
-    def __init__(self, root):
-        self.__root = root
-
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        """Show the language selection page"""
-        if sabnzbd.WINDOWS:
-            from sabnzbd.utils.apireg import get_install_lng
-
-            cfg.language.set(get_install_lng())
-            logging.debug('Installer language code "%s"', cfg.language())
-
-        info = build_header(sabnzbd.WIZARD_DIR)
-        info["languages"] = list_languages()
-
-        return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "index.html"), search_list=info)
-
-    @secured_expose(check_configlock=True)
-    def one(self, **kwargs):
-        """Accept language and show server page"""
-        if kwargs.get("lang"):
-            cfg.language.set(kwargs.get("lang"))
-
-        info = build_header(sabnzbd.WIZARD_DIR)
-
-        # Just in case, add server
-        servers = config.get_servers()
-        if not servers:
-            info["server"] = ""
-            info["host"] = ""
-            info["port"] = ""
-            info["username"] = ""
-            info["password"] = ""
-            info["connections"] = ""
-            info["ssl"] = 1
-            info["ssl_verify"] = 3
-            info["pipelining_requests"] = DEF_PIPELINING_REQUESTS
-        else:
-            # Sort servers to get the first enabled one
-            server_names = sorted(
-                servers,
-                key=lambda svr: "%d%02d%s"
-                % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
-            )
-            for server in server_names:
-                # If there are multiple servers, just use the first enabled one
-                s = servers[server]
-                info["server"] = server
-                info["host"] = s.host()
-                info["port"] = s.port()
-                info["username"] = s.username()
-                info["password"] = s.password.get_stars()
-                info["connections"] = s.connections()
-                info["ssl"] = s.ssl()
-                info["ssl_verify"] = s.ssl_verify()
-                info["pipelining_requests"] = s.pipelining_requests()
-                if s.enable():
-                    break
-        return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "one.html"), search_list=info)
-
-    @secured_expose(check_configlock=True)
-    def two(self, **kwargs):
-        """Accept server and show the final page for restart"""
-        # Save server details
-        if kwargs:
-            kwargs["enable"] = 1
-            handle_server(kwargs)
-
-        config.save_config()
-
-        # Show Restart screen
-        info = build_header(sabnzbd.WIZARD_DIR)
-
-        info["access_url"], info["urls"] = get_access_info()
-        info["download_dir"] = cfg.download_dir.get_clipped_path()
-        info["complete_dir"] = cfg.complete_dir.get_clipped_path()
-
-        return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "two.html"), search_list=info)
+# Page definitions - Wizard
+##############################################################################
 
 
-def get_access_info():
+@secured_expose(route="/wizard", check_configlock=True, methods=["GET"])
+def wizard_index(request: Request):
+    """Show the language selection page"""
+    if sabnzbd.WINDOWS:
+        from sabnzbd.utils.apireg import get_install_lng
+
+        cfg.language.set(get_install_lng())
+        logging.debug('Installer language code "%s"', cfg.language())
+
+    info = build_header(sabnzbd.WIZARD_DIR, request=request)
+    info["languages"] = list_languages()
+
+    return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "index.html"), search_list=info)
+
+
+@secured_expose(route="/wizard/one", check_configlock=True, methods=["GET", "POST"])
+def wizard_page_one(request: Request):
+    """Accept language and show server page"""
+    if request_params(request).get("lang"):
+        cfg.language.set(request_params(request).get("lang"))
+
+    info = build_header(sabnzbd.WIZARD_DIR, request=request)
+
+    # Just in case, add server
+    servers = config.get_servers()
+    if not servers:
+        info["server"] = ""
+        info["host"] = ""
+        info["port"] = ""
+        info["username"] = ""
+        info["password"] = ""
+        info["connections"] = ""
+        info["ssl"] = 1
+        info["ssl_verify"] = 2
+        info["pipelining_requests"] = sabnzbd.constants.DEF_PIPELINING_REQUESTS
+    else:
+        # Sort servers to get the first enabled one
+        server_names = sorted(
+            servers,
+            key=lambda svr: "%d%02d%s"
+            % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
+        )
+        for server in server_names:
+            # If there are multiple servers, just use the first enabled one
+            s = servers[server]
+            info["server"] = server
+            info["host"] = s.host()
+            info["port"] = s.port()
+            info["username"] = s.username()
+            info["password"] = s.password.get_stars()
+            info["connections"] = s.connections()
+            info["ssl"] = s.ssl()
+            info["ssl_verify"] = s.ssl_verify()
+            info["pipelining_requests"] = s.pipelining_requests()
+            if s.enable():
+                break
+    return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "one.html"), search_list=info)
+
+
+@secured_expose(route="/wizard/two", check_configlock=True, methods=["GET", "POST"])
+def wizard_page_two(request: Request):
+    """Accept server and show the final page for restart"""
+    # Save server details if submitted — no host means the user skipped server setup
+    if request_params(request).get("host"):
+        handle_server(request_params(request))
+
+    # Show Restart screen
+    info = build_header(sabnzbd.WIZARD_DIR, request=request)
+
+    info["urls"] = get_access_info(request)
+    info["download_dir"] = cfg.download_dir.get_clipped_path()
+    info["complete_dir"] = cfg.complete_dir.get_clipped_path()
+
+    return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "two.html"), search_list=info)
+
+
+def get_access_info(request: Optional[Request] = None) -> set[str]:
     """Build up a list of url's that sabnzbd can be accessed from"""
-    # Access_url is used to provide the user a link to SABnzbd depending on the host
     web_host = cfg.web_host()
     host = socket.gethostname().lower()
-    logging.info("hostname is", host)
     socks = [host]
 
     try:
@@ -639,94 +744,107 @@ def get_access_info():
     elif web_host:
         socks = [web_host]
 
-    # Add the current requested URL as the base
-    access_url = urllib.parse.urljoin(cherrypy.request.base, cfg.url_base())
+    # Lead with the URL this page was actually reached by, which is the one we know works.
+    # Built from the origin rather than url_for() so it matches the bare "scheme://host+base"
+    # shape of the entries below and dedupes against them.
+    urls = [url_origin(request) + cfg.url_base()]
 
-    urls = [access_url]
+    if cfg.enable_https():
+        scheme = "https"
+        port = cfg.https_port() or cfg.web_port()
+    else:
+        scheme = "http"
+        port = cfg.web_port()
+
     for sock in socks:
         if sock:
-            if cfg.enable_https() and cfg.https_port():
-                url = "https://%s:%s%s" % (sock, cfg.https_port(), cfg.url_base())
-            elif cfg.enable_https():
-                url = "https://%s:%s%s" % (sock, cfg.web_port(), cfg.url_base())
-            else:
-                url = "http://%s:%s%s" % (sock, cfg.web_port(), cfg.url_base())
-            urls.append(url)
+            urls.append("%s://%s%s" % (scheme, url_netloc(sock, scheme, port), cfg.url_base()))
 
     # Return a unique list
-    return access_url, set(urls)
+    return set(urls)
 
 
 ##############################################################################
-class LoginPage:
-    @secured_expose(check_for_login=False)
-    def index(self, **kwargs):
-        # Base output var
-        info = build_header(sabnzbd.WEB_DIR_CONFIG)
-        info["error"] = ""
+# Page definitions - Login
+##############################################################################
 
-        # Logout?
-        if kwargs.get("logout"):
-            set_login_cookie(remove=True)
-            raise Raiser()
 
-        # Check if there's even a username/password set
-        if check_login():
-            raise Raiser("/")
+@secured_expose(route="/login", check_for_login=False)
+async def login_index(request: Request):
+    # Already logged in, or no username/password set at all
+    if check_login(request):
+        return base_redirect_response("/")
 
-        # Check login info
-        if kwargs.get("username") == cfg.username() and kwargs.get("password") == cfg.password():
+    error = None
+    if request.method == "POST":
+        username = request_params(request).get("username")
+        password = request_params(request).get("password")
+        remember_me = bool(request_params(request).get("remember_me", False))
+
+        if username == cfg.username() and password == cfg.password():
+            # Create redirect response
+            response = base_redirect_response("/")
             # Save login cookie
-            set_login_cookie(remember_me=kwargs.get("remember_me", False))
+            set_login_cookie(request, response, remember_me=remember_me)
             # Log the success
-            logging.info("Successful login from %s", cherrypy.request.remote_label)
-            # Notify about new login
-            notifier.send_notification(T("User logged in"), T("User logged in to the web interface"), "new_login")
-            # Redirect
-            raise Raiser("/")
-        elif kwargs.get("username") or kwargs.get("password"):
-            info["error"] = T("Authentication failed, check username/password.")
+            remote_info = "%s:%s" % client_address(request)
+            if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
+                remote_info += f" (X-Forwarded-For: {xff_ips})"
+            logging.info("Successful login from %s", remote_info)
+            return response
+        elif username or password:
+            error = T("Authentication failed, check username/password.")
             # Warn about the potential security problem
-            logging.warning(T("Unsuccessful login attempt from %s"), cherrypy.request.remote_label)
+            remote_info = "%s:%s" % client_address(request)
+            if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
+                remote_info += f" (X-Forwarded-For: {xff_ips})"
+            logging.warning(T("Unsuccessful login attempt from %s"), remote_info)
 
-        # Show login
+    # Show login. Building the header and rendering the Cheetah template are
+    # blocking work, so keep them off the event loop.
+    def render_login_page():
+        info = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
+        info["error"] = error
         return template_filtered_response(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "login", "main.tmpl"),
             search_list=info,
         )
 
+    return await run_in_threadpool(render_login_page)
+
+
+@secured_expose(route="/logout", check_for_login=False, methods=["GET"])
+def logout_index(request: Request):
+    response = base_redirect_response("/")
+    set_login_cookie(request, response, remove=True)
+    return response
+
 
 ##############################################################################
-class ConfigPage:
-    def __init__(self, root):
-        self.__root = root
-        self.folders = ConfigFolders("/config/folders/")
-        self.notify = ConfigNotify("/config/notify/")
-        self.general = ConfigGeneral("/config/general/")
-        self.rss = ConfigRss("/config/rss/")
-        self.scheduling = ConfigScheduling("/config/scheduling/")
-        self.server = ConfigServer("/config/server/")
-        self.switches = ConfigSwitches("/config/switches/")
-        self.categories = ConfigCats("/config/categories/")
-        self.sorting = ConfigSorting("/config/sorting/")
-        self.special = ConfigSpecial("/config/special/")
-
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf["configfn"] = clip_path(config.get_filename())
-        conf["cmdline"] = sabnzbd.CMDLINE
-        conf["build"] = sabnzbd.__baseline__[:7]
-        conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
-        conf["have_par2_turbo"] = sabnzbd.newsunpack.PAR2_TURBO
-        conf["ssl_version"] = ssl.OPENSSL_VERSION
-
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config.tmpl"),
-            search_list=conf,
-        )
+# Page definitions - Config - General
+##############################################################################
 
 
+@secured_expose(route="/config", check_configlock=True, methods=["GET"])
+def config_general_index(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
+    conf["configfn"] = clip_path(config.get_filename())
+    conf["cmdline"] = sabnzbd.CMDLINE
+    conf["build"] = sabnzbd.__baseline__[:7]
+
+    conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
+    conf["have_sabctools"] = sabnzbd.decoder.SABCTOOLS_ENABLED
+    conf["have_par2_turbo"] = sabnzbd.newsunpack.PAR2_TURBO
+    conf["ssl_version"] = ssl.OPENSSL_VERSION
+
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config.tmpl"),
+        search_list=conf,
+    )
+
+
+##############################################################################
+# Page definitions - Config - Folders
 ##############################################################################
 LIST_DIRPAGE = (
     "download_dir",
@@ -748,37 +866,32 @@ LIST_DIRPAGE = (
 LIST_BOOL_DIRPAGE = ("fulldisk_autoresume",)
 
 
-class ConfigFolders:
-    def __init__(self, root):
-        self.__root = root
+@secured_expose(route="/config/folders", check_configlock=True, methods=["GET"])
+def index_config_folders(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
+    conf["file_exts"] = ", ".join(VALID_NZB_FILES + VALID_ARCHIVES)
 
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+    for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
+        conf[kw] = config.get_config("misc", kw)()
 
-        conf["file_exts"] = ", ".join(VALID_NZB_FILES + VALID_ARCHIVES)
-
-        for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
-            conf[kw] = config.get_config("misc", kw)()
-
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_folders.tmpl"),
-            search_list=conf,
-        )
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveDirectories(self, **kwargs):
-        for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
-            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
-                return badParameterResponse(msg, kwargs.get("ajax"))
-
-        config.save_config()
-        if kwargs.get("ajax"):
-            return sabnzbd.api.report()
-        else:
-            raise Raiser(self.__root)
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_folders.tmpl"),
+        search_list=conf,
+    )
 
 
+@secured_expose(route="/config/folders/save", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_folder_save(request: Request):
+    for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
+        if msg := config.get_config("misc", kw).set(request_params(request).get(kw)):
+            return report(request_params(request), error=msg)
+
+    config.save_config()
+    return report(request_params(request))
+
+
+##############################################################################
+# Page definitions - Config - Switches
 ##############################################################################
 SWITCH_LIST = (
     "par_option",
@@ -826,41 +939,37 @@ SWITCH_LIST = (
 )
 
 
-class ConfigSwitches:
-    def __init__(self, root):
-        self.__root = root
+@secured_expose(route="/config/switches", check_configlock=True, methods=["GET"])
+def index_config_switches(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
+    conf["have_nice"] = bool(sabnzbd.newsunpack.NICE_COMMAND)
+    conf["have_ionice"] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
 
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf["have_nice"] = bool(sabnzbd.newsunpack.NICE_COMMAND)
-        conf["have_ionice"] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
+    for kw in SWITCH_LIST:
+        conf[kw] = config.get_config("misc", kw)()
+    conf["cleanup_list"] = cfg.cleanup_list.get_string()
+    conf["unwanted_extensions"] = cfg.unwanted_extensions.get_string()
 
-        for kw in SWITCH_LIST:
-            conf[kw] = config.get_config("misc", kw)()
-        conf["cleanup_list"] = cfg.cleanup_list.get_string()
-        conf["unwanted_extensions"] = cfg.unwanted_extensions.get_string()
+    conf["scripts"] = list_scripts() or ["None"]
 
-        conf["scripts"] = list_scripts() or ["None"]
-
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_switches.tmpl"),
-            search_list=conf,
-        )
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveSwitches(self, **kwargs):
-        for kw in SWITCH_LIST:
-            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
-                return badParameterResponse(msg, kwargs.get("ajax"))
-
-        config.save_config()
-        if kwargs.get("ajax"):
-            return sabnzbd.api.report()
-        else:
-            raise Raiser(self.__root)
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_switches.tmpl"),
+        search_list=conf,
+    )
 
 
+@secured_expose(route="/config/switches/save", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_switches_save(request: Request):
+    for kw in SWITCH_LIST:
+        if msg := config.get_config("misc", kw).set(request_params(request).get(kw)):
+            return report(request_params(request), error=msg)
+
+    config.save_config()
+    return report(request_params(request))
+
+
+##############################################################################
+# Page definitions - Config - Special
 ##############################################################################
 SPECIAL_BOOL_LIST = (
     "start_paused",
@@ -880,6 +989,7 @@ SPECIAL_BOOL_LIST = (
     "enable_7zip",
     "enable_filejoin",
     "enable_tsjoin",
+    "enable_tar",
     "ignore_unrar_dates",
     "tray_icon",
     "allow_incomplete_nzb",
@@ -887,7 +997,6 @@ SPECIAL_BOOL_LIST = (
     "ipv6_hosting",
     "keep_awake",
     "new_nzb_on_failure",
-    "html_login",
     "disable_archive",
     "wait_for_dfolder",
     "enable_broadcast",
@@ -927,41 +1036,40 @@ SPECIAL_LIST_LIST = (
 )
 
 
-class ConfigSpecial:
-    def __init__(self, root):
-        self.__root = root
-
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf["switches"] = [
-            (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_BOOL_LIST
+@secured_expose(route="/config/special", check_configlock=True, methods=["GET"])
+def index_config_special(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
+    conf["switches"] = [
+        (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_BOOL_LIST
+    ]
+    conf["entries"] = [
+        (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_VALUE_LIST
+    ]
+    conf["entries"].extend(
+        [
+            (kw, config.get_config("misc", kw).get_string(), config.get_config("misc", kw).default_string())
+            for kw in SPECIAL_LIST_LIST
         ]
-        conf["entries"] = [
-            (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_VALUE_LIST
-        ]
-        conf["entries"].extend(
-            [
-                (kw, config.get_config("misc", kw).get_string(), config.get_config("misc", kw).default_string())
-                for kw in SPECIAL_LIST_LIST
-            ]
-        )
+    )
 
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_special.tmpl"),
-            search_list=conf,
-        )
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveSpecial(self, **kwargs):
-        for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
-            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
-                return badParameterResponse(msg)
-
-        config.save_config()
-        raise Raiser(self.__root)
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_special.tmpl"),
+        search_list=conf,
+    )
 
 
+@secured_expose(route="/config/special/save", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_special_save(request: Request):
+    for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
+        if msg := config.get_config("misc", kw).set(request_params(request).get(kw)):
+            return report(request_params(request), error=msg)
+
+    config.save_config()
+    return report(request_params(request))
+
+
+##############################################################################
+# Page definitions - Config - General
 ##############################################################################
 GENERAL_LIST = (
     "host",
@@ -984,165 +1092,162 @@ GENERAL_LIST = (
 )
 
 
-class ConfigGeneral:
-    def __init__(self, root):
-        self.__root = root
+@secured_expose(route="/config/general", check_configlock=True, methods=["GET"])
+def index_config_general(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
 
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+    web_list = []
+    for interface_dir in globber_full(sabnzbd.DIR_INTERFACES):
+        # Ignore the config
+        if not interface_dir.endswith(DEF_STD_CONFIG):
+            # Check the available templates
+            for colorscheme in globber(
+                os.path.join(interface_dir, "templates", "static", "stylesheets", "colorschemes")
+            ):
+                web_list.append("%s - %s" % (setname_from_path(interface_dir), setname_from_path(colorscheme)))
 
-        web_list = []
-        for interface_dir in globber_full(sabnzbd.DIR_INTERFACES):
-            # Ignore the config
-            if not interface_dir.endswith(DEF_STD_CONFIG):
-                # Check the available templates
-                for colorscheme in globber(
-                    os.path.join(interface_dir, "templates", "static", "stylesheets", "colorschemes")
-                ):
-                    web_list.append("%s - %s" % (setname_from_path(interface_dir), setname_from_path(colorscheme)))
+    conf["web_list"] = web_list
+    conf["web_dir"] = "%s - %s" % (cfg.web_dir(), cfg.web_color())
+    conf["password"] = cfg.password.get_stars()
 
-        conf["web_list"] = web_list
-        conf["web_dir"] = "%s - %s" % (cfg.web_dir(), cfg.web_color())
-        conf["password"] = cfg.password.get_stars()
+    conf["language"] = cfg.language()
+    conf["lang_list"] = list_languages()
+    conf["def_https_cert_file"] = DEF_HTTPS_CERT_FILE
 
-        conf["language"] = cfg.language()
-        conf["lang_list"] = list_languages()
-        conf["def_https_cert_file"] = DEF_HTTPS_CERT_FILE
+    for kw in GENERAL_LIST:
+        conf[kw] = config.get_config("misc", kw)()
 
-        for kw in GENERAL_LIST:
-            conf[kw] = config.get_config("misc", kw)()
+    conf["nzb_key"] = cfg.nzb_key()
 
-        conf["nzb_key"] = cfg.nzb_key()
-        conf["caller_url"] = cherrypy.request.base + cfg.url_base()
-
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_general.tmpl"),
-            search_list=conf,
-        )
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveGeneral(self, **kwargs):
-        # Handle general options
-        for kw in GENERAL_LIST:
-            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
-                return badParameterResponse(msg, ajax=kwargs.get("ajax"))
-
-        # Handle special options
-        cfg.password.set(kwargs.get("password"))
-
-        web_dir = kwargs.get("web_dir")
-        change_web_dir(web_dir)
-
-        config.save_config()
-
-        # Update CherryPy authentication
-        set_auth(cherrypy.config)
-        if kwargs.get("ajax"):
-            return sabnzbd.api.report(data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
-        else:
-            raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def uploadConfig(self, **kwargs):
-        """Restore a config backup"""
-        config_backup_file = kwargs.get("config_backup_file")
-
-        # Only accept the backup file if it can be opened as a zip archive and only contains a config file
-        try:
-            config_backup_data = config_backup_file.file.read()
-            config_backup_file.file.close()
-            if config.validate_config_backup(config_backup_data):
-                sabnzbd.RESTORE_DATA = config_backup_data
-                return sabnzbd.api.report(data={"success": True, "restart_req": True})
-        except Exception:
-            pass
-        return sabnzbd.api.report(error=T("Invalid backup archive"))
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_general.tmpl"),
+        search_list=conf,
+    )
 
 
-def change_web_dir(web_dir):
+@secured_expose(route="/config/general/save", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_general_save(request: Request):
+    # Handle general options
+    for kw in GENERAL_LIST:
+        if msg := config.get_config("misc", kw).set(request_params(request).get(kw)):
+            return report(request_params(request), error=msg)
+
+    # Handle special options
+    cfg.password.set(request_params(request).get("password"))
+
+    if web_dir := request_params(request).get("web_dir"):
+        if msg := change_web_dir(web_dir):
+            return report(request_params(request), error=msg)
+
+    config.save_config()
+    return report(request_params(request), data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
+
+
+@secured_expose(route="/config/general/upload_config", check_api_key=True, check_configlock=True, methods=["POST"])
+async def config_upload_backup(request: Request):
+    """Restore a config backup"""
+    config_backup_file = request_params(request).get("config_backup_file")
+
+    # Only accept the backup file if it can be opened as a zip archive and only contains a config file
+    try:
+        config_backup_data = await config_backup_file.read()
+        if config.validate_config_backup(config_backup_data):
+            sabnzbd.RESTORE_DATA = config_backup_data
+            return report(request_params(request), data={"success": True, "restart_req": True})
+    except Exception:
+        pass
+    return report(request_params(request), error=T("Invalid backup archive"))
+
+
+def change_web_dir(web_dir: str) -> Optional[str]:
     web_dir, web_color = web_dir.split(" - ")
     web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
 
     if not os.path.exists(web_dir_path):
-        return badParameterResponse("Cannot find web template: %s" % web_dir_path)
+        logging.info("Cannot find web template: %s", web_dir_path)
+        return "Cannot find web template: %s" % web_dir_path
     else:
         cfg.web_dir.set(web_dir)
         cfg.web_color.set(web_color)
+        return None
 
 
 ##############################################################################
-class ConfigServer:
-    def __init__(self, root):
-        self.__root = root
+# Page definitions - Config - Server
+##############################################################################
 
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        new = []
-        servers = config.get_servers()
-        server_names = sorted(
-            servers,
-            key=lambda svr: "%d%02d%s"
-            % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
-        )
-        for svr in server_names:
-            new.append(servers[svr].get_dict(for_public_api=True))
-            t, m, w, d, daily, articles_tried, articles_success = sabnzbd.BPSMeter.amounts(svr)
-            if t:
-                new[-1]["amounts"] = (
-                    to_units(t),
-                    to_units(m),
-                    to_units(w),
-                    to_units(d),
-                    daily,
-                    articles_tried,
-                    articles_success,
-                )
-            new[-1]["quota_left"] = to_units(
-                servers[svr].quota.get_int() - sabnzbd.BPSMeter.grand_total.get(svr, 0) + servers[svr].usage_at_start()
+
+@secured_expose(route="/config/server", check_configlock=True, methods=["GET"])
+def index_config_server(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
+    new = []
+    servers = config.get_servers()
+    server_names = sorted(
+        servers,
+        key=lambda svr: "%d%02d%s"
+        % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
+    )
+    for svr in server_names:
+        new.append(servers[svr].get_dict(for_public_api=True))
+        t, m, w, d, daily, articles_tried, articles_success = sabnzbd.BPSMeter.amounts(svr)
+        if t:
+            new[-1]["amounts"] = (
+                to_units(t),
+                to_units(m),
+                to_units(w),
+                to_units(d),
+                daily,
+                articles_tried,
+                articles_success,
             )
-
-        conf["servers"] = new
-        conf["cats"] = list_cats(default=True)
-
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_server.tmpl"),
-            search_list=conf,
+        new[-1]["quota_left"] = to_units(
+            servers[svr].quota.get_int() - sabnzbd.BPSMeter.grand_total.get(svr, 0) + servers[svr].usage_at_start()
         )
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def addServer(self, **kwargs):
-        return handle_server(kwargs, self.__root, True)
+    conf["servers"] = new
+    conf["cats"] = list_cats(default=True)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveServer(self, **kwargs):
-        return handle_server(kwargs, self.__root)
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_server.tmpl"),
+        search_list=conf,
+    )
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def delServer(self, **kwargs):
-        kwargs["section"] = "servers"
-        kwargs["keyword"] = kwargs.get("server")
-        del_from_section(kwargs)
-        raise Raiser(self.__root)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def clrServer(self, **kwargs):
-        server = kwargs.get("server")
-        if server:
-            sabnzbd.BPSMeter.clear_server(server)
-        raise Raiser(self.__root)
+@secured_expose(route="/config/server/add_server", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_server_add(request: Request):
+    return handle_server(request_params(request), new_svr=True)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def toggleServer(self, **kwargs):
-        server = kwargs.get("server")
-        if server:
-            svr = config.get_config("servers", server)
-            if svr:
-                svr.enable.set(not svr.enable())
-                config.save_config()
-                sabnzbd.Downloader.update_server(server, server)
-        raise Raiser(self.__root)
+
+@secured_expose(route="/config/server/save_server", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_server_save(request: Request):
+    return handle_server(request_params(request))
+
+
+@secured_expose(route="/config/server/delete_server", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_server_del(request: Request):
+    kw = {"section": "servers", "keyword": request_params(request).get("server")}
+    del_from_section(kw)
+    return base_redirect_response("/config/server")
+
+
+@secured_expose(route="/config/server/clear_server", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_server_clr(request: Request):
+    server = request_params(request).get("server")
+    if server:
+        sabnzbd.BPSMeter.clear_server(server)
+    return base_redirect_response("/config/server")
+
+
+@secured_expose(route="/config/server/toggle_server", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_server_toggle(request: Request):
+    server = request_params(request).get("server")
+    if server:
+        svr = config.get_config("servers", server)
+        if svr:
+            svr.enable.set(not svr.enable())
+            config.save_config()
+            sabnzbd.Downloader.update_server(server, server)
+    return base_redirect_response("/config/server")
 
 
 def unique_svr_name(server):
@@ -1160,35 +1265,34 @@ def unique_svr_name(server):
     return new_name
 
 
-def handle_server(kwargs, root=None, new_svr=False):
-    """Internal server handler"""
-    ajax = kwargs.get("ajax")
-    host = kwargs.get("host", "").strip()
+def handle_server(params, new_svr=False):
+    """Internal server handler, always returns a JSON response"""
+    host = params.get("host", "").strip()
     if not host:
-        return badParameterResponse(T("Server address required"), ajax)
+        return report(params, error=T("Server address required"))
 
-    port = kwargs.get("port", "").strip()
+    port = params.get("port", "").strip()
     if not port:
-        if not kwargs.get("ssl", "").strip():
+        if not params.get("ssl", "").strip():
             port = "119"
         else:
             port = "563"
-        kwargs["port"] = port
+        params["port"] = port
 
-    if kwargs.get("connections", "").strip() == "":
-        kwargs["connections"] = "1"
+    if params.get("connections", "").strip() == "":
+        params["connections"] = "1"
 
-    if kwargs.get("enable") == "1":
+    if params.get("enable") == "1":
         if not get_fastest_addrinfo(
-            host, int_conv(port), int_conv(kwargs.get("timeout"), default=DEF_NETWORKING_TEST_TIMEOUT)
+            host, int_conv(port), int_conv(params.get("timeout"), default=DEF_NETWORKING_TEST_TIMEOUT)
         ):
-            return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
+            return report(params, error=T('Server address "%s:%s" is not valid.') % (host, port))
 
     # Default server name is just the host name
     server = host
 
     svr = None
-    old_server = kwargs.get("server")
+    old_server = params.get("server")
     if old_server:
         svr = config.get_config("servers", old_server)
     if svr:
@@ -1200,296 +1304,345 @@ def handle_server(kwargs, root=None, new_svr=False):
         server = unique_svr_name(server)
 
     for kw in ("ssl", "enable", "required", "optional"):
-        if kw not in kwargs.keys():
-            kwargs[kw] = None
+        if kw not in params.keys():
+            params[kw] = None
     if svr and not new_svr:
-        svr.set_dict(kwargs)
+        svr.set_dict(params)
     else:
         old_server = None
-        config.ConfigServer(server, kwargs)
+        config.ConfigServer(server, params)
 
     config.save_config()
     sabnzbd.Downloader.update_server(old_server, server)
-    if root:
-        if ajax:
-            return sabnzbd.api.report()
-        else:
-            raise Raiser(root)
+    return report(params)
 
 
 ##############################################################################
-class ConfigRss:
-    def __init__(self, root):
-        self.__root = root
-        self.__last_msg = ""  # Last error message from RSS reader
+# Standalone RSS filter functions (used by both route handlers and api.py)
+##############################################################################
 
-    def process_feed(
-        self,
-        feed: str,
-        download: bool = False,
-        force: bool = False,
-        ignore_first: bool = False,
-        readout: bool = False,
-    ) -> None:
-        """Process a feed and cache the result message. When readout=True the feed
-        is re-fetched from its URL and the result message is stored for display.
-        When readout=False the cached items are re-evaluated against current filters."""
-        logging.debug(
-            "Processing RSS-feed: %s (download=%s, force=%s, ignore_first=%s, readout=%s)",
-            feed,
-            download,
-            force,
-            ignore_first,
-            readout,
-        )
-        msg = sabnzbd.RSSReader.process_feed(
-            feed,
-            download=download,
-            force=force,
-            ignore_first=ignore_first,
-            readout=readout,
-        )
-        if readout:
-            self.__last_msg = msg
 
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+def do_upd_rss_filter(kwargs):
+    """Update or add an RSS filter. Called by route handler and api.py.
 
-        conf["scripts"] = list_scripts(default=True)
-        pick_script = conf["scripts"] != []
+    Performs the config mutation and re-evaluates the feed against the new
+    filters so the cached match log reflects the change. Holds no UI state.
+    """
+    try:
+        feed_cfg = config.get_rss()[kwargs.get("feed")]
+    except KeyError:
+        return
 
-        conf["categories"] = list_cats(default=True)
-        pick_cat = conf["categories"] != []
+    pp = kwargs.get("pp", "")
+    if is_none(pp):
+        pp = ""
+    script = ConvertSpecials(kwargs.get("script"))
+    cat = ConvertSpecials(kwargs.get("cat"))
+    prio = ConvertSpecials(kwargs.get("priority"))
+    filt = kwargs.get("filter_text")
+    enabled = kwargs.get("enabled", "0")
 
-        conf["rss_rate"] = cfg.rss_rate()
-
-        rss = {}
-        feeds = config.get_rss()
-        for feed in feeds:
-            rss[feed] = feeds[feed].get_dict()
-            filters = feeds[feed].filters()
-            rss[feed]["filters"] = filters
-            rss[feed]["filter_states"] = [bool(sabnzbd.rss.convert_filter(f[4])) for f in filters]
-            rss[feed]["filtercount"] = len(filters)
-
-            rss[feed]["pick_cat"] = pick_cat
-            rss[feed]["pick_script"] = pick_script
-            rss[feed]["link"] = urllib.parse.quote_plus(feed)
-            rss[feed]["baselink"] = [get_base_url(uri) for uri in rss[feed]["uri"]]
-            rss[feed]["uris"] = feeds[feed].uri.get_string()
-
-        active_feed = kwargs.get("feed", "")
-        conf["active_feed"] = active_feed
-        conf["rss"] = rss
-        conf["rss_next"] = time.strftime(time_format("%H:%M"), time.localtime(sabnzbd.RSSReader.next_run))
-
-        if active_feed:
-            conf["error"] = self.__last_msg
-            conf["downloaded"], conf["matched"], conf["unmatched"] = GetRssLog(active_feed)
-        else:
-            self.__last_msg = ""
-
-        # Find a unique new Feed name
-        unum = 1
-        txt = T("Feed")  # : Used as default Feed name in Config->RSS
-        while txt + str(unum) in feeds:
-            unum += 1
-        conf["feed"] = txt + str(unum)
-
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_rss.tmpl"),
-            search_list=conf,
+    if filt:
+        feed_cfg.filters.update(
+            int(kwargs.get("index", 0)),
+            [cat, pp, script, kwargs.get("filter_type"), filt, prio, enabled],
         )
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def save_rss_rate(self, **kwargs):
-        """Save changed RSS automatic readout rate"""
-        cfg.rss_rate.set(kwargs.get("rss_rate"))
+        # Move filter if requested
+        index = int_conv(kwargs.get("index", ""))
+        new_index = kwargs.get("new_index", "")
+        if new_index and int_conv(new_index) != index:
+            feed_cfg.filters.move(int(index), int_conv(new_index))
+
         config.save_config()
-        sabnzbd.Scheduler.restart()
-        raise Raiser(self.__root)
+    # Re-evaluate cached items against the updated filters (no network read-out)
+    sabnzbd.RSSReader.process_feed(kwargs.get("feed"), readout=False)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def upd_rss_feed(self, **kwargs):
-        """Update Feed level attributes,
-        legacy version: ignores 'enable' parameter
-        """
-        if kwargs.get("enable") is not None:
-            del kwargs["enable"]
-        try:
-            cf = config.get_rss()[kwargs.get("feed")]
-        except KeyError:
-            cf = None
-        uri = Strip(kwargs.get("uri"))
-        if cf and uri:
-            kwargs["uri"] = uri
-            cf.set_dict(kwargs)
-            config.save_config()
 
-        self.process_feed(kwargs.get("feed"))
-        raise rssRaiser(self.__root, kwargs)
+def do_del_rss_filter(kwargs):
+    """Delete an RSS filter. Called by route handler and api.py.
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def save_rss_feed(self, **kwargs):
-        """Update Feed level attributes"""
-        feed_name = kwargs.get("feed")
-        try:
-            cf = config.get_rss()[feed_name]
-        except KeyError:
-            cf = None
-        if "enable" not in kwargs:
-            kwargs["enable"] = 0
-        uri = Strip(kwargs.get("uri"))
-        if cf and uri:
-            kwargs["uri"] = uri
-            cf.set_dict(kwargs)
+    Performs the config mutation and re-evaluates the feed. Holds no UI state.
+    """
+    try:
+        feed_cfg = config.get_rss()[kwargs.get("feed")]
+    except KeyError:
+        return
 
-            # Did we get a new name for this feed?
-            new_name = kwargs.get("feed_new_name")
-            if new_name and new_name != feed_name:
-                # Update the feed name for the redirect
-                kwargs["feed"] = cf.rename(new_name)
+    feed_cfg.filters.delete(int(kwargs.get("index", 0)))
+    config.save_config()
+    # Re-evaluate cached items against the remaining filters (no network read-out)
+    sabnzbd.RSSReader.process_feed(kwargs.get("feed"), readout=False)
 
-            config.save_config()
 
-        raise rssRaiser(self.__root, kwargs)
+##############################################################################
+# Config - RSS (standalone route functions)
+##############################################################################
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def toggle_rss_feed(self, **kwargs):
-        """Toggle automatic read-out flag of Feed"""
-        try:
-            item = config.get_rss()[kwargs.get("feed")]
-        except KeyError:
-            item = None
-        if cfg:
-            item.enable.set(not item.enable())
-            config.save_config()
-        if kwargs.get("table"):
-            raise Raiser(self.__root)
-        else:
-            raise rssRaiser(self.__root, kwargs)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def add_rss_feed(self, **kwargs):
-        """Add one new RSS feed definition"""
-        feed = Strip(kwargs.get("feed")).strip("[]")
-        uri = Strip(kwargs.get("uri"))
-        if feed and uri:
-            try:
-                rss_cfg = config.get_rss()[feed]
-            except KeyError:
-                rss_cfg = None
-            if not rss_cfg and uri:
-                kwargs["feed"] = feed
-                kwargs["uri"] = uri
-                config.ConfigRSS(feed, kwargs)
-                # Clear out any existing reference to this feed name
-                # Otherwise first-run detection can fail
-                with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
-                    repo.clear_feed(feed)
-                config.save_config()
-                self.process_feed(feed, readout=True, ignore_first=True)
-                raise rssRaiser(self.__root, kwargs)
-            else:
-                raise Raiser(self.__root)
-        else:
-            raise Raiser(self.__root)
+_RSS_ROOT = "/config/rss"
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def upd_rss_filter(self, **kwargs):
-        """Wrapper, so we can call from api.py"""
-        self.internal_upd_rss_filter(**kwargs)
 
-    def internal_upd_rss_filter(self, **kwargs):
-        """Save updated filter definition"""
-        try:
-            feed_cfg = config.get_rss()[kwargs.get("feed")]
-        except KeyError:
-            raise rssRaiser(self.__root, kwargs)
+def _rss_redirect(feed: str = "") -> RedirectResponse:
+    """Redirect back to the RSS page, optionally selecting a feed."""
+    if feed:
+        return base_redirect_response(_RSS_ROOT, feed=feed)
+    return base_redirect_response(_RSS_ROOT)
 
-        pp = kwargs.get("pp", "")
-        if is_none(pp):
-            pp = ""
-        script = ConvertSpecials(kwargs.get("script"))
-        cat = ConvertSpecials(kwargs.get("cat"))
-        prio = ConvertSpecials(kwargs.get("priority"))
-        filt = kwargs.get("filter_text")
-        enabled = kwargs.get("enabled", "0")
 
-        if filt:
-            feed_cfg.filters.update(
-                int(kwargs.get("index", 0)), [cat, pp, script, kwargs.get("filter_type"), filt, prio, enabled]
-            )
+def _rss_flash_redirect(request: Request, feed: str, msg: str = "") -> RedirectResponse:
+    """Store a feed read-out result as a one-shot flash in the client session and
+    redirect back to the RSS page. The flash lives in the per-client signed
+    session cookie rather than shared module state, so concurrent requests (other
+    tabs, the API path) can't clobber each other's result."""
+    request.session["rss_flash"] = {"feed": feed, "msg": msg}
+    return _rss_redirect(feed)
 
-            # Move filter if requested
-            index = int_conv(kwargs.get("index", ""))
-            new_index = kwargs.get("new_index", "")
-            if new_index and int_conv(new_index) != index:
-                feed_cfg.filters.move(int(index), int_conv(new_index))
 
-            config.save_config()
-        self.process_feed(kwargs.get("feed"))
-        raise rssRaiser(self.__root, kwargs)
+@secured_expose(route="/config/rss", check_configlock=True, methods=["GET"])
+def config_rss_index(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def del_rss_feed(self, *args, **kwargs):
-        """Remove complete RSS feed"""
-        kwargs["section"] = "rss"
-        kwargs["keyword"] = kwargs.get("feed")
-        del_from_section(kwargs)
-        with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
-            repo.clear_feed(kwargs.get("feed"))
-        raise Raiser(self.__root)
+    conf["scripts"] = list_scripts(default=True)
+    pick_script = conf["scripts"] != []
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def del_rss_filter(self, **kwargs):
-        """Wrapper, so we can call from api.py"""
-        self.internal_del_rss_filter(**kwargs)
+    conf["categories"] = list_cats(default=True)
+    pick_cat = conf["categories"] != []
 
-    def internal_del_rss_filter(self, **kwargs):
-        """Remove one RSS filter"""
-        try:
-            feed_cfg = config.get_rss()[kwargs.get("feed")]
-        except KeyError:
-            raise rssRaiser(self.__root, kwargs)
+    conf["rss_rate"] = cfg.rss_rate()
 
-        feed_cfg.filters.delete(int(kwargs.get("index", 0)))
+    rss = {}
+    feeds = config.get_rss()
+    for feed in feeds:
+        rss[feed] = feeds[feed].get_dict()
+        filters = feeds[feed].filters()
+        rss[feed]["filters"] = filters
+        rss[feed]["filter_states"] = [bool(sabnzbd.rss.convert_filter(f[4])) for f in filters]
+        rss[feed]["filtercount"] = len(filters)
+
+        rss[feed]["pick_cat"] = pick_cat
+        rss[feed]["pick_script"] = pick_script
+        rss[feed]["link"] = urllib.parse.quote_plus(feed)
+        rss[feed]["baselink"] = [get_base_url(uri) for uri in rss[feed]["uri"]]
+        rss[feed]["uris"] = feeds[feed].uri.get_string()
+
+    active_feed = request_params(request).get("feed", "")
+    conf["active_feed"] = active_feed
+    conf["rss"] = rss
+    conf["rss_next"] = time.strftime(time_format("%H:%M"), time.localtime(sabnzbd.RSSReader.next_run))
+
+    if active_feed:
+        # This is a plain GET: no feed processing happens here. Any read-out or
+        # re-evaluation is performed by the POST action handler that redirected
+        # us, which leaves its result message as a one-shot flash in the session.
+        flash = request.session.pop("rss_flash", None)
+        conf["error"] = flash["msg"] if flash and flash.get("feed") == active_feed else ""
+        conf["downloaded"], conf["matched"], conf["unmatched"] = GetRssLog(active_feed)
+
+    # Find a unique new Feed name
+    unum = 1
+    txt = T("Feed")  # : Used as default Feed name in Config->RSS
+    while txt + str(unum) in feeds:
+        unum += 1
+    conf["feed"] = txt + str(unum)
+
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_rss.tmpl"),
+        search_list=conf,
+    )
+
+
+@secured_expose(route="/config/rss/save_rss_rate", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_save_rss_rate(request: Request):
+    """Save changed RSS automatic readout rate"""
+    cfg.rss_rate.set(request_params(request).get("rss_rate"))
+    config.save_config()
+    sabnzbd.Scheduler.restart()
+    return base_redirect_response(_RSS_ROOT)
+
+
+@secured_expose(route="/config/rss/upd_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_upd_rss_feed(request: Request):
+    """Update Feed level attributes,
+    legacy version: ignores 'enable' parameter
+    """
+    params = request_params(request)
+    kwargs = dict(params)
+    if params.get("enable") is not None:
+        del kwargs["enable"]
+    try:
+        cf = config.get_rss()[params.get("feed")]
+    except KeyError:
+        cf = None
+    uri = Strip(params.get("uri"))
+    if cf and uri:
+        kwargs["uri"] = uri
+        cf.set_dict(kwargs)
         config.save_config()
-        self.process_feed(kwargs.get("feed"))
-        raise rssRaiser(self.__root, kwargs)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def download_rss_feed(self, *args, **kwargs):
-        """Force download of all matching jobs in a feed"""
-        if "feed" in kwargs:
-            self.process_feed(kwargs["feed"], readout=True, download=True, force=True)
-        raise rssRaiser(self.__root, kwargs)
+    return _rss_redirect(params.get("feed"))
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def clean_rss_jobs(self, *args, **kwargs):
-        """Remove processed RSS jobs from UI"""
-        with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
-            repo.clear_downloaded(kwargs["feed"])
-        self.process_feed(kwargs["feed"])
-        raise rssRaiser(self.__root, kwargs)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def test_rss_feed(self, *args, **kwargs):
-        """Read the feed content again and show results"""
-        if "feed" in kwargs:
-            self.process_feed(kwargs["feed"], readout=True, ignore_first=True)
-        raise rssRaiser(self.__root, kwargs)
+@secured_expose(route="/config/rss/save_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_save_rss_feed(request: Request):
+    """Update Feed level attributes"""
+    params = request_params(request)
+    kwargs = dict(params)
+    feed_name = params.get("feed")
+    try:
+        cf = config.get_rss()[feed_name]
+    except KeyError:
+        cf = None
+    if "enable" not in kwargs:
+        kwargs["enable"] = 0
+    uri = Strip(params.get("uri"))
+    if cf and uri:
+        kwargs["uri"] = uri
+        cf.set_dict(kwargs)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def download(self, **kwargs):
-        """Download NZB from provider (Download button)"""
-        feed = kwargs.get("feed")
-        url = kwargs.get("url")
-        db = sabnzbd.get_db_connection()
-        repo = sabnzbd.rss.RSSRepository(db)
+        # Did we get a new name for this feed?
+        new_name = params.get("feed_new_name")
+        if new_name and new_name != feed_name:
+            feed_name = cf.rename(new_name)
+
+        config.save_config()
+
+    return base_redirect_response(_RSS_ROOT, feed=feed_name) if feed_name else base_redirect_response(_RSS_ROOT)
+
+
+@secured_expose(route="/config/rss/toggle_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_toggle_rss_feed(request: Request):
+    """Toggle automatic read-out flag of Feed"""
+    params = request_params(request)
+    try:
+        item = config.get_rss()[params.get("feed")]
+    except KeyError:
+        item = None
+    if item:
+        item.enable.set(not item.enable())
+        config.save_config()
+    if params.get("table"):
+        return base_redirect_response(_RSS_ROOT)
+    else:
+        feed = params.get("feed")
+        return base_redirect_response(_RSS_ROOT, feed=feed) if feed else base_redirect_response(_RSS_ROOT)
+
+
+@secured_expose(route="/config/rss/add_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_add_rss_feed(request: Request):
+    """Add one new RSS feed definition"""
+    params = request_params(request)
+    kwargs = dict(params)
+    feed = Strip(params.get("feed", "")).strip("[]")
+    uri = Strip(params.get("uri"))
+    if feed and uri:
+        try:
+            rss_cfg = config.get_rss()[feed]
+        except KeyError:
+            rss_cfg = None
+        if not rss_cfg and uri:
+            kwargs["feed"] = feed
+            kwargs["uri"] = uri
+            config.ConfigRSS(feed, kwargs)
+            # Clear out any existing reference to this feed name
+            # Otherwise first-run detection can fail
+            with sabnzbd.rss.rss_repository() as repo:
+                repo.clear_feed(feed)
+            config.save_config()
+            # Read out the new feed now (this handler runs in the threadpool) and
+            # carry the result message to the redirected page via the session flash.
+            msg = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
+            return _rss_flash_redirect(request, feed, msg)
+        else:
+            return base_redirect_response(_RSS_ROOT)
+    else:
+        return base_redirect_response(_RSS_ROOT)
+
+
+@secured_expose(route="/config/rss/upd_rss_filter", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_upd_rss_filter(request: Request):
+    """Save updated filter definition"""
+    do_upd_rss_filter(dict(request_params(request)))
+    return _rss_redirect(request_params(request).get("feed"))
+
+
+@secured_expose(route="/config/rss/del_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_del_rss_feed(request: Request):
+    """Remove complete RSS feed"""
+    feed = request_params(request).get("feed")
+    kw = {"section": "rss", "keyword": feed}
+    del_from_section(kw)
+    with sabnzbd.rss.rss_repository() as repo:
+        repo.clear_feed(feed)
+    return base_redirect_response(_RSS_ROOT)
+
+
+@secured_expose(route="/config/rss/del_rss_filter", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_del_rss_filter(request: Request):
+    """Remove one RSS filter"""
+    do_del_rss_filter(dict(request_params(request)))
+    return _rss_redirect(request_params(request).get("feed"))
+
+
+@secured_expose(route="/config/rss/download_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_download_rss_feed(request: Request):
+    """Force download of all matching jobs in a feed"""
+    feed = request_params(request).get("feed")
+    if not feed:
+        return _rss_redirect()
+    # Network read-out with forced download; this handler runs in the threadpool.
+    msg = sabnzbd.RSSReader.process_feed(feed, readout=True, download=True, force=True)
+    return _rss_flash_redirect(request, feed, msg)
+
+
+@secured_expose(route="/config/rss/clean_rss_jobs", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_clean_rss_jobs(request: Request):
+    """Remove processed RSS jobs from UI"""
+    feed = request_params(request).get("feed")
+    if feed:
+        with sabnzbd.rss.rss_repository() as repo:
+            repo.clear_downloaded(feed)
+        # Re-evaluate cached items (no network read-out) so the log refreshes.
+        sabnzbd.RSSReader.process_feed(feed, readout=False)
+    return _rss_redirect(feed)
+
+
+@secured_expose(route="/config/rss/test_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_test_rss_feed(request: Request):
+    """Read the feed content again and show results"""
+    feed = request_params(request).get("feed")
+    if not feed:
+        return _rss_redirect()
+    # Network read-out; this handler runs in the threadpool.
+    msg = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
+    # This endpoint is only called via AJAX; the client navigates to the feed
+    # page itself once we return. Returning a redirect here would make the XHR
+    # follow it transparently and consume the one-shot session flash before the
+    # browser navigation can read it, so store the flash and return a plain
+    # response instead.
+    request.session["rss_flash"] = {"feed": feed, "msg": msg}
+    return PlainTextResponse(msg)
+
+
+@secured_expose(route="/config/rss/eval_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_eval_rss_feed(request: Request):
+    """Re-apply the filters to the feed"""
+    feed = request_params(request).get("feed")
+    if feed:
+        # Re-evaluate cached items against current filters (no network read-out).
+        sabnzbd.RSSReader.process_feed(feed, readout=False)
+    return _rss_redirect(feed)
+
+
+@secured_expose(route="/config/rss/download", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_download(request: Request):
+    """Download NZB from provider (Download button)"""
+    params = request_params(request)
+    feed = params.get("feed")
+    url = params.get("url")
+    with sabnzbd.rss.rss_repository() as repo:
         if att := repo.find_job_by_url(feed, url):
-            nzbname = kwargs.get("nzbname")
+            nzbname = params.get("nzbname")
             pp = att.pp
             cat = att.cat
             script = att.script
@@ -1507,13 +1660,14 @@ class ConfigRss:
                     nzo_info=NzoInfo(RSS=feed),
                 )
             repo.flag_downloaded(feed, url)
-        raise rssRaiser(self.__root, kwargs)
+    return _rss_redirect(feed)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def rss_now(self, *args, **kwargs):
-        """Run an automatic RSS run now"""
-        sabnzbd.Scheduler.force_rss()
-        raise Raiser(self.__root)
+
+@secured_expose(route="/config/rss/rss_now", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_rss_rss_now(request: Request):
+    """Run an automatic RSS run now"""
+    sabnzbd.Scheduler.force_rss()
+    return base_redirect_response(_RSS_ROOT)
 
 
 def ConvertSpecials(p):
@@ -1559,359 +1713,326 @@ _SCHED_ACTIONS = (
 )
 
 
-class ConfigScheduling:
-    def __init__(self, root):
-        self.__root = root
+_SCHED_ROOT = "/config/scheduling"
 
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        def get_days():
-            days = {
-                "*": T("Daily"),
-                "1": T("Monday"),
-                "2": T("Tuesday"),
-                "3": T("Wednesday"),
-                "4": T("Thursday"),
-                "5": T("Friday"),
-                "6": T("Saturday"),
-                "7": T("Sunday"),
-            }
-            return days
 
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+@secured_expose(route="/config/scheduling", check_configlock=True, methods=["GET"])
+def config_scheduling_index(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
 
-        actions = []
-        actions.extend(_SCHED_ACTIONS)
-        day_names = get_days()
-        categories = list_cats(False)
-        snum = 1
-        conf["schedlines"] = []
-        conf["taskinfo"] = []
-        for ev in sabnzbd.scheduler.sort_schedules(all_events=False):
-            line = ev[3]
-            conf["schedlines"].append(line)
-            try:
-                enabled, m, h, day_numbers, action = line.split(" ", 4)
-            except Exception:
-                continue
-            action = action.strip()
-            try:
-                action, value = action.split(" ", 1)
-            except Exception:
-                value = ""
-            value = value.strip()
-            if value and not value.lower().strip("0123456789kmgtp%."):
-                if "%" not in value and from_units(value) < 1.0:
-                    value = T("off")  # : "Off" value for speedlimit in scheduler
-                else:
-                    if "%" not in value and 1 < int_conv(value) < 101:
-                        value += "%"
-                    value = value.upper()
-            if action in actions:
+    actions = []
+    actions.extend(_SCHED_ACTIONS)
+    # Translated per request, so the names follow the currently active language
+    day_names = {
+        "*": T("Daily"),
+        "1": T("Monday"),
+        "2": T("Tuesday"),
+        "3": T("Wednesday"),
+        "4": T("Thursday"),
+        "5": T("Friday"),
+        "6": T("Saturday"),
+        "7": T("Sunday"),
+    }
+    categories = list_cats(False)
+    snum = 1
+    conf["schedlines"] = []
+    conf["taskinfo"] = []
+    for ev in sabnzbd.scheduler.sort_schedules(all_events=False):
+        line = ev[3]
+        conf["schedlines"].append(line)
+        try:
+            enabled, m, h, day_numbers, action = line.split(" ", 4)
+        except Exception:
+            continue
+        action = action.strip()
+        try:
+            action, value = action.split(" ", 1)
+        except Exception:
+            value = ""
+        value = value.strip()
+        if value and not value.lower().strip("0123456789kmgtp%."):
+            if "%" not in value and from_units(value) < 1.0:
+                value = T("off")  # : "Off" value for speedlimit in scheduler
+            else:
+                if "%" not in value and 1 < int_conv(value) < 101:
+                    value += "%"
+                value = value.upper()
+        if action in actions:
+            action = Ttemplate("sch-" + action)
+        else:
+            if action in ("enable_server", "disable_server"):
+                try:
+                    value = '"%s"' % config.get_servers()[value].displayname()
+                except KeyError:
+                    value = '"%s" <<< %s' % (value, T("Undefined server!"))
                 action = Ttemplate("sch-" + action)
-            else:
-                if action in ("enable_server", "disable_server"):
-                    try:
-                        value = '"%s"' % config.get_servers()[value].displayname()
-                    except KeyError:
-                        value = '"%s" <<< %s' % (value, T("Undefined server!"))
-                    action = Ttemplate("sch-" + action)
-                if action in ("pause_cat", "resume_cat"):
-                    action = Ttemplate("sch-" + action)
-                    if value not in categories:
-                        # Category name change
-                        value = '"%s" <<< %s' % (value, T("Incorrect parameter"))
-                    else:
-                        value = '"%s"' % value
-
-            if day_numbers == "1234567":
-                days_of_week = "Daily"
-            elif day_numbers == "12345":
-                days_of_week = "Weekdays"
-            elif day_numbers == "67":
-                days_of_week = "Weekends"
-            else:
-                days_of_week = ", ".join([day_names.get(i, "**") for i in day_numbers])
-
-            item = (snum, "%02d" % int(h), "%02d" % int(m), days_of_week, "%s %s" % (action, value), enabled)
-
-            conf["taskinfo"].append(item)
-            snum += 1
-
-        actions_lng = {}
-        for action in actions:
-            actions_lng[action] = Ttemplate("sch-" + action)
-
-        actions_servers = {}
-        servers = config.get_servers()
-        for srv in servers:
-            actions_servers[srv] = servers[srv].displayname()
-
-        conf["actions_servers"] = actions_servers
-        conf["actions"] = actions
-        conf["actions_lng"] = actions_lng
-        conf["categories"] = categories
-
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_scheduling.tmpl"),
-            search_list=conf,
-        )
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def addSchedule(self, **kwargs):
-        servers = config.get_servers()
-        minute = kwargs.get("minute")
-        hour = kwargs.get("hour")
-        days_of_week = "".join([str(x) for x in kwargs.get("daysofweek", "")])
-        if not days_of_week:
-            days_of_week = "1234567"
-        action = kwargs.get("action")
-        arguments = kwargs.get("arguments")
-
-        arguments = arguments.strip().lower()
-        if arguments in ("on", "enable"):
-            arguments = "1"
-        elif arguments in ("off", "disable"):
-            arguments = "0"
-
-        if minute and hour and days_of_week and action:
-            if action == "speedlimit":
-                if not arguments or arguments.strip("0123456789kmgtp%."):
-                    arguments = 0
-            elif action in _SCHED_ACTIONS:
-                arguments = ""
-            elif action in servers:
-                if arguments == "1":
-                    arguments = action
-                    action = "enable_server"
+            if action in ("pause_cat", "resume_cat"):
+                action = Ttemplate("sch-" + action)
+                if value not in categories:
+                    value = '"%s" <<< %s' % (value, T("Incorrect parameter"))
                 else:
-                    arguments = action
-                    action = "disable_server"
+                    value = '"%s"' % value
 
-            elif action in ("pause_cat", "resume_cat"):
-                # Need original category name, not lowercased
-                arguments = arguments.strip()
+        if day_numbers == "1234567":
+            days_of_week = "Daily"
+        elif day_numbers == "12345":
+            days_of_week = "Weekdays"
+        elif day_numbers == "67":
+            days_of_week = "Weekends"
+        else:
+            days_of_week = ", ".join([day_names.get(i, "**") for i in day_numbers])
+
+        item = (snum, "%02d" % int(h), "%02d" % int(m), days_of_week, "%s %s" % (action, value), enabled)
+
+        conf["taskinfo"].append(item)
+        snum += 1
+
+    actions_lng = {}
+    for action in actions:
+        actions_lng[action] = Ttemplate("sch-" + action)
+
+    actions_servers = {}
+    servers = config.get_servers()
+    for srv in servers:
+        actions_servers[srv] = servers[srv].displayname()
+
+    conf["actions_servers"] = actions_servers
+    conf["actions"] = actions
+    conf["actions_lng"] = actions_lng
+    conf["categories"] = categories
+
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_scheduling.tmpl"),
+        search_list=conf,
+    )
+
+
+@secured_expose(route="/config/scheduling/add_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_scheduling_add(request: Request):
+    params = request_params(request)
+    servers = config.get_servers()
+    minute = params.get("minute")
+    hour = params.get("hour")
+    days_of_week = "".join([str(x) for x in params.getlist("daysofweek")])
+    if not days_of_week:
+        days_of_week = "1234567"
+    action = params.get("action")
+    arguments = params.get("arguments")
+
+    arguments = arguments.strip().lower()
+    if arguments in ("on", "enable"):
+        arguments = "1"
+    elif arguments in ("off", "disable"):
+        arguments = "0"
+
+    if minute and hour and days_of_week and action:
+        if action == "speedlimit":
+            if not arguments or arguments.strip("0123456789kmgtp%."):
+                arguments = 0
+        elif action in _SCHED_ACTIONS:
+            arguments = ""
+        elif action in servers:
+            if arguments == "1":
+                arguments = action
+                action = "enable_server"
             else:
-                # Something else, leave empty
-                action = None
+                arguments = action
+                action = "disable_server"
 
-            if action:
-                sched = cfg.schedules()
-                sched.append("%s %s %s %s %s %s" % (1, minute, hour, days_of_week, action, arguments))
-                cfg.schedules.set(sched)
+        elif action in ("pause_cat", "resume_cat"):
+            # Need original category name, not lowercased
+            arguments = arguments.strip()
+        else:
+            # Something else, leave empty
+            action = None
 
+        if action:
+            sched = cfg.schedules()
+            sched.append("%s %s %s %s %s %s" % (1, minute, hour, days_of_week, action, arguments))
+            cfg.schedules.set(sched)
+
+    config.save_config()
+    sabnzbd.Scheduler.restart()
+    return base_redirect_response(_SCHED_ROOT)
+
+
+@secured_expose(route="/config/scheduling/del_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_scheduling_del(request: Request):
+    schedules = cfg.schedules()
+    line = request_params(request).get("line")
+    if line and line in schedules:
+        schedules.remove(line)
+        cfg.schedules.set(schedules)
         config.save_config()
         sabnzbd.Scheduler.restart()
-        raise Raiser(self.__root)
+    return base_redirect_response(_SCHED_ROOT)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def delSchedule(self, **kwargs):
-        schedules = cfg.schedules()
-        line = kwargs.get("line")
-        if line and line in schedules:
-            schedules.remove(line)
-            cfg.schedules.set(schedules)
-            config.save_config()
-            sabnzbd.Scheduler.restart()
-        raise Raiser(self.__root)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def toggleSchedule(self, **kwargs):
-        schedules = cfg.schedules()
-        line = kwargs.get("line")
-        if line:
-            for i, schedule in enumerate(schedules):
-                if schedule == line:
-                    # Toggle the schedule
-                    schedule_split = schedule.split()
-                    schedule_split[0] = "%d" % (schedule_split[0] == "0")
-                    schedules[i] = " ".join(schedule_split)
-                    break
-            cfg.schedules.set(schedules)
-            config.save_config()
-            sabnzbd.Scheduler.restart()
-        raise Raiser(self.__root)
+@secured_expose(route="/config/scheduling/toggle_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_scheduling_toggle(request: Request):
+    schedules = cfg.schedules()
+    line = request_params(request).get("line")
+    if line:
+        for i, schedule in enumerate(schedules):
+            if schedule == line:
+                # Toggle the schedule
+                schedule_split = schedule.split()
+                schedule_split[0] = "%d" % (schedule_split[0] == "0")
+                schedules[i] = " ".join(schedule_split)
+                break
+        cfg.schedules.set(schedules)
+        config.save_config()
+        sabnzbd.Scheduler.restart()
+    return base_redirect_response(_SCHED_ROOT)
 
 
 ##############################################################################
-class ConfigCats:
-    def __init__(self, root):
-        self.__root = root
-
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-
-        conf["scripts"] = list_scripts(default=True)
-        conf["defdir"] = cfg.complete_dir.get_clipped_path()
-
-        categories = config.get_ordered_categories()
-        new_cat_order = max(cat["order"] for cat in categories) + 1
-
-        # Add empty line to add new categories
-        empty = {
-            "name": "",
-            "order": str(new_cat_order),
-            "pp": "-1",
-            "script": "",
-            "dir": "",
-            "newzbin": "",
-            "priority": DEFAULT_PRIORITY,
-        }
-        categories.insert(1, empty)
-        conf["slotinfo"] = categories
-
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_cat.tmpl"),
-            search_list=conf,
-        )
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def delete(self, **kwargs):
-        kwargs["section"] = "categories"
-        kwargs["keyword"] = kwargs.get("name")
-        del_from_section(kwargs)
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def save(self, **kwargs):
-        name = kwargs.get("name", "*")
-        newname = kwargs.get("newname", "")
-        if name == "*":
-            newname = name
-
-        if newname:
-            # Check if this cat-dir is not sub-folder of incomplete
-            if same_directory(cfg.download_dir.get_path(), real_path(cfg.complete_dir.get_path(), kwargs["dir"])):
-                return T("Category folder cannot be a subfolder of the Temporary Download Folder.")
-
-            # Delete current one and replace with new one
-            if name:
-                config.delete("categories", name)
-            config.ConfigCat(newname.lower(), kwargs)
-
-        config.save_config()
-        raise Raiser(self.__root)
-
-
+# Page definitions - Config - Categories
 ##############################################################################
-class ConfigSorting:
-    def __init__(self, root):
-        self.__root = root
-
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-
-        sorters = config.get_ordered_sorters()
-        # Add empty sorter entry, used as a template at the top of the page
-        empty = {
-            "is_active": "1",
-            "name": "",
-            "order": len(sorters),  # Last in line
-            "min_size": DEF_SORTER_RENAME_SIZE,
-            "sort_string": "",
-            "sort_cats": "",
-            "sort_type": "0,",
-            "multipart_label": "",
-        }
-        sorters.insert(0, empty)
-        conf["slotinfo"] = sorters
-        conf["categories"] = list_cats(False)
-        conf["guessit_properties"] = tuple(
-            prop for prop in guessit_properties().keys() if prop not in EXCLUDED_GUESSIT_PROPERTIES
-        )
-        conf["sort_types"] = GUESSIT_SORT_TYPES
-
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_sorting.tmpl"),
-            search_list=conf,
-        )
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def delete(self, **kwargs):
-        kwargs["section"] = "sorters"
-        kwargs["keyword"] = kwargs.get("name")
-        del_from_section(kwargs)
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def save_sorter(self, **kwargs):
-        name = kwargs.get("name", "*")
-        newname = kwargs.get("newname", "")
-        newname = config.clean_section_name(newname)
-
-        if name == "*":
-            newname = name
-        if newname:
-            # Delete current one and replace with new one
-            if name:
-                config.delete("sorters", name)
-            config.ConfigSorter(newname, kwargs)
-
-        config.save_config()
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def toggle_sorter(self, **kwargs):
-        """Toggle is_active flag of a sorter"""
-        try:
-            sorter = config.get_sorters()[kwargs.get("sorter")]
-            sorter.is_active.set(not sorter.is_active())
-            config.save_config()
-        except Exception:
-            pass
-
-        raise Raiser(self.__root)
 
 
-def badParameterResponse(msg, ajax=None):
-    """Return a html page with error message and a 'back' button"""
-    if ajax:
-        return sabnzbd.api.report(error=msg)
-    else:
-        return """
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
-<head>
-           <title>SABnzbd %s - %s</title>
-</head>
-<body>
-<h3>%s</h3>
-%s
-<br><br>
-<FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
-</body>
-</html>
-""" % (
-            sabnzbd.__version__,
-            T("ERROR:"),
-            T("Incorrect parameter"),
-            msg,
-            T("Back"),
-        )
+@secured_expose(route="/config/categories", check_configlock=True, methods=["GET"])
+def index_config_categories(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
 
+    conf["scripts"] = list_scripts(default=True)
+    conf["defdir"] = cfg.complete_dir.get_clipped_path()
 
-def ShowString(name, msg):
-    """Return a html page listing a file and a 'back' button"""
-    return """
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
-<head>
-           <title>%s</title>
-</head>
-<body>
-           <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
-           <h3>%s</h3>
-           <code><pre>%s</pre></code>
-</body>
-</html>
-""" % (
-        xml_name(name),
-        T("Back"),
-        xml_name(name),
-        escape(msg),
+    categories = config.get_ordered_categories()
+    new_cat_order = max(cat["order"] for cat in categories) + 1
+
+    # Add empty line to add new categories
+    empty = {
+        "name": "",
+        "order": str(new_cat_order),
+        "pp": "-1",
+        "script": "",
+        "dir": "",
+        "newzbin": "",
+        "priority": DEFAULT_PRIORITY,
+    }
+    categories.insert(1, empty)
+    conf["slotinfo"] = categories
+
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_cat.tmpl"),
+        search_list=conf,
     )
+
+
+@secured_expose(route="/config/categories/delete", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_categories_delete(request: Request):
+    kw = {
+        "section": "categories",
+        "keyword": request_params(request).get("name"),
+    }
+    del_from_section(kw)
+    return base_redirect_response("/config/categories")
+
+
+@secured_expose(route="/config/categories/save", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_categories_save(request: Request):
+    name = request_params(request).get("name", "*")
+    newname = request_params(request).get("newname", "")
+    if name == "*":
+        newname = name
+
+    if newname:
+        cat_params = dict(request_params(request))
+        # Validate directory not under incomplete
+        if same_directory(
+            cfg.download_dir.get_path(),
+            real_path(cfg.complete_dir.get_path(), cat_params.get("dir", "")),
+        ):
+            return report(
+                request_params(request),
+                error=T("Category folder cannot be a subfolder of the Temporary Download Folder."),
+            )
+
+        # Delete current one and replace with new one
+        if name:
+            config.delete("categories", name)
+        config.ConfigCat(newname.lower(), cat_params)
+
+    config.save_config()
+    return base_redirect_response("/config/categories")
+
+
+##############################################################################
+# Config - Sorting (standalone route functions)
+##############################################################################
+
+_SORTING_ROOT = "/config/sorting"
+
+
+@secured_expose(route="/config/sorting", check_configlock=True, methods=["GET"])
+def config_sorting_index(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
+
+    sorters = config.get_ordered_sorters()
+    # Add empty sorter entry, used as a template at the top of the page
+    empty = {
+        "is_active": "1",
+        "name": "",
+        "order": len(sorters),  # Last in line
+        "min_size": DEF_SORTER_RENAME_SIZE,
+        "sort_string": "",
+        "sort_cats": "",
+        "sort_type": "0,",
+        "multipart_label": "",
+    }
+    sorters.insert(0, empty)
+    conf["slotinfo"] = sorters
+    conf["categories"] = list_cats(False)
+    conf["guessit_properties"] = tuple(
+        prop for prop in guessit_properties().keys() if prop not in EXCLUDED_GUESSIT_PROPERTIES
+    )
+    conf["sort_types"] = GUESSIT_SORT_TYPES
+
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_sorting.tmpl"),
+        search_list=conf,
+    )
+
+
+@secured_expose(route="/config/sorting/delete", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_sorting_delete(request: Request):
+    kw = {"section": "sorters", "keyword": request_params(request).get("name")}
+    del_from_section(kw)
+    return base_redirect_response(_SORTING_ROOT)
+
+
+@secured_expose(route="/config/sorting/save_sorter", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_sorting_save_sorter(request: Request):
+    params = request_params(request)
+    kwargs = dict(params)
+    name = params.get("name", "*")
+    newname = params.get("newname", "")
+    newname = config.clean_section_name(newname)
+
+    if name == "*":
+        newname = name
+    if newname:
+        # Delete current one and replace with new one
+        if name:
+            config.delete("sorters", name)
+        config.ConfigSorter(newname, kwargs)
+
+    config.save_config()
+    return base_redirect_response(_SORTING_ROOT)
+
+
+@secured_expose(route="/config/sorting/toggle_sorter", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_sorting_toggle_sorter(request: Request):
+    """Toggle is_active flag of a sorter"""
+    try:
+        sorter = config.get_sorters()[request_params(request).get("sorter")]
+        sorter.is_active.set(not sorter.is_active())
+        config.save_config()
+    except Exception:
+        pass
+
+    return base_redirect_response(_SORTING_ROOT)
 
 
 def GetRssLog(feed):
@@ -1960,7 +2081,7 @@ def GetRssLog(feed):
 
         return job
 
-    with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
+    with sabnzbd.rss.rss_repository() as repo:
         good, bad, done = ([], [], [])
         for job in repo.get_feed_jobs(feed, states=[RSSState.GOOD, RSSState.BAD, RSSState.DOWNLOADED]):
             if job.is_good:
@@ -2150,39 +2271,287 @@ NOTIFY_OPTIONS = {
 }
 
 
-class ConfigNotify:
-    def __init__(self, root):
-        self.__root = root
+##############################################################################
+# Page definitions - Config - Notify
+##############################################################################
 
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf["notify_types"] = sabnzbd.notifier.NOTIFICATION_TYPES
-        conf["categories"] = list_cats(False)
-        conf["have_ntfosd"] = sabnzbd.notifier.have_ntfosd()
-        conf["have_ncenter"] = sabnzbd.MACOS and sabnzbd.FOUNDATION
-        conf["scripts"] = list_scripts(default=False, none=True)
 
-        for section in NOTIFY_OPTIONS:
-            for option in NOTIFY_OPTIONS[section]:
-                conf[option] = config.get_config(section, option)()
+@secured_expose(route="/config/notify", check_configlock=True, methods=["GET"])
+def index_config_notify(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
+    conf["notify_types"] = sabnzbd.notifier.NOTIFICATION_TYPES
+    conf["categories"] = list_cats(False)
+    conf["have_ntfosd"] = sabnzbd.notifier.have_ntfosd()
+    conf["have_ncenter"] = sabnzbd.MACOS and sabnzbd.FOUNDATION
+    conf["scripts"] = list_scripts(default=False, none=True)
 
-        # Use get_string to make sure lists are displayed correctly
-        conf["email_to"] = cfg.email_to.get_string()
+    for section in NOTIFY_OPTIONS:
+        for option in NOTIFY_OPTIONS[section]:
+            conf[option] = config.get_config(section, option)()
 
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_notify.tmpl"),
-            search_list=conf,
-        )
+    # Use get_string to make sure lists are displayed correctly
+    conf["email_to"] = cfg.email_to.get_string()
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveNotify(self, **kwargs):
-        for section in NOTIFY_OPTIONS:
-            for option in NOTIFY_OPTIONS[section]:
-                if msg := config.get_config(section, option).set(kwargs.get(option)):
-                    return badParameterResponse(msg, kwargs.get("ajax"))
-        config.save_config()
-        if kwargs.get("ajax"):
-            return sabnzbd.api.report()
-        else:
-            raise Raiser(self.__root)
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_notify.tmpl"),
+        search_list=conf,
+    )
+
+
+@secured_expose(route="/config/notify/save", check_api_key=True, check_configlock=True, methods=["POST"])
+def config_notify_save(request: Request):
+    for section in NOTIFY_OPTIONS:
+        for option in NOTIFY_OPTIONS[section]:
+            if msg := config.get_config(section, option).set(request_params(request).get(option)):
+                return report(request_params(request), error=msg)
+    config.save_config()
+    return report(request_params(request))
+
+
+##############################################################################
+# New
+##############################################################################
+
+
+class XFrameOptionsMiddleware:
+    """Add X-Frame-Options to every response when cfg.x_frame_options is enabled,
+    mitigating clickjacking. Applied as middleware rather than in secured_expose so
+    it also covers static file mounts, redirects, the login page and error responses.
+    The setting is read per request, so toggling it needs no restart. Implemented as
+    pure ASGI (not BaseHTTPMiddleware) to keep streaming responses untouched."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http" or not cfg.x_frame_options():
+            return await self.app(scope, receive, send)
+
+        async def send_with_header(message):
+            if message["type"] == "http.response.start":
+                MutableHeaders(scope=message)["X-Frame-Options"] = "SAMEORIGIN"
+            await send(message)
+
+        await self.app(scope, receive, send_with_header)
+
+
+class SecureSessionCookieMiddleware:
+    """Add the Secure attribute to the session cookie when the connection warrants it.
+
+    SessionMiddleware builds its cookie flags once at construction, so it cannot know
+    that TLS was terminated at a reverse proxy, which is only visible per request. It
+    is therefore mounted without https_only and wrapped by this middleware, which
+    flags the cookie using the same rule as set_login_cookie. Any other Set-Cookie
+    header is passed through untouched: the login cookies are already flagged where
+    they are set. Pure ASGI (not BaseHTTPMiddleware) to keep streaming responses
+    untouched."""
+
+    # Matches the cookie emitted by SessionMiddleware, which is mounted with
+    # session_cookie=COOKIE_SESSION
+    COOKIE_PREFIX = utob(COOKIE_SESSION + "=")
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+
+        async def send_with_secure_cookie(message):
+            # Runs after SessionMiddleware appended its Set-Cookie, since the send of
+            # an inner middleware is called before that of the ones wrapping it
+            if message["type"] == "http.response.start" and use_secure_cookies(Request(scope)):
+                headers = message["headers"]
+                for index, (key, value) in enumerate(headers):
+                    # Append the Secure attribute to the session cookie, if not already set
+                    if (
+                        key.lower() == b"set-cookie"
+                        and value.startswith(self.COOKIE_PREFIX)
+                        and b"secure" not in value.lower().split(b"; ")
+                    ):
+                        headers[index] = (key, value + b"; secure")
+            await send(message)
+
+        await self.app(scope, receive, send_with_secure_cookie)
+
+
+class HostnameCheckMiddleware:
+    """Reject requests whose Host header is not allowed (DNS-rebinding mitigation).
+    Applied as global middleware rather than in secured_expose so a single place
+    guards every route, including the static mounts and error responses. The setting
+    is read per request, and check_hostname short-circuits to allow when a
+    username/password is configured. Pure ASGI, and no request body is consumed."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http" and not check_hostname(Request(scope, receive)):
+            message = _MSG_ACCESS_DENIED_HOSTNAME if cfg.api_warnings() else ""
+            response = PlainTextResponse(message, status_code=403)
+            return await response(scope, receive, send)
+        await self.app(scope, receive, send)
+
+
+class RequestLoggingMiddleware:
+    """Log every request when cfg.api_logging is enabled. The line is emitted after
+    the handler runs, once the request's parameters have been parsed onto
+    request.state; requests that never reach a secured handler (e.g. static files)
+    have no parsed params and are skipped, matching the previous
+    behavior. Pure ASGI to leave streaming responses untouched."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+        try:
+            await self.app(scope, receive, send)
+        finally:
+            # request.state stores params in scope["state"]; a missing key means the
+            # request did not pass through secured_expose, so there is nothing to log.
+            if cfg.api_logging() and (params := scope.get("state", {}).get("params")) is not None:
+                request = Request(scope)
+                if xff_ips := request.headers.get("X-Forwarded-For"):
+                    remote_label = "%s (X-Forwarded-For: %s) [%s]" % (
+                        client_address(request).host,
+                        xff_ips,
+                        request.headers.get("User-Agent"),
+                    )
+                else:
+                    remote_label = "%s [%s]" % (client_address(request).host, request.headers.get("User-Agent"))
+                logging.debug(
+                    "Request %s %s from %s %s",
+                    request.method,
+                    request.url.path,
+                    remote_label,
+                    dict(params),
+                )
+
+
+class ThreadedServer(uvicorn.Server):
+    """uvicorn server running in a background thread, so the main thread stays
+    free for the SABnzbd main loop."""
+
+    # Give up on a server that has not reached the serving state by then
+    STARTUP_TIMEOUT = 30.0
+
+    def __init__(self, *args, sockets: Optional[list[socket.socket]] = None, **kwargs):
+        self.thread: Optional[threading.Thread] = None
+        self._startup_exc: Optional[BaseException] = None
+        # Pre-bound listening sockets, so the port cannot be taken between the
+        # moment we claim it and the moment uvicorn starts serving on it
+        self._sockets = sockets
+        # Set once the server is either serving or done trying
+        self._startup_done = threading.Event()
+        super().__init__(*args, **kwargs)
+
+    async def startup(self, sockets=None):
+        await super().startup(sockets=sockets)
+        # Only signal here on success, a failure is signalled by _run() so that
+        # the exception is always recorded before run_in_thread() wakes up
+        self._startup_done.set()
+
+    def _run(self):
+        # Capture any start-up failure (bad cert, bad host, etc.) so
+        # run_in_thread() can report it. uvicorn raises SystemExit on a bind
+        # error, so catch BaseException rather than Exception.
+        try:
+            self.run(sockets=self._sockets)
+        except BaseException as exc:
+            self._startup_exc = exc
+        finally:
+            # No-op after a successful start-up, but releases run_in_thread()
+            # when the thread dies before it ever started serving
+            self._startup_done.set()
+
+    def run_in_thread(self):
+        """Start the server in a background thread and block until it is serving.
+
+        Raises RuntimeError if the server thread exits before signalling that it
+        has started, or if it takes too long, so the caller can abort instead of
+        waiting forever.
+        """
+        self.thread = threading.Thread(target=self._run, name="WebServer")
+        self.thread.start()
+
+        if not self._startup_done.wait(self.STARTUP_TIMEOUT):
+            raise RuntimeError("Web server did not start within %s seconds" % self.STARTUP_TIMEOUT)
+
+        if not self.started:
+            raise RuntimeError("Web server failed to start") from self._startup_exc
+
+    def stop(self):
+        """Ask the server to shut down and wait for the thread to finish.
+        Safe to call more than once and before the server was ever started."""
+        self.should_exit = True
+        if self.thread and self.thread is not threading.current_thread():
+            self.thread.join()
+
+    def stop_accepting_connections(self):
+        """Close the listening sockets so no new connections are accepted, while
+        in-flight requests (including the caller's own response) still complete.
+
+        Must be called from the event-loop thread, i.e. from within an async
+        request handler, so touching the asyncio Server objects needs no
+        cross-thread scheduling. Safe before start-up (uvicorn only sets `servers`
+        once serving) and after a previous close (uvicorn's own shutdown closes
+        them again, idempotently)."""
+        for server in getattr(self, "servers", []):
+            server.close()
+
+
+async def not_found_redirect(request: Request, exc):
+    """Catch-all for unknown URLs: redirect to the UI root"""
+    return base_redirect_response("/")
+
+
+def create_app() -> Starlette:
+    """Build the Starlette application"""
+    interface_routes = [
+        *INTERFACE_ROUTES,
+        Mount("/static", app=StaticFiles(directory=os.path.join(sabnzbd.WEB_DIR, "static")), name="static"),
+        Mount(
+            "/staticcfg", app=StaticFiles(directory=os.path.join(sabnzbd.WEB_DIR_CONFIG, "staticcfg")), name="staticcfg"
+        ),
+        Mount(
+            "/wizard/static",
+            app=StaticFiles(directory=os.path.join(sabnzbd.WIZARD_DIR, "static")),
+            name="wizard_static",
+        ),
+    ]
+
+    # Always serve at the root, and when a URL base is configured (e.g. behind a
+    # reverse proxy) additionally under that base.The base mount must come
+    # first so it is matched before the catch-all root mount.
+    routes = []
+    if url_base := cfg.url_base():
+        routes.append(Mount(url_base, routes=interface_routes))
+    routes.append(Mount("/", routes=interface_routes))
+
+    middleware = [
+        Middleware(XFrameOptionsMiddleware),
+        Middleware(HostnameCheckMiddleware),
+        Middleware(RequestLoggingMiddleware),
+        Middleware(GZipMiddleware, minimum_size=1000, compresslevel=2),
+        Middleware(SecureSessionCookieMiddleware),
+        # Signed session cookie, used for short-lived per-client UI state such as the
+        # RSS read-out result message (flash). Secret key is regenerated each run,
+        # so sessions naturally expire on restart, which is fine for flash messages.
+        # The Secure attribute is left to SecureSessionCookieMiddleware, which decides
+        # it per request instead of once at start-up.
+        Middleware(
+            SessionMiddleware,
+            secret_key=secrets.token_hex(),
+            session_cookie=COOKIE_SESSION,
+            same_site="lax",
+            https_only=False,
+        ),
+    ]
+
+    return Starlette(
+        middleware=middleware,
+        routes=routes,
+        exception_handlers={404: not_found_redirect},
+    )

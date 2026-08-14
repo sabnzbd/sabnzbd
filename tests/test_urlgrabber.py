@@ -28,7 +28,7 @@ import pytest_httpbin
 
 import sabnzbd
 import sabnzbd.urlgrabber as urlgrabber
-from sabnzbd.cfg import selftest_host
+import sabnzbd.cfg as cfg
 
 
 @pytest_httpbin.use_class_based_httpbin
@@ -82,15 +82,15 @@ class TestBuildRequest:
 
     def test_http_basic(self):
         # Use selftest_host for the most basic URL
-        self._runner("http://" + selftest_host(), 200)
+        self._runner("http://" + cfg.selftest_host(), 200)
         # Repeat with httpbin, which runs on a random non-standard port
         self._runner(self.httpbin.url, 200)
 
     def test_https_basic(self):
         # Use a real HTTPS server; httpbin_secure uses a self-signed cert
-        self._runner("https://" + selftest_host(), 200)
+        self._runner("https://" + cfg.selftest_host(), 200)
         # Repeat with the port explicitly specified
-        self._runner("https://" + selftest_host() + ":443/", 200)
+        self._runner("https://" + cfg.selftest_host() + ":443/", 200)
 
     def test_http_code(self):
         # Make the server reply with a non-standard status code

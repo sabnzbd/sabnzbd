@@ -19,6 +19,7 @@
     --clr-table-bg:       #555555;
     --clr-table-row-alt:  #444444;
     --clr-progress-track: #DADADA;
+    --clr-toggle-inactive: #666666;
 }
 
 /* Links and glyphicons inside links */
@@ -47,6 +48,11 @@ nav {
 nav .btn {
     background-color: #E4E4E4;
     border-color: #5D5D5D !important;
+}
+
+nav .btn:active {
+    /* Restore bootstrap default */
+    color: #333 !important;
 }
 
 @media (max-width: 767px) {

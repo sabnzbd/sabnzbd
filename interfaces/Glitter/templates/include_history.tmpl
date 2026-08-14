@@ -1,21 +1,21 @@
 <div class="history" id="history-tab">
     <div class="history-header">
         <h2>$T('menu-history') <small data-bind="visible: history.showArchive()">($T('archive'))</small></h2>
-        <a href="#" data-bind="click: history.showMultiEdit, visible: hasHistory()">
+        <a href="#" aria-label="$T('Glitter-multiOperations')" data-bind="click: history.showMultiEdit, visible: hasHistory()">
             <span class="glyphicon glyphicon-tasks" data-tooltip="true" data-placement="left" title="$T('Glitter-multiOperations')"></span>
         </a>
     </div>
-    <table class="table table-hover history-table paginated">
+    <table class="table table-hover history-table paginated" aria-label="$T('menu-history')">
         <thead>
             <tr>
-                <th style="width: 25px;"></th>
-                <th></th>
-                <th class="table-status-header" data-bind="css: { 'table-header-status-smaller' : extraHistoryColumns().length || displayCompact() }"></th>
+                <th scope="col" style="width: 25px;"><span class="sr-only">$T('Glitter-result')</span></th>
+                <th scope="col"><span class="sr-only">$T('name')</span></th>
+                <th class="table-status-header" scope="col" data-bind="css: { 'table-header-status-smaller' : extraHistoryColumns().length || displayCompact() }"><span class="sr-only">$T('status')</span></th>
                 <!-- ko foreach: extraHistoryColumns -->
-                <th class="table-header-extra"></th>
+                <th class="table-header-extra" scope="col"><span class="sr-only" data-bind="text: glitterTranslate.column[\$data]"></span></th>
                 <!-- /ko -->
-                <th style="width: 130px;"></th>
-                <th style="width: 60px;"></th>
+                <th scope="col" style="width: 130px;"><span class="sr-only">$T('post-Completed')</span></th>
+                <th scope="col" style="width: 60px;"><span class="sr-only">$T('Glitter-actions')</span></th>
             </tr>
         </thead>
         <!-- ko if: !hasHistory() -->
@@ -30,10 +30,10 @@
         <tbody data-bind="foreach: history.historyItems, visible: hasHistory()" style="display: none;">
             <tr class="history-item" data-bind="css: {'history-failed-download':failed()}">
                 <td>
-                    <div data-bind="visible: processingWaiting()">
-                        <span class="glyphicon glyphicon-time"></span>
+                    <div role="img" aria-label="$T('post-Queued')" data-bind="visible: processingWaiting()">
+                        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
                     </div>
-                    <div data-bind="visible: processingDownload()">
+                    <div role="img" aria-label="$T('stage-download')" data-bind="visible: processingDownload()">
                         <div class="processing-download">
                             <div class="loader-bar-one"></div>
                             <div class="loader-bar-two"></div>
@@ -41,17 +41,17 @@
                             <div class="loader-bar-four"></div>
                         </div>
                     </div>
-                    <div data-bind="visible: (!failed() && !processingDownload() && !processingWaiting())">
-                        <span class="glyphicon glyphicon-ok"></span>
+                    <div role="img" aria-label="$T('post-Completed')" data-bind="visible: (!failed() && !processingDownload() && !processingWaiting())">
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                     </div>
                     <div data-bind="visible: failed() && canRetry()">
-                        <a class="retry-button" href="#" data-bind="click: retry">
-                            <span class="glyphicon glyphicon-exclamation-sign"></span>
+                        <a class="retry-button" href="#" aria-label="$T('button-retry')" data-bind="click: retry">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                         </a>
                     </div>
                     <div data-bind="visible: failed() && !canRetry()">
-                        <span class="retry-button-inactive">
-                            <span class="glyphicon glyphicon-exclamation-sign"></span>
+                        <span class="retry-button-inactive" role="img" aria-label="$T('post-Failed')">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                         </span>
                     </div>
                 </td>
@@ -70,10 +70,10 @@
                 <td class="history-completedon row-wrap-text" data-bind="text: completedOn(), attr: { 'data-timestamp': completed }" onclick="showDetails(this)"></td>
                 <td class="delete">
                     <label data-bind="visible: parent.isMultiEditing()">
-                        <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="click: parent.addMultiEdit, attr: { 'id': 'multiedit_' + id } " />
+                        <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" aria-label="$T('Glitter-selectJob')" data-bind="click: parent.addMultiEdit, attr: { 'id': 'multiedit_' + id } " />
                     </label>
                     <div class="dropdown" data-bind="visible: !parent.isMultiEditing()">
-                        <a href="#" data-toggle="dropdown" data-bind="click: updateAllHistoryInfo">
+                        <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="$T('nzoDetails')" data-bind="click: updateAllHistoryInfo">
                             <span class="caret"></span>
                         </a>
                         <!-- ko if: hasDropdown() -->
@@ -95,7 +95,6 @@
                                     <div class="col-sm-2">$T('status')</div>
                                     <div class="col-sm-10">
                                         <span data-bind="text: glitterTranslate.status[historyStatus.status()] ? glitterTranslate.status[historyStatus.status()] : statusText()"></span>
-                                        <a href="#" class="mark-completed-link" data-bind="visible: failed(), click: markAsCompleted" title="$T('button-mark-completed')"><span class="glyphicon glyphicon-ok"></span> $T('post-Completed')</a>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -120,11 +119,14 @@
                                     <div class="col-sm-10 history-status-modallink" data-bind="longText: actions, longTextType: name()"></div>
                                 </div>
                                 <!-- /ko -->
+                                <div class="col-sm-12 text-right" data-bind="visible: failed()">
+                                    <a href="#" class="btn btn-default mark-completed-btn" data-bind="click: markAsCompleted"><span class="glyphicon glyphicon-ok"></span> $T('button-mark-completed')</a>
+                                </div>
                             </div>
                         </div>
                         <!-- /ko -->
                     </div>
-                    <a href="#" data-bind="click: parent.triggerRemoveDownload">
+                    <a href="#" data-bind="click: parent.triggerRemoveDownload, attr: { 'aria-label': processingDownload() == 2 ? '$T('abort')' : '$T('nzo-delete')' }">
                         <span class="hover-button glyphicon glyphicon-trash" data-bind="css: { 'glyphicon-stop' : processingDownload() == 2, disabled : processingDownload() == 1 }, attr: { title: processingDownload() == 2 ? '$T('abort')' : '$T('nzo-delete')' }"></span>
                     </a>
                 </td>
@@ -135,15 +137,20 @@
     <div class="history-footer">
 
     <div class="input-group search-box">
-        <input type="text" class="form-control" placeholder="$T('Glitter-search')" required data-bind="textInput: history.searchTerm, event: { keydown: history.clearSearchTerm }" />
-        <a data-bind="event: { mousedown: history.clearSearchTerm }">
+        <input type="text" class="form-control" placeholder="$T('Glitter-search')" aria-label="$T('Glitter-search')" required data-bind="textInput: history.searchTerm, event: { keydown: history.clearSearchTerm }" />
+        <a href="#" data-bind="click: history.clearSearchTerm, attr: { 'aria-label': history.searchTerm() ? '$T('Glitter-clearSearch')' : '$T('Glitter-search')' }">
             <span class="glyphicon" data-bind="css: { 'glyphicon-search' : !history.searchTerm(), 'glyphicon-remove' : history.searchTerm() }"></span>
         </a>
     </div>
 
     <ul class="pagination" data-bind="foreach: history.pagination.allpages(), visible: history.pagination.hasPagination" style="display: none;">
-        <li data-bind="css: { active: isCurrent, disabled: isDots }, click: onclick">
-            <span data-bind="text: page"></span>
+        <li data-bind="css: { active: isCurrent, disabled: isDots }">
+            <!-- ko ifnot: isDots -->
+            <a href="#" data-bind="text: page, click: onclick, attr: { 'aria-current': isCurrent ? 'page' : null }"></a>
+            <!-- /ko -->
+            <!-- ko if: isDots -->
+            <span aria-hidden="true" data-bind="text: page"></span>
+            <!-- /ko -->
         </li>
     </ul>
 

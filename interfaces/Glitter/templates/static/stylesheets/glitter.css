@@ -21,6 +21,8 @@
     --clr-table-bg:       #F5F5F5;            /* table and even-row background */
     --clr-table-row-alt:  #FDFDFD;           /* odd striped row background */
     --clr-progress-track: #f6f6f6;           /* progress bar track */
+    --clr-toggle-active:   #f9ca33;          /* toggle knob track: on  */
+    --clr-toggle-inactive: #aaaaaa;          /* toggle knob track: off */
 }
 
 body {
@@ -281,6 +283,12 @@ li.dropdown {
     padding-top: 8px;
     margin-top: 0;
     margin-bottom: 30px;
+    /* Hidden until the first refresh completes */
+    opacity: 0;
+}
+
+.main-content-loaded {
+    opacity: 1;
 }
 
 .main-notification-box {
@@ -358,6 +366,7 @@ li.dropdown {
     left: -370px;
     background: white;
     border: 1px solid rgba(0,0,0,.2);
+    border-radius: var(--radius-md);
     transition-duration: 0.3s;
     height: 115px;
     overflow: hidden;
@@ -652,6 +661,22 @@ tbody>tr>td:last-child {
     text-align: left;
 }
 
+.queue-table .row-extra-text select.row-extra-select {
+    width: 100%;
+    height: auto;
+    padding: 0 16px 0 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--clr-text);
+    cursor: pointer;
+}
+
+.queue-table .row-extra-text select.row-extra-select option {
+    background: var(--clr-dropdown-bg);
+    color: var(--clr-text);
+}
+
 td.name .row-wrap-text {
     max-width: calc(100% - 1px);
     display: block;
@@ -660,8 +685,15 @@ td.name .row-wrap-text {
     height: 1.5em;
 }
 
-.queue-table td.name .name-options,
-.queue-table td.name:hover .queue-item-password {
+.queue-table td.name .name-options {
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+}
+
+.queue-table td.name:hover .queue-item-password,
+.queue-table td.name:focus-within .queue-item-password {
     display: none;
 }
 
@@ -679,20 +711,27 @@ td.name .row-wrap-text {
     max-width: calc(100% - 75px);
 }
 
-.queue-table td.name:hover .row-wrap-text {
+.queue-table td.name:hover .row-wrap-text,
+.queue-table td.name:focus-within .row-wrap-text {
     max-width: calc(100% - 125px);
     /* Change for each size! */
 }
 
-.queue-table td.name:hover .direct-unpack {
+.queue-table td.name:hover .direct-unpack,
+.queue-table td.name:focus-within .direct-unpack {
     display: none;
 }
 
-.queue-table td.name:hover .name-options {
+.queue-table td.name:hover .name-options,
+.queue-table td.name:focus-within .name-options {
     display: block;
+    opacity: 1;
+    pointer-events: auto;
+    position: static;
 }
 
-.queue-table td.name:hover .glyphicon-folder-open {
+.queue-table td.name:hover .glyphicon-folder-open,
+.queue-table td.name:focus-within .glyphicon-folder-open {
     width: 1.5em;
     margin-left: 1px;
 }
@@ -1157,11 +1196,8 @@ tr.queue-item>td:first-child>a {
     font-weight: bold;
 }
 
-.mark-completed-link {
-    font-weight: bold !important;
-    color: #28a745 !important;
-    text-decoration: underline;
-    margin-left: 10px;
+.mark-completed-btn {
+    margin: 4px 0;
 }
 
 .history-status-hidden {
@@ -1347,6 +1383,10 @@ tr.queue-item>td:first-child>a {
 
 #modal-options .options-switch label,
 #modal-options #options-orphans .process-all-orphaned {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 8px;
     font-size: 1.4rem;
     margin-top: 5px;
     margin-bottom: 10px;
@@ -1371,13 +1411,48 @@ tr.queue-item>td:first-child>a {
     opacity: 1 !important;
 }
 
-#modal-options .options-switch input {
-    width: 14px;
-    height: 14px;
-    display: block;
-    float: left;
-    margin-top: 3px;
-    margin-right: 4px;
+#modal-options .options-switch input,
+#modal-options .form-checkbox input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+    float: none;
+    margin: 0;
+    width: 36px;
+    height: 20px;
+    background-color: var(--clr-toggle-inactive);
+    background-image:
+        radial-gradient(circle at 10px 10px, #ffffff 6.5px, rgba(255,255,255,0) 7px),
+        radial-gradient(circle at 11px 11px, rgba(0,0,0,0.30) 6.5px, transparent 9.5px);
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    background-position: 0px center;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, background-position 0.15s;
+}
+
+#modal-options .options-switch input:checked,
+#modal-options .form-checkbox input[type="checkbox"]:checked {
+    background-color: var(--clr-toggle-active);
+    background-position: 16px center;
+    background-image:
+        radial-gradient(circle at 10px 10px, #ffffff 6.5px, rgba(255,255,255,0) 7px),
+        radial-gradient(circle at 10.5px 10.5px, rgba(0,0,0,0.30) 6.5px, transparent 9.5px);
+}
+
+#modal-options .options-switch input:focus-visible,
+#modal-options .form-checkbox input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--clr-toggle-active);
+    outline-offset: 2px;
+    border-radius: 10px;
+}
+
+#modal-options .form-checkbox input[type="checkbox"] {
+    margin-top: 7px;
 }
 
 #modal-options #options-orphans .process-all-orphaned {
@@ -1514,13 +1589,6 @@ tr.queue-item>td:first-child>a {
 #modal-options .tab-content h4 {
     color: var(--clr-text-muted);
     text-align: center;
-}
-
-#modal-options .form-checkbox input[type="checkbox"] {
-    height: 14px;
-    width: 14px;
-    display: block;
-    margin-top: 11px;
 }
 
 .loader-dot-one, .loader-dot-two, .loader-dot-three {
@@ -1850,9 +1918,7 @@ input[name="nzbURL"] {
 .container-compact #modal-options #options-orphans .process-all-orphaned {
     font-size: 1em;
 }
-.container-compact #modal-options .options-switch input {
-    margin-top: 1px;
-}
+
 .container-compact #modal-options .tab-content {
     min-height: 190px;
 }
@@ -1948,6 +2014,11 @@ input[name="nzbURL"] {
     /* Need to reduce sparkline width when RSS button is added */
     .navbar-have-rss .sparkline-container svg {
         width: 220px !important;
+    }
+
+    /* Hidden columns (table-header-extra width: 0) would still show the select arrow */
+    .queue-table .row-extra-text select.row-extra-select {
+        display: none;
     }
 }
 
@@ -2221,15 +2292,18 @@ legend {
 .pagination li.active a,
 .pagination li.active span,
 .pagination li.active a:hover,
-.pagination li.active span:hover {
-    background-color: var(--clr-table-row-alt);
+.pagination li.active span:hover,
+.pagination>li>span:hover {
+    background-color: var(--clr-table-bg);
     border: 1px solid var(--clr-border-subtle);
     color: var(--clr-text);
 }
 
 .pagination>li>a,
 .pagination>li>span,
-.pagination>li>span:hover {
+.pagination>.disabled>span,
+.pagination>.disabled>span:focus,
+.pagination>.disabled>span:hover {
     color: var(--clr-text);
     background-color: var(--clr-input-bg);
     border-color: var(--clr-border-subtle);

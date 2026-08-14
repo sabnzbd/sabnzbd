@@ -62,41 +62,18 @@ def isFAT(check_dir: str) -> bool:
             except Exception:
                 pass
         elif "darwin" in sys.platform:
-            """
-            MacOS needs a two-step approach:
+            from Foundation import NSURL, NSURLVolumeLocalizedFormatDescriptionKey
 
-            # First: directory => device
-            server:~ sander$ df /Volumes/CARTUNES/Tuna/
-            Filesystem   512-blocks      Used Available Capacity iused ifree %iused  Mounted on
-            /dev/disk9s1  120815744 108840000  11975744    91%       0     0  100%   /Volumes/CARTUNES
+            # The description is "MS-DOS (FAT12/FAT16/FAT32)" for FAT volumes and "ExFAT" for exFAT,
+            # so match "MS-DOS" to avoid catching exFAT (which does not have the 4 GiB limit)
+            ok, description, _ = NSURL.fileURLWithPath_(check_dir).getResourceValue_forKey_error_(
+                None, NSURLVolumeLocalizedFormatDescriptionKey, None
+            )
+            if ok and "MS-DOS" in description:
+                FAT = True
 
-            # Then: device => filesystem type
-            server:~ sander$ mount | grep /dev/disk9s1
-            /dev/disk9s1 on /Volumes/CARTUNES (msdos, local, nodev, nosuid, noowners)
-            """
-            for thisline in getcmdoutput(["df", check_dir]):
-                if thisline.find("/") == 0:
-                    # Starts with /, so a real, local device
-                    device = thisline.split()[0]
-
-                    # Run the equivalent of "mount | grep $device"
-                    p_mount = subprocess.Popen(["mount"], stdout=subprocess.PIPE)
-                    p_grep = subprocess.Popen(
-                        ["grep", device + "[[:space:]]"],
-                        stdin=p_mount.stdout,
-                        stdout=subprocess.PIPE,
-                        text=True,
-                        encoding="utf8",
-                    )
-                    p_mount.stdout.close()
-                    mountoutput = p_grep.communicate()[0].strip()
-
-                    if "msdos" in mountoutput.split("(")[1]:
-                        FAT = True
-                    break
-
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Exception in isFAT({check_dir}): {e}")
     return FAT
 
 

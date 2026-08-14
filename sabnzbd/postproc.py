@@ -63,6 +63,7 @@ from sabnzbd.filesystem import (
     globber_full,
     set_permissions,
     cleanup_empty_directories,
+    remove_empty_parent_directories,
     fix_unix_encoding,
     sanitize_and_trim_path,
     sanitize_files,
@@ -73,6 +74,7 @@ from sabnzbd.filesystem import (
     get_unique_filename,
     get_ext,
     get_filename,
+    has_unwanted_extension,
 )
 from sabnzbd.nzb import NzbObject
 from sabnzbd.sorting import Sorter
@@ -85,13 +87,14 @@ from sabnzbd.constants import (
     Status,
     VERIFIED_FILE,
     IGNORED_MOVIE_FOLDERS,
+    ONDISK_FILE,
+    ONDISK_VERSION,
 )
 from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.decorators import synchronized
 import sabnzbd.emailer as emailer
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.database as database
 import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarvolinfo as rarvolinfo
 import sabnzbd.utils.checkdir
@@ -358,7 +361,7 @@ class PostProcessor(Thread):
             process_job(nzo)
 
             if nzo.to_be_removed:
-                with database.HistoryDB() as history_db:
+                with sabnzbd.db_pool.connection() as history_db:
                     history_db.remove(nzo.nzo_id)
                 nzo.purge_data()
 
@@ -496,6 +499,9 @@ def process_job(nzo: NzbObject) -> bool:
 
                 # Sanitize the resulting files
                 newfiles = sanitize_files(filelist=newfiles)
+
+                # Check unpacked files for unwanted extensions, the download-time check can miss files hidden inside archives
+                newfiles = remove_unwanted_files(nzo, newfiles, tmp_workdir_complete)
                 logging.info("Finished unpack_magic on %s", filename)
 
             if cfg.safe_postproc():
@@ -504,19 +510,17 @@ def process_job(nzo: NzbObject) -> bool:
             if all_ok:
                 # Move any (left-over) files to destination
                 nzo.status = Status.MOVING
-                for root, _, files in os.walk(nzo.download_path):
-                    if not root.endswith(JOB_ADMIN):
-                        for file in files:
-                            path = os.path.join(root, file)
-                            new_path = path.replace(nzo.download_path, tmp_workdir_complete)
-                            nzo.set_action_line(T("Moving"), file)
-                            ok, new_path = move_to_path(path, new_path)
-                            if new_path:
-                                newfiles.append(new_path)
-                            if not ok:
-                                nzo.set_unpack_info("Unpack", T("Failed moving %s to %s") % (path, new_path))
-                                all_ok = False
-                                break
+                for path in listdir_full(nzo.download_path):
+                    if JOB_ADMIN not in path:
+                        new_path = path.replace(nzo.download_path, tmp_workdir_complete)
+                        nzo.set_action_line(T("Moving"), get_filename(path))
+                        ok, new_path = move_to_path(path, new_path)
+                        if new_path:
+                            newfiles.append(new_path)
+                        if not ok:
+                            nzo.set_unpack_info("Unpack", T("Failed moving %s to %s") % (path, new_path))
+                            all_ok = False
+                            break
 
             # Set permissions right
             set_permissions(tmp_workdir_complete)
@@ -527,7 +531,7 @@ def process_job(nzo: NzbObject) -> bool:
 
             if all_ok:
                 # Remove files matching the cleanup list
-                cleanup_list(tmp_workdir_complete, skip_nzb=True)
+                newfiles = cleanup_list(newfiles, tmp_workdir_complete, skip_nzb=True)
 
                 # Check if this is an NZB-only download, if so redirect to queue
                 # except when PP was Download-only
@@ -540,7 +544,7 @@ def process_job(nzo: NzbObject) -> bool:
                     cleanup_empty_directories(tmp_workdir_complete)
                 else:
                     # Full cleanup including nzb's
-                    cleanup_list(tmp_workdir_complete, skip_nzb=False)
+                    newfiles = cleanup_list(newfiles, tmp_workdir_complete, skip_nzb=False)
 
         # No further processing for NZB-only downloads
         if not nzb_list:
@@ -576,7 +580,7 @@ def process_job(nzo: NzbObject) -> bool:
             # TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
             if all_ok and file_sorter.sorter_active:
                 if newfiles:
-                    workdir_complete, ok = file_sorter.rename(newfiles, workdir_complete)
+                    workdir_complete, ok, newfiles = file_sorter.rename(newfiles, workdir_complete)
                     if not ok:
                         nzo.set_unpack_info("Unpack", T("Failed to move files"))
                         nzo.fail_msg = T("Failed to move files")
@@ -603,7 +607,7 @@ def process_job(nzo: NzbObject) -> bool:
                 nzo.status = Status.RUNNING
                 nzo.set_action_line(T("Running script"), nzo.script)
                 nzo.set_unpack_info("Script", T("Running user script %s") % nzo.script, unique=True)
-                script_log, script_ret = external_processing(script_path, nzo, clip_path(workdir_complete), job_result)
+                script_log, script_ret = external_processing(script_path, nzo, workdir_complete, job_result, newfiles)
 
                 # Format output depending on return status
                 script_line = get_last_line(script_log)
@@ -648,7 +652,7 @@ def process_job(nzo: NzbObject) -> bool:
 
         # Cleanup again, including NZB files
         if all_ok and os.path.isdir(workdir_complete):
-            cleanup_list(workdir_complete, False)
+            cleanup_list(newfiles, workdir_complete, skip_nzb=False)
 
         # Force error for empty result
         all_ok = all_ok and not empty
@@ -721,7 +725,7 @@ def process_job(nzo: NzbObject) -> bool:
     # Log the overall time taken for postprocessing
     postproc_time = int(time.time() - start)
 
-    with database.HistoryDB() as history_db:
+    with sabnzbd.db_pool.connection() as history_db:
         # Add the nzo to the database. Only the path, script and time taken is passed
         # Other information is obtained from the nzo
         history_db.add_history_db(nzo, workdir_complete, postproc_time, script_log, script_line)
@@ -819,6 +823,12 @@ def parring(nzo: NzbObject) -> tuple[bool, bool]:
         logging.info("Skipping verification and repair, all sets previously verified: %s", verified)
         return par_error, re_add
 
+    # Combine the per-article crc32s into a whole-file crc32 for the quick-check and SFV-check below
+    # Done here rather than while assembling because crc32_combine is order-dependent and articles can
+    # be written to disk out of order
+    for nzf in nzo.finished_files:
+        nzf.finalize_crc32()
+
     if nzo.extrapars:
         # Need to make a copy because it can change during iteration
         for setname in list(nzo.extrapars):
@@ -845,7 +855,7 @@ def parring(nzo: NzbObject) -> tuple[bool, bool]:
         # This can happen even if par2 is present, it is always performed
         # so that in the next section the try_rar_check can be used if no
         # par2 check was performed in the previous part
-        _, rars, _, _ = build_filelists(nzo.download_path, check_rar=False)
+        _, rars, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
         if not rars:
             # Returns number of renamed RAR's
             rar_renamer(nzo)
@@ -865,7 +875,7 @@ def parring(nzo: NzbObject) -> tuple[bool, bool]:
             # If no luck with SFV, do RAR-check
             if sfv_check_result is None and cfg.enable_unrar():
                 # Check for RAR's with a sensible extension
-                _, rars, _, _ = build_filelists(nzo.download_path, check_rar=False)
+                _, rars, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
                 if rars:
                     par_error = not try_rar_check(nzo, rars)
 
@@ -886,6 +896,9 @@ def parring(nzo: NzbObject) -> tuple[bool, bool]:
 
     logging.debug("Verified sets: %s", verified)
     sabnzbd.filesystem.save_data(verified, VERIFIED_FILE, nzo.admin_path)
+
+    if cfg.direct_write() and (on_disk_data := nzo.on_disk()):
+        sabnzbd.filesystem.save_data((ONDISK_VERSION, on_disk_data), ONDISK_FILE, nzo.admin_path)
 
     logging.info("Verification and repair finished for %s", nzo.final_name)
     return par_error, re_add
@@ -966,6 +979,14 @@ def try_rar_check(nzo: NzbObject, rars: list[str]) -> bool:
         return True
 
 
+def rename_rar_file(filename: str, setname: str, download_path: str, extension: str) -> None:
+    """Rename a rar file to its setname plus the original extension"""
+    new_rar_name = os.path.join(download_path, "%s.%s" % (setname, extension))
+    new_rar_name = get_unique_filename(new_rar_name)
+    logging.debug("Deobfuscate: Renaming %s to %s", filename, new_rar_name)
+    renamer(filename, new_rar_name)
+
+
 def rar_renamer(nzo: NzbObject) -> int:
     """Deobfuscate rar file names: Use header and content information to give RAR-files decent names"""
     nzo.status = Status.VERIFYING
@@ -975,7 +996,7 @@ def rar_renamer(nzo: NzbObject) -> int:
     renamed_files = 0
 
     # This is the most important datastructure (in case of mixed obfuscated rarsets)
-    rarvolnr = {}
+    rarvolnr: dict[int, dict[str, list[str]]] = {}
     # rarvolnr will contain per rar vol number the rarfilenames and their respective contents (and maybe other characteristics, like filesizes).
     # for example: rarvolnr[6]['somerandomfilename.rar']={'readme.txt', 'linux.iso'},
     # which means 'somerandomfilename.rar' has rarvolnumber 6, and contents 'readme.txt' and 'linux.iso'
@@ -984,46 +1005,37 @@ def rar_renamer(nzo: NzbObject) -> int:
     # The volume number and real extension of a (obfuscated) rar file
     # so volnrext['dfakjldfalkjdfl.blabla'] = (14, 'part014.rar') or (2, 'r000')
     # Not really needed, but handy to avoid a second lookup at the renaming
-    volnrext = {}
+    volnrext: dict[str, tuple[int, str]] = {}
 
     # Scan rar files in workdir, but not subdirs
-    workdir_files = os.listdir(nzo.download_path)
-    for file_to_check in workdir_files:
+    for file_to_check in os.listdir(nzo.download_path):
         file_to_check = os.path.join(nzo.download_path, file_to_check)
 
-        # We only want files:
-        if not os.path.isfile(file_to_check):
+        # We only want rar files; guard against cbr files due to pr#3114
+        if (
+            not os.path.isfile(file_to_check)
+            or get_ext(file_to_check) == ".cbr"
+            or not rarfile.is_rarfile(file_to_check)
+        ):
             continue
 
-        # guard against cbr files due to pr#3114
-        if get_ext(file_to_check) == ".cbr":
-            continue
+        # if a rar file is fully encrypted, RarFile() will return an empty list:
+        rar_contents = SABRarFile(file_to_check, part_only=True).filelist()
+        if not rar_contents:
+            logging.info(
+                "Download %s contains a fully encrypted & obfuscated rar-file: %s.",
+                nzo.final_name,
+                file_to_check,
+            )
+            # bail out
+            return renamed_files
 
-        if rarfile.is_rarfile(file_to_check):
-            # if a rar file is fully encrypted, RarFile() will return an empty list:
-            if not SABRarFile(file_to_check, part_only=True).filelist():
-                logging.info(
-                    "Download %s contains a fully encrypted & obfuscated rar-file: %s.",
-                    nzo.final_name,
-                    file_to_check,
-                )
-                # bail out
-                return renamed_files
-
-        # The function will check if it's a RAR-file
-        # We do a sanity-check for the returned number
         rar_vol, new_extension = rarvolinfo.get_rar_extension(file_to_check)
-        if 0 < rar_vol < 1000:
+        if rar_vol > 0:
             logging.debug("Detected volume-number %s from RAR-header: %s ", rar_vol, file_to_check)
             volnrext[file_to_check] = (rar_vol, new_extension)
-            # The files inside rar file
-            rar_contents = SABRarFile(os.path.join(nzo.download_path, file_to_check), part_only=True).filelist()
-            try:
-                rarvolnr[rar_vol]
-            except Exception:
-                # does not yet exist, so create:
-                rarvolnr[rar_vol] = {}
-            rarvolnr[rar_vol][file_to_check] = rar_contents  # store them for matching (if needed)
+            # Store the files inside the rar file for matching (if needed)
+            rarvolnr.setdefault(rar_vol, {})[file_to_check] = rar_contents
         else:
             logging.debug("No RAR-volume-number found in %s", file_to_check)
 
@@ -1031,24 +1043,17 @@ def rar_renamer(nzo: NzbObject) -> int:
     logging.debug("Deobfuscate: volnrext is: %s", volnrext)
 
     # Could be that there are no rar-files, we stop
-    if not len(rarvolnr):
+    if not rarvolnr:
         return renamed_files
 
-    # this can probably done with a max-key-lambda oneliner, but ... how?
-    numberofrarsets = 0
-    for mykey in rarvolnr.keys():
-        numberofrarsets = max(numberofrarsets, len(rarvolnr[mykey]))
+    numberofrarsets = max(len(rar_sets) for rar_sets in rarvolnr.values())
     logging.debug("Number of rarset is %s", numberofrarsets)
 
     if numberofrarsets == 1:
         # Just one obfuscated rarset ... that's easy
         logging.debug("Deobfuscate: Just one obfuscated rarset")
         for filename in volnrext:
-            new_rar_name = "%s.%s" % (nzo.final_name, volnrext[filename][1])
-            new_rar_name = os.path.join(nzo.download_path, new_rar_name)
-            new_rar_name = get_unique_filename(new_rar_name)
-            logging.debug("Deobfuscate: Renaming %s to %s" % (filename, new_rar_name))
-            renamer(filename, new_rar_name)
+            rename_rar_file(filename, nzo.final_name, nzo.download_path, volnrext[filename][1])
             renamed_files += 1
         return renamed_files
 
@@ -1056,18 +1061,17 @@ def rar_renamer(nzo: NzbObject) -> int:
 
     # Sanity check of the rar set
     # Get the highest rar part number (that's the upper limit):
-    highest_rar = sorted(rarvolnr.keys())[-1]
+    highest_rar = max(rarvolnr)
     # A staircase check: number of rarsets should no go up, but stay the same or go down
     how_many_previous = 1000  # 1000 rarset mixed ... should be enough ... typical is 1, 2 or maybe 3
     # Start at part001.rar and go the highest
     for rar_set_number in range(1, highest_rar + 1):
-        try:
-            how_many_here = len(rarvolnr[rar_set_number])
-        except Exception:
+        if rar_set_number not in rarvolnr:
             # rarset does not exist at all
             logging.warning("rarset %s is missing completely, so I can't deobfuscate.", rar_set_number)
             return 0
         # OK, it exists, now let's check it's not higher
+        how_many_here = len(rarvolnr[rar_set_number])
         if how_many_here > how_many_previous:
             # this should not happen: higher number of rarset than previous number of rarset
             logging.warning("no staircase! rarset %s is higher than previous, so I can't deobfuscate.", rar_set_number)
@@ -1090,8 +1094,8 @@ def rar_renamer(nzo: NzbObject) -> int:
     # So, all rar files with rarvolnr 1, find the contents (files inside the rar),
     # and match with rarfiles with rarvolnr 2, and put them in the correct rarset.
     # And so on, until the highest rarvolnr minus 1 matched against highest rarvolnr
-    for n in range(1, len(rarvolnr)):
-        logging.debug("Deobfuscate: Finding matches between rar sets %s and %s" % (n, n + 1))
+    for n in range(1, highest_rar):
+        logging.debug("Deobfuscate: Finding matches between rar sets %s and %s", n, n + 1)
         for base_obfuscated_filename in rarvolnr[n]:
             matchcounter = 0
             for next_obfuscated_filename in rarvolnr[n + 1]:
@@ -1108,11 +1112,7 @@ def rar_renamer(nzo: NzbObject) -> int:
 
     # Do the renaming:
     for filename in rarsetname:
-        new_rar_name = "%s.%s" % (rarsetname[filename], volnrext[filename][1])
-        new_rar_name = os.path.join(nzo.download_path, new_rar_name)
-        new_rar_name = get_unique_filename(new_rar_name)
-        logging.debug("Deobfuscate: Renaming %s to %s" % (filename, new_rar_name))
-        renamer(filename, new_rar_name)
+        rename_rar_file(filename, rarsetname[filename], nzo.download_path, volnrext[filename][1])
         renamed_files += 1
 
     # Done: The obfuscated rar files have now been renamed to regular formatted filenames
@@ -1148,30 +1148,66 @@ def handle_empty_queue():
             sabnzbd.LIBC.malloc_trim(0)
 
 
-def cleanup_list(wdir: str, skip_nzb: bool, base_dir: Optional[str] = None):
-    """Remove all files whose extension matches the cleanup list,
-    optionally ignoring the nzb extension
+def cleanup_list(filelist: list[str], base_dir: str, skip_nzb: bool) -> list[str]:
+    """Remove all files of the job that match the cleanup list,
+    optionally ignoring the nzb extension.
+    Only the tracked files are considered, so files of other jobs
+    in a shared folder are left alone. Returns the remaining files.
     """
-    if cfg.cleanup_list():
-        if base_dir is None:
-            base_dir = wdir
-        try:
-            with os.scandir(wdir) as files:
-                for entry in files:
-                    if entry.is_dir():
-                        cleanup_list(entry.path, skip_nzb, base_dir)
-                        cleanup_empty_directories(entry.path)
-                    else:
-                        relative_path = os.path.relpath(entry.path, base_dir)
-                        if on_cleanup_list(entry.name, skip_nzb, relative_path):
-                            try:
-                                logging.info("Removing unwanted file %s", entry.path)
-                                remove_file(entry.path)
-                            except Exception:
-                                logging.error(T("Removing %s failed"), clip_path(entry.path))
-                                logging.info("Traceback: ", exc_info=True)
-        except Exception:
-            logging.info("Traceback: ", exc_info=True)
+    if not cfg.cleanup_list():
+        return filelist
+
+    remaining_files = []
+    removed_files = []
+    for path in filelist:
+        if os.path.isfile(path) and on_cleanup_list(get_filename(path), skip_nzb, os.path.relpath(path, base_dir)):
+            try:
+                logging.info("Removing unwanted file %s", path)
+                remove_file(path)
+                removed_files.append(path)
+                continue
+            except Exception:
+                logging.error(T("Removing %s failed"), clip_path(path))
+                logging.info("Traceback: ", exc_info=True)
+        remaining_files.append(path)
+
+    # Remove the directories the removed files left behind, if they are now empty
+    remove_empty_parent_directories(base_dir, removed_files)
+    return remaining_files
+
+
+def remove_unwanted_files(nzo: NzbObject, filelist: list[str], base_dir: str) -> list[str]:
+    """Remove all files of the job that match the unwanted extensions.
+    The download-time check can be bypassed, for example by files
+    hidden inside nested archives, or within PAR2 repair data,
+    so the files produced by unpacking are verified again.
+    Only the tracked files are considered, so files of other jobs
+    in a shared folder are left alone. Returns the remaining files.
+    """
+    # Skip if not configured or after an explicit user override of the unwanted extension pause
+    if not cfg.unwanted_extensions() or not cfg.action_on_unwanted_extensions() or nzo.unwanted_ext == 2:
+        return filelist
+
+    remaining_files = []
+    removed_files = []
+    for path in filelist:
+        if os.path.isfile(path) and has_unwanted_extension(get_filename(path)):
+            try:
+                logging.info("Removing unwanted file %s", path)
+                remove_file(path)
+                removed_files.append(path)
+                continue
+            except Exception:
+                logging.error(T("Removing %s failed"), clip_path(path))
+                logging.info("Traceback: ", exc_info=True)
+        remaining_files.append(path)
+
+    if removed_files:
+        nzo.set_unpack_info("Unpack", T("Removed %s files with unwanted extensions") % len(removed_files))
+
+    # Remove the directories the removed files left behind, if they are now empty
+    remove_empty_parent_directories(base_dir, removed_files)
+    return remaining_files
 
 
 def prefix(path: str, pre: str) -> str:
@@ -1257,8 +1293,9 @@ def remove_samples(path: str):
     for root, _dirs, files in os.walk(path):
         for file_to_match in files:
             nr_files += 1
-            if is_sample(file_to_match):
-                files_to_delete.append(os.path.join(root, file_to_match))
+            full_path = os.path.join(root, file_to_match)
+            if is_sample(full_path):
+                files_to_delete.append(full_path)
 
     # Make sure we skip false-positives
     if len(files_to_delete) < nr_files:

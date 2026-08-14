@@ -19,7 +19,10 @@ jobs:
     env:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
+        with:
+          # Need the parent commit too so we can diff HEAD and detect local translation edits
+          fetch-depth: 2
       - name: Generate translatable texts
         run: |
           python3 tools/extract_pot.py
@@ -27,13 +30,19 @@ jobs:
         if: env.TX_TOKEN
         # We use fixed version and manual download (instead of their sh script) to prevent potential supply-chain attack.
         # Changes are commited directly to the repo, so this is quite sensative and worth the extra hassle!
-        # Add --translation to the push command in order to update Transifex using local translation edits
-        # However, this prevents modifying existing translations in Transifex as they will be overwritten by the push!
+        # When the current commit contains local translation edits (changes to po/**/*.po), we add --translation so
+        # those edits are pushed to Transifex. Note: this overwrites the matching translations in Transifex with our
+        # local versions, so we only do it when local .po files actually changed.
         run: |
           TX_VERSION="v1.6.17"
           curl -fsSL "https://github.com/transifex/cli/releases/download/${TX_VERSION}/tx-linux-amd64.tar.gz" -o tx-linux-amd64.tar.gz
           tar -xzf tx-linux-amd64.tar.gz
-          ./tx push --source 
+          PUSH_ARGS="--source"
+          if git show --name-only --format= HEAD | grep -qE '^po/.+\.po$'; then
+            echo "Local translation edits detected; also pushing translations to Transifex."
+            PUSH_ARGS="--source --translation"
+          fi
+          ./tx push ${PUSH_ARGS}
           ./tx pull --all --force
       - name: Compile translations to validate them
         run: |

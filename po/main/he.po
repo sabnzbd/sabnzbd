@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-5.1.0\n"
+"Project-Id-Version: SABnzbd-5.2.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
@@ -115,7 +115,6 @@ msgstr "SABnzbd %s התחיל"
 msgid "SABnzbd shutdown finished"
 msgstr "כיבוי SABnzbd הסתיים"
 
-#. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "אות %s נתפס, שומר ויוצא…"
@@ -262,6 +261,14 @@ msgstr "אימות נכשל, בדוק שם משתמש/סיסמה."
 #: sabnzbd/api.py
 msgid "Too many connections, please pause downloading or try again later"
 msgstr "יותר מדי חיבורים, אנא השהה הורדה או נסה שוב מאוחר יותר"
+
+#. Warning message
+#: sabnzbd/api.py
+msgid ""
+"Server %s took %d ms to respond. On high-latency connections, increasing "
+"'Articles per request' to a value between 5 and 10 can improve download "
+"speed. See: https://sabnzbd.org/wiki/advanced/nntp-pipelining"
+msgstr ""
 
 #: sabnzbd/api.py
 msgid "Resolving address"
@@ -534,8 +541,8 @@ msgid "Resuming"
 msgstr "ממשיך"
 
 #. PP status - Priority pick list
-#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Paused"
 msgstr "מושהה"
 
@@ -599,6 +606,8 @@ msgid ""
 "Total number of configured connections (%d) is greater than the operating "
 "system limit (512), downloading will crash if all connections become active"
 msgstr ""
+"המספר הכולל של החיבורים שהוגדרו (%d) גדול ממגבלת מערכת ההפעלה (512), ההורדה "
+"תקרוס אם כל החיבורים יהפכו לפעילים"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -764,6 +773,8 @@ msgid ""
 "files. For details and possible solutions, see: "
 "https://sabnzbd.org/wiki/advanced/direct-write"
 msgstr ""
+"מצב Direct Write הושבת מכיוון ש-%s אינו תומך בקבצים דלילים. לפרטים ולפתרונות"
+" אפשריים, ראה: https://sabnzbd.org/wiki/advanced/direct-write"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -786,15 +797,6 @@ msgid ""
 "API Key incorrect, Use the api key from Config->General in your 3rd party "
 "program:"
 msgstr "מפתח API שגוי, השתמש במפתח ה־API מתצורה->כללי בתוכנית הצד השלישי שלך:"
-
-#: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr "משתמש התחבר לממשק הרשת"
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr "משתמש התחבר"
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -855,27 +857,20 @@ msgid ""
 "Category folder cannot be a subfolder of the Temporary Download Folder."
 msgstr "תיקיית קטגוריה אינה יכולה להיות תת־תיקייה של תיקיית ההורדות הזמניות."
 
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "שגיאה:"
-
-#: sabnzbd/interface.py
-msgid "Back"
-msgstr "הקודם"
-
 #. Warning message
 #: sabnzbd/internetspeed.py
 msgid ""
 "Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
 " %f MB/s"
 msgstr ""
+"רוחב פס האינטרנט של IPv4 שונה משמעותית מזה של IPv6: %f MB/s לעומת %f MB/s"
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Warnings"
 msgstr "אזהרות"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Idle"
 msgstr "מנוחה"
@@ -906,8 +901,8 @@ msgstr "הגבל מהירות"
 
 #. Notification - Pause downloading - Four way switch for duplicates -
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Pause"
 msgstr "השהה"
 
@@ -917,8 +912,8 @@ msgid "min"
 msgstr "דקה"
 
 #. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
 msgid "Resume"
 msgstr "המשך"
 
@@ -927,7 +922,7 @@ msgstr "המשך"
 msgid "Scan watched folder"
 msgstr "סרוק תיקייה מושגחת"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Read all RSS feeds"
 msgstr "קרא את כל הזנות RSS"
 
@@ -939,17 +934,17 @@ msgstr "תיקייה שלמה"
 msgid "Incomplete Folder"
 msgstr "תיקייה בלתי שלמה"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Troubleshoot"
 msgstr "פתור בעיות"
 
 #. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py,
 #: sabnzbd/skintext.py
 msgid "Restart"
 msgstr "הפעל מחדש"
 
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtraywin.py
 msgid "Restart without login"
 msgstr "הפעל מחדש ללא כניסה"
 
@@ -1146,6 +1141,10 @@ msgid "see logfile"
 msgstr "ראה קובץ יומן"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking skipped, TAR support requires Python 3.12 or later"
+msgstr "דילוג על פריקה, תמיכת TAR מחייבת Python 3.12 ומעלה"
+
+#: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "בדיקה זריזה"
 
@@ -1313,6 +1312,11 @@ msgstr "תור הסתיים"
 
 #. Notification
 #: sabnzbd/notifier.py
+msgid "User logged in"
+msgstr "משתמש התחבר"
+
+#. Notification
+#: sabnzbd/notifier.py
 msgid "Other Messages"
 msgstr "הודעות אחרות"
 
@@ -1322,7 +1326,7 @@ msgid "Open folder"
 msgstr "פתח תיקייה"
 
 #. Notification action
-#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/notifier.py, sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Open complete folder"
 msgstr "פתח תיקיית השלמה"
 
@@ -1461,7 +1465,8 @@ msgstr "מפיץ %s דקות"
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "ירד תוך %s בממוצע של %s ב/ש"
 
-#. Job details page, file age column header
+#. Config->RSS filter-type selection menu (e.g. ">3d", "<12h") - Job details
+#. page, file age column header
 #: sabnzbd/nzb/object.py, sabnzbd/skintext.py
 msgid "Age"
 msgstr "גיל"
@@ -1556,6 +1561,23 @@ msgstr "אם אתה מקבל את הודעת השגיאה הזו שוב, אנא 
 #: sabnzbd/panic.py
 msgid ""
 "\n"
+"    SABnzbd is not allowed to use port %s on %s.<br>\n"
+"    Low port numbers are reserved for privileged processes on most systems,\n"
+"    so the port itself is available but cannot be claimed.<br>\n"
+"    <br>\n"
+"    Either run SABnzbd with the privileges needed for that port, or restart it\n"
+"    with a port number of 1024 or higher."
+msgstr ""
+
+#: sabnzbd/panic.py
+msgid ""
+"To keep using the low port, put a reverse proxy in front of SABnzbd "
+"instead.<br>"
+msgstr ""
+
+#: sabnzbd/panic.py
+msgid ""
+"\n"
 "    SABnzbd needs a valid host address for its internal web server.<br>\n"
 "    You have specified an invalid address.<br>\n"
 "    Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>\n"
@@ -1641,18 +1663,15 @@ msgstr ""
 "לא היה ניתן לקשר את פתחה %s על %s. איזשהי תוכנה אחרת משתמשת בפתחה או SABnzbd"
 " כבר רץ."
 
+#: sabnzbd/panic.py
+msgid ""
+"Not allowed to bind to port %s on %s. Low ports need elevated privileges."
+msgstr ""
+
 #. Warning message
 #: sabnzbd/panic.py
 msgid "Cannot launch the browser, probably not found"
 msgstr "לא היה ניתן להפעיל את הדפדפן, כנראה שהוא לא נמצא"
-
-#: sabnzbd/panic.py
-msgid "Access denied"
-msgstr "גישה נדחתה"
-
-#: sabnzbd/panic.py
-msgid "Error %s: You need to provide a valid username and password."
-msgstr "שגיאה %s: אתה צריך לספק שם משתמש וסיסמה תקפים."
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -1782,6 +1801,10 @@ msgstr "אין קובץ rar קודם תואם עבור %s"
 msgid "Removing %s failed"
 msgstr "הסרת %s נכשלה"
 
+#: sabnzbd/postproc.py
+msgid "Removed %s files with unwanted extensions"
+msgstr ""
+
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Failed to hibernate system"
@@ -1835,51 +1858,51 @@ msgstr "הזנת RSS %s הייתה ריקה"
 msgid "Incompatible feed"
 msgstr "הזנה בלתי תואמת"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Show interface"
-msgstr "הראה ממשק"
-
-#. Queue page button or entry box
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for"
-msgstr "השהה למשך"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 5 minutes"
-msgstr "השהה למשך 5 דקות"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 15 minutes"
-msgstr "השהה למשך 15 דקות"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 30 minutes"
-msgstr "השהה למשך 30 דקות"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 1 hour"
-msgstr "השהה למשך שעה"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 3 hours"
-msgstr "השהה למשך 3 שעות"
-
-#: sabnzbd/sabtray.py, sabnzbd/skintext.py
-msgid "Pause for 6 hours"
-msgstr "השהה למשך 6 שעות"
-
-#. Config->Scheduling
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Shutdown"
-msgstr "כבה"
-
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
 msgid "Remaining"
 msgstr "נותר"
 
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Add NZB"
 msgstr "הוסף NZB"
+
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py
+msgid "Show interface"
+msgstr "הראה ממשק"
+
+#. Config->Scheduling
+#: sabnzbd/sabtraylinux.py, sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Shutdown"
+msgstr "כבה"
+
+#. Queue page button or entry box
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for"
+msgstr "השהה למשך"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 5 minutes"
+msgstr "השהה למשך 5 דקות"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 15 minutes"
+msgstr "השהה למשך 15 דקות"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 30 minutes"
+msgstr "השהה למשך 30 דקות"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 1 hour"
+msgstr "השהה למשך שעה"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 3 hours"
+msgstr "השהה למשך 3 שעות"
+
+#: sabnzbd/sabtraywin.py, sabnzbd/skintext.py
+msgid "Pause for 6 hours"
+msgstr "השהה למשך 6 שעות"
 
 #. Warning message
 #: sabnzbd/scheduler.py
@@ -2215,6 +2238,10 @@ msgstr "מארח"
 #: sabnzbd/skintext.py
 msgid "Cancel"
 msgstr "ביטול"
+
+#: sabnzbd/skintext.py
+msgid "Close"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Log in"
@@ -2799,10 +2826,6 @@ msgid "Web Interface Theme"
 msgstr "ערכת נושא של ממשק רשת"
 
 #: sabnzbd/skintext.py
-msgid "Choose a theme."
-msgstr "בחר ערכת נושא."
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Username"
 msgstr "שם משתמש SABnzbd"
 
@@ -2947,6 +2970,9 @@ msgid ""
 "download.<br />Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> "
 "(filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
 msgstr ""
+"רשימת סיומות קבצים, שמות קבצים או תבניות שיש למחוק לאחר ההורדה.<br "
+"/>דוגמאות: <b>nfo, sfv</b> (סיומות) או <b>thumbs.db</b> (שמות קבצים) או "
+"<b>*.tmp, images/*, */test.jpg</b> (תבניות)."
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
@@ -3313,6 +3339,8 @@ msgid ""
 "all jobs will be marked as Completed and moved to the Complete folder even "
 "if they are incomplete."
 msgstr ""
+"נסה לפרוק רק עבודות שעברו את שלב הווידוא. אם מבוטל, כל העבודות יסומנו "
+"כ\"הושלם\" ויועברו לתיקייה השלמה גם אם הן אינן שלמות."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
@@ -3475,8 +3503,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr "מיין עבודות בתור באופן אוטומטי כאשר עבודה חדשה מתווספת."
 
 #: sabnzbd/skintext.py
-msgid "The queue will resort every 30 seconds if % downloaded is selected."
-msgstr "התור ימוין כל 30 שניות אם האפשרות % ירד נבחרה."
+msgid ""
+"The queue will resort every 30 seconds if % downloaded or Remaining Size is "
+"selected."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Propagation delay"
@@ -3814,6 +3844,8 @@ msgid ""
 "first.<br />This can improve download speeds, especially on connections with"
 " higher latency."
 msgstr ""
+"בקש מספר מאמרים לכל חיבור מבלי להמתין תחילה לכל תגובה.<br />הדבר עשוי לשפר "
+"את מהירויות ההורדה, במיוחד בחיבורים בעלי השהיה גבוהה."
 
 #. Button: Remove server
 #: sabnzbd/skintext.py
@@ -4577,6 +4609,14 @@ msgid "Filename"
 msgstr "שם קובץ"
 
 #: sabnzbd/skintext.py
+msgid "Toggle SABnzbd navigation menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Open SABnzbd main menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "שטח פנוי"
 
@@ -4585,12 +4625,20 @@ msgid "Temp Folder"
 msgstr "תיקייה זמנית"
 
 #: sabnzbd/skintext.py
+msgid "Clear search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "רב־תפעולים"
 
 #: sabnzbd/skintext.py
 msgid "Hold shift key to select a range"
 msgstr "החזק את מקש Shift כדי לבחור טווח"
+
+#: sabnzbd/skintext.py
+msgid "Select job"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Check all"
@@ -4623,6 +4671,10 @@ msgstr "במקרה של הפעלה מחדש של SABnzbd המסך ייעלם ב�
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "אזהרה:"
+
+#: sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "שגיאה:"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"
@@ -4659,6 +4711,14 @@ msgstr "יותר עמודות תור"
 #: sabnzbd/skintext.py
 msgid "Extra history columns"
 msgstr "יותר עמודות היסטוריה"
+
+#: sabnzbd/skintext.py
+msgid "Progress"
+msgstr "התקדמות"
+
+#: sabnzbd/skintext.py
+msgid "Actions"
+msgstr "פעולות"
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4835,6 +4895,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
 msgstr "מיין לפי % ירד <small>הכי הרבה&rarr;הכי מעט</small>"
+
+#: sabnzbd/skintext.py
+msgid "Sort by Remaining Size <small>Smallest&rarr;Largest</small>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"

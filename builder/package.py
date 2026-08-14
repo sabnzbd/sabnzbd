@@ -32,7 +32,7 @@ import markdown
 import packaging.version
 import xml.etree.ElementTree as ET
 
-from constants import (
+from common import (
     RELEASE_VERSION,
     RELEASE_VERSION_TUPLE,
     VERSION_FILE,
@@ -48,6 +48,7 @@ from constants import (
     EXTRA_FOLDERS,
     APPDATA_FILE,
     RELEASE_VERSION_BASE,
+    pe_has_authenticode_signature,
 )
 
 
@@ -336,6 +337,12 @@ if __name__ == "__main__":
             # Make sure it exists
             if not os.path.exists("dist/SABnzbd/SABnzbd.exe"):
                 raise FileNotFoundError("SABnzbd executable not found, signed zip extraction failed")
+
+            # Make sure the executables are actually signed
+            for exe_to_check in ("dist/SABnzbd/SABnzbd.exe", "dist/SABnzbd/SABnzbd-console.exe"):
+                if not pe_has_authenticode_signature(exe_to_check):
+                    raise RuntimeError("%s is not signed!" % exe_to_check)
+                print("%s has an Authenticode signature" % exe_to_check)
         elif RELEASE_THIS:
             raise FileNotFoundError("Signed SABnzbd executable not found, required for release!")
         else:

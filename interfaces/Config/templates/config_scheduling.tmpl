@@ -17,17 +17,17 @@ else:
         <div class="col2">
             <h3>$T('addSchedule') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
         </div><!-- /col2 -->
-        <form action="addSchedule" method="post" autocomplete="off">
+        <form data-form="add-schedule" action="$url('config/scheduling/add_schedule')" method="post" autocomplete="off">
         <input type="hidden" id="apikey" name="apikey" value="$apikey" />
         <div class="col1">
             <fieldset>
                 <div class="field-pair">
                     <label class="config" for="hour">$T('hour').capitalize() : $T('minute').capitalize()</label>
-                    <select name="hour" id="hour">
+                    <select name="hour" id="hour" aria-label="$T('hour').capitalize()">
                         <!--#for $i in range(24)#-->
                             <option value="$i" <!--#if hour == i then 'selected="selected"' else ""#--> > $str($i).zfill(2) </option>
                         <!--#end for#-->
-                    </select>&nbsp;<b>:</b>&nbsp;<select name="minute" id="minute">
+                    </select>&nbsp;<b>:</b>&nbsp;<select name="minute" id="minute" aria-label="$T('minute').capitalize()">
                         <!--#for $i in range(60)#-->
                             <option value="$i"> $str($i).zfill(2) </option>
                         <!--#end for#-->
@@ -90,13 +90,13 @@ else:
                         <!--#set $odd = True#-->
                         <!--#for $schednum, $line in enumerate($schedlines)#-->
                             <!--#set $odd = not $odd#-->
-                            <form action="delSchedule" method="post">
+                            <form data-form="del-schedule" action="$url('config/scheduling/del_schedule')" method="post">
                                 <input type="hidden" name="apikey" value="$apikey"/>
-                                <input type="hidden" name="line" id="line" value="$line"/>
+                                <input type="hidden" name="line" value="$line"/>
                                 <div class="field-pair infoTableSeperator <!--#if $odd then "" else " alt"#-->">
-                                    <input type="checkbox" name="schedenabled" value="$line" <!--#if int($taskinfo[$schednum][5]) > 0 then 'checked="checked"' else ""#-->>
-                                    <button class="btn btn-default float-left"><span class="glyphicon glyphicon-trash"></span></button>
-                                    <div class="scheduleEntry">
+                                    <input type="checkbox" name="schedenabled" value="$line" aria-label="$T('enabled')" aria-describedby="schedule-description-$schednum" <!--#if int($taskinfo[$schednum][5]) > 0 then 'checked="checked"' else ""#-->>
+                                    <button class="btn btn-default float-left" type="submit" aria-label="$T('nzo-delete')" aria-describedby="schedule-description-$schednum"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                                    <div class="scheduleEntry" id="schedule-description-$schednum">
                                         <span class="time">$taskinfo[$schednum][1]:$taskinfo[$schednum][2]</span><span class="frequency">$taskinfo[$schednum][3]</span> <span class="darkred">$taskinfo[$schednum][4]</span>
                                     </div>
                                 </div>
@@ -136,7 +136,7 @@ else:
     jQuery('[name="schedenabled"]').click(function() {
         jQuery.ajax({
             type: "POST",
-            url: "toggleSchedule",
+            url: "$url('config/scheduling/toggle_schedule')",
             data: {line: jQuery(this).val(), apikey: "$apikey" }
         }).done(function() {
             // Let us leave!

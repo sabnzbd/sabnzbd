@@ -30,7 +30,8 @@ from typing import Optional
 import sabnzbd
 from sabnzbd.filesystem import (
     move_to_path,
-    cleanup_empty_directories,
+    remove_dir,
+    remove_empty_parent_directories,
     get_unique_filename,
     get_ext,
     globber,
@@ -443,7 +444,8 @@ class Sorter:
 
                 try:
                     logging.debug("Renaming season pack file %s to %s", f, f_new)
-                    renamer(self._to_filepath(f, base_path), self._to_filepath(f_new, base_path))
+                    new_filepath = renamer(self._to_filepath(f, base_path), self._to_filepath(f_new, base_path))
+                    update_tracked_file(all_job_files, self._to_filepath(f, base_path), new_filepath)
                     success = True
                 except Exception:
                     logging.error("Failed to rename file %s to %s in season pack %s", f, f_new, self.original_job_name)
@@ -453,15 +455,17 @@ class Sorter:
 
                 # Rename similar files and move to base_path
                 for sim_f in globber(base_path, f_name + "*"):
+                    sim_filepath = self._to_filepath(sim_f, base_path)
                     # Only take into consideration:
                     # * existing files (but not directories),
                     # * that were created as part of this job,
                     # * and didn't qualify for processing in the own right.
-                    if os.path.isfile(os.path.join(base_path, sim_f)) and sim_f in all_job_files and sim_f not in files:
+                    if os.path.isfile(sim_filepath) and sim_filepath in all_job_files and sim_filepath not in files:
                         sim_f_new = os.path.basename(sim_f).replace(f_name, f_name_new, 1)
                         logging.debug("Renaming %s to %s (alongside season pack file %s)", sim_f, sim_f_new, f)
                         try:
-                            renamer(self._to_filepath(sim_f, base_path), self._to_filepath(sim_f_new, base_path))
+                            sim_filepath_new = renamer(sim_filepath, self._to_filepath(sim_f_new, base_path))
+                            update_tracked_file(all_job_files, sim_filepath, sim_filepath_new)
                         except Exception:
                             logging.error(
                                 "Failed to rename similar file %s to %s (alongside %s in season pack %s)",
@@ -477,7 +481,7 @@ class Sorter:
                 )
         return success
 
-    def _rename_sequential(self, sequential_files: dict[str, str], base_path: str) -> bool:
+    def _rename_sequential(self, sequential_files: dict[str, str], base_path: str, all_job_files: list[str]) -> bool:
         success = False
         for index, f in sequential_files.items():
             filepath = self._to_filepath(f, base_path)
@@ -494,9 +498,10 @@ class Sorter:
             )
             try:
                 logging.debug("Renaming %s to %s", filepath, new_filepath)
-                renamer(filepath, new_filepath)
+                new_filepath = renamer(filepath, new_filepath)
+                update_tracked_file(all_job_files, filepath, new_filepath)
                 success = True
-                rename_similar(base_path, f_ext, self.filename_set, [new_filepath])
+                rename_similar(base_path, f_ext, self.filename_set, [new_filepath], all_job_files)
             except Exception:
                 logging.error(T("Failed to rename %s to %s"), clip_path(filepath), clip_path(new_filepath))
                 logging.info("Traceback: ", exc_info=True)
@@ -509,30 +514,33 @@ class Sorter:
 
     def _filter_files(self, f: str, base_path: str) -> bool:
         filepath = self._to_filepath(f, base_path)
+        # Cheap checks first; the media-duration sample check
+        # only runs for files that are otherwise kept
         return (
-            not is_sample(f)
-            and get_ext(f) not in EXCLUDED_FILE_EXTS
+            get_ext(f) not in EXCLUDED_FILE_EXTS
             and os.path.exists(filepath)
             and os.stat(filepath).st_size >= self.rename_limit
+            and not is_sample(filepath)
         )
 
-    def rename(self, files: list[str], base_path: str) -> tuple[str, bool]:
+    def rename(self, files: list[str], base_path: str) -> tuple[str, bool, list[str]]:
+        # Track all files of the job as absolute paths, so any renames can be recorded
+        # and the updated locations returned to the caller after the move
+        tracked_files = [self._to_filepath(f, base_path) for f in files]
+
         if not self.rename_files:
-            return move_to_parent_directory(base_path)
+            return move_to_parent_directory(base_path, tracked_files)
 
         # Log the minimum filesize for renaming
         if self.rename_limit > 0:
             logging.debug("Minimum filesize for renaming set to %s bytes", self.rename_limit)
 
-        # Store the list of all files for later use
-        all_files = files
-
         # Filter files to remove nonexistent, undersized, samples, and excluded extensions
-        files = [f for f in files if self._filter_files(f, base_path)]
+        files = [f for f in tracked_files if self._filter_files(f, base_path)]
 
         if len(files) == 0:
             logging.debug("No files left to rename after applying filter")
-            return move_to_parent_directory(base_path)
+            return move_to_parent_directory(base_path, tracked_files)
 
         # Check for season packs or sequential filenames and handle their renaming separately;
         # if neither applies or succeeds, fall back to going with the single largest file instead.
@@ -540,18 +548,20 @@ class Sorter:
             # Season packs handling
             if self.is_season_pack:
                 logging.debug("Trying to rename season pack files %s", files)
-                if self._rename_season_pack(files, base_path, all_files):
-                    cleanup_empty_directories(base_path)
-                    return move_to_parent_directory(base_path)
+                original_locations = list(tracked_files)
+                if self._rename_season_pack(files, base_path, tracked_files):
+                    remove_empty_parent_directories(base_path, original_locations)
+                    return move_to_parent_directory(base_path, tracked_files)
                 else:
                     logging.debug("Season pack sorting didn't rename any files")
 
             # Try generic sequential files handling
             if self.multipart_label and (sequential_files := check_for_multiple(files)):
                 logging.debug("Trying to rename sequential files %s", sequential_files)
-                if self._rename_sequential(sequential_files, base_path):
-                    cleanup_empty_directories(base_path)
-                    return move_to_parent_directory(base_path)
+                original_locations = list(tracked_files)
+                if self._rename_sequential(sequential_files, base_path, tracked_files):
+                    remove_empty_parent_directories(base_path, original_locations)
+                    return move_to_parent_directory(base_path, tracked_files)
                 else:
                     logging.debug("Sequential file handling didn't rename any files")
 
@@ -563,7 +573,7 @@ class Sorter:
                 largest_file.update({"name": f, "size": f_size})
 
         # Rename it
-        f_name, f_ext = os.path.splitext(largest_file.get("name"))
+        f_name, f_ext = os.path.splitext(os.path.basename(largest_file.get("name")))
         filepath = self._to_filepath(largest_file.get("name"), base_path)
         new_filepath = os.path.join(
             base_path,
@@ -577,15 +587,16 @@ class Sorter:
             renamed_files = []
             try:
                 logging.debug("Renaming %s to %s", filepath, new_filepath)
-                renamer(filepath, new_filepath)
+                new_filepath = renamer(filepath, new_filepath)
+                update_tracked_file(tracked_files, filepath, new_filepath)
                 renamed_files.append(new_filepath)
             except Exception:
                 logging.error(T("Failed to rename %s to %s"), clip_path(base_path), clip_path(new_filepath))
                 logging.info("Traceback: ", exc_info=True)
 
-            rename_similar(base_path, f_ext, self.filename_set, renamed_files)
+            rename_similar(base_path, f_ext, self.filename_set, renamed_files, tracked_files)
 
-        return move_to_parent_directory(base_path)
+        return move_to_parent_directory(base_path, tracked_files)
 
 
 class BasicAnalyzer(Sorter):
@@ -610,29 +621,47 @@ def ends_in_file(path: str) -> bool:
     return bool(RE_ENDEXT.search(path) or RE_ENDFN.search(path))
 
 
-def move_to_parent_directory(workdir: str) -> tuple[str, bool]:
-    """Move all files under 'workdir' into 'workdir/..'"""
-    # Determine 'folder'/..
-    workdir = os.path.abspath(os.path.normpath(workdir))
-    dest = os.path.abspath(os.path.normpath(os.path.join(workdir, "..")))
+def update_tracked_file(tracked_files: list[str], old_path: str, new_path: str):
+    """Record the rename of a job file in the tracked files list"""
+    if new_path and old_path in tracked_files:
+        tracked_files[tracked_files.index(old_path)] = new_path
 
-    logging.debug("Moving all files from %s to %s", workdir, dest)
+
+def move_to_parent_directory(workdir: str, files: list[str]) -> tuple[str, bool, list[str]]:
+    """Move the job 'files' under 'workdir' into 'workdir/..'
+    and return the updated locations of the files"""
+    # Determine 'folder'/..
+    workdir = os.path.abspath(workdir)
+    dest = os.path.abspath(os.path.join(workdir, ".."))
 
     # Check for DVD folders and bail out if found
     for item in os.listdir(workdir):
         if item.lower() in IGNORED_MOVIE_FOLDERS:
-            return workdir, True
+            return workdir, True, files
 
-    for root, dirs, files in os.walk(workdir):
-        for _file in files:
-            path = os.path.join(root, _file)
-            new_path = path.replace(workdir, dest)
-            ok, new_path = move_to_path(path, new_path)
-            if not ok:
-                return dest, False
+    logging.debug("Moving all job files from %s to %s", workdir, dest)
 
-    cleanup_empty_directories(workdir)
-    return dest, True
+    moved_files = []
+    for nr, path in enumerate(files):
+        path = os.path.abspath(path)
+        if not path.startswith(workdir + os.path.sep):
+            # Not inside the directory we move, keep as-is
+            moved_files.append(path)
+            continue
+        ok, new_path = move_to_path(path, path.replace(workdir, dest))
+        if not ok:
+            return dest, False, moved_files + files[nr:]
+        if new_path:
+            moved_files.append(new_path)
+
+    # Remove the directories the job files left behind, if they are now empty
+    remove_empty_parent_directories(workdir, files)
+    try:
+        if not os.listdir(workdir):
+            remove_dir(workdir)
+    except OSError:
+        pass
+    return dest, True, moved_files
 
 
 def guess_what(name: str) -> MatchesDict:
@@ -840,39 +869,42 @@ def strip_path_elements(path: str) -> str:
     return "\\\\" + path if is_unc else path
 
 
-def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: Optional[list[str]] = None):
-    """Rename all other files in the 'folder' hierarchy after 'name'
+def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: Optional[list[str]], job_files: list[str]):
+    """Rename all other files of the job in the 'folder' hierarchy after 'name'
     and move them to the root of 'folder'.
     Files having extension 'skip_ext' will be moved, but not renamed.
-    Don't touch files in list `skipped_files`
+    Don't touch files in list `skipped_files`.
+    Only files tracked in `job_files` are touched; the list is updated in place.
     """
     logging.debug('Give files in set "%s" matching names.', name)
     folder = os.path.normpath(folder)
     skip_ext = skip_ext.lower()
 
-    for root, dirs, files in os.walk(folder):
-        for f in files:
-            path = os.path.join(root, f)
-            if skipped_files and path in skipped_files:
-                continue
-            org, ext = os.path.splitext(f)
-            if ext.lower() == skip_ext:
-                # Move file, but do not rename
-                newpath = os.path.join(folder, f)
-            else:
-                # Move file and rename
-                newname = "%s%s" % (name, ext)
-                newname = newname.replace("%fn", org)
-                newpath = os.path.join(folder, newname)
-            if path != newpath:
-                newpath = get_unique_filename(newpath)
-                try:
-                    logging.debug("Rename: %s to %s", path, newpath)
-                    renamer(path, newpath)
-                except Exception:
-                    logging.error(T("Failed to rename similar file: %s to %s"), clip_path(path), clip_path(newpath))
-                    logging.info("Traceback: ", exc_info=True)
-    cleanup_empty_directories(folder)
+    original_locations = list(job_files)
+    for path in original_locations:
+        if not path.startswith(folder + os.path.sep) or not os.path.isfile(path):
+            continue
+        if skipped_files and path in skipped_files:
+            continue
+        org, ext = os.path.splitext(os.path.basename(path))
+        if ext.lower() == skip_ext:
+            # Move file, but do not rename
+            newpath = os.path.join(folder, os.path.basename(path))
+        else:
+            # Move file and rename
+            newname = "%s%s" % (name, ext)
+            newname = newname.replace("%fn", org)
+            newpath = os.path.join(folder, newname)
+        if path != newpath:
+            newpath = get_unique_filename(newpath)
+            try:
+                logging.debug("Rename: %s to %s", path, newpath)
+                newpath = renamer(path, newpath)
+                update_tracked_file(job_files, path, newpath)
+            except Exception:
+                logging.error(T("Failed to rename similar file: %s to %s"), clip_path(path), clip_path(newpath))
+                logging.info("Traceback: ", exc_info=True)
+    remove_empty_parent_directories(folder, original_locations)
 
 
 def is_full_path(file: str) -> bool:

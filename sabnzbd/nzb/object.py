@@ -49,6 +49,7 @@ from sabnzbd.constants import (
     Status,
     DuplicateStatus,
     NZO_FILE,
+    ONDISK_FILE,
 )
 from sabnzbd.misc import (
     to_units,
@@ -95,7 +96,6 @@ from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.downloader import Server
-from sabnzbd.database import HistoryDB
 from sabnzbd.deobfuscate_filenames import is_probably_obfuscated
 
 # Fixed types for the bad-article counter keys
@@ -856,11 +856,6 @@ class NzbObject(TryList):
         # Substitute renamed files
         if renames := load_data(RENAMES_FILE, self.admin_path, remove=True):
             for name, old_name in renames.items():
-                if name in existing_files or old_name in existing_files:
-                    if name in existing_files:
-                        existing_files.remove(name)
-                    if os.path.exists(os.path.join(wdir, old_name)):
-                        existing_files.append(old_name)
                 self.renamed_file(name, old_name)
 
         # Looking for the longest name first, minimizes the chance on a mismatch
@@ -870,21 +865,45 @@ class NzbObject(TryList):
         nzfs = self.files[:]
         nzfs.sort(key=lambda x: len(x.filename))
 
+        # Mapping of filename to bitmap of articles already on disk
+        on_disk_lookup: dict[str, list[bool]] = {}
+        if cfg.direct_write() and (on_disk_data := load_data(ONDISK_FILE, self.admin_path, remove=True)):
+            _, mapping = on_disk_data
+            on_disk_lookup: dict[str, list[bool]] = mapping
+
         # Flag files from NZB that already exist as finished
         for existing_filename in existing_files[:]:
             for nzf in nzfs:
-                if existing_filename in nzf.filename:
+                if existing_filename in nzf.filename or nzf.filename == self.renames.get(existing_filename, None):
                     logging.info("Matched file %s to %s of %s", existing_filename, nzf.filename, self.final_name)
                     nzf.filename = existing_filename
-                    nzf.bytes_left = 0
-                    self.remove_nzf(nzf)
-                    nzfs.remove(nzf)
+                    nzf.filename_checked = True
+                    nzf.filepath = os.path.join(self.download_path, existing_filename)
+                    self.filenames.add(existing_filename)
                     existing_files.remove(existing_filename)
 
-                    # Set bytes correctly
-                    nzf.bytes_left = 0
-                    self.bytes_tried += nzf.bytes
-                    self.bytes_downloaded += nzf.bytes
+                    # Does the finished file have missing articles
+                    if on_disks := on_disk_lookup.get(existing_filename, None):
+                        if not nzf.import_finished:
+                            nzf.finish_import()
+                        for index, on_disk in enumerate(on_disks):
+                            if on_disk:
+                                article = nzf.decodetable[index]
+                                article.on_disk = True
+                                self.remove_article(article, True)
+                    else:
+                        # Since not import_finished will only contain first articles
+                        for article in nzf.decodetable:
+                            article.on_disk = True
+                        # Mark as assembled so when it is imported the articles are marked on_disk
+                        nzf.assembled = True
+                        self.remove_nzf(nzf)
+                        nzfs.remove(nzf)
+
+                        # Set bytes correctly
+                        nzf.bytes_left = 0
+                        self.bytes_tried += nzf.bytes
+                        self.bytes_downloaded += nzf.bytes
                     break
 
         # Create an NZF for each remaining existing file
@@ -899,7 +918,8 @@ class NzbObject(TryList):
                 self.files.append(nzf)
                 self.files_table[nzf.nzf_id] = nzf
                 nzf.filename = existing_filename
-                self.remove_nzf(nzf)
+                if not nzf.articles:
+                    self.remove_nzf(nzf)
 
                 # Set bytes correctly
                 nzf.bytes_left = 0
@@ -1627,7 +1647,7 @@ class NzbObject(TryList):
         duplicate_in_history = smart_duplicate_in_history = False
         duplicate_in_queue = smart_duplicate_in_queue = False
 
-        with HistoryDB() as history_db:
+        with sabnzbd.db_pool.connection() as history_db:
             # Dupe check off just name or nzb contents
             if cfg.no_dupes():
                 logging.debug("Duplicate checking NZB %s (md5sum=%s)", self.final_name, self.md5sum)
@@ -1702,6 +1722,11 @@ class NzbObject(TryList):
         ):
             logging.info("Pausing duplicate alternative %s", self.final_name)
             self.pause()
+
+    @synchronized()
+    def on_disk(self) -> dict[str, list[bool]]:
+        """Mapping of filename to list of on_disk articles per file"""
+        return {nzf.filename: bm for nzf in self.finished_files if (bm := nzf.on_disk()) is not None}
 
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""

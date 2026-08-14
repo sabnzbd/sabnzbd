@@ -34,9 +34,9 @@ jobs:
             linux_arch: arm64
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Cache par2cmdline-turbo tarball
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: cache-par2cmdline
         # Clearing the cache in case of new version requires manual clearing in GitHub!
         with:
@@ -54,8 +54,16 @@ jobs:
         run: |
           sudo snap install --dangerous *.snap
           sudo snap connect sabnzbd:removable-media
-          # Basic smoke test - check that the binary exists and can show help
-          timeout 10s snap run sabnzbd --help || true
+          # Installing a daemon snap starts the service automatically. 
+          if ! curl -fsSL -o /dev/null \
+              --retry 30 --retry-delay 2 --retry-connrefused --retry-all-errors \
+              http://127.0.0.1:8080/; then
+            echo "::error::SABnzbd web UI did not come up"
+            sudo snap logs sabnzbd -n 200 || true
+            systemctl status snap.sabnzbd.sabnzbd.service --no-pager || true
+            exit 1
+          fi
+          echo "SABnzbd web UI responded"
           sudo snap remove sabnzbd
       - name: Upload snap
         uses: actions/upload-artifact@v7

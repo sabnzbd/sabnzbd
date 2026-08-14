@@ -1,0 +1,32 @@
+name: "Claude Review (manual)"
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+
+jobs:
+  review:
+    name: "Review PR on @claude mention"
+    # Only PR comments containing @claude, and only from maintainers
+    if: >
+      github.repository_owner == 'sabnzbd' &&
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '@claude') &&
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Full history so the review can diff the PR against its base branch
+          fetch-depth: 0
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Actual triggering is gated by the job-level `if` above; this disables
+          # the action's internal write-permission check, which contributors fail
+          allowed_non_write_users: "*"

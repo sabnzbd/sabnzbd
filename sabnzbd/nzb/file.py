@@ -107,7 +107,7 @@ class NzbFile(TryList):
         self.deleted = False
         self.import_finished = False
 
-        self.crc32: Optional[int] = 0
+        self.crc32: Optional[int] = None
         self.assembled: bool = False
         self.md5of16k: Optional[bytes] = None
         self.assembler_next_index: int = 0
@@ -143,6 +143,13 @@ class NzbFile(TryList):
             return self.decodetable[next_index]
         return None
 
+    @synchronized()
+    def on_disk(self) -> Optional[list[bool]]:
+        """List of each articles on_disk state, if any are not on_disk"""
+        if self.import_finished and any(not article.on_disk for article in self.decodetable):
+            return [bool(article.on_disk) for article in self.decodetable]
+        return None
+
     def finish_import(self):
         """Load the article objects from disk"""
         logging.debug("Finishing import on %s", self.filename)
@@ -161,6 +168,7 @@ class NzbFile(TryList):
     def add_article(self, article_info):
         """Add article to object database and return article object"""
         article = Article(article_info[0], article_info[1], self)
+        article.on_disk = self.assembled
         self.articles[article] = article
         self.decodetable.append(article)
         return article
@@ -171,6 +179,8 @@ class NzbFile(TryList):
         if self.articles.pop(article, None) is not None:
             if success:
                 self.bytes_left -= article.bytes
+            else:
+                article.failed = True
         # Only on fully loaded files we can know if it's really done
         return self.import_finished and not self.articles
 
@@ -182,11 +192,15 @@ class NzbFile(TryList):
         self.blocks = int_conv(blocks)
 
     @synchronized()
-    def update_crc32(self, crc32: Optional[int], length: int) -> None:
-        if self.crc32 is None or crc32 is None:
-            self.crc32 = None
-        else:
-            self.crc32 = sabctools.crc32_combine(self.crc32, crc32, length)
+    def finalize_crc32(self) -> None:
+        """Compute the whole-file crc32 by combining the per-article crc32s in decodetable order"""
+        crc = 0
+        for article in self.decodetable:
+            if article.crc32 is None or article.decoded_size is None:
+                self.crc32 = None
+                return
+            crc = sabctools.crc32_combine(crc, article.crc32, article.decoded_size)
+        self.crc32 = crc
 
     @synchronized()
     def get_articles(self, server: Server, servers: list[Server], fetch_limit: int):
@@ -278,18 +292,19 @@ class NzbFile(TryList):
         return offset
 
     @synchronized()
-    def contiguous_ready_bytes(self) -> int:
-        """How many bytes from assembler_next_index onward are ready to write to file contiguously?"""
-        bytes_ready: int = 0
+    def has_contiguous_ready_bytes(self, bytes_ready: int) -> bool:
+        """Are there at least bytes_ready bytes from assembler_next_index onward ready to write to file contiguously?"""
         for article in self.decodetable[self.assembler_next_index :]:
             if not article.decoded:
                 break
-            if article.on_disk:
+            if article.on_disk or article.failed:
                 continue
             if article.decoded_size is None:
                 break
-            bytes_ready += article.decoded_size
-        return bytes_ready
+            bytes_ready -= article.decoded_size
+            if bytes_ready <= 0:
+                break
+        return bytes_ready <= 0
 
     def sort_key(self) -> tuple[Any, ...]:
         """Comparison function for sorting NZB files.

@@ -32,9 +32,10 @@ from sabnzbd.constants import (
     GIGI,
     ANFO,
     ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE,
+    ARTICLE_CACHE_RESERVED_MEMORY,
 )
 from sabnzbd.nzb import Article, NzbFile
-from sabnzbd.misc import to_units
+from sabnzbd.misc import to_units, get_memory
 
 # Operations on the article table are handled via try/except.
 # The counters need to be made atomic to ensure consistency.
@@ -61,6 +62,13 @@ class ArticleCache(threading.Thread):
         self.__cache_upper_limit = GIGI
         if sabnzbd.MACOS or sabnzbd.WINDOWS or (struct.calcsize("P") * 8) == 64:
             self.__cache_upper_limit = 4 * GIGI
+
+        # Whatever is configured also has to fit in the memory we are allowed to use,
+        # leaving room for the rest of SABnzbd and anything else sharing the limit.
+        # Skipped when memory could not be determined, we would end up without any cache
+        if memory := get_memory():
+            available = max(0, memory - ARTICLE_CACHE_RESERVED_MEMORY)
+            self.__cache_upper_limit = min(self.__cache_upper_limit, available)
 
     def change_direct_write(self, direct_write: bool) -> None:
         self.__direct_write = direct_write
@@ -124,7 +132,7 @@ class ArticleCache(threading.Thread):
             self.__cache_limit = self.__cache_upper_limit
         else:
             self.__cache_limit = min(limit, self.__cache_upper_limit)
-        self.__non_contiguous_trigger = self.__cache_limit * ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE
+        self.__non_contiguous_trigger = int(self.__cache_limit * ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE)
         if self.__cache_limit:
             logging.debug("Article cache trigger:%s", to_units(self.__non_contiguous_trigger))
 
@@ -158,6 +166,10 @@ class ArticleCache(threading.Thread):
             if nzo.pp_or_finished:
                 return
             nzo.saved_articles.add(article)
+
+        # Count the decoded bytes before they can be written, so the assembler always
+        # removes bytes that were added, even when we write straight to disk below
+        sabnzbd.Assembler.add_ready_bytes(article)
 
         if article.lowest_partnum and not (article.nzf.import_finished or article.nzf.filename_checked):
             # Write the first-fetched articles to temporary file unless downloading

@@ -15,7 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import hashlib
 import json
 import os
 import re
@@ -23,7 +22,7 @@ import re
 import github
 import praw
 
-from constants import (
+from common import (
     RELEASE_VERSION,
     PRERELEASE,
     RELEASE_SRC,
@@ -34,6 +33,7 @@ from constants import (
     RELEASE_README,
     RELEASE_THIS,
     RELEASE_TITLE,
+    pe_has_authenticode_signature,
 )
 
 # Verify we have all assets
@@ -47,18 +47,14 @@ files_to_check = (
 )
 for file_to_check in files_to_check:
     if not os.path.exists(file_to_check):
-        raise RuntimeError("Not all release files are present!")
+        raise RuntimeError("Release file %s is missing!" % file_to_check)
 print("All release files are present")
 
-# Calculate hashes for Synology release
-with open(RELEASE_SRC, "rb") as inp_file:
-    source_data = inp_file.read()
-
-print("---- Synology spksrc digest hashes ---- ")
-print(RELEASE_SRC, "SHA1", hashlib.sha1(source_data).hexdigest())
-print(RELEASE_SRC, "SHA256", hashlib.sha256(source_data).hexdigest())
-print(RELEASE_SRC, "MD5", hashlib.md5(source_data).hexdigest())
-print("----")
+# When releasing, the Windows installer must be signed
+if RELEASE_THIS:
+    if not pe_has_authenticode_signature(RELEASE_WIN_INSTALLER):
+        raise RuntimeError("%s is not signed!" % RELEASE_WIN_INSTALLER)
+    print("%s has an Authenticode signature" % RELEASE_WIN_INSTALLER)
 
 # Check if tagged as release and check for token
 gh_token = os.environ.get("AUTOMATION_GITHUB_TOKEN", "")
@@ -66,18 +62,15 @@ if RELEASE_THIS and gh_token:
     gh_obj = github.Github(auth=github.Auth.Token(gh_token))
     gh_repo = gh_obj.get_repo("sabnzbd/sabnzbd")
 
-    # Read the release notes
+    # Read the release notes (reused for the Reddit post below)
     with open(RELEASE_README, "r") as readme_file:
         readme_data = readme_file.read()
 
-    # We have to manually check if we already created this release
-    for release in gh_repo.get_releases():
-        if release.tag_name == RELEASE_VERSION:
-            gh_release = release
-            print("Found existing release %s" % gh_release.name)
-            break
-    else:
-        # Did not find it, so create the release, use the GitHub tag we got as input
+    # Find the existing release for this tag, or create a fresh draft
+    try:
+        gh_release = gh_repo.get_release(RELEASE_VERSION)
+        print("Found existing release %s" % gh_release.name)
+    except github.UnknownObjectException:
         print("Creating GitHub release SABnzbd %s" % RELEASE_VERSION)
         gh_release = gh_repo.create_git_release(
             tag=RELEASE_VERSION,
@@ -87,38 +80,26 @@ if RELEASE_THIS and gh_token:
             prerelease=PRERELEASE,
         )
 
-    # Fetch existing assets, as overwriting is not allowed by GitHub
-    gh_assets = gh_release.get_assets()
+    # Overwriting an asset isn't allowed by GitHub, so delete any that already exist
+    existing_assets = {asset.name: asset for asset in gh_release.get_assets()}
+    for file_to_upload in files_to_check:
+        if file_to_upload in existing_assets:
+            print("Removing existing asset %s" % file_to_upload)
+            existing_assets[file_to_upload].delete_asset()
+        print("Uploading %s to release %s" % (file_to_upload, gh_release.name))
+        gh_release.upload_asset(file_to_upload)
 
-    # Upload the assets
-    for file_to_check in files_to_check:
-        if os.path.exists(file_to_check):
-            # Check if this file was previously uploaded
-            if gh_assets.totalCount:
-                for gh_asset in gh_assets:
-                    if gh_asset.name == file_to_check:
-                        print("Removing existing asset %s " % gh_asset.name)
-                        gh_asset.delete_asset()
-            # Upload the new one
-            print("Uploading %s to release %s" % (file_to_check, gh_release.name))
-            gh_release.upload_asset(file_to_check)
-
-    # Check if we now have all files
-    gh_new_assets = gh_release.get_assets()
-    if gh_new_assets.totalCount:
-        all_assets = [gh_asset.name for gh_asset in gh_new_assets]
-
-        # Check if we have all files, using set-comparison
-        if set(files_to_check) == set(all_assets):
-            print("All assets present, releasing %s" % RELEASE_VERSION)
-            # Publish release
-            gh_release.update_release(
-                tag_name=RELEASE_VERSION,
-                name=RELEASE_TITLE,
-                message=readme_data,
-                draft=False,
-                prerelease=PRERELEASE,
-            )
+    # Publish the release once all assets are attached
+    uploaded_assets = {asset.name for asset in gh_release.get_assets()}
+    if set(files_to_check).issubset(uploaded_assets):
+        print("All assets present, releasing %s" % RELEASE_VERSION)
+        gh_release.update_release(
+            tag_name=RELEASE_VERSION,
+            name=RELEASE_TITLE,
+            message=readme_data,
+            draft=False,
+            prerelease=PRERELEASE,
+        )
 
     # Update the website
     gh_repo_web = gh_obj.get_repo("sabnzbd/sabnzbd.github.io")
@@ -221,9 +202,8 @@ if RELEASE_THIS and gh_token:
         subreddit_sabnzbd = reddit.subreddit("sabnzbd")
         subreddit_usenet = reddit.subreddit("usenet")
 
-        # Read the release notes
-        with open(RELEASE_README, "r") as readme_file:
-            readme_lines = readme_file.readlines()
+        # Reuse the release notes read earlier, split into lines
+        readme_lines = readme_data.splitlines(keepends=True)
 
         # Put the download link after the title
         readme_lines[2] = "## https://sabnzbd.org/downloads\n\n"

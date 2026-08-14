@@ -24,6 +24,7 @@ import shutil
 import stat
 import sys
 import time
+from functools import cached_property
 from random import choice, randint, sample
 
 import pytest
@@ -129,10 +130,6 @@ class ModuleVars:
     PRE_QUEUE_SETUP_DONE = False
 
 
-# Shared variables at module-level
-VAR = ModuleVars()
-
-
 @pytest.fixture(scope="function")
 def pause_and_clear():
     # Pause the queue
@@ -150,6 +147,10 @@ def pause_and_clear():
 
 @pytest.mark.usefixtures("run_sabnzbd", "pause_and_clear")
 class TestAddingNZBs:
+    @cached_property
+    def config(self):
+        return ModuleVars()
+
     def _api_set_config(self, keyword, value):
         """Shorthand for the API-call to change the config settings"""
         json = get_api_result(
@@ -163,19 +164,19 @@ class TestAddingNZBs:
         assert value == json["config"]["misc"][keyword]
 
     def _setup_script_dir(self):
-        VAR.SCRIPT_DIR = os.path.join(SAB_CACHE_DIR, "scripts" + SCRIPT_RANDOM)
+        self.config.SCRIPT_DIR = os.path.join(SAB_CACHE_DIR, "scripts" + SCRIPT_RANDOM)
         try:
-            os.makedirs(VAR.SCRIPT_DIR, exist_ok=True)
+            os.makedirs(self.config.SCRIPT_DIR, exist_ok=True)
         except Exception:
-            pytest.fail("Cannot create script_dir %s" % VAR.SCRIPT_DIR)
+            pytest.fail("Cannot create script_dir %s" % self.config.SCRIPT_DIR)
 
-        self._api_set_config("script_dir", VAR.SCRIPT_DIR)
+        self._api_set_config("script_dir", self.config.SCRIPT_DIR)
 
     def _customize_pre_queue_script(self, priority, category):
         """Add a script that accepts the job and sets priority & category"""
         script_name = "SCRIPT%s.py" % SCRIPT_RANDOM
         try:
-            script_path = os.path.join(VAR.SCRIPT_DIR, script_name)
+            script_path = os.path.join(self.config.SCRIPT_DIR, script_name)
             with open(script_path, "w") as f:
                 # line 1 = accept; 4 = category; 6 = priority
                 f.write(
@@ -189,12 +190,12 @@ class TestAddingNZBs:
             if not sys.platform.startswith("win"):
                 os.chmod(script_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
         except Exception:
-            pytest.fail("Cannot add script %s to script_dir %s" % (script_name, VAR.SCRIPT_DIR))
+            pytest.fail("Cannot add script %s to script_dir %s" % (script_name, self.config.SCRIPT_DIR))
 
-        if not VAR.PRE_QUEUE_SETUP_DONE:
+        if not self.config.PRE_QUEUE_SETUP_DONE:
             # Set as pre-queue script
             self._api_set_config("pre_script", script_name)
-            VAR.PRE_QUEUE_SETUP_DONE = True
+            self.config.PRE_QUEUE_SETUP_DONE = True
 
     def _configure_cat(self, priority, tag):
         category_name = "cat" + tag + CAT_RANDOM
@@ -345,10 +346,10 @@ class TestAddingNZBs:
         return NORMAL_PRIORITY, return_state
 
     def _prep_priority_tester(self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat):
-        if not VAR.SCRIPT_DIR:
+        if not self.config.SCRIPT_DIR:
             self._setup_script_dir()
-        if not VAR.NZB_FILE:
-            VAR.NZB_FILE = self._create_random_nzb()
+        if not self.config.NZB_FILE:
+            self.config.NZB_FILE = self._create_random_nzb()
 
         # Set the priority for the Default category
         self._configure_default_category_priority(prio_def_cat)
@@ -357,8 +358,8 @@ class TestAddingNZBs:
         cat_meta = None
         if prio_meta_cat is not None:
             cat_meta = self._configure_cat(prio_meta_cat, "meta")
-            if not VAR.META_NZB_FILE:
-                VAR.META_NZB_FILE = self._create_meta_nzb(cat_meta)
+            if not self.config.META_NZB_FILE:
+                self.config.META_NZB_FILE = self._create_meta_nzb(cat_meta)
         cat_add = None
         if prio_add_cat is not None:
             cat_add = self._configure_cat(prio_add_cat, "add")
@@ -371,7 +372,7 @@ class TestAddingNZBs:
         self._customize_pre_queue_script(prio_preq, cat_preq)
 
         # Queue the job, store the nzo_id
-        extra = {"name": VAR.META_NZB_FILE if cat_meta else VAR.NZB_FILE}
+        extra = {"name": self.config.META_NZB_FILE if cat_meta else self.config.NZB_FILE}
         if cat_add:
             extra["cat"] = cat_add
         if prio_add is not None:
@@ -478,16 +479,16 @@ class TestAddingNZBs:
     def test_adding_nzbs_partial(self):
         """Test adding parts of an NZB file, cut off somewhere in the middle to simulate
         the effects of an interrupted download or bad hardware. Should fail, of course."""
-        if not VAR.NZB_FILE:
-            VAR.NZB_FILE = self._create_random_nzb()
+        if not self.config.NZB_FILE:
+            self.config.NZB_FILE = self._create_random_nzb()
 
-        nzb_basedir, nzb_basename = os.path.split(VAR.NZB_FILE)
-        nzb_size = os.stat(VAR.NZB_FILE).st_size
+        nzb_basedir, nzb_basename = os.path.split(self.config.NZB_FILE)
+        nzb_size = os.stat(self.config.NZB_FILE).st_size
         part_size = round(randint(40, 70) / 100 * nzb_size)
         first_part = os.path.join(nzb_basedir, "part1_of_" + nzb_basename)
         second_part = os.path.join(nzb_basedir, "part2_of_" + nzb_basename)
 
-        with open(VAR.NZB_FILE, "rb") as nzb_in:
+        with open(self.config.NZB_FILE, "rb") as nzb_in:
             for nzb_part, chunk in (first_part, part_size), (second_part, -1):
                 with open(nzb_part, "wb") as nzb_out:
                     nzb_out.write(nzb_in.read(chunk))
@@ -519,10 +520,10 @@ class TestAddingNZBs:
     )
     def test_adding_nzbs_malformed(self, keep_first, keep_last, strip_first, strip_last, should_work):
         """Test adding broken, empty, or otherwise malformed NZB file"""
-        if not VAR.NZB_FILE:
-            VAR.NZB_FILE = self._create_random_nzb()
+        if not self.config.NZB_FILE:
+            self.config.NZB_FILE = self._create_random_nzb()
 
-        with open(VAR.NZB_FILE, "rt") as nzb_in:
+        with open(self.config.NZB_FILE, "rt") as nzb_in:
             nzb_lines = nzb_in.readlines()
             assert len(nzb_lines) >= 9
 

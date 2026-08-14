@@ -19,11 +19,40 @@
 tests.test_interface - Testing functions in interface.py
 """
 
-import cherrypy
+import asyncio
 import pytest
+from unittest.mock import Mock
+from starlette.requests import Request
+from starlette.datastructures import Headers, Address
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from sabnzbd import interface
-from sabnzbd.misc import is_local_addr, is_loopback_addr
+from sabnzbd.misc import is_local_addr, is_loopback_addr, xff_trusted_networks
+
+
+def create_mock_request(remote_ip: str = "127.0.0.1", headers: dict | None = None, remote_port: int = 12345):
+    """Create a mock Starlette Request object for testing"""
+    mock_request = Mock(spec=Request)
+    mock_request.client = Address(remote_ip, remote_port)
+    mock_request.headers = Headers(headers or {})
+    return mock_request
+
+
+def resolve_client(remote_ip: str, xff_header: str | None = None, remote_port: int = 12345) -> Address:
+    """Pass a connection through uvicorn's ProxyHeadersMiddleware, configured
+    exactly like SABnzbd.py does, and return the resulting effective client."""
+    captured = {}
+
+    async def asgi_app(scope, receive, send):
+        captured["client"] = scope.get("client")
+
+    middleware = ProxyHeadersMiddleware(asgi_app, trusted_hosts=xff_trusted_networks())
+    headers = []
+    if xff_header:
+        headers.append((b"x-forwarded-for", xff_header.encode("latin1")))
+    scope = {"type": "http", "client": (remote_ip, remote_port), "headers": headers}
+    asyncio.run(middleware(scope, None, None))
+    return Address(*captured["client"])
 
 
 class TestInterfaceFunctions:
@@ -33,10 +62,10 @@ class TestInterfaceFunctions:
             ("10.11.12.13", None, None, True),
             ("10.11.12.13", None, "127.0.0.1", True),
             ("10.11.12.13", None, "127.1.2.3", True),
-            ("10.11.12.13", None, "127.0.0.1:8080", False),  # Port number in XFF
+            ("10.11.12.13", None, "127.0.0.1:8080", True),  # Port stripped from XFF, leaving loopback
             ("10.11.12.13", None, "::1", True),
             ("10.11.12.13", None, "[::1]", True),
-            ("10.11.12.13", None, "[::1]:8080", False),  # Port number in XFF
+            ("10.11.12.13", None, "[::1]:8080", True),  # Port stripped from XFF, leaving loopback
             ("10.11.12.13", None, "localhost", False),  # Hostname in XFF
             ("10.11.12.13", None, "example.org", False),  # Hostname in XFF
             ("10.11.12.13", None, "192.168.1.1", True),
@@ -82,10 +111,10 @@ class TestInterfaceFunctions:
             ("127.6.6.6", None, None, True),
             ("127.6.6.6", None, "127.0.0.1", True),
             ("127.6.6.6", None, "127.1.2.3", True),
-            ("127.6.6.6", None, "127.0.0.1:8080", False),  # Port number in XFF
+            ("127.6.6.6", None, "127.0.0.1:8080", True),  # Port stripped from XFF, leaving loopback
             ("127.6.6.6", None, "::1", True),
             ("127.6.6.6", None, "[::1]", True),
-            ("127.6.6.6", None, "[::1]:8080", False),  # Port number in XFF
+            ("127.6.6.6", None, "[::1]:8080", True),  # Port stripped from XFF, leaving loopback
             ("127.6.6.6", None, "localhost", False),  # Hostname in XFF
             ("127.6.6.6", None, "example.org", False),  # Hostname in XFF
             ("127.6.6.6", None, "192.168.1.1", True),
@@ -144,23 +173,35 @@ class TestInterfaceFunctions:
         }
     )
     def test_check_access(
-        self, access_type, inet_exposure, local_ranges, remote_ip, xff_header, verify_xff_header, result_with_xff
+        self,
+        access_type,
+        inet_exposure,
+        local_ranges,
+        remote_ip,
+        xff_header,
+        verify_xff_header,
+        result_with_xff,
+        monkeypatch,
     ):
         def _func():
-            # Insert fake request data
-            cherrypy.request.remote.ip = remote_ip
-            cherrypy.request.headers.update({"X-Forwarded-For": xff_header})
-
+            # With verify_xff_header enabled, SABnzbd.py runs uvicorn with
+            # proxy_headers=True, so the XFF chain is resolved into the
+            # effective client before check_access ever sees the request.
+            # With it disabled the header is ignored entirely.
             if verify_xff_header:
+                client = resolve_client(remote_ip=remote_ip, xff_header=xff_header)
                 result = result_with_xff
             else:
+                client = Address(remote_ip, 12345)
                 # Without XFF, only the remote IP and the local ranges setting matter
                 result = is_loopback_addr(remote_ip) or is_local_addr(remote_ip)
 
+            request = create_mock_request(remote_ip=client.host, remote_port=client.port)
+
             if access_type <= inet_exposure:
-                assert interface.check_access(access_type) is True
+                assert interface.check_access(request, access_type) is True
             else:
-                assert interface.check_access(access_type) is result
+                assert interface.check_access(request, access_type) is result
 
         _func()
 
@@ -212,7 +253,7 @@ class TestInterfaceFunctions:
             (["666::/48"], ["4.3.2.1", "192.168.0.1", "10.10.10.10", "127.0.0.1"], "10.10.10.10"),
             (["8.8.8.8"], ["4.3.2.1", "192.168.0.1", "10.10.10.10", "::1"], "10.10.10.10"),
             (["666::/48"], ["4.3.2.1", "192.168.0.1", "10.10.10.10", "::1"], "10.10.10.10"),
-            ([], ["4.3.2.1:56789"], "4.3.2.1:56789"),  # Garbage in, garbage out.
+            ([], ["4.3.2.1:56789"], "4.3.2.1"),  # Port stripped from XFF entry
         ],
     )
     @pytest.mark.config(
@@ -220,11 +261,52 @@ class TestInterfaceFunctions:
             "local_ranges": params["local_ranges"],
         }
     )
-    def test_remote_ip_from_xff(self, local_ranges, xff_ips, expected_result):
+    def test_effective_client_from_xff(self, local_ranges, xff_ips, expected_result):
         def _func():
-            # Insert fake request data; should *not* influence the results of the tested function
-            cherrypy.request.remote.ip = "6.6.6.6"
+            # The effective client IP (used for login-cookie binding and access
+            # checks) is selected by uvicorn's ProxyHeadersMiddleware: the last
+            # XFF entry that is not a trusted (local) proxy, or the first entry
+            # when the whole chain is trusted. Connect from loopback, which is
+            # always a trusted peer.
             assert xff_ips
-            assert interface.remote_ip_from_xff(xff_ips) is expected_result
+            client = resolve_client(remote_ip="127.0.0.1", xff_header=", ".join(xff_ips))
+            assert client.host == expected_result
+
+        _func()
+
+    @pytest.mark.parametrize("access_type", [1, 2, 3, 4, 5, 6])
+    @pytest.mark.parametrize("inet_exposure", [0, 2, 4])
+    @pytest.mark.config(lambda params: {"inet_exposure": params["inet_exposure"], "api_warnings": True})
+    def test_check_access_without_client(self, access_type, inet_exposure):
+        # request.client can be None (e.g. unix sockets or some test clients);
+        # this must not raise and must fail closed for restricted access types
+        request = create_mock_request()
+        request.client = None
+
+        assert interface.check_access(request, access_type, warn_user=True) is (access_type <= inet_exposure)
+        # The logging helpers must not raise either
+        interface.log_warning_and_ip(request, "txt")
+
+    @pytest.mark.parametrize(
+        "local_ranges, expected_networks, unexpected_networks",
+        [
+            # Without local_ranges: loopback plus all private address space
+            (None, ["127.0.0.0/8", "::1", "10.0.0.0/8", "192.168.0.0/16", "::ffff:10.0.0.0/104"], []),
+            # With local_ranges: loopback plus the configured ranges only
+            (
+                "192.168.1.0/24",
+                ["127.0.0.0/8", "::1", "192.168.1.0/24", "::ffff:192.168.1.0/120"],
+                ["10.0.0.0/8", "172.16.0.0/12"],
+            ),
+        ],
+    )
+    @pytest.mark.config(lambda params: {"local_ranges": params["local_ranges"]})
+    def test_xff_trusted_networks(self, local_ranges, expected_networks, unexpected_networks):
+        def _func():
+            networks = xff_trusted_networks()
+            for network in expected_networks:
+                assert network in networks
+            for network in unexpected_networks:
+                assert network not in networks
 
         _func()

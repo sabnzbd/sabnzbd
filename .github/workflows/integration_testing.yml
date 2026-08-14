@@ -14,7 +14,7 @@ jobs:
     name: Black and Ruff checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: pip install ruff black
       - name: Black code formatter
         run: >
@@ -38,7 +38,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
+        # TODO: Remove libxml2-dev libxslt-dev below once 3.15 is stable and lxml releases wheels!
+        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14", "3.15-dev" ]
         name: ["Linux"]
         os: [ubuntu-latest]
         include:
@@ -50,21 +51,21 @@ jobs:
             python-version: "3.14"
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python-version }}
         cache: pip
         cache-dependency-path: "**/requirements.txt"
     - name: Install system dependencies
       if: runner.os == 'Linux'
-      run: sudo apt-get install unrar 7zip par2
+      run: sudo apt-get install unrar 7zip par2 libxml2-dev libxslt-dev
     - name: Install Python dependencies
       run: |
         python --version
         python -m pip install --upgrade pip wheel
-        pip install --upgrade -r requirements.txt --no-dependencies
+        pip install -r requirements.txt --no-dependencies
         pip install --upgrade -r tests/requirements.txt
     - name: Test SABnzbd
-      run: pytest -s
+      run: pytest -n auto --dist loadscope

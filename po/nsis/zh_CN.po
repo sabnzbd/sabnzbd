@@ -2,13 +2,13 @@
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2025
+# Safihre <safihre@sabnzbd.org>, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.1.0\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,7 +41,7 @@ msgid ""
 "An ARM version of SABnzbd is available on our Downloads page. This installer"
 " only contains the regular version.\\nPress OK to continue or Cancel to "
 "exit."
-msgstr ""
+msgstr "我们的下载页面提供 SABnzbd 的 ARM 版本。此安装程序仅包含常规版本。\\n按“确定”继续，或按“取消”退出。"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Shutting down SABnzbd"
