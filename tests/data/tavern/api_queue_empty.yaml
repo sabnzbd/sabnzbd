@@ -25,6 +25,7 @@ stages:
           version: "{SAB_VERSION}"
           paused: !anybool
           pause_int: !re_match "[0-9]*"
+          resume_int: !re_match "[0-9]*"
           paused_all: !anybool
           diskspace1: !re_match "[0-9.]*"
           diskspace2: !re_match "[0-9.]*"
@@ -86,6 +87,7 @@ stages:
             <queue><version>!anystr</version>
             <paused>!anybool</paused>
             <pause_int>!anyint</pause_int>
+            <resume_int>!anyint</resume_int>
             <paused_all>!anybool</paused_all>
             <diskspace1>!anyfloat</diskspace1>
             <diskspace2>!anyfloat</diskspace2>
