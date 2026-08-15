@@ -89,10 +89,10 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-4">
-                                <button id="serverTest" class="btn btn-default" data-toggle="tooltip" data-placement="left"><span class="glyphicon glyphicon-sort"></span> $T('wizard-button-testServer')</button>
+                                <button id="serverTest" class="btn btn-default" data-toggle="tooltip" data-placement="left" aria-busy="false"><span class="glyphicon glyphicon-sort" aria-hidden="true"></span> $T('wizard-button-testServer')</button>
                             </div>
                             <div class="col-sm-8">
-                                <div id="serverResponse" class="well well-sm">$T('wizard-server-text')</div>
+                                <div id="serverResponse" class="well well-sm" role="status" aria-live="polite" aria-atomic="true">$T('wizard-server-text')</div>
                             </div>
                         </div>
 
