@@ -20,11 +20,18 @@ tests.test_interface - Testing functions in interface.py
 """
 
 import asyncio
+import inspect
+import logging
+import logging.config
 import pytest
 from unittest.mock import Mock
 from starlette.requests import Request
 from starlette.datastructures import Headers, Address
+import uvicorn
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+from uvicorn.lifespan import on as lifespan_on
+from uvicorn.protocols.http import h11_impl, httptools_impl
+from uvicorn.server import ServerState
 
 from sabnzbd import interface
 from sabnzbd.misc import is_local_addr, is_loopback_addr, xff_trusted_networks
@@ -310,3 +317,111 @@ class TestInterfaceFunctions:
                 assert network not in networks
 
         _func()
+
+
+async def empty_app(scope, receive, send):
+    """Minimal ASGI app, replying to anything that does reach it"""
+    await send({"type": "http.response.start", "status": 200, "headers": []})
+    await send({"type": "http.response.body", "body": b""})
+
+
+def is_client_error(record: logging.LogRecord) -> bool:
+    """Was this record logged by uvicorn because of client behavior?"""
+    return record.getMessage().startswith(interface.UvicornNoiseFilter.CLIENT_ERRORS)
+
+
+def feed_raw_request(protocol_class, data: bytes):
+    """Hand raw bytes to a real uvicorn HTTP protocol, so it logs whatever it
+    makes of them, just like it would for an actual connection."""
+
+    async def _run():
+        # log_config=None: the logging setup under test is applied by the fixture
+        config = uvicorn.Config(app=empty_app, log_config=None)
+        config.load()
+        protocol = protocol_class(config=config, server_state=ServerState(), app_state={})
+        transport = Mock()
+        transport.get_extra_info = lambda name, default=None: ("127.0.0.1", 12345) if name == "peername" else default
+        protocol.connection_made(transport)
+        protocol.data_received(data)
+
+    asyncio.run(_run())
+
+
+class TestUvicornLogging:
+    @pytest.fixture(autouse=True)
+    def uvicorn_logging(self):
+        """Apply the logging configuration that SABnzbd hands to uvicorn and
+        restore the previous state afterwards, so other tests are unaffected."""
+        loggers = [logging.getLogger(name) for name in ("uvicorn", "uvicorn.error", "uvicorn.access")]
+        saved = [(logger.level, logger.propagate, logger.handlers[:], logger.filters[:]) for logger in loggers]
+        logging.config.dictConfig(interface.uvicorn_logging_config())
+        yield
+        for logger, (level, propagate, handlers, filters) in zip(loggers, saved):
+            logger.setLevel(level)
+            logger.propagate = propagate
+            logger.handlers = handlers
+            logger.filters = filters
+
+    @pytest.mark.parametrize("protocol_class", [h11_impl.H11Protocol, httptools_impl.HttpToolsProtocol])
+    @pytest.mark.parametrize(
+        "raw_request",
+        [
+            # Not HTTP at all, as sent by port scanners and misdirected clients
+            b"\x16\x03\x01\x00\xf4\x01\x00\x00\xf0\x03\x03",
+            # Valid HTTP, but asking for an upgrade we do not support
+            b"GET / HTTP/1.1\r\nHost: localhost\r\nConnection: upgrade\r\nUpgrade: h2c\r\n\r\n",
+        ],
+    )
+    def test_client_errors_are_not_warnings(self, protocol_class, raw_request, caplog):
+        # A handler that only wants INFO and up, just like the console and logfile
+        # handlers when debug logging is off, must not see the message at all
+        caplog.set_level(logging.INFO)
+        feed_raw_request(protocol_class, raw_request)
+        assert not [record for record in caplog.records if record.levelno >= logging.WARNING]
+        assert not [record for record in caplog.records if is_client_error(record)]
+
+    @pytest.mark.parametrize("protocol_class", [h11_impl.H11Protocol, httptools_impl.HttpToolsProtocol])
+    def test_client_errors_are_kept_for_debug_logging(self, protocol_class, caplog):
+        caplog.set_level(logging.DEBUG)
+        feed_raw_request(protocol_class, b"\x16\x03\x01\x00\xf4\x01\x00\x00\xf0\x03\x03")
+        assert [
+            record
+            for record in caplog.records
+            if record.levelname == "DEBUG" and record.getMessage() == "Invalid HTTP request received."
+        ]
+
+    def test_lifecycle_messages_are_not_logged(self, caplog):
+        # Starting and stopping is already logged by SABnzbd itself
+        caplog.set_level(logging.INFO)
+        logging.getLogger("uvicorn.error").info("Application startup complete.")
+        assert not caplog.records
+
+    def test_lifecycle_messages_are_kept_for_debug_logging(self, caplog):
+        caplog.set_level(logging.DEBUG)
+        logging.getLogger("uvicorn.error").info("Application startup complete.")
+        assert [record for record in caplog.records if record.levelname == "DEBUG"]
+
+    def test_failures_reported_by_sabnzbd_are_not_logged_twice(self, caplog):
+        # SABnzbd logs its own error, including the reason, when the
+        # web-interface fails to start, so this summary adds nothing
+        caplog.set_level(logging.INFO)
+        logging.getLogger("uvicorn.error").error("Application startup failed. Exiting.")
+        assert not caplog.records
+
+    def test_reason_for_a_failed_start_still_propagates(self, caplog):
+        caplog.set_level(logging.INFO)
+        logging.getLogger("uvicorn.error").error("Exception in 'lifespan' protocol")
+        assert [record for record in caplog.records if record.levelno == logging.ERROR]
+
+    def test_real_warnings_still_propagate(self, caplog):
+        caplog.set_level(logging.INFO)
+        logging.getLogger("uvicorn.error").warning("Exceeded concurrency limit.")
+        logging.getLogger("uvicorn.error").error("Exception in ASGI application")
+        assert [record for record in caplog.records if record.levelno == logging.WARNING]
+        assert [record for record in caplog.records if record.levelno == logging.ERROR]
+
+    def test_filtered_messages_still_used_by_uvicorn(self):
+        """Guard against uvicorn rewording the messages we filter on"""
+        uvicorn_source = "".join(inspect.getsource(module) for module in (h11_impl, httptools_impl, lifespan_on))
+        for message in interface.UvicornNoiseFilter.CLIENT_ERRORS + interface.UvicornNoiseFilter.REPORTED_FAILURES:
+            assert message in uvicorn_source
