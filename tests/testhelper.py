@@ -22,6 +22,7 @@ tests.testhelper - Basic helper functions
 import copy
 import io
 import os
+import shutil
 import socket
 import time
 import uuid
@@ -419,6 +420,60 @@ class FakeHistoryDB(db.HistoryDB):
                 category=choice(self.category_options),
                 password=choice(["secret", ""]),
             )
+
+
+# Min/max size for random files used in generated NZBs (bytes)
+MIN_FILESIZE = 128
+MAX_FILESIZE = 1024
+
+
+class AddingNZBsTestBase:
+    """Helpers shared by the functional tests that add NZBs to a running SABnzbd"""
+
+    def _api_set_config(self, keyword, value):
+        """Shorthand for the API-call to change the config settings"""
+        json = get_api_result(
+            mode="set_config",
+            extra_arguments={
+                "section": "misc",
+                "keyword": keyword,
+                "value": value,
+            },
+        )
+        assert value == json["config"]["misc"][keyword]
+
+    def _create_random_nzb(self, metadata=None):
+        # Create some simple, unique nzb
+        job_dir = os.path.join(SAB_CACHE_DIR, "NZB" + os.urandom(8).hex())
+        try:
+            os.mkdir(job_dir)
+            job_file = "%s.bin" % random_name()
+            with open(os.path.join(job_dir, job_file), "wb") as f:
+                f.write(os.urandom(randint(MIN_FILESIZE, MAX_FILESIZE)))
+        except Exception:
+            pytest.fail("Failed to create random nzb")
+
+        return create_nzb(job_dir, metadata=metadata)
+
+    def _add_backup_directory(self):
+        # Set an nzb backup directory
+        backup_dir = os.path.join(SAB_CACHE_DIR, "nzb_backup_dir" + os.urandom(4).hex())
+        self._api_set_config("nzb_backup_dir", backup_dir)
+        return backup_dir
+
+    def _clear_and_reset_backup_directory(self, backup_dir):
+        # Reset duplicate handling (0), nzb_backup_dir ("")
+        get_api_result(mode="set_config_default", extra_arguments={"keyword": ["no_dupes", "nzb_backup_dir"]})
+
+        # Remove backup_dir
+        for timer in range(0, 5):
+            try:
+                shutil.rmtree(backup_dir)
+                break
+            except OSError:
+                time.sleep(1)
+        else:
+            pytest.fail("Failed to erase nzb_backup_dir %s" % backup_dir)
 
 
 @pytest.mark.usefixtures("run_sabnzbd", "run_sabnews_and_selenium")
