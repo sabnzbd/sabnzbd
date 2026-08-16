@@ -1615,12 +1615,19 @@ msgid ""
 "    Either run SABnzbd with the privileges needed for that port, or restart it\n"
 "    with a port number of 1024 or higher."
 msgstr ""
+"\n"
+"SABnzbd'nin %s bağlantı noktasını %s üzerinde kullanma izni yoktur. <br>\n"
+"Düşük bağlantı noktaları, sistemlerin çoğunluğunda imtiyazlı süreçler için ayrılmıştır, yani bağlantı noktası mevcuttur ama talep edilemezler.<br>\n"
+"<br>\n"
+"Ya SABnzbd'yi bu bağlantı noktası için ihtiyaç duyulan izinlerle çalıştırın ya da onu 1024 veya daha yüksek bir bağlantı noktası sayısı ile tekrar başlatın."
 
 #: sabnzbd/panic.py
 msgid ""
 "To keep using the low port, put a reverse proxy in front of SABnzbd "
 "instead.<br>"
 msgstr ""
+"Düşük bağlantı noktasını kullanmaya devam etmek için bunun yerine "
+"SABnzbd'nin önüne ters bir vekil sunucu koyun.<br>"
 
 #: sabnzbd/panic.py
 msgid ""
@@ -1714,6 +1721,8 @@ msgstr ""
 msgid ""
 "Not allowed to bind to port %s on %s. Low ports need elevated privileges."
 msgstr ""
+"%s bağlantı noktasına %s üzerinde bağlanma izni yoktur. Düşük bağlantı "
+"noktaları yüksek izinler gerektirir."
 
 #. Warning message
 #: sabnzbd/panic.py
@@ -2290,7 +2299,7 @@ msgstr "İptal"
 
 #: sabnzbd/skintext.py
 msgid "Close"
-msgstr ""
+msgstr "Kapat"
 
 #: sabnzbd/skintext.py
 msgid "Log in"
@@ -4841,11 +4850,11 @@ msgstr "Ek tarihçe sütunları"
 
 #: sabnzbd/skintext.py
 msgid "Progress"
-msgstr ""
+msgstr "İlerleme"
 
 #: sabnzbd/skintext.py
 msgid "Actions"
-msgstr ""
+msgstr "Eylemler"
 
 #: sabnzbd/skintext.py
 msgid "page"
