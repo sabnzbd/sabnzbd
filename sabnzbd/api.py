@@ -1920,7 +1920,7 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
-def url_for(path: str = "", request: Optional[Request] = None, absolute: bool = True, **kwargs) -> str:
+def url_for(path: str = "", **kwargs) -> str:
     """Build an absolute URL below the configured URL base.
 
     Templates reach this as $url(...), so a link never depends on the depth of the
@@ -1938,8 +1938,6 @@ def url_for(path: str = "", request: Optional[Request] = None, absolute: bool = 
     # so normalising the path to a single leading slash is enough to join them
     url = cfg.url_base() + "/" + path.lstrip("/")
 
-    if absolute:
-        url = url_origin(request) + url
     if kwargs:
         url = "%s?%s" % (url, urllib.parse.urlencode(kwargs))
     if fragment:
@@ -1964,22 +1962,6 @@ def url_netloc(host: Optional[str], scheme: str, port: Optional[int]) -> str:
     return "%s:%s" % (host, port)
 
 
-def url_origin(request: Optional[Request] = None) -> str:
-    """The scheme://host[:port] SABnzbd was reached by, for use in absolute URLs.
-
-    Taken from the request when there is one: uvicorn's ProxyHeadersMiddleware has
-    already applied X-Forwarded-Proto by then (when verify_xff_header is enabled), so
-    this stays correct behind a reverse proxy terminating TLS on another port. Without
-    a request there is nothing to observe, so fall back to the configured scheme and
-    port on localhost."""
-    if request:
-        return "%s://%s" % (request.url.scheme, url_netloc(request.url.hostname, request.url.scheme, request.url.port))
-
-    scheme = "https" if cfg.enable_https() else "http"
-    port = cfg.https_port() if cfg.enable_https() else cfg.web_port()
-    return "%s://%s" % (scheme, url_netloc("localhost", scheme, port))
-
-
 def build_header(
     webdir: str = "",
     for_template: bool = True,
@@ -1995,16 +1977,7 @@ def build_header(
         if trans_functions:
             header["T"] = Ttemplate
             header["Tspec"] = Tspec
-
-            # Bound to this request so $url() can see the scheme and host it was reached by.
-            # Deliberately a closure rather than functools.partial: template_filtered_response
-            # deep-copies the search list, and deepcopy treats a function as atomic but walks a
-            # partial's keywords -- which would drag in the request's scope, the app and its
-            # whole route graph, and blow the recursion limit.
-            def bound_url_for(path: str = "", **kwargs) -> str:
-                return url_for(path, request=request, **kwargs)
-
-            header["url"] = bound_url_for
+            header["url"] = url_for
 
         header["uptime"] = calc_age(sabnzbd.START)
         header["color_scheme"] = sabnzbd.WEB_COLOR or ""

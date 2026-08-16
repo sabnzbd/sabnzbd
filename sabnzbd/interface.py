@@ -101,7 +101,6 @@ from sabnzbd.api import (
     halt_and_shutdown,
     build_header,
     url_for,
-    url_origin,
     url_netloc,
     Ttemplate,
 )
@@ -537,10 +536,7 @@ logging.getLogger("python_multipart.multipart").setLevel(logging.WARNING)
 
 def base_redirect_response(root: str = "", **kwargs) -> RedirectResponse:
     """Create a Starlette RedirectResponse with SABnzbd URL base and query parameters"""
-    # Shares url_for with the templates so redirect targets and links stay in step.
-    # Root-relative on purpose: a Location header should send the client back to the
-    # host it just used, not to whatever origin this process thinks it is on.
-    url = url_for(root, absolute=False, **kwargs)
+    url = url_for(root, **kwargs)
 
     # Log the redirect if API logging is enabled
     if cfg.api_logging():
@@ -712,7 +708,7 @@ def wizard_page_two(request: Request):
     return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "two.html"), search_list=info)
 
 
-def get_access_info(request: Optional[Request] = None) -> set[str]:
+def get_access_info(request: Optional[Request] = None) -> list[str]:
     """Build up a list of url's that sabnzbd can be accessed from"""
     web_host = cfg.web_host()
     host = socket.gethostname().lower()
@@ -747,7 +743,11 @@ def get_access_info(request: Optional[Request] = None) -> set[str]:
     # Lead with the URL this page was actually reached by, which is the one we know works.
     # Built from the origin rather than url_for() so it matches the bare "scheme://host+base"
     # shape of the entries below and dedupes against them.
-    urls = [url_origin(request) + cfg.url_base()]
+    urls = set()
+    if request:
+        base_url = str(request.base_url).rstrip("/")
+        url_base = cfg.url_base().lstrip("/")
+        urls.add(f"{base_url}/{url_base}" if url_base else base_url)
 
     if cfg.enable_https():
         scheme = "https"
@@ -758,10 +758,10 @@ def get_access_info(request: Optional[Request] = None) -> set[str]:
 
     for sock in socks:
         if sock:
-            urls.append("%s://%s%s" % (scheme, url_netloc(sock, scheme, port), cfg.url_base()))
+            urls.add("%s://%s%s" % (scheme, url_netloc(sock, scheme, port), cfg.url_base()))
 
-    # Return a unique list
-    return set(urls)
+    # Return a unique list, with HTTPS URLs first
+    return sorted(urls, key=lambda url: (not url.startswith("https://"), url))
 
 
 ##############################################################################
