@@ -476,9 +476,11 @@ class AddingNZBsTestBase:
             pytest.fail("Failed to erase nzb_backup_dir %s" % backup_dir)
 
 
-@pytest.mark.usefixtures("run_sabnzbd", "run_sabnews_and_selenium")
+@pytest.mark.usefixtures("run_sabnzbd")
 class SABnzbdBaseTest:
-    driver = None
+    @pytest.fixture(autouse=True)
+    def _setup_driver(self, run_sabnews_and_selenium):
+        self.driver = run_sabnews_and_selenium
 
     def no_page_crash(self):
         # Do a base test if CherryPy did not report test

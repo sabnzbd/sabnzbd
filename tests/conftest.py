@@ -45,7 +45,6 @@ from tests.testhelper import (
     SAB_NEWSSERVER_HOST,
     SAB_NEWSSERVER_PORT,
     SAB_PORT,
-    SABnzbdBaseTest,
     get_api_result,
     get_url_result,
     wait_for,
@@ -226,7 +225,6 @@ def run_sabnews_and_selenium(request):
 
     # Start the driver and pass it on to all the classes
     driver = webdriver.Chrome(options=driver_options)
-    SABnzbdBaseTest.driver = driver
 
     # Start SABNews on this worker's own host/port so parallel workers don't
     # collide on a single fixed newsserver port.
@@ -242,7 +240,7 @@ def run_sabnews_and_selenium(request):
     )
 
     # Now we run the tests
-    yield
+    yield driver
 
     # Shutdown SABNews
     try:
