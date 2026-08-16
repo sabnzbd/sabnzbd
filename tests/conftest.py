@@ -45,7 +45,6 @@ from tests.testhelper import (
     SAB_NEWSSERVER_HOST,
     SAB_NEWSSERVER_PORT,
     SAB_PORT,
-    SABnzbdBaseTest,
     get_api_result,
     get_url_result,
     wait_for,
