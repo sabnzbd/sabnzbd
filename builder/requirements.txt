@@ -3,9 +3,9 @@ pyinstaller==6.21.0
 packaging==26.2
 pyinstaller-hooks-contrib==2026.6
 altgraph==0.17.5
-wrapt==2.2.2
+wrapt==2.3.0
 setuptools==83.0.0
-markdown==3.10.2
+markdown==3.10.3
 pefile==2024.8.26
 
 # For the Windows build

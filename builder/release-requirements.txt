@@ -23,5 +23,5 @@ certifi==2026.7.22
 
 # cryptography (via pyjwt[crypto]) dependencies
 cryptography==49.0.0
-cffi==2.1.0
+cffi==2.1.1
 pycparser==3.0
