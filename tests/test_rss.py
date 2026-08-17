@@ -1072,3 +1072,49 @@ class TestRSS:
         repo.purge_removed_feeds()
 
         assert set(repo.get_feeds()) == {configured_feed}
+
+    def test_process_feed_without_readout_keeps_stored_jobs(self, httpserver: HTTPServer, tmp_rss):
+        """Replaying stored jobs (readout=False) must not expire or purge anything."""
+        repo, reader = tmp_rss
+        feed_name = "NoReadoutFeed"
+        feed_xml = """<?xml version="1.0" encoding="utf-8"?>
+        <rss version="2.0">
+          <channel>
+            <title>NoReadout</title>
+            <item>
+                <title>New.Show.S01E01.720p</title>
+                <link>http://example.test/no-readout/current</link>
+                <guid>http://example.test/info/no-readout-current</guid>
+                <category>tv</category>
+                <pubDate>Wed, 01 Jan 2025 00:00:00 GMT</pubDate>
+            </item>
+          </channel>
+        </rss>
+        """
+        httpserver.expect_request("/rss_no_readout.xml").respond_with_data(feed_xml, content_type="application/rss+xml")
+        self.setup_rss(feed_name, httpserver.url_for("/rss_no_readout.xml"))
+
+        now = datetime.datetime.now(datetime.timezone.utc)
+        old_url = "http://example.test/no-readout/expired"
+        repo.upsert(
+            ResolvedEntry(
+                feed=feed_name,
+                link=old_url,
+                title="Old.Show.S01E01.720p",
+                infourl=None,
+                size=10,
+                age=now - datetime.timedelta(weeks=52),
+                seen_at=now - datetime.timedelta(days=4),
+                season=1,
+                episode=1,
+                category=None,
+                state=RSSState.EXPIRED,
+            )
+        )
+
+        assert reader.process_feed(feed_name, readout=False) == ""
+        assert repo.find_job_by_url(feed_name, old_url) is not None
+
+        # A real readout does not find the link anymore, so it gets purged
+        assert reader.process_feed(feed_name, readout=True) == ""
+        assert repo.find_job_by_url(feed_name, old_url) is None

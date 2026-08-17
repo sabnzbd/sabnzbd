@@ -1001,7 +1001,8 @@ class RSSReader:
             if new_downloads and cfg.email_rss() and not force:
                 emailer.rss_mail(feed, new_downloads)
 
-            repo.remove_obsolete(feed, new_links, purge_downloaded=True)
+            if readout:
+                repo.remove_obsolete(feed, new_links, purge_downloaded=True)
 
         return ""
 
