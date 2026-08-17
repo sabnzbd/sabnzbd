@@ -479,10 +479,9 @@
         // Initialize tooltips
         jQuery('[data-toggle="tooltip"]').tooltip()
         
-        // Reload form in case we change items that make the servers appear different
+        // Reload the page after saving in case we change items that make the servers appear different
         jQuery('input[name="priority"], input[name="displayname"], textarea[name="notes"]').on('change', function(event) {
-            var parentForm = jQuery(event.target).parents("form")
-            parentForm.unbind("submit")
+            jQuery(event.target).parents("form").attr("data-reload-on-save", "")
         })
 
         /**

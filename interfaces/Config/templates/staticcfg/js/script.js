@@ -403,7 +403,7 @@ $(document).ready(function () {
                 $(this).attr("disabled", "disabled").removeClass('btn-danger').html('<span class="glyphicon glyphicon-transfer"></span> ' + configTranslate.saving);
             });
         },
-        success: function (json) {
+        success: function (json, statusText, xhr, form) {
             if (json.error) {
                $('#config_err_msg').text(json.error);
                alert(json.error)
@@ -417,6 +417,12 @@ $(document).ready(function () {
                     $('#config_err_msg').text(" ");
                     setTimeout(config_success, 1000);
                 }
+            } else if(form && form.is('[data-reload-on-save]')) {
+                // Values changed that are rendered by the server, so reload the page
+                $('#config_err_msg').text(" ");
+                formWasSubmitted = true;
+                formHasChanged = false;
+                location.reload();
             } else {
                $('#config_err_msg').text(" ");
                setTimeout(config_success, 1000);
