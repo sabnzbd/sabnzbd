@@ -2,14 +2,14 @@
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Fred L <88com88@gmail.com>, 2026
 # Safihre <safihre@sabnzbd.org>, 2026
+# Fred L <88com88@gmail.com>, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.2.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2026\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1643,12 +1643,21 @@ msgid ""
 "    Either run SABnzbd with the privileges needed for that port, or restart it\n"
 "    with a port number of 1024 or higher."
 msgstr ""
+"\n"
+"    SABnzbd n'est pas autorisé à utiliser le port %s sur %s.<br>\n"
+"    Sur la plupart des systèmes, les numéros de port faibles sont réservés aux processus privilégiés.\n"
+"    le port est donc disponible, mais ne peut pas être utilisé.<br>\n"
+"    <br>\n"
+"    Lancez SABnzbd avec les privilèges requis pour ce port, ou redémarrez-le\n"
+"    en lui attribuant un numéro de port supérieur ou égal à  1024."
 
 #: sabnzbd/panic.py
 msgid ""
 "To keep using the low port, put a reverse proxy in front of SABnzbd "
 "instead.<br>"
 msgstr ""
+"Pour continuer à utiliser un port privilégié, mettez un proxy inverse devant"
+" SABnzbd.<br>"
 
 #: sabnzbd/panic.py
 msgid ""
@@ -1742,6 +1751,8 @@ msgstr ""
 msgid ""
 "Not allowed to bind to port %s on %s. Low ports need elevated privileges."
 msgstr ""
+"Impossible de se lier au port %s sur %s. Les ports inférieurs à 1024 "
+"demandent des privilèges élevés."
 
 #. Warning message
 #: sabnzbd/panic.py
@@ -2321,7 +2332,7 @@ msgstr "Annuler"
 
 #: sabnzbd/skintext.py
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: sabnzbd/skintext.py
 msgid "Log in"
