@@ -1041,3 +1041,34 @@ class TestRSS:
 
         # Shared link must only appear once
         assert links == {shared_link, a_only_link, b_only_link}
+
+    def test_purge_removed_feeds_only_drops_unconfigured_feeds(self, tmp_rss):
+        """Records should only be dropped for feeds that are no longer configured."""
+        repo, _reader = tmp_rss
+        configured_feed = "ConfiguredFeed"
+        removed_feed = "RemovedFeed"
+
+        self.setup_rss(configured_feed, "http://example.test/rss.xml")
+
+        age = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(weeks=52)
+        old_seen_at = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=30)
+        for feed in (configured_feed, removed_feed):
+            repo.upsert(
+                ResolvedEntry(
+                    feed=feed,
+                    link=f"http://example.test/{feed}/job",
+                    title=f"{feed} job",
+                    infourl=None,
+                    size=10,
+                    age=age,
+                    seen_at=old_seen_at,
+                    season=1,
+                    episode=1,
+                    category=None,
+                    state=RSSState.GOOD,
+                )
+            )
+
+        repo.purge_removed_feeds()
+
+        assert set(repo.get_feeds()) == {configured_feed}

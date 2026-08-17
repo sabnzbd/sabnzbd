@@ -536,8 +536,8 @@ def delayed_startup_actions():
     # aren't on 24/7 and typically don't benefit from the daily scheduled call at midnight
     sabnzbd.database.scheduled_history_purge()
 
-    # Purge links older than 3 days
-    sabnzbd.rss.expired_purge()
+    # Drop leftover records of feeds that are no longer configured
+    sabnzbd.rss.purge_removed_feeds()
 
     # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only
     if sabnzbd.cfg.enable_broadcast() and not misc.is_localhost(cfg.web_host()):

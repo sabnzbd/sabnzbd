@@ -847,10 +847,13 @@ class RSSRepository:
         )
         return bool(self.db.cursor.fetchone()["found"])
 
-    def expired_purge(self):
-        """Removed expired links from all feeds"""
+    def purge_removed_feeds(self):
+        """Remove all records of feeds that are no longer configured"""
+        configured = set(config.get_rss())
         for feed in self.get_feeds():
-            self.remove_obsolete(feed)
+            if feed not in configured:
+                logging.debug("Purging records of removed feed %s", feed)
+                self.clear_feed(feed)
 
     def import_rss_records(self):
         """Migrate old RSS database"""
@@ -1266,10 +1269,10 @@ def special_rss_site(url: str) -> bool:
     return bool(cfg.rss_filenames() or match_str(url, cfg.rss_odd_titles()))
 
 
-def expired_purge():
-    """Purge links older than 3 days"""
+def purge_removed_feeds():
+    """Purge records of feeds that are no longer configured"""
     with rss_repository() as repo:
-        repo.expired_purge()
+        repo.purge_removed_feeds()
 
 
 @contextmanager
