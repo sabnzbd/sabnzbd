@@ -1385,25 +1385,19 @@ def is_localhost(value: str) -> bool:
     return (value == "localhost") or is_loopback_addr(value)
 
 
-# Private address space reserved for local area networks. Note that is_lan_addr() is currently
-# broader than this: it defers to ipaddress.is_private, which also covers ranges such as 2002::/16.
+# Private address space reserved for local area networks
 LAN_RANGES = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "169.254.0.0/16", "fc00::/7", "fe80::/10"]
 LAN_NETWORKS = [ipaddress.ip_network(lan_range) for lan_range in LAN_RANGES]
 
 
 def is_lan_addr(ip: str) -> bool:
-    """Determine if the ip is a local area network address"""
+    """Determine if the ip is a local area network address. Not ipaddress.is_private, which
+    is wider and covers globally routable ranges such as 6to4 and Teredo."""
     try:
-        ip = strip_ipv4_mapped_notation(ip)
-        return (
-            # The ipaddress module considers these private, see https://bugs.python.org/issue38655
-            ip not in ("0.0.0.0", "255.255.255.255")
-            and not ip_in_subnet(ip, "::/128")  # Also catch (partially) exploded forms of "::"
-            and ipaddress.ip_address(ip).is_private
-            and not is_loopback_addr(ip)
-        )
+        address = ipaddress.ip_address(strip_ipv4_mapped_notation(ip))
     except ValueError:
         return False
+    return any(address in lan_network for lan_network in LAN_NETWORKS)
 
 
 def is_local_addr(ip: str) -> bool:

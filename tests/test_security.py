@@ -694,6 +694,19 @@ class TestForwardedHeaderTrust:
 
         _func()
 
+    @pytest.mark.parametrize("remote_ip", ["2002::1", "2001::1", "203.0.113.5", "240.0.0.1"])
+    @pytest.mark.config({"inet_exposure": 0})
+    def test_routable_special_ranges_are_not_local(self, remote_ip):
+        """These are private only in the sense that ipaddress.is_private means "not ordinary
+        public internet". 6to4 and Teredo in particular are globally routable, so counting
+        them as a local network handed such clients local access, and at inet_exposure 5
+        entry without a password."""
+
+        def _func():
+            assert security.check_access(mock_request(remote_ip=remote_ip), access_type=4) is False
+
+        _func()
+
     @pytest.mark.parametrize(
         "xff_header",
         [
