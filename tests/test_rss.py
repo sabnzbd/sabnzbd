@@ -734,9 +734,15 @@ class TestRSS:
         assert job_after_clear.archived_at is not None
         assert job_after_clear.is_downloaded
 
-        # get_jobs should return all jobs for a feed
+        # get_jobs should return all non-archived jobs for a feed
         jobs_from_get_jobs = list(repo.get_feed_jobs(feed=feed))
-        assert {j.link for j in jobs_from_get_jobs} == set(links_by_feed[feed])
+        assert {j.link for j in jobs_from_get_jobs} == {
+            job_link for job_link in links_by_feed[feed] if job_link is not link
+        }
+
+        # get_jobs archive should return only archived jobs for a feed
+        jobs_from_get_jobs = list(repo.get_feed_jobs(feed=feed, archive=True))
+        assert {j.link for j in jobs_from_get_jobs} == {link}
 
         # is_duplicate should detect similar jobs in other feeds
         duplicate_candidate = ResolvedEntry(

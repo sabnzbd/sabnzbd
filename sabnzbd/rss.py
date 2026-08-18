@@ -702,12 +702,18 @@ class RSSRepository:
     def get_feed_jobs(
         self,
         feed: Optional[str] = None,
+        archive: Optional[bool] = None,
         search: Optional[str] = None,
         states: Optional[list[RSSState]] = None,
     ) -> Generator[ResolvedEntry, Any, None]:
         """Return records for specified jobs"""
         command_args = []
         where_clauses = []
+
+        if archive:
+            where_clauses.append("archived_at IS NOT NULL")
+        else:
+            where_clauses.append("archived_at IS NULL")
 
         if search is not None:
             where_clauses.append("title LIKE ?")
