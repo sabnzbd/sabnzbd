@@ -621,10 +621,10 @@ class RSSRepository:
         """
         Expire G/B links that are not in new_jobs (mark them 'X')
 
-        Expired links older than 3 days are removed
+        Expired links older than 7 days are removed
         """
         now = datetime.datetime.now(datetime.timezone.utc)
-        limit = int((now - datetime.timedelta(days=3)).timestamp())
+        limit = int((now - datetime.timedelta(days=7)).timestamp())
 
         if new_urls:
             # Create temporary table for all new URLs
@@ -634,6 +634,22 @@ class RSSRepository:
             for batch in batched(new_urls, 500):
                 placeholders = ",".join(["(?)"] * len(batch))
                 self.db.execute(f"INSERT INTO temp_urls(url) VALUES {placeholders}", batch)
+
+            # Refresh seen_at for everything still listed in the feed. Entries in a terminal
+            # state are skipped during evaluation, so this is the only place they are touched
+            # and without it they would be purged while still present in the feed.
+            self.db.execute(
+                """
+                UPDATE rss
+                SET seen_at = ?
+                WHERE feed = ?
+                  AND url IN (SELECT url FROM temp_urls)
+            """,
+                (
+                    int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
+                    feed,
+                ),
+            )
 
             # Update rss to mark G/B not in temp_urls as X
             self.db.execute(
@@ -847,10 +863,13 @@ class RSSRepository:
         )
         return bool(self.db.cursor.fetchone()["found"])
 
-    def expired_purge(self):
-        """Removed expired links from all feeds"""
+    def purge_removed_feeds(self):
+        """Remove all records of feeds that are no longer configured"""
+        configured = set(config.get_rss())
         for feed in self.get_feeds():
-            self.remove_obsolete(feed)
+            if feed not in configured:
+                logging.debug("Purging records of removed feed %s", feed)
+                self.clear_feed(feed)
 
     def import_rss_records(self):
         """Migrate old RSS database"""
@@ -998,7 +1017,8 @@ class RSSReader:
             if new_downloads and cfg.email_rss() and not force:
                 emailer.rss_mail(feed, new_downloads)
 
-            repo.remove_obsolete(feed, new_links, purge_downloaded=True)
+            if readout:
+                repo.remove_obsolete(feed, new_links, purge_downloaded=True)
 
         return ""
 
@@ -1266,10 +1286,10 @@ def special_rss_site(url: str) -> bool:
     return bool(cfg.rss_filenames() or match_str(url, cfg.rss_odd_titles()))
 
 
-def expired_purge():
-    """Purge links older than 3 days"""
+def purge_removed_feeds():
+    """Purge records of feeds that are no longer configured"""
     with rss_repository() as repo:
-        repo.expired_purge()
+        repo.purge_removed_feeds()
 
 
 @contextmanager
