@@ -2430,6 +2430,86 @@ class RequestLoggingMiddleware:
                 )
 
 
+class UvicornNoiseFilter(logging.Filter):
+    """Log uvicorn messages that are not news to SABnzbd as debug messages.
+
+    Three kinds of records get in the way. Its start-up and shutdown are logged
+    at info level, repeating what we already log ourselves. It warns about
+    clients sending a malformed request or asking for an upgrade we do not
+    support, which says nothing about the state of SABnzbd, yet shows up in the
+    web-interface and is sent out as a notification. And it reports a failed
+    start-up twice, once with the reason and once as a bare summary, while we
+    report it ourselves as well before giving up.
+
+    They are demoted rather than dropped, so they are still there when debug
+    logging is on: the missing half of a start-up sequence, or the reason a
+    client fails to connect. The handlers take it from there, they all have a
+    level, so the message only reaches the ones that want it. Warnings and
+    errors about our own web-interface are left alone.
+    """
+
+    # Logged by uvicorn/protocols/http/{h11,httptools}_impl.py
+    CLIENT_ERRORS = (
+        "Invalid HTTP request received.",
+        "Unsupported upgrade request.",
+        "No supported WebSocket library detected.",
+    )
+
+    # Logged by uvicorn/lifespan/on.py, after the reason was logged separately
+    REPORTED_FAILURES = ("Application startup failed. Exiting.",)
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        message = record.getMessage()
+        if (
+            record.levelno == logging.INFO
+            or (record.levelno == logging.WARNING and message.startswith(self.CLIENT_ERRORS))
+            or (record.levelno == logging.ERROR and message.startswith(self.REPORTED_FAILURES))
+        ):
+            record.levelno = logging.DEBUG
+            record.levelname = logging.getLevelName(logging.DEBUG)
+        return True
+
+
+def uvicorn_logging_config(access_log_file: Optional[str] = None) -> dict[str, Any]:
+    """Make uvicorn log through the SABnzbd handlers, so its output ends up in
+    the regular logfile. Access logging goes to its own file, if requested.
+    Format: https://github.com/encode/uvicorn/blob/d43afed1cfa018a85c83094da8a2dd29f656d676/uvicorn/config.py#L82-L114
+    """
+    logging_config = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "access": {
+                "()": "uvicorn.logging.AccessFormatter",
+                "fmt": '%(asctime)s::%(levelname)s::%(client_addr)s - "%(request_line)s" %(status_code)s',
+                "use_colors": False,
+            },
+        },
+        "filters": {
+            "uvicorn_noise": {"()": "sabnzbd.interface.UvicornNoiseFilter"},
+        },
+        "handlers": {},
+        "loggers": {
+            "uvicorn": {"propagate": True},
+            "uvicorn.error": {"propagate": True, "filters": ["uvicorn_noise"]},
+            "uvicorn.access": {"propagate": False, "level": "INFO"},
+        },
+    }
+
+    if access_log_file:
+        logging_config["handlers"]["access_file"] = {
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "access",
+            "filename": access_log_file,
+            "maxBytes": cfg.log_size(),
+            "backupCount": cfg.log_backups(),
+            "encoding": "utf-8",
+        }
+        logging_config["loggers"]["uvicorn.access"]["handlers"] = ["access_file"]
+
+    return logging_config
+
+
 class ThreadedServer(uvicorn.Server):
     """uvicorn server running in a background thread, so the main thread stays
     free for the SABnzbd main loop."""
