@@ -459,3 +459,79 @@ class TestClientAddressInfo:
         """Without verify_xff_header the header is not trusted, so it is not reported"""
         request = create_mock_request(remote_ip="::1", remote_port=55170, headers={"X-Forwarded-For": "8.7.6.5"})
         assert interface.client_address_info(request) == "[::1]:55170"
+
+
+class TestUseSecureCookies:
+    """The Secure attribute must follow the connection the request actually arrived on,
+    including TLS terminated by a trusted reverse proxy in front of SABnzbd."""
+
+    @staticmethod
+    def make_request(scheme: str, host: str | None = "sab.example.com", server=("127.0.0.1", 8080)) -> Request:
+        headers = [(b"host", host.encode())] if host is not None else []
+        return Request(
+            {
+                "type": "http",
+                "method": "GET",
+                "path": "/",
+                "query_string": b"",
+                "scheme": scheme,
+                "headers": headers,
+                "client": ("127.0.0.1", 12345),
+                "server": server,
+            }
+        )
+
+    @pytest.mark.config({"enable_https": False})
+    @pytest.mark.parametrize(
+        "scheme, host, server, expected",
+        [
+            ("http", "sab.example.com", ("127.0.0.1", 8080), False),
+            ("https", "sab.example.com", ("127.0.0.1", 8080), True),
+            # No Host header: the scheme must still decide the flag
+            ("https", None, ("127.0.0.1", 8080), True),
+            # An IPv6 listen address leaves the URL unparseable, the scheme is unaffected
+            ("https", None, ("::ffff:127.0.0.1", 8080), True),
+            ("https", "1234:5678::1:8080", ("::1", 8080), True),
+            # Neither a Host header nor an address: the URL is relative and has no
+            # scheme at all, which must not silently drop the Secure attribute
+            ("https", None, None, True),
+            ("http", None, None, False),
+        ],
+    )
+    def test_follows_request_scheme(self, scheme, host, server, expected):
+        assert interface.use_secure_cookies(self.make_request(scheme, host, server)) is expected
+
+    @pytest.mark.config({"enable_https": True})
+    def test_https_enabled_always_secure(self):
+        """Serving https ourselves is enough, whatever the request looks like"""
+        assert interface.use_secure_cookies(self.make_request("http")) is True
+
+    @pytest.mark.config({"enable_https": False})
+    def test_scheme_from_trusted_proxy(self):
+        """X-Forwarded-Proto from a trusted proxy is resolved into the scope by
+        uvicorn, so a proxy terminating TLS still gets the Secure attribute."""
+
+        captured = {}
+
+        async def asgi_app(scope, receive, send):
+            captured["secure"] = interface.use_secure_cookies(Request(scope))
+
+        def run(remote_ip: str):
+            middleware = ProxyHeadersMiddleware(asgi_app, trusted_hosts=xff_trusted_networks())
+            scope = {
+                "type": "http",
+                "method": "GET",
+                "path": "/",
+                "query_string": b"",
+                "scheme": "http",
+                "client": (remote_ip, 12345),
+                "server": ("127.0.0.1", 8080),
+                "headers": [(b"host", b"sab.example.com"), (b"x-forwarded-proto", b"https")],
+            }
+            asyncio.run(middleware(scope, None, None))
+            return captured["secure"]
+
+        # Trusted proxy: the forwarded scheme is honoured
+        assert run("127.0.0.1") is True
+        # Untrusted peer: the header must be ignored, so no Secure on a plain connection
+        assert run("8.7.6.5") is False

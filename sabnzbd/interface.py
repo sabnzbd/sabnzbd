@@ -254,7 +254,10 @@ COOKIE_SESSION = "sabnzbd_session"
 
 def use_secure_cookies(request: Request) -> bool:
     """Whether cookies for this request should carry the Secure attribute"""
-    return request.url.scheme == "https" or bool(cfg.enable_https())
+    # Taken from the scope, which is what the proxy headers are applied to and what
+    # request.url is built from. The URL itself comes out relative, and its scheme
+    # empty, when there is neither a Host header nor an address to fall back on.
+    return request.scope.get("scheme") == "https" or bool(cfg.enable_https())
 
 
 def set_login_cookie(request: Request, response: Response, remove=False, remember_me=False):
