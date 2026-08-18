@@ -734,9 +734,15 @@ class TestRSS:
         assert job_after_clear.archived_at is not None
         assert job_after_clear.is_downloaded
 
-        # get_jobs should return all jobs for a feed
+        # get_jobs should return all non-archived jobs for a feed
         jobs_from_get_jobs = list(repo.get_feed_jobs(feed=feed))
-        assert {j.link for j in jobs_from_get_jobs} == set(links_by_feed[feed])
+        assert {j.link for j in jobs_from_get_jobs} == {
+            job_link for job_link in links_by_feed[feed] if job_link is not link
+        }
+
+        # get_jobs archive should return only archived jobs for a feed
+        jobs_from_get_jobs = list(repo.get_feed_jobs(feed=feed, archive=True))
+        assert {j.link for j in jobs_from_get_jobs} == {link}
 
         # is_duplicate should detect similar jobs in other feeds
         duplicate_candidate = ResolvedEntry(
@@ -775,7 +781,7 @@ class TestRSS:
 
         now = datetime.datetime.now(datetime.timezone.utc)
         age = now - datetime.timedelta(weeks=52)
-        old_seen_at = now - datetime.timedelta(days=4)
+        old_seen_at = now - datetime.timedelta(days=8)
         new_seen_at = now - datetime.timedelta(days=1)
 
         # Old good item that should be kept because it is part of the new_urls set
@@ -1039,3 +1045,123 @@ class TestRSS:
 
         # Shared link must only appear once
         assert links == {shared_link, a_only_link, b_only_link}
+
+    def test_purge_removed_feeds_only_drops_unconfigured_feeds(self, tmp_rss):
+        """Records should only be dropped for feeds that are no longer configured."""
+        repo, _reader = tmp_rss
+        configured_feed = "ConfiguredFeed"
+        removed_feed = "RemovedFeed"
+
+        self.setup_rss(configured_feed, "http://example.test/rss.xml")
+
+        age = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(weeks=52)
+        old_seen_at = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=30)
+        for feed in (configured_feed, removed_feed):
+            repo.upsert(
+                ResolvedEntry(
+                    feed=feed,
+                    link=f"http://example.test/{feed}/job",
+                    title=f"{feed} job",
+                    infourl=None,
+                    size=10,
+                    age=age,
+                    seen_at=old_seen_at,
+                    season=1,
+                    episode=1,
+                    category=None,
+                    state=RSSState.GOOD,
+                )
+            )
+
+        repo.purge_removed_feeds()
+
+        assert set(repo.get_feeds()) == {configured_feed}
+
+    def test_process_feed_without_readout_keeps_stored_jobs(self, httpserver: HTTPServer, tmp_rss):
+        """Replaying stored jobs (readout=False) must not expire or purge anything."""
+        repo, reader = tmp_rss
+        feed_name = "NoReadoutFeed"
+        feed_xml = """<?xml version="1.0" encoding="utf-8"?>
+        <rss version="2.0">
+          <channel>
+            <title>NoReadout</title>
+            <item>
+                <title>New.Show.S01E01.720p</title>
+                <link>http://example.test/no-readout/current</link>
+                <guid>http://example.test/info/no-readout-current</guid>
+                <category>tv</category>
+                <pubDate>Wed, 01 Jan 2025 00:00:00 GMT</pubDate>
+            </item>
+          </channel>
+        </rss>
+        """
+        httpserver.expect_request("/rss_no_readout.xml").respond_with_data(feed_xml, content_type="application/rss+xml")
+        self.setup_rss(feed_name, httpserver.url_for("/rss_no_readout.xml"))
+
+        now = datetime.datetime.now(datetime.timezone.utc)
+        old_url = "http://example.test/no-readout/expired"
+        repo.upsert(
+            ResolvedEntry(
+                feed=feed_name,
+                link=old_url,
+                title="Old.Show.S01E01.720p",
+                infourl=None,
+                size=10,
+                age=now - datetime.timedelta(weeks=52),
+                seen_at=now - datetime.timedelta(days=8),
+                season=1,
+                episode=1,
+                category=None,
+                state=RSSState.EXPIRED,
+            )
+        )
+
+        assert reader.process_feed(feed_name, readout=False) == ""
+        assert repo.find_job_by_url(feed_name, old_url) is not None
+
+        # A real readout does not find the link anymore, so it gets purged
+        assert reader.process_feed(feed_name, readout=True) == ""
+        assert repo.find_job_by_url(feed_name, old_url) is None
+
+    def test_downloaded_item_still_in_feed_is_not_redownloaded(self, httpserver: HTTPServer, tmp_rss, mocker):
+        """An item that stays in the feed must survive the retention period and not be grabbed twice."""
+        repo, reader = tmp_rss
+        feed_name = "LongLivedFeed"
+        link = "http://example.test/long-lived"
+        feed_xml = f"""<?xml version="1.0" encoding="utf-8"?>
+        <rss version="2.0">
+          <channel>
+            <title>LongLived</title>
+            <item>
+                <title>Show.S01E01.720p</title>
+                <link>{link}</link>
+                <guid>http://example.test/info/long-lived</guid>
+                <category>tv</category>
+                <pubDate>Wed, 01 Jan 2025 00:00:00 GMT</pubDate>
+            </item>
+          </channel>
+        </rss>
+        """
+        httpserver.expect_request("/rss_long_lived.xml").respond_with_data(feed_xml, content_type="application/rss+xml")
+        self.setup_rss(feed_name, httpserver.url_for("/rss_long_lived.xml"))
+
+        add_url = mocker.patch("sabnzbd.urlgrabber.add_url")
+        assert reader.process_feed(feed_name, download=True, force=True) == ""
+        assert add_url.call_count == 1
+        assert repo.find_job_by_url(feed_name, link).state is RSSState.DOWNLOADED
+
+        # Pretend the item was downloaded longer ago than the retention period, while
+        # it is still being served by the feed
+        stale = int((datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=30)).timestamp())
+        repo.db.execute("UPDATE rss SET seen_at = ? WHERE feed = ?", (stale, feed_name))
+
+        # Still being listed should refresh seen_at instead of purging the job
+        assert reader.process_feed(feed_name, download=True) == ""
+        job = repo.find_job_by_url(feed_name, link)
+        assert job is not None
+        assert job.state is RSSState.DOWNLOADED
+        assert job.seen_at.timestamp() > stale
+
+        # And it must not be picked up as a new job on the next scans
+        assert reader.process_feed(feed_name, download=True) == ""
+        assert add_url.call_count == 1

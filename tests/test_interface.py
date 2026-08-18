@@ -228,3 +228,29 @@ class TestInterfaceFunctions:
             assert interface.remote_ip_from_xff(xff_ips) is expected_result
 
         _func()
+
+    @pytest.mark.config({"verify_xff_header": False})
+    def test_logout_does_not_leak_valid_cookie(self):
+        """A logout must never emit a cookie/salt pair that passes check_login_cookie.
+        The Set-Cookie header is readable regardless of its expiry, so leaking valid
+        values there is an authentication bypass (harvest via logout, then replay)."""
+        cherrypy.request.remote.ip = "10.11.12.13"
+        cherrypy.request.headers.update({"X-Forwarded-For": None})
+
+        # Sanity check: a real login produces a cookie that validates
+        cherrypy.response.cookie.clear()
+        interface.set_login_cookie()
+        cherrypy.request.cookie["login_cookie"] = cherrypy.response.cookie["login_cookie"].value
+        cherrypy.request.cookie["login_salt"] = cherrypy.response.cookie["login_salt"].value
+        assert interface.check_login_cookie() is True
+
+        # Logout must blank out the values, not emit a working hash/salt
+        cherrypy.response.cookie.clear()
+        interface.set_login_cookie(remove=True)
+        assert cherrypy.response.cookie["login_cookie"].value == ""
+        assert cherrypy.response.cookie["login_salt"].value == ""
+
+        # Replaying whatever the logout response carried must fail authentication
+        cherrypy.request.cookie["login_cookie"] = cherrypy.response.cookie["login_cookie"].value
+        cherrypy.request.cookie["login_salt"] = cherrypy.response.cookie["login_salt"].value
+        assert interface.check_login_cookie() is False

@@ -30,6 +30,7 @@ import socket
 import ssl
 import functools
 import copy
+import secrets
 from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
@@ -262,8 +263,10 @@ def check_hostname():
     return False
 
 
-# Create a more unique ID for each instance
-COOKIE_SECRET = str(randint(1000, 100000) * os.getpid())
+# Per-process secret used to sign login cookies. Regenerated on every start,
+# so sessions do not survive a restart (as before), but with enough entropy
+# that a captured cookie cannot be brute-forced back to the secret.
+COOKIE_SECRET = secrets.token_hex(32)
 
 
 def remote_ip_from_xff(xff_ips: list[str]) -> str:
@@ -295,23 +298,25 @@ def set_login_cookie(remove=False, remember_me=False):
     else:
         remote_ip = cherrypy.request.remote.ip
 
-    cookie_str = utob(str(salt) + remote_ip + COOKIE_SECRET)
-    cherrypy.response.cookie["login_cookie"] = hashlib.sha1(cookie_str).hexdigest()
-    cherrypy.response.cookie["login_cookie"]["path"] = "/"
-    cherrypy.response.cookie["login_cookie"]["httponly"] = 1
-    cherrypy.response.cookie["login_salt"] = salt
-    cherrypy.response.cookie["login_salt"]["path"] = "/"
-    cherrypy.response.cookie["login_salt"]["httponly"] = 1
-
-    # If we want to be remembered
-    if remember_me:
-        cherrypy.response.cookie["login_cookie"]["max-age"] = 3600 * 24 * 14
-        cherrypy.response.cookie["login_salt"]["max-age"] = 3600 * 24 * 14
-
-    # To remove
     if remove:
+        # Never emit a valid cookie/salt pair on logout
+        cherrypy.response.cookie["login_cookie"] = ""
+        cherrypy.response.cookie["login_salt"] = ""
         cherrypy.response.cookie["login_cookie"]["expires"] = 0
         cherrypy.response.cookie["login_salt"]["expires"] = 0
+    else:
+        cookie_str = utob(str(salt) + remote_ip + COOKIE_SECRET)
+        cherrypy.response.cookie["login_cookie"] = hashlib.sha1(cookie_str).hexdigest()
+        cherrypy.response.cookie["login_salt"] = salt
+        # If we want to be remembered
+        if remember_me:
+            cherrypy.response.cookie["login_cookie"]["max-age"] = 3600 * 24 * 14
+            cherrypy.response.cookie["login_salt"]["max-age"] = 3600 * 24 * 14
+
+    cherrypy.response.cookie["login_cookie"]["path"] = "/"
+    cherrypy.response.cookie["login_cookie"]["httponly"] = 1
+    cherrypy.response.cookie["login_salt"]["path"] = "/"
+    cherrypy.response.cookie["login_salt"]["httponly"] = 1
 
 
 def check_login_cookie():
