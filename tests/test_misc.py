@@ -875,6 +875,29 @@ class TestMisc:
         assert misc.ip_in_subnet(ip, subnet) is result
 
     @pytest.mark.parametrize(
+        "subnet, result",
+        [
+            ("192.168.1.0/24", "192.168.1.0/24"),  # Already canonical
+            ("192.168.1.", "192.168.1.0/24"),  # Old local_ranges style
+            ("192.168.1", "192.168.1.0/24"),
+            ("10", "10.0.0.0/8"),
+            ("10.42.0.0/255.255.0.0", "10.42.0.0/16"),  # Netmask form
+            ("192.168.1.5", "192.168.1.5/32"),  # Bare address
+            ("::1", "::1/128"),
+            ("FC00::/7", "fc00::/7"),  # Canonicalised
+            ("2001:db8:", "2001:db8::/32"),
+            ("192.168.1.5/24", None),  # Host bits set, ip_in_subnet() never matched this
+            ("not-a-network", None),
+            ("654.3.2.1/24", None),
+            ("", None),
+            (None, None),
+        ],
+    )
+    def test_parse_subnet(self, subnet, result):
+        network = misc.parse_subnet(subnet)
+        assert (str(network) if network else None) == result
+
+    @pytest.mark.parametrize(
         "ip, result",
         [
             ("::ffff:127.0.0.1", "127.0.0.1"),
