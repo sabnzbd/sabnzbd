@@ -738,6 +738,17 @@ class TestMisc:
             ("::ffff:192.168.1.100", True),
             ("::ffff:1.1.1.1", False),
             ("::ffff:127.0.0.1", False),
+            ("100.64.0.1", False),  # Shared address space (CGNAT), not a local network
+            # ipaddress.is_private covers all of these, but none is a local network:
+            ("2002::1", False),  # 6to4, globally routable
+            ("2001::1", False),  # Teredo
+            ("203.0.113.5", False),  # TEST-NET-3
+            ("192.0.2.5", False),  # TEST-NET-1
+            ("198.51.100.5", False),  # TEST-NET-2
+            ("198.18.0.5", False),  # Benchmarking
+            ("240.0.0.1", False),  # Reserved
+            ("0.1.2.3", False),  # "This network"
+            ("2001:db8::1", False),  # Documentation
         ],
     )
     def test_is_lan_addr(self, value, result):
