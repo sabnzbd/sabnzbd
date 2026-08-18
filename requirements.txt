@@ -10,7 +10,7 @@ configobj==5.0.9
 six==1.17.0
 more-itertools==11.1.0
 python-dateutil==2.9.0.post0
-sgmllib3k==1.0.0
+feedparser-sgmllib==2.1.0
 PySocks==1.7.1
 puremagic # Version-less for Python 3.11 and below
 puremagic==2.2.0; python_version > '3.11'
