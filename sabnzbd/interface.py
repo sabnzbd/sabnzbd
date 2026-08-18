@@ -172,6 +172,16 @@ def client_address(request: Request) -> Address:
     return request.client or Address("", 0)
 
 
+def client_address_info(request: Request) -> str:
+    """The client as host:port for logging, with the forwarding chain when there is one"""
+    client = client_address(request)
+    # Bracketed, so the port cannot be read as another group of an IPv6 address
+    host = f"[{client.host}]" if ":" in client.host else client.host
+    if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
+        return f"{host}:{client.port} (X-Forwarded-For: {xff_ips})"
+    return f"{host}:{client.port}"
+
+
 def check_access(request: Request, access_type: int = 4, warn_user: bool = False) -> bool:
     """Check if external address is allowed given access_type (Starlette version):
     1=nzb
@@ -388,10 +398,7 @@ def template_filtered_response(file: str, search_list: dict[str, Any]):
 def log_warning_and_ip(request: Request, txt: str):
     """Include the IP and the Proxy-IP for warnings (Starlette version)"""
     if cfg.api_warnings():
-        remote_info = "%s:%s" % client_address(request)
-        if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
-            remote_info += f" (X-Forwarded-For: {xff_ips})"
-        logging.warning("%s %s", txt, remote_info)
+        logging.warning("%s %s", txt, client_address_info(request))
 
 
 # CherryPy collapsed these API routing/scalar keys to their first value when a key
@@ -792,18 +799,12 @@ async def login_index(request: Request):
             # Save login cookie
             set_login_cookie(request, response, remember_me=remember_me)
             # Log the success
-            remote_info = "%s:%s" % client_address(request)
-            if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
-                remote_info += f" (X-Forwarded-For: {xff_ips})"
-            logging.info("Successful login from %s", remote_info)
+            logging.info("Successful login from %s", client_address_info(request))
             return response
         elif username or password:
             error = T("Authentication failed, check username/password.")
             # Warn about the potential security problem
-            remote_info = "%s:%s" % client_address(request)
-            if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
-                remote_info += f" (X-Forwarded-For: {xff_ips})"
-            logging.warning(T("Unsuccessful login attempt from %s"), remote_info)
+            logging.warning(T("Unsuccessful login attempt from %s"), client_address_info(request))
 
     # Show login. Building the header and rendering the Cheetah template are
     # blocking work, so keep them off the event loop.
@@ -2418,19 +2419,12 @@ class RequestLoggingMiddleware:
             # request did not pass through secured_expose, so there is nothing to log.
             if cfg.api_logging() and (params := scope.get("state", {}).get("params")) is not None:
                 request = Request(scope)
-                if xff_ips := request.headers.get("X-Forwarded-For"):
-                    remote_label = "%s (X-Forwarded-For: %s) [%s]" % (
-                        client_address(request).host,
-                        xff_ips,
-                        request.headers.get("User-Agent"),
-                    )
-                else:
-                    remote_label = "%s [%s]" % (client_address(request).host, request.headers.get("User-Agent"))
                 logging.debug(
-                    "Request %s %s from %s %s",
+                    "Request %s %s from %s [%s] %s",
                     request.method,
                     request.url.path,
-                    remote_label,
+                    client_address_info(request),
+                    request.headers.get("User-Agent"),
                     dict(params),
                 )
 

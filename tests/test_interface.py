@@ -425,3 +425,37 @@ class TestUvicornLogging:
         uvicorn_source = "".join(inspect.getsource(module) for module in (h11_impl, httptools_impl, lifespan_on))
         for message in interface.UvicornNoiseFilter.CLIENT_ERRORS + interface.UvicornNoiseFilter.REPORTED_FAILURES:
             assert message in uvicorn_source
+
+
+class TestClientAddressInfo:
+    """The client address goes into log lines as host:port, so an IPv6 address has to
+    be bracketed: ::ffff:127.0.0.1:55170 gives no clue where the address stops."""
+
+    @pytest.mark.config({"verify_xff_header": False})
+    @pytest.mark.parametrize(
+        "remote_ip, expected",
+        [
+            ("127.0.0.1", "127.0.0.1:55170"),
+            ("10.11.12.13", "10.11.12.13:55170"),
+            ("::1", "[::1]:55170"),
+            # Dual-stack listener reporting an IPv4 client
+            ("::ffff:127.0.0.1", "[::ffff:127.0.0.1]:55170"),
+            ("2001:470:1:332::152", "[2001:470:1:332::152]:55170"),
+            # Unknown client, request.client was None
+            ("", ":55170"),
+        ],
+    )
+    def test_brackets_ipv6(self, remote_ip, expected):
+        request = create_mock_request(remote_ip=remote_ip, remote_port=55170)
+        assert interface.client_address_info(request) == expected
+
+    @pytest.mark.config({"verify_xff_header": True})
+    def test_includes_forwarded_chain(self):
+        request = create_mock_request(remote_ip="::1", remote_port=55170, headers={"X-Forwarded-For": "8.7.6.5, ::1"})
+        assert interface.client_address_info(request) == "[::1]:55170 (X-Forwarded-For: 8.7.6.5, ::1)"
+
+    @pytest.mark.config({"verify_xff_header": False})
+    def test_omits_forwarded_chain_when_not_verified(self):
+        """Without verify_xff_header the header is not trusted, so it is not reported"""
+        request = create_mock_request(remote_ip="::1", remote_port=55170, headers={"X-Forwarded-For": "8.7.6.5"})
+        assert interface.client_address_info(request) == "[::1]:55170"
