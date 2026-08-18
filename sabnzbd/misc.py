@@ -1312,13 +1312,15 @@ def strip_ipv4_mapped_notation(ip: str) -> str:
     return str(ip)
 
 
-def ip_in_subnet(ip: str, subnet: str) -> bool:
-    """Determine whether ip is part of subnet. For the latter, the standard form with a prefix or
-    netmask (e.g. "192.168.1.0/24" or "10.42.0.0/255.255.0.0") is expected. Input in SABnzbd's old
-    cfg.local_ranges() settings style (e.g. "192.168.1."), intended for use with str.startswith(),
-    is also accepted and internally converted to address/prefix form."""
-    if not ip or not subnet:
-        return False
+def parse_subnet(subnet: str) -> Optional[ipaddress.IPv4Network | ipaddress.IPv6Network]:
+    """Return subnet as a network. The standard form with a prefix or netmask (e.g.
+    "192.168.1.0/24" or "10.42.0.0/255.255.0.0") is expected. A bare address and input in
+    SABnzbd's old cfg.local_ranges() settings style (e.g. "192.168.1."), intended for use
+    with str.startswith(), are also accepted.
+
+    Anything ip_in_subnet() could never match returns None."""
+    if not subnet:
+        return None
 
     try:
         if subnet.find("/") < 0 and subnet.find("::") < 0:
@@ -1328,17 +1330,26 @@ def ip_in_subnet(ip: str, subnet: str) -> bool:
             # Take the IP version of the subnet into account
             IP_LEN, IP_BITS, IP_SEP = (8, 16, ":") if subnet.find(":") >= 0 else (4, 8, ".")
 
-            subnet = subnet.rstrip(IP_SEP).split(IP_SEP)
-            prefix = IP_BITS * len(subnet)
+            parts = subnet.rstrip(IP_SEP).split(IP_SEP)
+            prefix = IP_BITS * len(parts)
             # Append as many zeros as needed
-            subnet.extend(["0"] * (IP_LEN - len(subnet)))
+            parts.extend(["0"] * (IP_LEN - len(parts)))
             # Store in address/prefix form
-            subnet = "%s/%s" % (IP_SEP.join(subnet), prefix)
+            subnet = "%s/%s" % (IP_SEP.join(parts), prefix)
 
-        ip = strip_ipv4_mapped_notation(ip)
-        return ipaddress.ip_address(ip) in ipaddress.ip_network(subnet, strict=True)
+        return ipaddress.ip_network(subnet, strict=True)
     except Exception:
         # Probably an invalid range
+        return None
+
+
+def ip_in_subnet(ip: str, subnet: str) -> bool:
+    """Determine whether ip is part of subnet; see parse_subnet() for the accepted forms."""
+    if not ip or not (network := parse_subnet(subnet)):
+        return False
+    try:
+        return ipaddress.ip_address(strip_ipv4_mapped_notation(ip)) in network
+    except ValueError:
         return False
 
 
@@ -1372,6 +1383,11 @@ def is_loopback_addr(ip: str) -> bool:
 def is_localhost(value: str) -> bool:
     """Determine if the input is some variety of 'localhost'"""
     return (value == "localhost") or is_loopback_addr(value)
+
+
+# Private address space reserved for local area networks. Note that is_lan_addr() is currently
+# broader than this: it defers to ipaddress.is_private, which also covers ranges such as 2002::/16.
+LAN_RANGES = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "169.254.0.0/16", "fc00::/7", "fe80::/10"]
 
 
 def is_lan_addr(ip: str) -> bool:
