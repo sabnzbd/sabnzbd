@@ -1,10 +1,44 @@
-Release Notes - SABnzbd 5.1.0
+Release Notes - SABnzbd 5.1.1
 =========================================================
+
+## Critical authentication vulnerability resolved in 5.1.1 (GHSA-xrfq-jhgh-wqch)
+
+You are only affected if an untrusted party can reach the web interface.
+By default, SABnzbd is only accessible from your own device and `External internet access`
+is set to `No access`. If either of those is still at its default, or if you use a proxy
+service for authentication, you are not affected.
+
+If the SABnzbd login page is reachable from outside your network, an attacker could
+obtain a valid session in version 5.1.0 and earlier, even when SABnzbd is protected with
+a username and password. This means that all information in SABnzbd would be exposed.
+
+If you rely on the SABnzbd username and password to keep out other users on your
+network or the internet, it is recommended that you change the following
+sensitive information after applying the update:
+
+* SABnzbd username and password.
+* SABnzbd API-key.
+* Usenet server passwords.
+* API-keys from indexers used within RSS-feeds.
+* Authentication information for notification services.
+
+If you cannot update right away, the only mitigations are to ensure the web interface is not
+reachable by untrusted parties, or to lower `External internet access` to `Full API` or below.
+
+More information: https://sabnzbd.org/auth-bypass
+
+## Other bug fixes in 5.1.1
+
+* Styling cache issues could occur after updating.
+* RSS items were removed too eagerly from RSS-history after download.
+* The RSS-feed `Clear Downloaded` button did not do anything.
+
+## Changelog 5.1.0
 
 This release brings a fundamental improvement to "Retry": instead of
 re-downloading any files with missing data, only the articles that were actually
 missing are fetched again. RSS got an overhaul under the hood, the interface is
-refreshed, and we added quite a long list of of long-requested features and bugfixes.
+refreshed, and we added quite a long list of long-requested features and bugfixes.
 
 ## New features in 5.1.0
 
