@@ -635,6 +635,22 @@ class RSSRepository:
                 placeholders = ",".join(["(?)"] * len(batch))
                 self.db.execute(f"INSERT INTO temp_urls(url) VALUES {placeholders}", batch)
 
+            # Refresh seen_at for everything still listed in the feed. Entries in a terminal
+            # state are skipped during evaluation, so this is the only place they are touched
+            # and without it they would be purged while still present in the feed.
+            self.db.execute(
+                """
+                UPDATE rss
+                SET seen_at = ?
+                WHERE feed = ?
+                  AND url IN (SELECT url FROM temp_urls)
+            """,
+                (
+                    int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
+                    feed,
+                ),
+            )
+
             # Update rss to mark G/B not in temp_urls as X
             self.db.execute(
                 """

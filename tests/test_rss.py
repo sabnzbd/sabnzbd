@@ -1118,3 +1118,46 @@ class TestRSS:
         # A real readout does not find the link anymore, so it gets purged
         assert reader.process_feed(feed_name, readout=True) == ""
         assert repo.find_job_by_url(feed_name, old_url) is None
+
+    def test_downloaded_item_still_in_feed_is_not_redownloaded(self, httpserver: HTTPServer, tmp_rss, mocker):
+        """An item that stays in the feed must survive the retention period and not be grabbed twice."""
+        repo, reader = tmp_rss
+        feed_name = "LongLivedFeed"
+        link = "http://example.test/long-lived"
+        feed_xml = f"""<?xml version="1.0" encoding="utf-8"?>
+        <rss version="2.0">
+          <channel>
+            <title>LongLived</title>
+            <item>
+                <title>Show.S01E01.720p</title>
+                <link>{link}</link>
+                <guid>http://example.test/info/long-lived</guid>
+                <category>tv</category>
+                <pubDate>Wed, 01 Jan 2025 00:00:00 GMT</pubDate>
+            </item>
+          </channel>
+        </rss>
+        """
+        httpserver.expect_request("/rss_long_lived.xml").respond_with_data(feed_xml, content_type="application/rss+xml")
+        self.setup_rss(feed_name, httpserver.url_for("/rss_long_lived.xml"))
+
+        add_url = mocker.patch("sabnzbd.urlgrabber.add_url")
+        assert reader.process_feed(feed_name, download=True, force=True) == ""
+        assert add_url.call_count == 1
+        assert repo.find_job_by_url(feed_name, link).state is RSSState.DOWNLOADED
+
+        # Pretend the item was downloaded longer ago than the retention period, while
+        # it is still being served by the feed
+        stale = int((datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=30)).timestamp())
+        repo.db.execute("UPDATE rss SET seen_at = ? WHERE feed = ?", (stale, feed_name))
+
+        # Still being listed should refresh seen_at instead of purging the job
+        assert reader.process_feed(feed_name, download=True) == ""
+        job = repo.find_job_by_url(feed_name, link)
+        assert job is not None
+        assert job.state is RSSState.DOWNLOADED
+        assert job.seen_at.timestamp() > stale
+
+        # And it must not be picked up as a new job on the next scans
+        assert reader.process_feed(feed_name, download=True) == ""
+        assert add_url.call_count == 1
