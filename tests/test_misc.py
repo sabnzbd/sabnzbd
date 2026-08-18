@@ -840,7 +840,8 @@ class TestMisc:
             ("108.1.2.3", "10", False),  # This used to be allowed with the bad setting!
             ("108.1.2.3", "10.", False),
             ("192.168.43.21", "192.168.0.0/16", True),
-            ("192.168.43.21", "192.168.0.0/255.255.255.0", True),
+            ("192.168.43.21", "192.168.43.0/255.255.255.0", True),  # Netmask form of /24
+            ("192.168.43.21", "192.168.0.0/255.255.255.0", False),  # Netmask form of a /24 that excludes it
             ("::ffff:192.168.43.21", "192.168.43.0/24", True),  # IPv4-mapped IPv6 ("dual-stack") notation
             ("::FFff:192.168.43.21", "192.168.43.0/24", True),
             ("::ffff:192.168.12.34", "192.168.43.0/24", False),
@@ -871,7 +872,7 @@ class TestMisc:
         ],
     )
     def test_ip_in_subnet(self, ip, subnet, result):
-        misc.ip_in_subnet(ip, subnet) is result
+        assert misc.ip_in_subnet(ip, subnet) is result
 
     @pytest.mark.parametrize(
         "ip, result",
@@ -881,7 +882,7 @@ class TestMisc:
             ("::ffff:192.168.1.255", "192.168.1.255"),
             ("::ffff:8.8.8.8", "8.8.8.8"),
             ("2007::2021", "2007::2021"),
-            ("::ffff:2007:2021", "::ffff:2007:2021"),
+            ("::ffff:2007:2021", "32.7.32.33"),  # Hex form of ::ffff:0:0/96 is still IPv4-mapped
             ("2007::ffff:2021", "2007::ffff:2021"),
             ("12.34.56.78", "12.34.56.78"),
             ("foobar", "foobar"),
@@ -891,7 +892,7 @@ class TestMisc:
         ],
     )
     def test_strip_ipv4_mapped_notation(self, ip, result):
-        misc.strip_ipv4_mapped_notation(ip) == result
+        assert misc.strip_ipv4_mapped_notation(ip) == result
 
     def test_sort_to_opts(self):
         for result, sort_type in GUESSIT_SORT_TYPES.items():
