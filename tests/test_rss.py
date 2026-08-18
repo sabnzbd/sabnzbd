@@ -777,7 +777,7 @@ class TestRSS:
 
         now = datetime.datetime.now(datetime.timezone.utc)
         age = now - datetime.timedelta(weeks=52)
-        old_seen_at = now - datetime.timedelta(days=4)
+        old_seen_at = now - datetime.timedelta(days=8)
         new_seen_at = now - datetime.timedelta(days=1)
 
         # Old good item that should be kept because it is part of the new_urls set
@@ -1104,7 +1104,7 @@ class TestRSS:
                 infourl=None,
                 size=10,
                 age=now - datetime.timedelta(weeks=52),
-                seen_at=now - datetime.timedelta(days=4),
+                seen_at=now - datetime.timedelta(days=8),
                 season=1,
                 episode=1,
                 category=None,

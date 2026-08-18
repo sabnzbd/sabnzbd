@@ -621,10 +621,10 @@ class RSSRepository:
         """
         Expire G/B links that are not in new_jobs (mark them 'X')
 
-        Expired links older than 3 days are removed
+        Expired links older than 7 days are removed
         """
         now = datetime.datetime.now(datetime.timezone.utc)
-        limit = int((now - datetime.timedelta(days=3)).timestamp())
+        limit = int((now - datetime.timedelta(days=7)).timestamp())
 
         if new_urls:
             # Create temporary table for all new URLs
