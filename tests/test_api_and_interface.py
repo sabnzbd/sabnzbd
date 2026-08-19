@@ -485,6 +485,22 @@ class TestSecuredExpose:
         bad_request = create_mock_request(hostname="not_me")
         assert interface.check_hostname(bad_request) is True
 
+    def test_check_hostname_bare_ipv6_is_refused(self):
+        """An IPv6 literal must be bracketed in a Host header (RFC 7230). A bare one is
+        ambiguous, as there is no telling where the address ends and the port begins,
+        so it must not be accepted as if the trailing group were a port number."""
+        for bad_hostname in (
+            "1234:5678::1:8080",
+            "bla:bla:1234",
+            "::ffff:127.0.0.1:8080",
+            "2001:db8:3333:4444:5555:6666:7777:8888",
+        ):
+            assert interface.check_hostname(create_mock_request(hostname=bad_hostname)) is False
+
+        # The bracketed forms of the same addresses stay allowed
+        for good_hostname in ("[1234:5678::1]:8080", "[::ffff:127.0.0.1]:8080", "[1234:5678::1]"):
+            assert interface.check_hostname(create_mock_request(hostname=good_hostname)) is True
+
     @pytest.mark.config({"host_whitelist": "test.com, not_evil"})
     def test_check_hostname_whitelist(self):
         """Test hostname whitelist functionality"""

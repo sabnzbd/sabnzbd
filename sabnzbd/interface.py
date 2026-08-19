@@ -117,6 +117,8 @@ _MSG_MISSING_AUTH = "Missing authentication"
 _MSG_APIKEY_REQUIRED = "API Key Required"
 _MSG_APIKEY_INCORRECT = "API Key Incorrect"
 
+RE_HOST_PORT = re.compile(":[0-9]+$")
+
 INTERFACE_ROUTES: list[Route | Mount] = []
 
 
@@ -170,6 +172,16 @@ def client_address(request: Request) -> Address:
     return request.client or Address("", 0)
 
 
+def client_address_info(request: Request) -> str:
+    """The client as host:port for logging, with the forwarding chain when there is one"""
+    client = client_address(request)
+    # Bracketed, so the port cannot be read as another group of an IPv6 address
+    host = f"[{client.host}]" if ":" in client.host else client.host
+    if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
+        return f"{host}:{client.port} (X-Forwarded-For: {xff_ips})"
+    return f"{host}:{client.port}"
+
+
 def check_access(request: Request, access_type: int = 4, warn_user: bool = False) -> bool:
     """Check if external address is allowed given access_type (Starlette version):
     1=nzb
@@ -212,10 +224,13 @@ def check_hostname(request: Request) -> bool:
 
     # Remove the port-part (like ':8080'), if it is there, always on the right hand side.
     # Not to be confused with IPv6 colons (within square brackets)
-    host = re.sub(":[0123456789]+$", "", host).lower()
+    host = RE_HOST_PORT.sub("", host).lower()
 
-    # Fine if localhost or IP
-    if host == "localhost" or is_ipv4_addr(host) or is_ipv6_addr(host):
+    # Fine if localhost or IP. RFC 7230 requires an IPv6 literal in a Host header to be
+    # bracketed, so brackets are required here too: without them there is no telling
+    # where the address ends and the port begins, and a bare "1234:5678::1:8080" would
+    # otherwise pass as an address after the port-stripping above took a guess at it.
+    if host == "localhost" or is_ipv4_addr(host) or (host.startswith("[") and is_ipv6_addr(host)):
         return True
 
     # Check on the whitelist
@@ -239,7 +254,10 @@ COOKIE_SESSION = "sabnzbd_session"
 
 def use_secure_cookies(request: Request) -> bool:
     """Whether cookies for this request should carry the Secure attribute"""
-    return request.url.scheme == "https" or bool(cfg.enable_https())
+    # Taken from the scope, which is what the proxy headers are applied to and what
+    # request.url is built from. The URL itself comes out relative, and its scheme
+    # empty, when there is neither a Host header nor an address to fall back on.
+    return request.scope.get("scheme") == "https" or bool(cfg.enable_https())
 
 
 def set_login_cookie(request: Request, response: Response, remove=False, remember_me=False):
@@ -383,10 +401,7 @@ def template_filtered_response(file: str, search_list: dict[str, Any]):
 def log_warning_and_ip(request: Request, txt: str):
     """Include the IP and the Proxy-IP for warnings (Starlette version)"""
     if cfg.api_warnings():
-        remote_info = "%s:%s" % client_address(request)
-        if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
-            remote_info += f" (X-Forwarded-For: {xff_ips})"
-        logging.warning("%s %s", txt, remote_info)
+        logging.warning("%s %s", txt, client_address_info(request))
 
 
 # CherryPy collapsed these API routing/scalar keys to their first value when a key
@@ -787,18 +802,12 @@ async def login_index(request: Request):
             # Save login cookie
             set_login_cookie(request, response, remember_me=remember_me)
             # Log the success
-            remote_info = "%s:%s" % client_address(request)
-            if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
-                remote_info += f" (X-Forwarded-For: {xff_ips})"
-            logging.info("Successful login from %s", remote_info)
+            logging.info("Successful login from %s", client_address_info(request))
             return response
         elif username or password:
             error = T("Authentication failed, check username/password.")
             # Warn about the potential security problem
-            remote_info = "%s:%s" % client_address(request)
-            if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
-                remote_info += f" (X-Forwarded-For: {xff_ips})"
-            logging.warning(T("Unsuccessful login attempt from %s"), remote_info)
+            logging.warning(T("Unsuccessful login attempt from %s"), client_address_info(request))
 
     # Show login. Building the header and rendering the Cheetah template are
     # blocking work, so keep them off the event loop.
@@ -2413,19 +2422,12 @@ class RequestLoggingMiddleware:
             # request did not pass through secured_expose, so there is nothing to log.
             if cfg.api_logging() and (params := scope.get("state", {}).get("params")) is not None:
                 request = Request(scope)
-                if xff_ips := request.headers.get("X-Forwarded-For"):
-                    remote_label = "%s (X-Forwarded-For: %s) [%s]" % (
-                        client_address(request).host,
-                        xff_ips,
-                        request.headers.get("User-Agent"),
-                    )
-                else:
-                    remote_label = "%s [%s]" % (client_address(request).host, request.headers.get("User-Agent"))
                 logging.debug(
-                    "Request %s %s from %s %s",
+                    "Request %s %s from %s [%s] %s",
                     request.method,
                     request.url.path,
-                    remote_label,
+                    client_address_info(request),
+                    request.headers.get("User-Agent"),
                     dict(params),
                 )
 
