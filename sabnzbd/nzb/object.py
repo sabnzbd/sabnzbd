@@ -76,7 +76,7 @@ from sabnzbd.filesystem import (
     get_unique_filename,
     renamer,
     make_script_path,
-    globber,
+    listdir_full,
     is_valid_script,
     has_unwanted_extension,
     create_all_dirs,
@@ -89,6 +89,7 @@ from sabnzbd.filesystem import (
     remove_data,
     get_ext,
     create_work_name,
+    same_directory,
     RAR_RE,
 )
 from sabnzbd.par2file import FilePar2Info, has_par2_in_filename, analyse_par2, parse_par2_file, is_par2_file
@@ -850,8 +851,13 @@ class NzbObject(TryList):
         """Check if downloaded files already exits, for these set NZF to complete"""
         fix_unix_encoding(wdir)
 
-        # Get a list of already present files, ignore folders
-        existing_files = globber(wdir, "*.*")
+        # Get a list of already present files, ignore folders. Par2 can name a file inside a
+        # sub-directory of the job, so look there too, but never inside the admin folder.
+        existing_files = [
+            os.path.relpath(path, wdir)
+            for path in listdir_full(wdir)
+            if JOB_ADMIN not in path and "." in os.path.basename(path)
+        ]
 
         # Substitute renamed files
         if renames := load_data(RENAMES_FILE, self.admin_path, remove=True):
@@ -1435,14 +1441,31 @@ class NzbObject(TryList):
             # Add to dict
             for name, old_name in renames_or_name.items():
                 if old_name is not None:
-                    self.renames[name] = self.renames.pop(old_name, old_name)
+                    self.renames[os.path.normpath(name)] = self.renames.pop(old_name, old_name)
         elif old_name is not None:
-            self.renames[renames_or_name] = self.renames.pop(old_name, old_name)
+            self.renames[os.path.normpath(renames_or_name)] = self.renames.pop(old_name, old_name)
+
+    def sub_directories(self) -> set[str]:
+        """Sub-folders of the download folder that this job put files in.
+        Par2 sets can store their files in a folder of their own, we assemble straight into
+        it, and par2cmdline can restore a file into one during repair. These are the only
+        sub-folders we know about, so the rest of the download folder is left alone, see #1304.
+        """
+        sub_dirs = set()
+        # nzf.filename is sanitized and cannot escape, names reported by par2cmdline are not
+        for name in [nzf.filename for nzf in self.finished_files] + list(self.renames):
+            if subdir := os.path.dirname(name):
+                path = os.path.join(self.download_path, subdir)
+                if same_directory(self.download_path, path) == 2:
+                    sub_dirs.add(path)
+        return sub_dirs
 
     @synchronized()
-    def get_unique_filepath(self, filename: str) -> str:
+    def get_unique_filepath(self, filename: str) -> tuple[str, str]:
         """
-        Ensure a unique filepath by appending .N before extension if needed
+        Ensure a unique filepath by appending .N before extension if needed.
+        The filename can name a sub-directory of the job, that folder is created here.
+        Returns the (unique) filename relative to the download folder and its full path.
         """
         directory = self.download_path
         base_name, ext = os.path.splitext(filename)
@@ -1453,8 +1476,15 @@ class NzbObject(TryList):
             candidate = f"{base_name}.{num}{ext}"
             path = os.path.join(directory, candidate)
             num += 1
+
+        if subdir := os.path.dirname(candidate):
+            # sanitize_filename() keeps the name local, so this should never trigger
+            if same_directory(directory, os.path.dirname(path)) == 0:
+                raise ValueError("Refusing to write %s outside of %s" % (candidate, directory))
+            create_all_dirs(os.path.join(directory, subdir))
+
         self.filenames.add(candidate)
-        return path
+        return candidate, path
 
     @property
     def admin_path(self):
@@ -1757,7 +1787,8 @@ class NzbObject(TryList):
         self.filenames = set()
         for nzf in self.files_table.values():
             if nzf.filepath:
-                self.filenames.add(get_filename(nzf.filepath))
+                # Relative to the download folder, it can name a sub-directory
+                self.filenames.add(nzf.filename)
 
         # Attributes added since 3.0.0
         if self.bytes_par2 is None:

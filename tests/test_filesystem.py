@@ -123,6 +123,58 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("../") == ".._"
         assert filesystem.sanitize_filename("../test") == ".._test"
 
+    @pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
+    @pytest.mark.platform()
+    def test_file_allow_subdirs(self, platform):
+        """Par2 uses "/" to separate sub-directories, no matter which platform created the set"""
+        assert filesystem.sanitize_filename("sub/test.rar", allow_subdirs=True) == os.path.join("sub", "test.rar")
+        assert filesystem.sanitize_filename("sub/deeper/test.rar", allow_subdirs=True) == os.path.join(
+            "sub", "deeper", "test.rar"
+        )
+        # No sub-directory at all, or nothing but separators
+        assert filesystem.sanitize_filename("test.rar", allow_subdirs=True) == "test.rar"
+        assert filesystem.sanitize_filename("a//b.rar", allow_subdirs=True) == os.path.join("a", "b.rar")
+        assert filesystem.sanitize_filename("sub/./test.rar", allow_subdirs=True) == os.path.join("sub", "test.rar")
+        # Every part is sanitized on its own, chr(0) is illegal on all platforms
+        assert filesystem.sanitize_filename("sub" + chr(0) + "1/test" + chr(0) + "2.rar", allow_subdirs=True) == (
+            os.path.join("sub_1", "test_2.rar")
+        )
+
+    @pytest.mark.parametrize(
+        "hostile_name",
+        [
+            "/test.rar",
+            "//test.rar",
+            "../test.rar",
+            "../../../../../../etc/shadow",
+            "sub/../../test.rar",
+            "sub/../../../sub/test.rar",
+            "./../test.rar",
+            "../..",
+            "../",
+            "/",
+            "//",
+            "/../",
+            "...",
+            "....",
+        ],
+    )
+    @pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
+    @pytest.mark.platform()
+    def test_file_allow_subdirs_cannot_escape(self, platform, hostile_name):
+        """Whatever the par2 claims, the result has to stay inside the folder it is used in.
+        Joining it onto any base directory must never point above that base."""
+        result = filesystem.sanitize_filename(hostile_name, allow_subdirs=True)
+
+        assert result, "an empty result would resolve to the base directory itself"
+        assert not os.path.isabs(result)
+        assert os.pardir not in result.split(os.sep)
+
+        # The real test: it cannot climb out of whatever it gets joined to
+        base = os.path.join(os.sep + "downloads", "incomplete", "job")
+        resolved = os.path.normpath(os.path.join(base, result))
+        assert resolved.startswith(base + os.sep), "%s escaped to %s" % (hostile_name, resolved)
+
     @pytest.mark.platform("linux")
     def test_folder_illegal_chars_linux(self):
         assert filesystem.sanitize_foldername('test"aftertest') == "test_aftertest"
