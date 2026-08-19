@@ -19,7 +19,6 @@
 sabnzbd.decoder - article decoder
 """
 
-import errno
 import logging
 import hashlib
 from typing import Optional
@@ -130,7 +129,7 @@ def decode(article: Article, decoder: sabctools.NNTPResponse):
         # again cannot fix a full disk, and doing so would spend its retries and then
         # fail the job as incomplete - so pause instead and leave the article to be
         # picked up again once there is room.
-        if error.errno == errno.ENOSPC:
+        if sabnzbd.filesystem.out_of_space(error):
             logging.error(T("Disk full! Forcing Pause"))
         else:
             logging.error(T("Disk error on creating file %s"), error.filename)

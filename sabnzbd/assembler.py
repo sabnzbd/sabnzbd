@@ -345,8 +345,7 @@ class Assembler(Thread):
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error
                         if not nzo.pp_or_finished:
-                            # 28 == disk full => pause downloader
-                            if err.errno == 28:
+                            if sabnzbd.filesystem.out_of_space(err):
                                 logging.error(T("Disk full! Forcing Pause"))
                             else:
                                 logging.error(T("Disk error on creating file %s"), clip_path(filepath))

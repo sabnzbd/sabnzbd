@@ -19,6 +19,7 @@
 sabnzbd.misc - filesystem operations
 """
 
+import errno
 import gzip
 import os
 import pickle
@@ -1505,6 +1506,21 @@ def is_sparse(path: str) -> bool:
         pass
 
     return False
+
+
+def out_of_space(error: OSError) -> bool:
+    """Did this write fail because there is nowhere to put the data?
+
+    A full filesystem and an exhausted quota are the same thing to a user, and both are
+    fixed by freeing space rather than by retrying, so they are reported together.
+
+    Windows has more than one way to say it and maps only some of them onto an errno,
+    so the native codes are checked as well: 39 ERROR_HANDLE_DISK_FULL, 112
+    ERROR_DISK_FULL, 1295 ERROR_DISK_QUOTA_EXCEEDED.
+    """
+    if error.errno in (errno.ENOSPC, getattr(errno, "EDQUOT", None)):
+        return True
+    return sabnzbd.WINDOWS and getattr(error, "winerror", None) in (39, 112, 1295)
 
 
 def is_sparse_supported(check_dir: str) -> bool:
