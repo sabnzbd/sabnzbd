@@ -138,8 +138,8 @@
                     </div>
                     <div class="field-pair no-field-pair-bg">
                         <button class="btn btn-default addNewServer" disabled data-toggle="tooltip" data-placement="top" title="$T('wizard-test-server-required')"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
-                        <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
-                        <div class="result-box">
+                        <button class="btn btn-default testServer" type="button" aria-busy="false"><span class="glyphicon glyphicon-sort" aria-hidden="true"></span> $T('button-testServer')</button>
+                        <div class="result-box" role="status" aria-live="polite" aria-atomic="true">
                             <div class="alert"></div>
                         </div>
                     </div>
@@ -275,10 +275,10 @@
                         </div>
                         <div class="field-pair no-field-pair-bg">
                             <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                            <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
+                            <button class="btn btn-default testServer" type="button" aria-busy="false"><span class="glyphicon glyphicon-sort" aria-hidden="true"></span> $T('button-testServer')</button>
                             <button class="btn btn-default delServer"><span class="glyphicon glyphicon-trash"></span> $T('button-delServer')</button>
 
-                            <div class="result-box">
+                            <div class="result-box" role="status" aria-live="polite" aria-atomic="true">
                                 <div class="alert"></div>
                             </div>
                         </div>
@@ -546,7 +546,9 @@
             var theButton = jQuery(this)
             var resultBox = theButton.parents('.col1').find('.result-box .alert');
             theButton.attr("disabled", "disabled")
+            theButton.attr("aria-busy", "true")
             theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
+            resultBox.removeClass('alert-success alert-danger').html("$T('srv-testing')").show()
             jQuery.ajax({
                 type: "POST",
                 url: "$url('api')",
@@ -559,12 +561,13 @@
                 resultBox.removeClass('alert-success alert-danger').show()
                 resultBox.html(msg)
                 theButton.removeAttr("disabled")
+                theButton.attr("aria-busy", "false")
                 theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
 
                 // Success or not?
                 if(data.value.result) {
                     resultBox.addClass('alert-success')
-                    resultBox.prepend('<span class="glyphicon glyphicon-ok-sign"></span> ')
+                    resultBox.prepend('<span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> ')
 
                     // Allow adding the new server if we are in the new-server section
                     if(theButton.parents("form[data-form='add-server']").length) {
@@ -575,7 +578,7 @@
                     }
                 } else {
                     resultBox.addClass('alert-danger')
-                    resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
+                    resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> ')
 
                     // Disable the adding of new server, just to be sure
                     if(theButton.parents("form[data-form='add-server']").length) {
