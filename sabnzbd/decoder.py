@@ -19,6 +19,7 @@
 sabnzbd.decoder - article decoder
 """
 
+import errno
 import logging
 import hashlib
 from typing import Optional
@@ -124,6 +125,20 @@ def decode(article: Article, decoder: sabctools.NNTPResponse):
         if search_new_server(article):
             return
 
+    except OSError as error:
+        # The same response the assembler gives a failed write. Fetching the article
+        # again cannot fix a full disk, and doing so would spend its retries and then
+        # fail the job as incomplete - so pause instead and leave the article to be
+        # picked up again once there is room.
+        if error.errno == errno.ENOSPC:
+            logging.error(T("Disk full! Forcing Pause"))
+        else:
+            logging.error(T("Disk error on creating file %s"), error.filename)
+        logging.info("Traceback: ", exc_info=True)
+        sabnzbd.Downloader.pause()
+        article.allow_new_fetcher()
+        return
+
     except (BadYenc, ValueError):
         # Handles precheck and badly formed articles
         if nzo.precheck and decoder.status_code == 223:
@@ -187,6 +202,12 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
     # decoder consumed the response anyway so the connection survives, but nothing was
     # kept, so this is a failed article rather than one on disk.
     if response.sink_failed:
+        # A closed file means the job went away while the article was arriving, and it
+        # only needs fetching again. Anything else is a real disk error - a full disk,
+        # most often - and is re-raised as the OSError it came from so it gets the same
+        # handling as a failed write from the assembler.
+        if isinstance(response.sink_error, OSError):
+            raise response.sink_error
         raise SinkFailed
 
     # Let SABCTools do all the heavy lifting
