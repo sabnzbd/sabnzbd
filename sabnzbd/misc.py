@@ -1388,6 +1388,7 @@ def is_localhost(value: str) -> bool:
 # Private address space reserved for local area networks. Note that is_lan_addr() is currently
 # broader than this: it defers to ipaddress.is_private, which also covers ranges such as 2002::/16.
 LAN_RANGES = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "169.254.0.0/16", "fc00::/7", "fe80::/10"]
+LAN_NETWORKS = [ipaddress.ip_network(lan_range) for lan_range in LAN_RANGES]
 
 
 def is_lan_addr(ip: str) -> bool:
@@ -1414,33 +1415,52 @@ def is_local_addr(ip: str) -> bool:
         return is_lan_addr(ip)
 
 
-def xff_trusted_networks() -> list[str]:
-    """Networks from which the X-Forwarded-For header may be trusted, for use as
-    uvicorn's forwarded_allow_ips. Mirrors is_loopback_addr plus is_local_addr:
-    loopback and the user-defined local_ranges, or the private LAN address space
-    when no local_ranges are set.
+def lan_ranges_within(ranges: list[str]) -> list[str]:
+    """The part of ranges that falls inside the private address space, or all of it when no
+    ranges are given. Two CIDR blocks are either disjoint or nested, so an overlap is the
+    narrower of the pair."""
+    if not ranges:
+        # A copy: the caller gets a list of its own rather than the shared constant
+        return list(LAN_RANGES)
 
-    Uvicorn compares the raw peer address without normalization, so for every
-    IPv4 entry the IPv4-mapped IPv6 form (::ffff:a.b.c.d) is added as well.
-    """
-    networks = ["127.0.0.0/8", "::1"]
-    if local_ranges := cfg.local_ranges():
-        networks.extend(local_ranges)
-    else:
-        # Private address space, matching is_lan_addr()
-        networks.extend(["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "169.254.0.0/16", "fc00::/7", "fe80::/10"])
-
-    # Add IPv4-mapped IPv6 equivalents of all IPv4 entries
-    mapped = []
-    for network in networks:
-        try:
-            net = ipaddress.ip_network(network, strict=False)
-        except ValueError:
-            # Not a valid IP or network; leave it to uvicorn as a literal
+    overlap = []
+    for entry in ranges:
+        if not (net := parse_subnet(entry)):
+            logging.warning(T("Ignoring invalid entry in local_ranges: %s"), entry)
             continue
+        within = []
+        for lan_network in LAN_NETWORKS:
+            if net.version != lan_network.version:
+                continue
+            if net.subnet_of(lan_network):
+                within.append(str(net))
+            elif lan_network.subnet_of(net):
+                within.append(str(lan_network))
+        if not within:
+            # Only a private network can be trusted by default, so say what to do instead
+            logging.warning(
+                T("%s in local_ranges is not a private network, list it in xff_trusted_hosts to trust it"), entry
+            )
+        overlap.extend(within)
+    return overlap
+
+
+def xff_trusted_networks() -> list[str]:
+    """Networks whose forwarded headers may be trusted"""
+    if trusted_hosts := cfg.xff_trusted_hosts():
+        trusted_hosts = ["127.0.0.0/8", "::1", *trusted_hosts]
+    else:
+        trusted_hosts = ["127.0.0.0/8", "::1", *lan_ranges_within(cfg.local_ranges())]
+
+    trusted_networks = []
+    for entry in trusted_hosts:
+        if not (net := parse_subnet(entry)):
+            logging.warning(T("Ignoring invalid network in the forwarded-header trust list: %s"), entry)
+            continue
+        trusted_networks.append(str(net))
         if net.version == 4:
-            mapped.append("::ffff:%s/%d" % (net.network_address, net.prefixlen + 96))
-    return networks + mapped
+            trusted_networks.append("::ffff:%s/%d" % (net.network_address, net.prefixlen + 96))
+    return trusted_networks
 
 
 def ip_extract() -> list[str]:

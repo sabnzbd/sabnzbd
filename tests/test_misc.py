@@ -22,6 +22,7 @@ tests.test_misc - Testing functions in misc.py
 import builtins
 import datetime
 import functools
+import logging
 import os
 import socket
 import subprocess
@@ -873,6 +874,50 @@ class TestMisc:
     )
     def test_ip_in_subnet(self, ip, subnet, result):
         assert misc.ip_in_subnet(ip, subnet) is result
+
+    @pytest.mark.parametrize(
+        "ranges, result",
+        [
+            # Nothing configured means the whole private address space
+            ([], misc.LAN_RANGES),
+            (None, misc.LAN_RANGES),
+            # Narrower than a private range, so the narrower one is the overlap
+            (["192.168.1.0/24"], ["192.168.1.0/24"]),
+            (["192.168.1."], ["192.168.1.0/24"]),  # Old-style entry
+            (["fd00::/8"], ["fd00::/8"]),
+            # Wider than a private range, so the private range is the overlap
+            (["10.0.0.0/7"], ["10.0.0.0/8"]),
+            # Public ranges have no overlap at all
+            (["8.8.8.0/24"], []),
+            (["dead:beef::/32"], []),
+            (["not-a-network"], []),
+            # A mixture keeps only the part that is private
+            (["192.168.1.0/24", "8.8.8.0/24"], ["192.168.1.0/24"]),
+        ],
+    )
+    def test_lan_ranges_within(self, ranges, result):
+        assert misc.lan_ranges_within(ranges) == result
+
+    @pytest.mark.parametrize(
+        "ranges, expected_warning",
+        [
+            (["100.64.0.0/10"], "not a private network"),
+            (["8.8.8.0/24"], "not a private network"),
+            (["nonsense"], "Ignoring invalid entry"),
+            # Nothing to say about a range that is kept
+            (["192.168.1.0/24"], None),
+        ],
+    )
+    def test_lan_ranges_within_says_what_it_dropped(self, ranges, expected_warning, caplog):
+        """A dropped range silently stops conferring forwarded-header trust, so the proxy
+        living in it starts being refused with nothing at start-up to explain why."""
+        with caplog.at_level(logging.WARNING):
+            misc.lan_ranges_within(ranges)
+        messages = [record.getMessage() for record in caplog.records]
+        if expected_warning:
+            assert any(expected_warning in message and ranges[0] in message for message in messages)
+        else:
+            assert not messages
 
     @pytest.mark.parametrize(
         "subnet, result",

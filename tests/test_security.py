@@ -32,6 +32,7 @@ from starlette.datastructures import Headers, Address, QueryParams, State, Uploa
 import sabnzbd
 import sabnzbd.cfg as cfg
 import sabnzbd.security as security
+from sabnzbd.misc import is_local_addr, xff_trusted_networks
 from sabnzbd import interface
 
 
@@ -76,6 +77,39 @@ def set_csrf_header(request, token: str):
 def anonymous_csrf() -> str:
     """The CSRF token a login-bypassed request (no cookie) must echo"""
     return security.csrf_token_for(security._ANONYMOUS_CSRF_IDENTITY)
+
+
+def proxied_request(
+    remote_ip: str,
+    xff_header: Optional[str | list] = None,
+    forwarded_header: Optional[str] = None,
+):
+    """A request that really went through ProxyTrustMiddleware, so the headers, the resolved
+    client and the trust verdict all agree with each other, exactly as in a served request.
+
+    xff_header takes a list to send X-Forwarded-For as several header lines, which is what a
+    proxy that appends rather than rewrites produces, and what a dict of headers cannot say."""
+    captured = {}
+
+    async def asgi_app(scope, receive, send):
+        captured.update(scope)
+
+    raw = []
+    if xff_header is not None:
+        for value in xff_header if isinstance(xff_header, list) else [xff_header]:
+            raw.append((b"x-forwarded-for", value.encode("latin1")))
+    if forwarded_header:
+        raw.append((b"forwarded", forwarded_header.encode("latin1")))
+
+    scope = {"type": "http", "client": (remote_ip, 12345), "headers": raw}
+    asyncio.run(security.ProxyTrustMiddleware(asgi_app)(scope, None, None))
+
+    request = mock_request(remote_ip=captured["client"][0], remote_port=captured["client"][1])
+    request.headers = Headers(raw=raw)
+    request.scope["headers"] = raw
+    request.scope[security.SCOPE_PEER] = captured[security.SCOPE_PEER]
+    request.scope[security.SCOPE_PEER_TRUSTED] = captured[security.SCOPE_PEER_TRUSTED]
+    return request
 
 
 def api_request(token: Optional[str] = None, *, mode: str = "queue", with_token: bool = True, **kwargs):
@@ -511,3 +545,200 @@ class TestCsrfIdentity:
         request = mock_request(csrf=security.csrf_token_for(""))
         assert security.csrf_identity(request) == ""
         assert security.csrf_token_matches(request) is False
+
+
+class TestForwardedHeaderTrust:
+    """A forwarded header means the peer is speaking for someone else. Unless the client was
+    resolved from it, the peer's own address must not stand in for theirs."""
+
+    @pytest.mark.parametrize(
+        "verify_xff_header, xff_header, forwarded_header, expected",
+        [
+            # Nothing forwarded: the peer is the client, exactly as before
+            (True, None, None, True),
+            (False, None, None, True),
+            # A trusted local peer speaking for a local client stays local
+            (True, "192.168.1.50", None, True),
+            # ...but not when we were told never to trust the header
+            (False, "192.168.1.50", None, False),
+            # A trusted local peer speaking for the internet resolves to the internet
+            (True, "8.8.8.8", None, False),
+            (False, "8.8.8.8", None, False),
+            # RFC 7239 is not parsed, so it can only tell us the client is someone else
+            (True, None, 'for="8.8.8.8"', False),
+            (False, None, 'for="8.8.8.8"', False),
+            # X-Forwarded-For wins when both are present
+            (True, "192.168.1.50", 'for="8.8.8.8"', True),
+            # An empty header tells us nothing, so the peer is still the client
+            (True, "", None, True),
+        ],
+    )
+    @pytest.mark.config(lambda params: {"verify_xff_header": params["verify_xff_header"], "inet_exposure": 0})
+    def test_unresolved_client_is_not_local(self, verify_xff_header, xff_header, forwarded_header, expected):
+        def _func():
+            request = proxied_request("192.168.1.5", xff_header=xff_header, forwarded_header=forwarded_header)
+            assert security.check_access(request, access_type=4) is expected
+
+        _func()
+
+    @pytest.mark.config({"verify_xff_header": False, "inet_exposure": 5, "username": "u", "password": "p"})
+    def test_login_is_not_bypassed_behind_an_unverified_proxy(self):
+        """The escalation this exists to remove: at inet_exposure 5 a client considered local
+        is let through without a login, so a proxy standing in for the client handed that
+        bypass to everyone behind it."""
+
+        def _func():
+            assert security.login_bypassed(proxied_request("127.0.0.1", xff_header="8.8.8.8")) is False
+            # A genuinely local client with no proxy in front is unaffected
+            assert security.login_bypassed(proxied_request("127.0.0.1")) is True
+
+        _func()
+
+    @pytest.mark.config({"xff_trusted_hosts": ["104.16.0.0/13"]})
+    def test_trusted_hosts_grant_no_local_access(self):
+        """The point of splitting this off from local_ranges: a public reverse proxy can be
+        trusted to speak for others without any of its addresses counting as local."""
+
+        def _func():
+            assert "104.16.0.0/13" in xff_trusted_networks()
+            assert is_local_addr("104.16.0.1") is False
+            # The proxy speaks, and the real client is who we act on
+            request = proxied_request("104.16.0.1", xff_header="8.8.8.8")
+            assert security.client_address(request).host == "8.8.8.8"
+
+        _func()
+
+    @pytest.mark.config({"xff_trusted_hosts": ["104.16.0.0/13"]})
+    def test_trusted_hosts_replace_the_default(self):
+        """An explicit list is the whole trust boundary, so trust can be narrowed below the
+        LAN default rather than only widened."""
+
+        def _func():
+            assert "10.0.0.0/8" not in xff_trusted_networks()
+            # A LAN peer outside the list cannot speak for anyone
+            request = proxied_request("10.11.12.13", xff_header="10.11.12.99")
+            assert security.check_access(request, access_type=4) is False
+
+        _func()
+
+    @pytest.mark.config({"local_ranges": ["192.168.1."]})
+    def test_legacy_local_range_is_a_trusted_proxy(self):
+        """Old-style local_ranges entries used to reach uvicorn verbatim, where they became
+        literals that never matched, leaving such a peer local but untrusted: its header was
+        ignored and it stood in for its own clients."""
+
+        def _func():
+            assert "192.168.1.0/24" in xff_trusted_networks()
+            assert is_local_addr("192.168.1.5") is True
+            request = proxied_request("192.168.1.5", xff_header="8.8.8.8")
+            assert security.client_address(request).host == "8.8.8.8"
+
+        _func()
+
+    @pytest.mark.config({"xff_trusted_hosts": ["*"]})
+    def test_wildcard_is_not_a_trust_list(self):
+        """`*` would hand the choice of client address to anyone who can reach us, so it is
+        not accepted. It is refused like any other entry that is not a network, which leaves
+        loopback trusted rather than everybody."""
+
+        def _func():
+            assert xff_trusted_networks() == ["127.0.0.0/8", "::ffff:127.0.0.0/104", "::1/128"]
+            # The peer speaks only for itself, so a header from it is not resolved
+            request = proxied_request("8.8.8.8", xff_header="1.1.1.1")
+            assert security.client_address(request).host == "8.8.8.8"
+            assert security.check_access(request, access_type=4) is False
+
+        _func()
+
+    @pytest.mark.config({"xff_trusted_hosts": ["192.168.1.0/24", "not-a-network", "10."]})
+    def test_invalid_entries_are_skipped_not_fatal(self):
+        """One bad entry must not take the valid ones down with it, because that would fall
+        back to trusting the whole local network."""
+
+        def _func():
+            networks = xff_trusted_networks()
+            assert "192.168.1.0/24" in networks
+            assert "10.0.0.0/8" in networks
+            assert "not-a-network" not in networks
+
+        _func()
+
+    @pytest.mark.config({"local_ranges": ["192.168.1.0/24"], "inet_exposure": 0})
+    def test_local_ranges_can_only_narrow_trust(self):
+        """Saying who counts as local restricts who may speak for others, and never widens it.
+        A LAN neighbour outside local_ranges has no access of its own, so it must not be able
+        to claim an address that does."""
+
+        def _func():
+            assert "10.0.0.0/8" not in xff_trusted_networks()
+            outsider = proxied_request("10.11.12.13")
+            assert security.check_access(outsider, access_type=4) is False
+            # The same neighbour claiming an address inside local_ranges gets no further
+            forged = proxied_request("10.11.12.13", xff_header="192.168.1.23")
+            assert security.check_access(forged, access_type=4) is False
+
+        _func()
+
+    @pytest.mark.config({"local_ranges": ["8.8.8.0/24"], "inet_exposure": 0})
+    def test_public_local_range_speaks_only_for_itself(self):
+        """local_ranges accepts any range, including a public one. Being called local says
+        nothing about being trusted to name other clients."""
+
+        def _func():
+            assert "8.8.8.0/24" not in xff_trusted_networks()
+            # It keeps the local access it was given
+            assert security.check_access(proxied_request("8.8.8.8"), access_type=4) is True
+            # ...but cannot hand it to anyone else
+            forged = proxied_request("8.8.8.8", xff_header="1.2.3.4")
+            assert security.check_access(forged, access_type=4) is False
+
+        _func()
+
+    @pytest.mark.parametrize(
+        "xff_header",
+        [
+            # A proxy that appends rather than rewrites sends a second line, so a client can
+            # prepend one of its own. Reading only the first line would miss the real chain.
+            ["", "8.8.8.8"],
+            ["", "", "8.8.8.8"],
+            ["8.8.8.8", ""],
+            # Nothing the resolver can take an address from, so the peer is still not the client
+            [",,,"],
+            [" "],
+            ["", ","],
+        ],
+    )
+    @pytest.mark.config({"verify_xff_header": False, "inet_exposure": 0})
+    def test_header_split_over_lines_is_still_a_header(self, xff_header):
+        """The guard has to see the header the way the resolver does. Starlette returns the
+        first line and ProxyHeadersMiddleware joins them all, so asking for one line let a
+        prepended empty value hide a chain and leave the proxy standing in for its client."""
+
+        def _func():
+            request = proxied_request("127.0.0.1", xff_header=xff_header)
+            assert security.check_access(request, access_type=4) is False
+
+        _func()
+
+    @pytest.mark.config({"verify_xff_header": True, "inet_exposure": 0})
+    def test_trusted_peer_sending_an_unusable_header(self):
+        """A trusted proxy whose header names nobody leaves request.client as the proxy. It
+        was speaking for someone, so its own address must not be taken for theirs."""
+
+        def _func():
+            assert security.check_access(proxied_request("192.168.1.5", xff_header=",,,"), access_type=4) is False
+            # ...while a header naming a local client still resolves as it should
+            resolved = proxied_request("192.168.1.5", xff_header="192.168.1.50")
+            assert security.check_access(resolved, access_type=4) is True
+
+        _func()
+
+    @pytest.mark.config({"verify_xff_header": True, "inet_exposure": 5, "username": "u", "password": "p"})
+    def test_login_is_not_bypassed_by_a_split_header(self):
+        """The same bypass reached through login_bypassed(), which is what turns it into
+        entry without a password."""
+
+        def _func():
+            assert security.login_bypassed(proxied_request("127.0.0.1", xff_header=["", "8.8.8.8"])) is False
+
+        _func()
