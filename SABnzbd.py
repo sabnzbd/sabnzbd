@@ -89,7 +89,6 @@ from sabnzbd.misc import (
     find_free_port,
     bind_web_socket,
     HostNotAvailableError,
-    xff_trusted_networks,
     create_https_certificates,
     ip_extract,
     set_serv_parms,
@@ -1250,8 +1249,9 @@ def main():
         ssl_keyfile=https_key if enable_https else None,
         ssl_certfile=https_cert if enable_https else None,
         ssl_ca_certs=https_chain if enable_https else None,
-        proxy_headers=bool(sabnzbd.cfg.verify_xff_header()),
-        forwarded_allow_ips=xff_trusted_networks(),
+        # Handled by ProxyTrustMiddleware inside the application, which needs the untouched
+        # peer address. Defaults to True, so it has to be turned off rather than left out.
+        proxy_headers=False,
     )
     sabnzbd.WEB_SERVER = sabnzbd.interface.ThreadedServer(config=server_config, sockets=[web_socket])
     try:

@@ -24,16 +24,17 @@ import logging
 import hmac
 import secrets
 import time
-from typing import Any
+from typing import Any, Optional
 
 from starlette.datastructures import Address
 from starlette.requests import Request
 from starlette.responses import Response
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import utob
-from sabnzbd.misc import is_local_addr, is_loopback_addr
+from sabnzbd.misc import is_local_addr, is_loopback_addr, xff_trusted_networks
 
 _MSG_MISSING_SESSION = "Access denied - Missing or invalid session token, reload the page and try again"
 _MSG_APIKEY_NOT_ON_PAGES = (
@@ -70,6 +71,35 @@ CSRF_FIELD = "csrf_token"
 _ANONYMOUS_CSRF_IDENTITY = "anonymous"
 
 
+# What ProxyTrustMiddleware observed before the forwarded headers were applied
+SCOPE_PEER = "sabnzbd.peer"
+SCOPE_PEER_TRUSTED = "sabnzbd.peer_trusted"
+
+
+class ProxyTrustMiddleware:
+    """Resolve the forwarded headers, recording the connecting peer and whether it was
+    trusted to speak for anyone. Run here rather than at the uvicorn layer, which leaves no
+    trace of what it decided, so an address taken from X-Forwarded-For cannot afterwards be
+    told apart from the proxy that sent it. The verdict comes from the same trust set that
+    does the parsing, so the two cannot drift apart."""
+
+    def __init__(self, app):
+        if cfg.verify_xff_header():
+            proxy_headers = ProxyHeadersMiddleware(app, trusted_hosts=xff_trusted_networks())
+            self.app = proxy_headers
+            self.trusted_hosts = proxy_headers.trusted_hosts
+        else:
+            self.app = app
+            self.trusted_hosts = None
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] in ("http", "websocket"):
+            peer = scope.get("client")
+            scope[SCOPE_PEER] = peer
+            scope[SCOPE_PEER_TRUSTED] = bool(self.trusted_hosts is not None and peer and peer[0] in self.trusted_hosts)
+        await self.app(scope, receive, send)
+
+
 def client_address(request: Request) -> Address:
     """Safe access to request.client, which can be None (e.g. when serving on a
     unix socket, or with some test clients). Treated as an unknown, non-local
@@ -77,14 +107,68 @@ def client_address(request: Request) -> Address:
     return request.client or Address("", 0)
 
 
+def peer_address(request: Request) -> Address:
+    """The address that opened the connection, before any forwarded header was applied.
+    Equal to client_address() unless a trusted proxy spoke for someone else."""
+    if peer := request.scope.get(SCOPE_PEER):
+        return Address(*peer)
+    return client_address(request)
+
+
+def forwarded_for_header(request: Request) -> str:
+    """The X-Forwarded-For value as the resolver reads it. A header sent more than once
+    arrives as several lines, which ProxyHeadersMiddleware joins and Headers.get() does not:
+    taking only the first line would miss a chain that has one prepended to it."""
+    return ", ".join(request.headers.getlist("X-Forwarded-For"))
+
+
+def unresolved_client_reason(request: Request) -> Optional[str]:
+    """Why request.client cannot be taken for the client address, or None when it can. A
+    forwarded header means the peer is speaking for someone else, so unless the client was
+    resolved from it the peer's own address must not stand in for theirs."""
+    if forwarded_for_header(request):
+        # The address is replaced wholesale when it is resolved, so an unchanged one means
+        # the resolver declined: the peer was not trusted, or the header named nobody. No
+        # recorded peer means the request never passed ProxyTrustMiddleware.
+        recorded_peer = request.scope.get(SCOPE_PEER)
+        if recorded_peer is not None and recorded_peer != request.scope.get("client"):
+            return None
+        peer = peer_address(request).host
+        if not cfg.verify_xff_header():
+            return (
+                T(
+                    "X-Forwarded-For received while verify_xff_header is off, turn it on and list %s in xff_trusted_hosts"
+                )
+                % peer
+            )
+        if not request.scope.get(SCOPE_PEER_TRUSTED):
+            return T("X-Forwarded-For received from %s, which is not in xff_trusted_hosts") % peer
+        return T("X-Forwarded-For from %s does not name a client address") % peer
+    if request.headers.get("Forwarded"):
+        # RFC 7239 is not parsed, so its presence only tells us the client is someone else
+        return T("Forwarded is not supported, configure the proxy to send X-Forwarded-For instead")
+    return None
+
+
 def client_address_info(request: Request) -> str:
-    """The client as host:port for logging, with the forwarding chain when there is one"""
+    """The client as host:port for logging, with the forwarding chain when there is one,
+    and the peer that connected when it is not the client itself.
+
+    Always ends with the user-agent, which is the shape sanitize_line() looks for when it
+    redacts external addresses out of the log the showlog api-call returns. A line that
+    mentions a client and does not end this way is not redacted at all."""
     client = client_address(request)
     # Bracketed, so the port cannot be read as another group of an IPv6 address
     host = f"[{client.host}]" if ":" in client.host else client.host
-    if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
-        return f"{host}:{client.port} (X-Forwarded-For: {xff_ips})"
-    return f"{host}:{client.port}"
+    info = f"{host}:{client.port}"
+    # Only when it was verified: an unverified header is attacker-controlled text
+    if cfg.verify_xff_header() and (xff_ips := forwarded_for_header(request)):
+        info += f" (X-Forwarded-For: {xff_ips})"
+    if (peer := peer_address(request)).host != client.host:
+        peer_host = f"[{peer.host}]" if ":" in peer.host else peer.host
+        info += f" (via {peer_host})"
+    # A dash rather than nothing: the brackets have to hold something to be recognised
+    return f"{info} [{request.headers.get('User-Agent') or '-'}]"
 
 
 def use_secure_cookies(request: Request) -> bool:
@@ -104,10 +188,13 @@ def check_access(request: Request, access_type: int = 4, warn_user: bool = False
     if access_type <= cfg.inet_exposure():
         return True
 
-    # X-Forwarded-For is resolved by uvicorn's ProxyHeadersMiddleware (see the
-    # uvicorn.Config in SABnzbd.py): when verify_xff_header is enabled and the
-    # connecting peer is a trusted local proxy, request.client already holds the
-    # effective client address taken from the XFF chain.
+    # Without a resolved client there is nobody to grant access to, whatever the peer is
+    if reason := unresolved_client_reason(request):
+        if warn_user and cfg.api_warnings():
+            logging.warning("%s %s - %s", T("Refused connection from:"), client_address_info(request), reason)
+        return False
+
+    # ProxyTrustMiddleware has resolved the chain, so this is the effective client
     remote_ip = client_address(request).host
 
     # Check if the client IP is a loopback address or considered local
