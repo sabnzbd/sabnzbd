@@ -841,6 +841,7 @@ SKIN_TEXT = {
     "Glitter-fetch": TT("Fetch"),
     "Glitter-interfaceOptions": TT("Web Interface"),
     "Glitter-interfaceRefresh": TT("Refresh rate"),
+    "Glitter-speedgraphDuration": TT("Speedgraph duration"),
     "Glitter-useGlobalOptions": TT("Use global interface settings"),
     "Glitter-queueItemLimit": TT("Queue item limit"),
     "Glitter-historyItemLimit": TT("History item limit"),

@@ -34,7 +34,9 @@ import sabnzbd.cfg as cfg
 DAY = float(24 * 60 * 60)
 WEEK = DAY * 7
 DAYS = (0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
-BPS_LIST_MAX = 275
+# Keep up to 24 hours of 1-second speed samples, so the speedgraph
+# can display any window up to that (cfg.speedgraph_duration)
+BPS_LIST_MAX = 86400
 
 RE_DAY = re.compile(r"^\s*(\d+)[^:]*")
 RE_HHMM = re.compile(r"(\d+):(\d+)\s*$")
@@ -433,7 +435,9 @@ class BPSMeter:
         refresh_rate = int(cfg.refresh_rate()) if cfg.refresh_rate() else 1
         self.add_empty_time()
         # We record every second, but display at the user's refresh-rate
-        return list(islice(self.bps_list, 0, None, refresh_rate))
+        # and only for the configured speedgraph duration
+        nr_seconds = max(1, int(cfg.speedgraph_duration()))
+        return list(islice(self.bps_list, max(0, len(self.bps_list) - nr_seconds), None, refresh_rate))
 
     def check_quota(self):
         """Pause the queue when all quota is spent

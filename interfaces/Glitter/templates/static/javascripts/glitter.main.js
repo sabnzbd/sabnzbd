@@ -13,6 +13,7 @@ function ViewModel() {
     self.isLoaded = ko.observable(false); // Becomes true after the first queue response
     self.useGlobalOptions = ko.observable(true).extend({ persist: 'useGlobalOptions' });
     self.refreshRate = ko.observable(1).extend({ persist: 'pageRefreshRate' });
+    self.speedgraphDuration = ko.observable(300).extend({ persist: 'speedgraphDuration' });
     self.dateFormat = ko.observable('fromNow').extend({ persist: 'pageDateFormat' });
     self.displayTabbed = ko.observable(false).extend({ persist: 'displayTabbed' });
     self.displayCompact = ko.observable(false).extend({ persist: 'displayCompact' });
@@ -206,8 +207,10 @@ function ViewModel() {
         self.speed(parseFloat(speedSplit[0]));
         self.speedMetric(speedSplit[1]);
 
-        // Update sparkline data
-        if (self.speedHistory.length >= 275) {
+        // Update sparkline data, limited to the configured duration
+        // (1 sample is added per refresh, so convert seconds to samples)
+        var maxSpeedHistory = Math.max(1, Math.ceil(self.speedgraphDuration() / self.refreshRate()));
+        while (self.speedHistory.length >= maxSpeedHistory) {
             // Remove first one
             self.speedHistory.shift();
         }
@@ -611,6 +614,19 @@ function ViewModel() {
                 mode: "set_config",
                 section: "misc",
                 keyword: "refresh_rate",
+                value: newValue
+            })
+        }
+    })
+
+    // Update speedgraph duration
+    self.speedgraphDuration.subscribe(function(newValue) {
+        // Save in config if global-settings
+        if (self.useGlobalOptions()) {
+            callAPI({
+                mode: "set_config",
+                section: "misc",
+                keyword: "speedgraph_duration",
                 value: newValue
             })
         }
@@ -1064,6 +1080,10 @@ function ViewModel() {
             // Set refreshrate (defaults to 1/s)
             if (!response.config.misc.refresh_rate) response.config.misc.refresh_rate = 1;
             self.refreshRate(response.config.misc.refresh_rate.toString());
+
+            // Set speedgraph duration (defaults to 5 minutes)
+            if (!response.config.misc.speedgraph_duration) response.config.misc.speedgraph_duration = 300;
+            self.speedgraphDuration(response.config.misc.speedgraph_duration.toString());
 
             // Set history and queue limit
             self.history.paginationLimit(response.config.misc.history_limit.toString())

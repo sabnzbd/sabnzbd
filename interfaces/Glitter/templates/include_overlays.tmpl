@@ -351,6 +351,22 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label class="col-sm-6 control-label" for="speedgraphDuration-option">$T('Glitter-speedgraphDuration')</label>
+                                <div class="col-sm-4">
+                                    <select id="speedgraphDuration-option" class="form-control" data-bind="value: speedgraphDuration">
+                                        <option value="60">1 $T('minute')</option>
+                                        <option value="300">5 $T('minute')</option>
+                                        <option value="900">15 $T('minute')</option>
+                                        <option value="1800">30 $T('minute')</option>
+                                        <option value="3600">1 $T('hour')</option>
+                                        <option value="10800">3 $T('hour')</option>
+                                        <option value="21600">6 $T('hour')</option>
+                                        <option value="43200">12 $T('hour')</option>
+                                        <option value="86400">24 $T('hour')</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label class="col-sm-6 control-label" for="queue-pagination-limit">$T('Glitter-queueItemLimit')</label>
                                 <div class="col-sm-4">
                                     <select name="queue-pagination-limit" id="queue-pagination-limit" class="form-control" data-bind="value: queue.paginationLimit">
