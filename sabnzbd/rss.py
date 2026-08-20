@@ -1006,7 +1006,6 @@ class RSSReader:
                     new_links.add(entry.link)
 
                     downloaded = self._process_entry(
-                        repo,
                         feed_entry=entry,
                         filters=filters,
                         first=first,
@@ -1145,8 +1144,6 @@ class RSSReader:
 
     def _process_entry(
         self,
-        repo: RSSRepository,
-        *,
         feed_entry: ResolvedEntry,
         filters: FeedConfig,
         first: bool,
@@ -1204,8 +1201,9 @@ class RSSReader:
             initial_scan=initial_scan,
         )
 
-        repo.upsert(resolved_entry)
-        self.enqueue_download(repo, resolved_entry)
+        with sabnzbd.rss.rss_repository() as repo:
+            repo.upsert(resolved_entry)
+            self.enqueue_download(repo, resolved_entry)
 
         return bool(evaluation.matched and should_download)
 
