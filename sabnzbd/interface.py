@@ -111,6 +111,7 @@ def secured_expose(
     check_configlock: bool = False,
     check_for_login: bool = True,
     check_api_key: bool = False,
+    api_route: bool = False,
     access_type: int = 4,
 ) -> Callable | str:
     """Wrapper for both cherrypy.expose and login/access check"""
@@ -120,6 +121,7 @@ def secured_expose(
             check_configlock=check_configlock,
             check_for_login=check_for_login,
             check_api_key=check_api_key,
+            api_route=api_route,
             access_type=access_type,
         )
 
@@ -183,7 +185,7 @@ def secured_expose(
 
         # Some pages need correct API key
         if check_api_key:
-            if msg := check_apikey(kwargs):
+            if msg := check_apikey(kwargs, api_route=api_route):
                 cherrypy.response.status = 403
                 if cfg.api_warnings():
                     return msg
@@ -374,31 +376,34 @@ def set_auth(conf):
         conf.update({"tools.auth_basic.on": False})
 
 
-def check_apikey(kwargs):
-    """Check API-key or NZB-key
-    Return None when OK, otherwise an error message
-    """
-    mode = kwargs.get("mode", "")
-    name = kwargs.get("name", "")
-
-    # Lookup required access level for the specific api-call
-    req_access = sabnzbd.api.api_level(mode, name)
-    if not check_access(req_access, warn_user=True):
-        return _MSG_ACCESS_DENIED
-
-    # Skip for auth and version calls
-    if mode in ("version", "auth"):
-        return None
-
-    # First check API-key, if OK that's sufficient
+def check_apikey(kwargs, api_route: bool = False):
+    """Check API-key or NZB-key, return None when OK, else an error message.
+    Only the real /api route trusts "mode"; elsewhere it's attacker-controlled,
+    so a valid API-key is always required."""
     key = kwargs.get("apikey")
+
+    if api_route:
+        mode = kwargs.get("mode", "")
+        name = kwargs.get("name", "")
+
+        req_access = sabnzbd.api.api_level(mode, name)
+        if not check_access(req_access, warn_user=True):
+            return _MSG_ACCESS_DENIED
+
+        # Skip for auth and version calls
+        if mode in ("version", "auth"):
+            return None
+
+        # NZB-key suffices for nzb-level calls
+        if req_access == 1 and key and key == cfg.nzb_key():
+            return None
+
+    # A valid API-key is required for everything else
     if not key:
         log_warning_and_ip(
             T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
         )
         return _MSG_APIKEY_REQUIRED
-    elif req_access == 1 and key == cfg.nzb_key():
-        return None
     elif key == cfg.api_key():
         return None
     else:
@@ -497,7 +502,7 @@ class MainPage:
         sabnzbd.shutdown_program()
         return T("SABnzbd shutdown finished")
 
-    @secured_expose(check_api_key=True, access_type=1)
+    @secured_expose(check_api_key=True, api_route=True, access_type=1)
     def api(self, **kwargs):
         """Redirect to API-handler, we check the access_type in the API-handler"""
         return api_handler(kwargs)
