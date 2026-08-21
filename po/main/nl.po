@@ -3751,8 +3751,8 @@ msgid "Naming"
 msgstr "Naamgeving"
 
 #: sabnzbd/skintext.py
-msgid "How much can be downloaded this month (K/M/G)"
-msgstr "Hoeval mag deze maand worden gedownload (K/M/G)"
+msgid "How much can be downloaded this Quota period (K/M/G)"
+msgstr ""
 
 #. Reset day of the download quota
 #: sabnzbd/skintext.py

@@ -3587,8 +3587,8 @@ msgid "Naming"
 msgstr "Именовање"
 
 #: sabnzbd/skintext.py
-msgid "How much can be downloaded this month (K/M/G)"
-msgstr "Колико може да се преузме овог месеца (К/М/Г)"
+msgid "How much can be downloaded this Quota period (K/M/G)"
+msgstr ""
 
 #. Reset day of the download quota
 #: sabnzbd/skintext.py
