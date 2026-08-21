@@ -109,16 +109,26 @@ class TestMisc:
             (None, None, None, (None, None, None)),
             ("", "", "", (None, None, None)),
             ("none", "-1", "default", (None, None, None)),
-            ("SomeCategory", "5", "SomeScript", ("SomeCategory", "5", "SomeScript")),
+            ("SomeCategory", "1", "SomeScript", ("SomeCategory", 1, "SomeScript")),
             ("none", 0, "default", (None, 0, None)),
             ("Movies", "", "default", ("Movies", None, None)),
-            ("", "10", "default", (None, "10", None)),
-            ("none", "15", "", (None, "15", None)),
             ("none", 0, "Default", (None, 0, None)),
             ("other", "-1", "Default", ("other", None, None)),
             ("none", "None", "default", (None, None, None)),
             ("some", "none", "script", ("some", None, "script")),
             ("none", "NONE", "Default", (None, None, None)),
+            # pp must be a PP_LOOKUP key or None
+            ("none", "2", "default", (None, 2, None)),
+            ("none", 3, "default", (None, 3, None)),
+            # Out-of-range ints are invalid
+            ("", "10", "default", (None, None, None)),
+            ("none", "15", "", (None, None, None)),
+            ("none", 4, "default", (None, None, None)),
+            # Non-numeric never passes as a string
+            ("none", "-c", "default", (None, 0, None)),
+            ("none", "echo pwned", "default", (None, 0, None)),
+            ("none", "2; rm -rf /", "default", (None, 0, None)),
+            ("none", "1.5", "default", (None, 0, None)),
         ],
     )
     def test_cat_pp_script_sanitizer(self, cat, pp, script, expected):
