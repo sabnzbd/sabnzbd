@@ -124,6 +124,12 @@ ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE = 0.9
 # Memory left to the rest of the system when capping the article cache
 ARTICLE_CACHE_RESERVED_MEMORY = int(512 * MEBI)
 
+# Minimum reading to go into the rate estimate, which needs volume
+WRITE_MONITOR_MIN_RATE_BYTES = 4 * MEBI
+# Seconds of writes the rate estimate is averaged over. Long enough to span both a
+# burst the page cache absorbed and the stall that follows it.
+WRITE_MONITOR_WRITE_RATE_WINDOW = 30.0
+
 REPAIR_PRIORITY = 3
 FORCE_PRIORITY = 2
 HIGH_PRIORITY = 1
