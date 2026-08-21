@@ -306,12 +306,12 @@ msgid "Default"
 msgstr "Varsayılan"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk full! Forcing Pause"
 msgstr "Disk dolu! Duraklatma Zorlanıyor"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk error on creating file %s"
 msgstr "%s dosyasının oluşturulmasında disk hatası"
 

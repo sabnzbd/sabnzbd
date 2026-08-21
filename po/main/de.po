@@ -321,12 +321,12 @@ msgid "Default"
 msgstr "Standard"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk full! Forcing Pause"
 msgstr "Festplatte voll! Downloads werden angehalten."
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk error on creating file %s"
 msgstr "Festplattenfehler beim Anlegen der Datei %s"
 

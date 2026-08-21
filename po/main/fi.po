@@ -281,12 +281,12 @@ msgid "Default"
 msgstr "Oletus"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk full! Forcing Pause"
 msgstr "Levy täynnä! Pakotetaan keskeytys"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk error on creating file %s"
 msgstr "Levyvirhe luotaessa tiedostoa %s"
 

@@ -285,12 +285,12 @@ msgid "Default"
 msgstr "ברירת מחדל"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk full! Forcing Pause"
 msgstr "דיסק מלא! מאלץ השהיה"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk error on creating file %s"
 msgstr "שגיאת דיסק ביצירת קובץ %s"
 

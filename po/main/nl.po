@@ -300,12 +300,12 @@ msgid "Default"
 msgstr "Standaard"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk full! Forcing Pause"
 msgstr "Schijf is vol; gedwongen pauze"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk error on creating file %s"
 msgstr "Schrijffout bij opslaan van bestand %s"
 

@@ -301,12 +301,12 @@ msgid "Default"
 msgstr "Výchozí"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk full! Forcing Pause"
 msgstr "Disk je plný! Vynucení pozastavení"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk error on creating file %s"
 msgstr "Probém s vytvořením souboru %s na disku"
 

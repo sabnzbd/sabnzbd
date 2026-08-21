@@ -278,12 +278,12 @@ msgid "Default"
 msgstr "Domyślne"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk full! Forcing Pause"
 msgstr "Dysk pełny! Wstrzymuję pobieranie"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk error on creating file %s"
 msgstr "Błąd dysku podczas tworzenia pliku %s"
 

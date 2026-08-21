@@ -302,12 +302,12 @@ msgid "Default"
 msgstr "Predefinito"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk full! Forcing Pause"
 msgstr "Disco pieno! Messa in pausa forzata"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk error on creating file %s"
 msgstr "Errore del disco durante la creazione del file %s"
 

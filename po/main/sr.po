@@ -275,12 +275,12 @@ msgid "Default"
 msgstr "Подразумевано"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk full! Forcing Pause"
 msgstr "Disk je pun! Tera Pause"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk error on creating file %s"
 msgstr "Greška na disku prilikom kreiranja datoteke %s"
 
