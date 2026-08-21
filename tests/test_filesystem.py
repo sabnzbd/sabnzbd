@@ -19,6 +19,7 @@
 tests.test_filesystem - Testing functions in filesystem.py
 """
 
+import errno
 import stat
 import sys
 import os
@@ -1393,3 +1394,46 @@ class TestOtherFileSystemFunctions:
         # Only test stuff specific for create_work_name
         # The sanitizing is already tested in tests for sanitize_foldername
         assert filesystem.create_work_name(file_name) == clean_file_name
+
+
+class TestOutOfSpace:
+    """A full filesystem and an exhausted quota are the same thing to a user, and both
+    are fixed by freeing space rather than by retrying the write."""
+
+    @staticmethod
+    def error(code, winerror=None):
+        err = OSError(code, "test")
+        if winerror is not None:
+            err.winerror = winerror
+        return err
+
+    def test_a_full_filesystem(self):
+        assert sabnzbd.filesystem.out_of_space(self.error(errno.ENOSPC)) is True
+
+    def test_an_exhausted_quota(self):
+        assert sabnzbd.filesystem.out_of_space(self.error(errno.EDQUOT)) is True
+
+    @pytest.mark.parametrize("code", [errno.EACCES, errno.ENOENT, errno.EIO, errno.EROFS])
+    def test_other_errors_are_not_out_of_space(self, code):
+        """These need a person, not more free space, so they must not be reported as a
+        full disk"""
+        assert sabnzbd.filesystem.out_of_space(self.error(code)) is False
+
+    @pytest.mark.parametrize("winerror", [39, 112, 1295])
+    def test_the_windows_codes(self, winerror):
+        """Windows says it several ways and only some map onto an errno"""
+        original = sabnzbd.WINDOWS
+        sabnzbd.WINDOWS = True
+        try:
+            assert sabnzbd.filesystem.out_of_space(self.error(errno.EINVAL, winerror)) is True
+        finally:
+            sabnzbd.WINDOWS = original
+
+    def test_an_unrelated_windows_code(self):
+        original = sabnzbd.WINDOWS
+        sabnzbd.WINDOWS = True
+        try:
+            # 5 is ERROR_ACCESS_DENIED
+            assert sabnzbd.filesystem.out_of_space(self.error(errno.EINVAL, 5)) is False
+        finally:
+            sabnzbd.WINDOWS = original
