@@ -1455,6 +1455,27 @@ def check_sparse_and_disable(test_dir: str) -> bool:
     return True
 
 
+@lru_cache(maxsize=16)
+def is_rotational(path: str) -> Optional[bool]:
+    """Does the kernel say the disk behind this path seeks?"""
+    if sabnzbd.WINDOWS:
+        return None
+
+    try:
+        device = os.stat(path).st_dev
+        node = "/sys/dev/block/%d:%d" % (os.major(device), os.minor(device))
+        for candidate in (node, os.path.dirname(os.path.realpath(node))):
+            try:
+                with open(os.path.join(candidate, "queue", "rotational")) as flag:
+                    return flag.read().strip() == "1"
+            except OSError:
+                continue
+    except OSError:
+        pass
+
+    return None
+
+
 def get_win_drives() -> list[str]:
     """Return list of detected drives, adapted from:
     http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490

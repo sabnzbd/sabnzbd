@@ -724,8 +724,7 @@ class Downloader(Thread):
                     BPSMeter.update()
                     next_bpsmeter_update = now + _BPSMETER_UPDATE_DELAY
                     self.check_assembler_levels()
-                    # thread_time() only reports the calling thread, so each thread has to
-                    # report its own. Tied to the existing tick rather than the loop.
+                    sabnzbd.WriteMonitor.sample()
 
                 if not events:
                     continue

@@ -1,7 +1,7 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 apprise==1.12.0
-sabctools==9.7.0
+sabctools @ git+https://github.com/mnightingale/sabctools@feature/storage_probe
 CT3==3.4.0.post5
 cffi==2.1.1
 pycparser==3.0

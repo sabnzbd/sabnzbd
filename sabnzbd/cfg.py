@@ -52,7 +52,6 @@ from sabnzbd.constants import (
     DEF_STD_WEB_COLOR,
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
-    DEF_MAX_ASSEMBLER_QUEUE,
     DEF_DOWNLOAD_FREE,
 )
 from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_network_path
@@ -551,7 +550,6 @@ local_ranges = OptionList("misc", "local_ranges", protect=True)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, minval=1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, minval=0)
 receive_threads = OptionNumber("misc", "receive_threads", 2, minval=1)
-assembler_max_queue_size = OptionNumber("misc", "assembler_max_queue_size", DEF_MAX_ASSEMBLER_QUEUE, minval=1)
 switchinterval = OptionNumber("misc", "switchinterval", 0.005, minval=0.001)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600)
 ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
@@ -772,6 +770,12 @@ def new_direct_write():
     """Callback for direct write changes"""
     sabnzbd.Assembler.change_direct_write(bool(direct_write()))
     sabnzbd.ArticleCache.change_direct_write(bool(direct_write()))
+
+
+def new_storage_dir():
+    """Callback for download directory changes"""
+    if sabnzbd.__INITIALIZED__:
+        sabnzbd.WriteMonitor.reset()
 
 
 def guard_restart():
