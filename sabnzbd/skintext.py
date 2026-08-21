@@ -518,7 +518,7 @@ SKIN_TEXT = {
     "swtag-naming": TT("Naming"),
     "swtag-quota": TT("Quota"),
     "opt-quota_size": TT("Size"),  #: Size of the download quota
-    "explain-quota_size": TT("How much can be downloaded this month (K/M/G)"),
+    "explain-quota_size": TT("How much can be downloaded this Quota period (K/M/G)"),
     "opt-quota_day": TT("Reset day"),  #: Reset day of the download quota
     "explain-quota_day": TT(
         "On which day of the month or week (1=Monday) does your ISP reset the quota? (Optionally with hh:mm)"
