@@ -1153,6 +1153,39 @@ def get_new_id(prefix: str, folder: str, check_list: Optional[list] = None) -> s
     raise IOError
 
 
+# Non-sabnzbd globals our pickles reference: plain data types only, nothing that runs code
+_SAFE_GLOBALS = {
+    ("datetime", "datetime"),
+    ("datetime", "date"),
+    ("datetime", "time"),
+    ("datetime", "timedelta"),
+    ("datetime", "timezone"),
+    ("time", "struct_time"),  # pre-5.x rss_data.sab
+    ("collections", "OrderedDict"),
+    ("collections", "defaultdict"),
+    ("collections", "deque"),
+    ("builtins", "set"),
+    ("builtins", "frozenset"),
+    ("builtins", "bytearray"),
+    ("builtins", "complex"),
+    ("copyreg", "_reconstructor"),
+}
+
+
+class SafeUnpickler(pickle.Unpickler):
+    """Unpickler that blocks code-execution gadgets: only sabnzbd classes and safe data types"""
+
+    def find_class(self, module, name):
+        if module == "sabnzbd" or module.startswith("sabnzbd."):
+            # Wildcard our own package, but classes defined in it only (never re-exported callables)
+            obj = super().find_class(module, name)
+            if isinstance(obj, type) and getattr(obj, "__module__", "").startswith("sabnzbd"):
+                return obj
+        elif (module, name) in _SAFE_GLOBALS:
+            return super().find_class(module, name)
+        raise pickle.UnpicklingError("Refusing to unpickle %s.%s" % (module, name))
+
+
 def save_data(data: Any, _id: str, path: str, do_pickle: bool = True, silent: bool = False):
     """Save data to a diskfile"""
     if not silent:
@@ -1201,11 +1234,7 @@ def load_data(
     try:
         with open(path, "rb") as data_file:
             if do_pickle:
-                try:
-                    data = pickle.load(data_file, encoding=sabnzbd.encoding.CODEPAGE)
-                except UnicodeDecodeError:
-                    # Could be Python 2 data that we can load using old encoding
-                    data = pickle.load(data_file, encoding="latin1")
+                data = SafeUnpickler(data_file, encoding=sabnzbd.encoding.CODEPAGE).load()
             elif mutable:
                 data = bytearray(os.fstat(data_file.fileno()).st_size)
                 data_file.readinto(data)

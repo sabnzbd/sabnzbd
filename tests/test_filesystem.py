@@ -19,11 +19,15 @@
 tests.test_filesystem - Testing functions in filesystem.py
 """
 
+import datetime
 import errno
+import io
+import pickle
 import stat
 import sys
 import os
 import shutil
+import time
 import unicodedata
 from pathlib import Path
 import tempfile
@@ -1258,6 +1262,30 @@ class TestRenamer:
 
         # Cleanup working directory
         shutil.rmtree(dirname)
+
+
+class TestSafeUnpickler:
+    def test_round_trip(self, tmp_path):
+        # struct_time covers the pre-5.x rss_data.sab migration
+        data = {"a": 1, "s": {1, 2}, "when": datetime.datetime(2024, 1, 1), "t": time.gmtime(0)}
+        filesystem.save_data(data, "d", str(tmp_path))
+        assert filesystem.load_data("d", str(tmp_path), remove=False) == data
+
+    def test_rejects_code_execution_gadget(self):
+        class Evil:
+            def __reduce__(self):
+                return (os.system, ("echo pwned",))
+
+        with pytest.raises(pickle.UnpicklingError):
+            filesystem.SafeUnpickler(io.BytesIO(pickle.dumps(Evil()))).load()
+
+    def test_loads_legacy_3_0_rss_pickle(self):
+        # Real pre-5.x rss_data.sab must still deserialize (migrated by rss.import_rss_records)
+        path = os.path.join(SAB_DATA_DIR, "test_3_0_0_data_format")
+        data = filesystem.load_data("rss_data.sab", path, remove=False)
+        assert isinstance(data, dict) and data
+        feed_jobs = next(iter(data.values()))
+        assert isinstance(feed_jobs, dict) and feed_jobs
 
 
 class TestUnwantedExtensions:
