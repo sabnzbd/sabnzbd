@@ -43,7 +43,7 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd import cfg
 import sabnzbd.filesystem as filesystem
-from sabnzbd.constants import DEF_FOLDER_MAX, DEF_FILE_MAX
+from sabnzbd.constants import DEF_FOLDER_MAX, DEF_FILE_MAX, JOB_ADMIN
 
 # Set the global uid for fake filesystems to a non-root user;
 # by default this depends on the user running pytest.
@@ -179,6 +179,25 @@ class TestFileFolderNameSanitizer:
         base = os.path.join(os.sep + "downloads", "incomplete", "job")
         resolved = os.path.normpath(os.path.join(base, result))
         assert resolved.startswith(base + os.sep), "%s escaped to %s" % (hostile_name, resolved)
+
+    @pytest.mark.parametrize(
+        "hostile_name",
+        [
+            JOB_ADMIN,
+            JOB_ADMIN + "/__verified__",
+            JOB_ADMIN.lower() + "/__verified__",
+            "sub/" + JOB_ADMIN + "/__verified__",
+            JOB_ADMIN + "/deeper/__verified__",
+        ],
+    )
+    @pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
+    @pytest.mark.platform()
+    def test_file_allow_subdirs_cannot_enter_admin(self, platform, hostile_name):
+        """The admin folder is pickle-loaded, so a par2 name must never point into it"""
+        result = filesystem.sanitize_filename(hostile_name, allow_subdirs=True)
+
+        assert result, "an empty result would resolve to the base directory itself"
+        assert JOB_ADMIN.lower() not in result.lower().split(os.sep)
 
     @pytest.mark.platform("linux")
     def test_folder_illegal_chars_linux(self):
@@ -498,6 +517,59 @@ class TestSameDirectory:
         assert 0 == filesystem.same_directory("/test", "/Test")
         assert 0 == filesystem.same_directory("tesT", "Test")
         assert 0 == filesystem.same_directory("/test/../Home", "/home")
+
+
+class TestPointsIntoAdminDir:
+    def test_by_name(self, tmp_path):
+        base = str(tmp_path)
+        assert filesystem.points_into_admin_dir(os.path.join(base, JOB_ADMIN), base)
+        assert filesystem.points_into_admin_dir(os.path.join(base, JOB_ADMIN, "__verified__"), base)
+        assert filesystem.points_into_admin_dir(os.path.join(base, "sub", JOB_ADMIN, "__verified__"), base)
+
+    def test_regular_names_are_left_alone(self, tmp_path):
+        base = str(tmp_path)
+        assert not filesystem.points_into_admin_dir(os.path.join(base, "testfile.rar"), base)
+        assert not filesystem.points_into_admin_dir(os.path.join(base, "sub", "testfile.rar"), base)
+        # Only a full part counts, not a name that merely starts with it
+        assert not filesystem.points_into_admin_dir(os.path.join(base, JOB_ADMIN + "-data", "testfile.rar"), base)
+
+    def test_link_cannot_hide_it(self, tmp_path):
+        """On Windows an NTFS 8.3 alias ("__ADMI~1") points at the admin folder under a
+        different name, exactly like a link does here, so the name cannot be trusted"""
+        base = str(tmp_path)
+        admin_dir = os.path.join(base, JOB_ADMIN)
+        os.mkdir(admin_dir)
+        linkname = os.path.join(base, "notadmin")
+        os.symlink(admin_dir, linkname)
+
+        assert filesystem.points_into_admin_dir(linkname, base)
+        assert filesystem.points_into_admin_dir(os.path.join(linkname, "__verified__"), base)
+
+    @pytest.mark.skipif(not sys.platform.startswith("win"), reason="NTFS 8.3 aliases only exist on Windows")
+    def test_ntfs_8dot3_alias_cannot_hide_it(self, tmp_path):
+        """The real thing the link above stands in for: NTFS keeps an 8.3 alias for every
+        long name, so "__ADMI~1" reaches the admin folder without ever spelling it out"""
+        import win32api
+
+        base = str(tmp_path)
+        admin_dir = os.path.join(base, JOB_ADMIN)
+        os.mkdir(admin_dir)
+
+        # Ask the filesystem for the alias instead of assuming what it generated
+        alias = os.path.basename(win32api.GetShortPathName(admin_dir))
+        if alias.lower() == JOB_ADMIN.lower():
+            pytest.skip("8.3 name creation is disabled on this volume")
+
+        assert filesystem.points_into_admin_dir(os.path.join(base, alias), base)
+        assert filesystem.points_into_admin_dir(os.path.join(base, alias, "__verified__"), base)
+
+        # And the rename that the alias was meant to sneak through has to fail
+        filename = os.path.join(base, "myfile.txt")
+        Path(filename).touch()
+        with pytest.raises(OSError):
+            filesystem.renamer(filename, os.path.join(base, alias, "__verified__"), create_local_directories=True)
+        assert os.path.isfile(filename)
+        assert not os.listdir(admin_dir)
 
 
 class TestFirstExistingPath:
@@ -1259,6 +1331,41 @@ class TestRenamer:
             pass
         assert os.path.isfile(filename)
         assert not os.path.isfile(newfilename)
+
+        # ... renaming into the admin folder is not allowed either
+        admin_dir = os.path.join(dirname, JOB_ADMIN)
+        os.mkdir(admin_dir)
+        Path(filename).touch()
+        newfilename = os.path.join(admin_dir, "__verified__")
+        try:
+            filesystem.renamer(filename, newfilename, create_local_directories=True)
+        except Exception:
+            pass
+        assert os.path.isfile(filename)
+        assert not os.path.isfile(newfilename)
+
+        # ... nor is naming the admin folder itself: a move into an existing directory
+        # keeps the old basename, so this would end up inside the admin folder as well
+        Path(filename).touch()
+        try:
+            filesystem.renamer(filename, admin_dir, create_local_directories=True)
+        except Exception:
+            pass
+        assert os.path.isfile(filename)
+        assert not os.listdir(admin_dir)
+
+        # ... and not under another name that resolves to it, such as a link. On Windows
+        # an NTFS 8.3 alias ("__ADMI~1") reaches the admin folder the very same way.
+        linkname = os.path.join(dirname, "notadmin")
+        os.symlink(admin_dir, linkname)
+        Path(filename).touch()
+        try:
+            filesystem.renamer(filename, os.path.join(linkname, "__verified__"), create_local_directories=True)
+        except Exception:
+            pass
+        assert os.path.isfile(filename)
+        assert not os.listdir(admin_dir)
+        os.remove(linkname)
 
         # Cleanup working directory
         shutil.rmtree(dirname)
