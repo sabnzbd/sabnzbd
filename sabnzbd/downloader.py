@@ -33,6 +33,7 @@ from typing import Optional, Callable
 import sabctools
 
 import sabnzbd
+from sabnzbd.constants import DOWNLOADER_TICK
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV, DOWNLOADER_LOCK
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
@@ -52,10 +53,10 @@ _PENALTY_VERYSHORT = 0.1  # Error 400 without cause clues
 
 # Wait this many seconds between checking idle servers for new articles or busy threads for timeout
 _SERVER_CHECK_DELAY = 0.5
-# Wait this many seconds between updates of the BPSMeter
-_BPSMETER_UPDATE_DELAY = 0.05
 # How many articles should be prefetched when checking the next articles?
 _ARTICLE_PREFETCH = 20
+# Only report the disk holding the download up once delay is this many seconds
+_ASSEMBLER_DELAY_REPORT = 0.2
 # Minimum expected size of TCP receive buffer
 _DEFAULT_CHUNK_SIZE = 32768
 
@@ -282,6 +283,9 @@ class Downloader(Thread):
         cfg.bandwidth_max.callback(self.speed_set)
         self.speed_set()
 
+        # Rate-limits the delay logging, which is otherwise once per pass
+        self.next_delay_log: float = 0.0
+
         # Used to see if we can add a slowdown to the Downloader-loop
         self.sleep_time: float = 0.0
         self.sleep_time_set()
@@ -444,7 +448,6 @@ class Downloader(Thread):
             if self.no_active_jobs():
                 sabnzbd.BPSMeter.reset()
                 sabnzbd.WriteMonitor.forget_rate()
-                sabnzbd.WriteMonitor.forget_rate()
             if cfg.autodisconnect():
                 self.disconnect()
 
@@ -502,9 +505,6 @@ class Downloader(Thread):
             if cfg.receive_threads() == cfg.receive_threads.default:
                 cfg.receive_threads.set(4)
                 logging.info("Receive threads set to 4")
-            if cfg.assembler_max_queue_size() == cfg.assembler_max_queue_size.default:
-                cfg.assembler_max_queue_size.set(30)
-                logging.info("Assembler max_queue_size set to 30")
 
     def sleep_time_set(self):
         self.sleep_time = cfg.downloader_sleep_time() * 0.0001
@@ -711,7 +711,6 @@ class Downloader(Thread):
                     events = []
                     BPSMeter.reset()
                     sabnzbd.WriteMonitor.forget_rate()
-                    sabnzbd.WriteMonitor.forget_rate()
                     time.sleep(0.1)
                     self.max_chunk_size = _DEFAULT_CHUNK_SIZE
                     with DOWNLOADER_CV:
@@ -726,7 +725,7 @@ class Downloader(Thread):
                 if now > next_bpsmeter_update:
                     # Do not update statistics and check levels every loop
                     BPSMeter.update()
-                    next_bpsmeter_update = now + _BPSMETER_UPDATE_DELAY
+                    next_bpsmeter_update = now + DOWNLOADER_TICK
                     self.check_assembler_levels()
                     sabnzbd.WriteMonitor.sample()
 
@@ -837,33 +836,22 @@ class Downloader(Thread):
                     sabnzbd.BPSMeter.update()
 
     def check_assembler_levels(self):
-        """Check the Assembler queue to see if we need to delay, depending on queue size"""
-        if not sabnzbd.Assembler.is_busy() or (delay := sabnzbd.Assembler.delay()) <= 0:
+        """Sleep for part of this pass if the disk is behind what is being downloaded"""
+        if (delay := sabnzbd.Assembler.delay()) <= 0:
             return
-        time.sleep(delay)
-        sabnzbd.BPSMeter.delayed_assembler += 1
-        start_time = time.monotonic()
-        deadline = start_time + 5
-        next_log = start_time + 1.0
-        logged_counter = 0
 
-        while not self.shutdown and sabnzbd.Assembler.is_busy() and time.monotonic() < deadline:
-            if (delay := sabnzbd.Assembler.delay()) <= 0:
-                break
-            # Sleep for the current delay (but cap to remaining time)
-            sleep_time = max(0.001, min(delay, deadline - time.monotonic()))
-            time.sleep(sleep_time)
-            # Make sure the BPS-meter is updated
-            sabnzbd.BPSMeter.update()
-            # Only log/update once every second
-            if time.monotonic() >= next_log:
-                logged_counter += 1
-                logging.debug(
-                    "Delayed - %d seconds - Assembler queue: %s",
-                    logged_counter,
-                    to_units(sabnzbd.Assembler.total_ready_bytes()),
-                )
-                next_log += 1.0
+        time.sleep(delay)
+        sabnzbd.BPSMeter.update()
+
+        if delay >= _ASSEMBLER_DELAY_REPORT and time.monotonic() >= self.next_delay_log:
+            self.next_delay_log = time.monotonic() + 1.0
+            sabnzbd.BPSMeter.delayed_assembler += 1
+            logging.debug(
+                "Delaying %.0f ms per pass - Assembler queue: %s - disk %s/s",
+                delay * 1000,
+                to_units(sabnzbd.Assembler.total_ready_bytes()),
+                to_units(sabnzbd.WriteMonitor.throughput),
+            )
 
     @synchronized(DOWNLOADER_LOCK)
     def finish_connect_nw(self, nw: NewsWrapper, response: sabctools.NNTPResponse) -> bool:

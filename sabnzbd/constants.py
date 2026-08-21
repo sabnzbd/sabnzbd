@@ -105,16 +105,19 @@ CONFIG_BACKUP_HTTPS = {  # "basename": "associated setting"
     "server.chain": "https_chain",
 }
 
-# Constants affecting download performance
-DEF_MAX_ASSEMBLER_QUEUE = 12
-SOFT_ASSEMBLER_QUEUE_LIMIT = 0.5
+# How often the downloader updates its meters and reconsiders the delay
+DOWNLOADER_TICK = 0.05
+# Longest the downloader sleeps in one pass to let the disk catch up
+ASSEMBLER_MAX_DELAY = 0.5
+# Fraction of the measured write rate the downloader aims for, so the backlog shrinks
+# rather than merely holding
+ASSEMBLER_DRAIN_MARGIN = 0.9
 # Percentage of cache to use before adding file to assembler
 ASSEMBLER_TRIGGER_PERCENTAGE = 0.05
 # Files kept open for writing at once. Handles are cached so an article does not cost an
 # open/close pair, but they are a limited resource shared with every socket the
 # downloader holds, so the cache is bounded rather than growing with the queue.
 ASSEMBLER_MAX_OPEN_WRITERS = 32
-ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE = 1.5
 ASSEMBLER_WRITE_INTERVAL = 5.0
 NNTP_BUFFER_SIZE = int(256 * KIBI)
 NTTP_MAX_BUFFER_SIZE = int(10 * MEBI)
@@ -123,12 +126,6 @@ DEF_PIPELINING_REQUESTS = 2
 ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE = 0.9
 # Memory left to the rest of the system when capping the article cache
 ARTICLE_CACHE_RESERVED_MEMORY = int(512 * MEBI)
-
-# Minimum reading to go into the rate estimate, which needs volume
-WRITE_MONITOR_MIN_RATE_BYTES = 4 * MEBI
-# Seconds of writes the rate estimate is averaged over. Long enough to span both a
-# burst the page cache absorbed and the stall that follows it.
-WRITE_MONITOR_WRITE_RATE_WINDOW = 30.0
 
 REPAIR_PRIORITY = 3
 FORCE_PRIORITY = 2
