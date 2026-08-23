@@ -1264,10 +1264,9 @@ class TestRenamer:
         shutil.rmtree(dirname)
 
 
-class TestSafeUnpickler:
+class TestRestrictedUnpickler:
     def test_round_trip(self, tmp_path):
-        # struct_time covers the pre-5.x rss_data.sab migration
-        data = {"a": 1, "s": {1, 2}, "when": datetime.datetime(2024, 1, 1), "t": time.gmtime(0)}
+        data = {"a": 1, "s": {1, 2}, "when": datetime.datetime(2024, 1, 1), "t": time.gmtime(0), "st": os.stat(".")}
         filesystem.save_data(data, "d", str(tmp_path))
         assert filesystem.load_data("d", str(tmp_path), remove=False) == data
 
@@ -1277,10 +1276,25 @@ class TestSafeUnpickler:
                 return (os.system, ("echo pwned",))
 
         with pytest.raises(pickle.UnpicklingError):
-            filesystem.SafeUnpickler(io.BytesIO(pickle.dumps(Evil()))).load()
+            filesystem.RestrictedUnpickler(io.BytesIO(pickle.dumps(Evil()))).load()
+
+    def test_rejects_non_allowlisted_sabnzbd_class(self):
+        # kronos.ForkedScheduler has a __del__ that runs os.kill; referenced by name, rejected pre-import
+        def named_global(module, name):
+            return (
+                b"\x80\x04\x8c"
+                + bytes([len(module)])
+                + module.encode()
+                + b"\x8c"
+                + bytes([len(name)])
+                + name.encode()
+                + b"\x93."
+            )
+
+        with pytest.raises(pickle.UnpicklingError):
+            filesystem.RestrictedUnpickler(io.BytesIO(named_global("sabnzbd.utils.kronos", "ForkedScheduler"))).load()
 
     def test_loads_legacy_3_0_rss_pickle(self):
-        # Real pre-5.x rss_data.sab must still deserialize (migrated by rss.import_rss_records)
         path = os.path.join(SAB_DATA_DIR, "test_3_0_0_data_format")
         data = filesystem.load_data("rss_data.sab", path, remove=False)
         assert isinstance(data, dict) and data
