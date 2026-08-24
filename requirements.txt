@@ -21,7 +21,7 @@ rebulk==6.0.1
 hachoir==3.3.0
 
 # New for starlette/uvicorn
-starlette==1.3.1
+starlette==1.6.0
 itsdangerous==2.2.0
 anyio==4.14.2
 sniffio==1.3.1

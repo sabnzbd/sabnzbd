@@ -11,7 +11,7 @@ env:
   PYTHONNODEBUGRANGES: 1
   # For macOS we download the official Python, because the GitHub one only support newer macOS 11+ versions
   # We also use the specific pin for Windows release, so Renovate can update it all at once
-  PYTHON_VERSION: "3.14.6"
+  PYTHON_VERSION: "3.14.7"
 
 jobs:
   build_windows:
