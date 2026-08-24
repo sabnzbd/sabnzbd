@@ -3750,7 +3750,7 @@ msgstr "İsimlendirme"
 
 #: sabnzbd/skintext.py
 msgid "How much can be downloaded this Quota period (K/M/G)"
-msgstr ""
+msgstr "Bu kota süresinde ne kadar indirme yapılabileceği (K/M/G)"
 
 #. Reset day of the download quota
 #: sabnzbd/skintext.py
