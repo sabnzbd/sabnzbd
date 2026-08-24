@@ -1153,6 +1153,44 @@ def get_new_id(prefix: str, folder: str, check_list: Optional[list] = None) -> s
     raise IOError
 
 
+# Allowlist of every global our pickles may reference: safe data types and our persisted classes.
+# Explicit, not a "sabnzbd.*" wildcard, which would also admit gadget classes (e.g. a __del__
+# that runs os.kill). sabnzbd.nzbstuff is the pre-refactor module path (compat shim).
+_SAFE_GLOBALS = {
+    ("datetime", "datetime"),
+    ("datetime", "date"),
+    ("datetime", "time"),
+    ("datetime", "timedelta"),
+    ("datetime", "timezone"),
+    ("time", "struct_time"),
+    ("os", "stat_result"),
+    ("collections", "OrderedDict"),
+    ("collections", "defaultdict"),
+    ("collections", "deque"),
+    ("builtins", "set"),
+    ("builtins", "frozenset"),
+    ("builtins", "bytearray"),
+    ("builtins", "complex"),
+    ("copyreg", "_reconstructor"),
+    ("sabnzbd.nzb.object", "NzbObject"),
+    ("sabnzbd.nzb.file", "NzbFile"),
+    ("sabnzbd.nzb.article", "Article"),
+    ("sabnzbd.par2file", "FilePar2Info"),
+    ("sabnzbd.nzbstuff", "NzbObject"),
+    ("sabnzbd.nzbstuff", "NzbFile"),
+    ("sabnzbd.nzbstuff", "Article"),
+}
+
+
+class RestrictedUnpickler(pickle.Unpickler):
+    """Unpickler restricted to an allowlist, so a hostile pickle cannot run code"""
+
+    def find_class(self, module, name):
+        if (module, name) in _SAFE_GLOBALS:
+            return super().find_class(module, name)
+        raise pickle.UnpicklingError("Refusing to unpickle %s.%s" % (module, name))
+
+
 def save_data(data: Any, _id: str, path: str, do_pickle: bool = True, silent: bool = False):
     """Save data to a diskfile"""
     if not silent:
@@ -1201,11 +1239,7 @@ def load_data(
     try:
         with open(path, "rb") as data_file:
             if do_pickle:
-                try:
-                    data = pickle.load(data_file, encoding=sabnzbd.encoding.CODEPAGE)
-                except UnicodeDecodeError:
-                    # Could be Python 2 data that we can load using old encoding
-                    data = pickle.load(data_file, encoding="latin1")
+                data = RestrictedUnpickler(data_file, encoding=sabnzbd.encoding.CODEPAGE).load()
             elif mutable:
                 data = bytearray(os.fstat(data_file.fileno()).st_size)
                 data_file.readinto(data)

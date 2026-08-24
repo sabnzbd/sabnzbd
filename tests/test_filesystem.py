@@ -19,11 +19,15 @@
 tests.test_filesystem - Testing functions in filesystem.py
 """
 
+import datetime
 import errno
+import io
+import pickle
 import stat
 import sys
 import os
 import shutil
+import time
 import unicodedata
 from pathlib import Path
 import tempfile
@@ -1258,6 +1262,44 @@ class TestRenamer:
 
         # Cleanup working directory
         shutil.rmtree(dirname)
+
+
+class TestRestrictedUnpickler:
+    def test_round_trip(self, tmp_path):
+        data = {"a": 1, "s": {1, 2}, "when": datetime.datetime(2024, 1, 1), "t": time.gmtime(0), "st": os.stat(".")}
+        filesystem.save_data(data, "d", str(tmp_path))
+        assert filesystem.load_data("d", str(tmp_path), remove=False) == data
+
+    def test_rejects_code_execution_gadget(self):
+        class Evil:
+            def __reduce__(self):
+                return (os.system, ("echo pwned",))
+
+        with pytest.raises(pickle.UnpicklingError):
+            filesystem.RestrictedUnpickler(io.BytesIO(pickle.dumps(Evil()))).load()
+
+    def test_rejects_non_allowlisted_sabnzbd_class(self):
+        # kronos.ForkedScheduler has a __del__ that runs os.kill; referenced by name, rejected pre-import
+        def named_global(module, name):
+            return (
+                b"\x80\x04\x8c"
+                + bytes([len(module)])
+                + module.encode()
+                + b"\x8c"
+                + bytes([len(name)])
+                + name.encode()
+                + b"\x93."
+            )
+
+        with pytest.raises(pickle.UnpicklingError):
+            filesystem.RestrictedUnpickler(io.BytesIO(named_global("sabnzbd.utils.kronos", "ForkedScheduler"))).load()
+
+    def test_loads_legacy_3_0_rss_pickle(self):
+        path = os.path.join(SAB_DATA_DIR, "test_3_0_0_data_format")
+        data = filesystem.load_data("rss_data.sab", path, remove=False)
+        assert isinstance(data, dict) and data
+        feed_jobs = next(iter(data.values()))
+        assert isinstance(feed_jobs, dict) and feed_jobs
 
 
 class TestUnwantedExtensions:
