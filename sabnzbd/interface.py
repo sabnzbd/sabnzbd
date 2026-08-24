@@ -128,6 +128,7 @@ def secured_expose(
     check_configlock: bool = False,
     check_for_login: bool = True,
     check_api_key: bool = False,
+    api_route: bool = False,
     access_type: int = 4,
     methods: Collection = ("GET", "POST"),
 ) -> Callable:
@@ -139,6 +140,7 @@ def secured_expose(
             check_configlock=check_configlock,
             check_for_login=check_for_login,
             check_api_key=check_api_key,
+            api_route=api_route,
             access_type=access_type,
             methods=methods,
         )
@@ -156,6 +158,7 @@ def secured_expose(
                         check_configlock=check_configlock,
                         check_for_login=check_for_login,
                         check_api_key=check_api_key,
+                        api_route=api_route,
                         access_type=access_type,
                     ),
                 ],
@@ -349,35 +352,37 @@ def check_login_cookie(request: Request) -> bool:
     return login_cookie == hashlib.sha1(cookie_str).hexdigest()
 
 
-def check_apikey(request: Request) -> Optional[str]:
-    """Check API-key or NZB-key (Starlette version)
-    Return None when OK, otherwise an error message
-    """
-    mode = request_params(request).get("mode", "")
-
-    # Resolve the call once here and stash it on the request, so the /api route can
-    # dispatch through api_handler without consulting the api table a second time.
-    entry, argument = sabnzbd.api.resolve_api_call(request_params(request))
-    request.state.api_call = (entry, argument)
-
-    # The entry carries the access level required for this specific api-call
-    req_access = entry.access_level
-    if not check_access(request, access_type=req_access, warn_user=True):
-        return _MSG_ACCESS_DENIED
-
-    # Skip for auth and version calls
-    if mode in ("version", "auth"):
-        return None
-
-    # First check API-key, if OK that's sufficient
+def check_apikey(request: Request, api_route: bool = False) -> Optional[str]:
+    """Check API-key or NZB-key, return None when OK, else an error message"""
     key = request_params(request).get("apikey")
+
+    if api_route:
+        mode = request_params(request).get("mode", "")
+
+        # Resolve the call once here and stash it on the request, so the /api route can
+        # dispatch through api_handler without consulting the api table a second time.
+        entry, argument = sabnzbd.api.resolve_api_call(request_params(request))
+        request.state.api_call = (entry, argument)
+
+        # The entry carries the access level required for this specific api-call
+        req_access = entry.access_level
+        if not check_access(request, access_type=req_access, warn_user=True):
+            return _MSG_ACCESS_DENIED
+
+        # Skip for auth and version calls
+        if mode in ("version", "auth"):
+            return None
+
+        # NZB-key suffices for nzb-level calls
+        if req_access == 1 and key and key == cfg.nzb_key():
+            return None
+
+    # A valid API-key is required for everything else
     if not key:
         log_warning_and_ip(
             request, T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
         )
         return _MSG_APIKEY_REQUIRED
-    elif req_access == 1 and key == cfg.nzb_key():
-        return None
     elif key == cfg.api_key():
         return None
     else:
@@ -501,12 +506,14 @@ class SecurityMiddleware:
         check_configlock: bool = False,
         check_for_login: bool = True,
         check_api_key: bool = False,
+        api_route: bool = False,
         access_type: int = 4,
     ):
         self.app = app
         self.check_configlock = check_configlock
         self.check_for_login = check_for_login
         self.check_api_key = check_api_key
+        self.api_route = api_route
         self.access_type = access_type
 
     async def __call__(self, scope, receive, send):
@@ -529,7 +536,7 @@ class SecurityMiddleware:
             return base_redirect_response("/login")
 
         # Some pages need the correct API key
-        if self.check_api_key and (msg := check_apikey(request)):
+        if self.check_api_key and (msg := check_apikey(request, api_route=self.api_route)):
             return PlainTextResponse(msg if cfg.api_warnings() else "", status_code=403)
 
         return None
@@ -604,7 +611,7 @@ async def shutdown(request: Request):
     return PlainTextResponse(T("SABnzbd shutdown finished"))
 
 
-@secured_expose(route="/api", check_api_key=True, access_type=1)
+@secured_expose(route="/api", check_api_key=True, api_route=True, access_type=1)
 async def api(request: Request):
     """Redirect to API-handler, we check the access_type in the API-handler"""
     return await api_handler(request_params(request), request.state.api_call)

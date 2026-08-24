@@ -26,7 +26,7 @@ import logging.config
 import pytest
 from unittest.mock import Mock
 from starlette.requests import Request
-from starlette.datastructures import Headers, Address
+from starlette.datastructures import Headers, Address, QueryParams
 import uvicorn
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 from uvicorn.lifespan import on as lifespan_on
@@ -211,6 +211,33 @@ class TestInterfaceFunctions:
                 assert interface.check_access(request, access_type) is result
 
         _func()
+
+    @pytest.mark.config({"api_key": "the_real_api_key", "nzb_key": "the_real_nzb_key"})
+    @pytest.mark.parametrize(
+        "api_route, params, expected",
+        [
+            # /api route: version/auth public, NZB-key valid for nzb-level calls
+            (True, {"mode": "version"}, None),
+            (True, {"mode": "auth"}, None),
+            (True, {"mode": "addfile", "apikey": "the_real_nzb_key"}, None),
+            (True, {"mode": "queue", "apikey": "the_real_api_key"}, None),
+            (True, {"mode": "queue"}, interface._MSG_APIKEY_REQUIRED),
+            (True, {"mode": "queue", "apikey": "wrong"}, interface._MSG_APIKEY_INCORRECT),
+            # Web-ui routes must ignore 'mode': no version/auth or NZB-key bypass
+            (False, {"mode": "version"}, interface._MSG_APIKEY_REQUIRED),
+            (False, {"mode": "auth"}, interface._MSG_APIKEY_REQUIRED),
+            (False, {"mode": "addfile", "apikey": "the_real_nzb_key"}, interface._MSG_APIKEY_INCORRECT),
+            (False, {"apikey": "the_real_api_key"}, None),
+            (False, {"mode": "version", "apikey": "the_real_api_key"}, None),
+            (False, {"apikey": "wrong"}, interface._MSG_APIKEY_INCORRECT),
+            (False, {}, interface._MSG_APIKEY_REQUIRED),
+        ],
+    )
+    def test_check_apikey_ignores_mode_off_api_route(self, api_route, params, expected):
+        """'mode' is only trusted on the real /api route, not on web-ui handlers."""
+        request = create_mock_request()
+        request.state.params = QueryParams(params)
+        assert interface.check_apikey(request, api_route=api_route) == expected
 
     @pytest.mark.parametrize(
         "local_ranges, xff_ips, expected_result",
