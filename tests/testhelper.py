@@ -24,6 +24,7 @@ import io
 import os
 import shutil
 import socket
+import tempfile
 import time
 import uuid
 from http.client import RemoteDisconnected
@@ -275,21 +276,22 @@ def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
     return r.text
 
 
-def create_nzb(nzb_dir: str, metadata: Optional[dict[str, str]] = None) -> str:
+def create_nzb(nzb_dir: str, metadata: Optional[dict[str, str]] = None, output_file: Optional[str] = None) -> str:
     """Create NZB from directory using SABNews"""
     nzb_dir_full = os.path.join(SAB_DATA_DIR, nzb_dir)
-    return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full, metadata=metadata)
+    return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full, metadata=metadata, output_file=output_file)
 
 
 def create_and_read_nzb_fp(nzbdir: str, metadata: Optional[dict[str, str]] = None) -> BinaryIO:
-    """Create NZB, return data and delete file"""
-    # Create NZB-file to import
-    nzb_path = create_nzb(nzbdir, metadata)
-    with open(nzb_path, "rb") as nzb_data_fp:
-        nzb_data = nzb_data_fp.read()
-    # Remove the created NZB-file
-    os.remove(nzb_path)
-    return io.BytesIO(nzb_data)
+    """Create NZB and return its data, leaving no file behind"""
+    # Write the NZB to its own temporary directory. The input directories are shared
+    # between tests, so writing it there has tests running in parallel reading and
+    # removing each other's file. Leaving it out of there also keeps it from ending up
+    # in the next NZB created from the same input.
+    with tempfile.TemporaryDirectory() as nzb_output_dir:
+        nzb_path = create_nzb(nzbdir, metadata, output_file=os.path.join(nzb_output_dir, "test.nzb"))
+        with open(nzb_path, "rb") as nzb_data_fp:
+            return io.BytesIO(nzb_data_fp.read())
 
 
 def httpserver_handler_data_dir(request: Request):
