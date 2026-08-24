@@ -1867,7 +1867,13 @@ def sfv_check(sfvs: list[str], nzo: NzbObject) -> bool:
             if calculated_crc32.get(nzf.filename, "") == sfv_parse_results[file]:
                 try:
                     logging.debug("SFV-check will rename %s to %s", nzf.filename, file)
-                    renamer(os.path.join(nzo.download_path, nzf.filename), os.path.join(nzo.download_path, file))
+                    # Untrusted sfv name: normalize separators and contain
+                    file = os.path.normpath(file)
+                    renamer(
+                        os.path.join(nzo.download_path, nzf.filename),
+                        os.path.join(nzo.download_path, file),
+                        create_local_directories=True,
+                    )
                     renames[file] = nzf.filename
                     nzf.filename = file
                     result &= True
