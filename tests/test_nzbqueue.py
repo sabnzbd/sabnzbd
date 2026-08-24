@@ -212,7 +212,7 @@ class TestNzbQueue:
 
     @pytest.mark.skipif(not sabnzbd.WINDOWS, reason="Legacy 3.0.0 queue fixture contains Windows-specific paths")
     def test_restore_legacy_queue_format_3_0_0(self, tmp_path, monkeypatch):
-        fixture_path = Path(SAB_DATA_DIR) / "test_3_0_0_queue_format"
+        fixture_path = Path(SAB_DATA_DIR) / "test_3_0_0_data_format"
         shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
 
         nzbqueue = NzbQueue()
