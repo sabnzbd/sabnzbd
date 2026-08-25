@@ -58,6 +58,9 @@ SABCTOOLS_VERSION_REQUIRED = "9.7.0"
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = "history%s.db" % DB_HISTORY_VERSION
 
+SESSIONS_VERSION = 1
+SESSIONS_FILE_NAME = "sessions.sab"
+
 DEF_DOWNLOAD_DIR = os.path.normpath("Downloads/incomplete")
 DEF_COMPLETE_DIR = os.path.normpath("Downloads/complete")
 DEF_ADMIN_DIR = "admin"

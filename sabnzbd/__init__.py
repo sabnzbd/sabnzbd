@@ -88,6 +88,7 @@ import sabnzbd.encoding as encoding
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.database
+import sabnzbd.sessionstore
 import sabnzbd.lang as lang
 import sabnzbd.nzb
 import sabnzbd.nzbparser as nzbparser
@@ -128,6 +129,7 @@ DirScanner: sabnzbd.dirscanner.DirScanner
 BPSMeter: sabnzbd.bpsmeter.BPSMeter
 RSSReader: sabnzbd.rss.RSSReader
 Scheduler: sabnzbd.scheduler.Scheduler
+SessionStore: sabnzbd.sessionstore.SessionStore
 
 # For backwards compatibility with pre-5.0 queue files
 sys.modules["sabnzbd.nzbstuff"] = sabnzbd.nzb
@@ -303,6 +305,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.URLGrabber = sabnzbd.urlgrabber.URLGrabber()
     sabnzbd.RSSReader = sabnzbd.rss.RSSReader()
     sabnzbd.Scheduler = sabnzbd.scheduler.Scheduler()
+    sabnzbd.SessionStore = sabnzbd.sessionstore.SessionStore()
 
     # Run startup tasks
     sabnzbd.NzbQueue.read_queue(repair)
