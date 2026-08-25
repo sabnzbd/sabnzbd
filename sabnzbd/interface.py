@@ -20,23 +20,21 @@ sabnzbd.interface - webinterface
 """
 
 import os
+import re
 import secrets
 import threading
 import time
 import logging
 import urllib.parse
-import re
-import hashlib
 import socket
 import ssl
 import functools
 import copy
-from random import randint
 
 import uvicorn
 from starlette.applications import Starlette
 from starlette.concurrency import run_in_threadpool
-from starlette.datastructures import Address, MultiDict, MutableHeaders, QueryParams
+from starlette.datastructures import MultiDict, MutableHeaders, QueryParams
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse, Response, FileResponse
 from starlette.middleware import Middleware
@@ -59,8 +57,6 @@ from sabnzbd.misc import (
     is_ipv4_addr,
     is_ipv6_addr,
     is_lan_addr,
-    is_local_addr,
-    is_loopback_addr,
     recursive_html_escape,
     is_none,
     get_cpu_name,
@@ -93,6 +89,7 @@ from sabnzbd.constants import (
 )
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
+    base_redirect_response,
     report,
     list_scripts,
     list_cats,
@@ -100,9 +97,35 @@ from sabnzbd.api import (
     api_handler,
     halt_and_shutdown,
     build_header,
-    url_for,
+    build_log_response,
     url_netloc,
     Ttemplate,
+)
+from sabnzbd.security import (
+    SESSION_COOKIE_FLASH,
+    SESSION_COOKIE_USER,
+    _MSG_APIKEY_NOT_ON_PAGES,
+    _MSG_MISSING_SESSION,
+    _MSG_SESSION_EXPIRED,
+    _anonymous_session_sender,
+    anonymous_session_tag,
+    check_access,
+    clear_login_failures,
+    clear_session,
+    client_address,
+    client_address_info,
+    constant_time_equals,
+    create_session,
+    csrf_token_for,
+    csrf_token_matches,
+    login_bypassed,
+    login_cooldown_remaining,
+    presented_csrf_token,
+    record_login_failure,
+    use_secure_cookies,
+    validate_any_session,
+    validate_csrf,
+    validate_session,
 )
 from sabnzbd.nzb import NzoInfo
 from sabnzbd.rss import ResolvedEntry, RSSState
@@ -128,7 +151,7 @@ def secured_expose(
     check_configlock: bool = False,
     check_for_login: bool = True,
     check_api_key: bool = False,
-    api_route: bool = False,
+    check_csrf: bool = True,
     access_type: int = 4,
     methods: Collection = ("GET", "POST"),
 ) -> Callable:
@@ -140,7 +163,7 @@ def secured_expose(
             check_configlock=check_configlock,
             check_for_login=check_for_login,
             check_api_key=check_api_key,
-            api_route=api_route,
+            check_csrf=check_csrf,
             access_type=access_type,
             methods=methods,
         )
@@ -158,7 +181,7 @@ def secured_expose(
                         check_configlock=check_configlock,
                         check_for_login=check_for_login,
                         check_api_key=check_api_key,
-                        api_route=api_route,
+                        check_csrf=check_csrf,
                         access_type=access_type,
                     ),
                 ],
@@ -166,49 +189,6 @@ def secured_expose(
         )
 
     return wrap_func
-
-
-def client_address(request: Request) -> Address:
-    """Safe access to request.client, which can be None (e.g. when serving on a
-    unix socket, or with some test clients). Treated as an unknown, non-local
-    client, so access checks fail closed."""
-    return request.client or Address("", 0)
-
-
-def client_address_info(request: Request) -> str:
-    """The client as host:port for logging, with the forwarding chain when there is one"""
-    client = client_address(request)
-    # Bracketed, so the port cannot be read as another group of an IPv6 address
-    host = f"[{client.host}]" if ":" in client.host else client.host
-    if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
-        return f"{host}:{client.port} (X-Forwarded-For: {xff_ips})"
-    return f"{host}:{client.port}"
-
-
-def check_access(request: Request, access_type: int = 4, warn_user: bool = False) -> bool:
-    """Check if external address is allowed given access_type (Starlette version):
-    1=nzb
-    2=api
-    3=full_api
-    4=webui
-    5=webui with login for external
-    """
-    # Easy, it's allowed
-    if access_type <= cfg.inet_exposure():
-        return True
-
-    # X-Forwarded-For is resolved by uvicorn's ProxyHeadersMiddleware (see the
-    # uvicorn.Config in SABnzbd.py): when verify_xff_header is enabled and the
-    # connecting peer is a trusted local proxy, request.client already holds the
-    # effective client address taken from the XFF chain.
-    remote_ip = client_address(request).host
-
-    # Check if the client IP is a loopback address or considered local
-    is_allowed = is_loopback_addr(remote_ip) or is_local_addr(remote_ip)
-
-    if not is_allowed and warn_user:
-        log_warning_and_ip(request, T("Refused connection from:"))
-    return is_allowed
 
 
 def check_hostname(request: Request) -> bool:
@@ -250,156 +230,85 @@ def check_hostname(request: Request) -> bool:
     return False
 
 
-# Create a more unique ID for each instance
-COOKIE_SECRET = str(randint(1000, 100000) * os.getpid())
-COOKIE_SESSION = "sabnzbd_session"
-
-
-def use_secure_cookies(request: Request) -> bool:
-    """Whether cookies for this request should carry the Secure attribute"""
-    # Taken from the scope, which is what the proxy headers are applied to and what
-    # request.url is built from. The URL itself comes out relative, and its scheme
-    # empty, when there is neither a Host header nor an address to fall back on.
-    return request.scope.get("scheme") == "https" or bool(cfg.enable_https())
-
-
-def set_login_cookie(request: Request, response: Response, remove=False, remember_me=False):
-    """Set login cookie for Starlette (updated version)
-    We try to set a cookie as unique as possible
-    to the current user. Based on it's IP and the
-    current process ID of the SAB instance and a random
-    number, so cookies cannot be re-used
-    """
-    salt = randint(1, 1000)
-
-    # request.client is the effective client: uvicorn resolves the XFF header
-    # from trusted proxies when verify_xff_header is enabled
-    cookie_str = utob(str(salt) + client_address(request).host + COOKIE_SECRET)
-    cookie_value = hashlib.sha1(cookie_str).hexdigest()
-
-    secure = use_secure_cookies(request)
-    if remove:
-        # Remove cookies
-        response.set_cookie(
-            "login_cookie",
-            "",
-            path="/",
-            httponly=True,
-            secure=secure,
-            samesite="strict",
-            expires="Thu, 01 Jan 1970 00:00:00 GMT",
-        )
-        response.set_cookie(
-            "login_salt",
-            "",
-            path="/",
-            httponly=True,
-            secure=secure,
-            samesite="strict",
-            expires="Thu, 01 Jan 1970 00:00:00 GMT",
-        )
-    else:
-        # Set cookies
-        max_age = None
-        if remember_me:
-            max_age = 3600 * 24 * 14  # 14 days
-
-        response.set_cookie(
-            "login_cookie",
-            cookie_value,
-            path="/",
-            httponly=True,
-            secure=secure,
-            samesite="strict",
-            max_age=max_age,
-        )
-        response.set_cookie(
-            "login_salt",
-            str(salt),
-            path="/",
-            httponly=True,
-            secure=secure,
-            samesite="strict",
-            max_age=max_age,
-        )
-
-
 def check_login(request: Request) -> bool:
-    """Check if user is logged in (Starlette version)"""
-    # No authentication required when no username/password is set
-    if not cfg.username() or not cfg.password():
+    """Check if user is logged in"""
+    # No authentication required, or waived for this client
+    if login_bypassed(request):
         return True
 
-    # If we show login for external IP, by using access_type=6 we can check if IP match
-    if cfg.inet_exposure() == 5 and check_access(request, access_type=6):
-        return True
-
-    # Check the cookie
-    return check_login_cookie(request)
+    # Check the session cookie
+    return validate_session(request)
 
 
-def check_login_cookie(request: Request) -> bool:
-    """Check login cookie validity (Starlette version)"""
-    # Do we have everything?
-    login_cookie = request.cookies.get("login_cookie")
-    login_salt = request.cookies.get("login_salt")
-    if not login_cookie or not login_salt:
-        return False
+def check_apikey(request: Request) -> Optional[Response]:
+    """Check session cookie, API-key or NZB-key
+    Return None when OK, otherwise the error response to send
+    """
+    mode = request_params(request).get("mode", "")
 
-    # request.client is the effective client: uvicorn resolves the XFF header
-    # from trusted proxies when verify_xff_header is enabled
-    cookie_str = utob(str(login_salt) + client_address(request).host + COOKIE_SECRET)
-    return login_cookie == hashlib.sha1(cookie_str).hexdigest()
+    # Resolve the call once here and stash it on the request, so the /api route can
+    # dispatch through api_handler without consulting the api table a second time.
+    entry, argument = sabnzbd.api.resolve_api_call(request_params(request))
+    request.state.api_call = (entry, argument)
 
+    # The entry carries the access level required for this specific api-call
+    req_access = entry.access_level
+    if not check_access(request, access_type=req_access, warn_user=True):
+        return forbidden(_MSG_ACCESS_DENIED)
 
-def check_apikey(request: Request, api_route: bool = False) -> Optional[str]:
-    """Check API-key or NZB-key, return None when OK, else an error message"""
-    key = request_params(request).get("apikey")
-
-    if api_route:
-        mode = request_params(request).get("mode", "")
-
-        # Resolve the call once here and stash it on the request, so the /api route can
-        # dispatch through api_handler without consulting the api table a second time.
-        entry, argument = sabnzbd.api.resolve_api_call(request_params(request))
-        request.state.api_call = (entry, argument)
-
-        # The entry carries the access level required for this specific api-call
-        req_access = entry.access_level
-        if not check_access(request, access_type=req_access, warn_user=True):
-            return _MSG_ACCESS_DENIED
-
-        # Skip for auth and version calls
-        if mode in ("version", "auth"):
-            return None
-
-        # NZB-key suffices for nzb-level calls
-        if req_access == 1 and key and key == cfg.nzb_key():
-            return None
-
-    # A valid API-key is required for everything else
-    if not key:
-        log_warning_and_ip(
-            request, T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
-        )
-        return _MSG_APIKEY_REQUIRED
-    elif key == cfg.api_key():
+    # Skip for auth and version calls
+    if mode in ("version", "auth"):
         return None
-    else:
+
+    # A session cookie authorizes the frontend without the apikey, but only with the
+    # session's CSRF token in the header. Header only: this route merges the query string in.
+    cookie_ok = validate_any_session(request)
+    if cookie_ok and csrf_token_matches(request, header_only=True):
+        return None
+
+    # No early return above, so a request carrying both a cookie and a valid apikey stays
+    # authorized
+    key = request_params(request).get("apikey")
+    if key:
+        # Constant-time, like the login credentials
+        if req_access == 1 and constant_time_equals(key, cfg.nzb_key()):
+            return None
+        if constant_time_equals(key, cfg.api_key()):
+            return None
         log_warning_and_ip(
             request, T("API Key incorrect, Use the api key from Config->General in your 3rd party program:")
         )
-        return _MSG_APIKEY_INCORRECT
+        return forbidden(_MSG_APIKEY_INCORRECT)
+
+    if SESSION_COOKIE_USER in request.cookies:
+        # A cookie was presented, so this is a browser
+        stale_token = presented_csrf_token(request, header_only=True)
+        if stale_token:
+            logging.info(
+                "Stale session token from %s, the page will reload for a fresh one", client_address_info(request)
+            )
+        else:
+            log_warning_and_ip(request, T("Refused connection from:"))
+        # The frontend answers a 401 by reloading, so only send one where that fixes it
+        if not cookie_ok or stale_token:
+            return PlainTextResponse(_MSG_SESSION_EXPIRED, status_code=401)
+        return forbidden(_MSG_MISSING_SESSION)
+
+    log_warning_and_ip(
+        request, T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
+    )
+    return forbidden(_MSG_APIKEY_REQUIRED)
 
 
-def template_filtered_response(file: str, search_list: dict[str, Any]):
+def template_filtered_response(file: str, search_list: dict[str, Any], status_code: int = 200):
     """Wrapper for Cheetah response"""
     # We need a copy, because otherwise source-dicts might be modified
     search_list_copy = copy.deepcopy(search_list)
     # 'filters' is excluded because the RSS-filters are listed twice
     recursive_html_escape(search_list_copy, exclude_items=("webdir", "filters"))
     return HTMLResponse(
-        Template(file=file, searchList=[search_list_copy], compilerSettings=CHEETAH_DIRECTIVES).respond()
+        Template(file=file, searchList=[search_list_copy], compilerSettings=CHEETAH_DIRECTIVES).respond(),
+        status_code=status_code,
     )
 
 
@@ -427,25 +336,11 @@ def is_form_post(request: Request) -> bool:
 async def get_request_params(request: Request, merge_query: bool = False) -> MultiDict | QueryParams:
     """Parse the request's parameters.
 
-    A page GET renders a page and never changes state, so only the URL query
-    string is used, returned as the request's immutable QueryParams. A page POST
-    reads the form body only (urlencoded or multipart, with file uploads kept as
-    UploadFile objects) into a mutable MultiDict; the query string is ignored, so
-    parameters cannot be smuggled into form handlers via the URL. A POST without a
-    form body yields an empty MultiDict.
+    A page GET uses the query string, a page POST the form body only (urlencoded or
+    multipart, file uploads kept as UploadFile) and an empty MultiDict without one.
 
-    The merged API routes (merge_query, i.e. /api and the api-key protected
-    *_save routes) keep the CherryPy behavior instead: 3rd-party clients
-    traditionally POST an NZB as a multipart body while passing mode/apikey/output
-    in the query string, so the form body and query string are merged into a
-    mutable MultiDict, the body winning per key. A key supplied only in the query
-    string keeps all of its values. GET, form POST and bodyless POST all take this
-    same path, so a duplicated key resolves identically regardless of method, and
-    the API scalar keys collapse to their first value exactly as CherryPy did.
-
-    ParamsMiddleware stores the result on request.state.params so that
-    request_params(request) returns it in every handler without an extra await.
-    """
+    The merged API route (merge_query, i.e. /api) takes the form body and the query string
+    merged, the body winning per key, and collapses the API scalar keys to their first value."""
     if not merge_query:
         if is_form_post(request):
             return MultiDict(await request.form())
@@ -474,13 +369,13 @@ def request_params(request: Request) -> MultiDict | QueryParams:
     return request.state.params
 
 
+# Disable over-active logging for the form parser
+logging.getLogger("python_multipart.multipart").setLevel(logging.WARNING)
+
+
 class ParamsMiddleware:
-    """Parse a request's parameters onto request.state.params before the handler
-    runs, so request_params(request) returns them without a further await. Attached
-    per route by secured_expose because the merge behavior is route-specific:
-    merge_query follows check_api_key (the /api and *_save routes that accept
-    mode/apikey in the query string alongside a form body). Pure ASGI, and the
-    request body is read once here; handlers only ever read the parsed params."""
+    """Parse a request's parameters onto request.state.params before the handler runs.
+    Attached per route by secured_expose, with merge_query following check_api_key."""
 
     def __init__(self, app, merge_query: bool = False):
         self.app = app
@@ -494,11 +389,9 @@ class ParamsMiddleware:
 
 
 class SecurityMiddleware:
-    """Enforce a route's access rules before its handler runs: config lock, local vs
-    external access, login, and API key. Attached per route by secured_expose with
-    that route's flags, and ordered after ParamsMiddleware so the API-key check can
-    read the parsed request_params. Pure ASGI; a failed check answers with a 403 (or
-    a redirect to /login) without ever invoking the handler."""
+    """Enforce a route's access rules before its handler runs: config lock, local vs external
+    access, login, CSRF token and API key. Attached per route by secured_expose, after
+    ParamsMiddleware. A failed check answers with a 403 or a redirect to /login."""
 
     def __init__(
         self,
@@ -506,38 +399,75 @@ class SecurityMiddleware:
         check_configlock: bool = False,
         check_for_login: bool = True,
         check_api_key: bool = False,
-        api_route: bool = False,
+        check_csrf: bool = True,
         access_type: int = 4,
     ):
         self.app = app
         self.check_configlock = check_configlock
         self.check_for_login = check_for_login
         self.check_api_key = check_api_key
-        self.api_route = api_route
+        self.check_csrf = check_csrf
         self.access_type = access_type
 
     async def __call__(self, scope, receive, send):
-        if scope["type"] == "http" and (response := self.denied_response(Request(scope, receive))):
-            return await response(scope, receive, send)
+        if scope["type"] == "http":
+            request = Request(scope, receive)
+            if response := self.denied_response(request):
+                return await response(scope, receive, send)
+            # Where the login is bypassed, issue an anonymous cookie on the UI pages, unless
+            # the client already holds a session. Injected into the response start.
+            if (
+                self.check_for_login
+                and not self.check_api_key
+                and login_bypassed(request)
+                and not validate_any_session(request)
+            ):
+                send = _anonymous_session_sender(request, send)
+                # The page is rendered before that Set-Cookie reaches the client, so its
+                # token has to belong to the cookie being issued, not the one that arrived
+                request.state.csrf_token = csrf_token_for(anonymous_session_tag())
+            else:
+                request.state.csrf_token = csrf_token_for(request.cookies.get(SESSION_COOKIE_USER, ""))
         await self.app(scope, receive, send)
 
     def denied_response(self, request: Request) -> Optional[Response]:
         """Return the response to send when a check fails, or None when allowed."""
         # Check if config is locked
         if self.check_configlock and cfg.configlock():
-            return PlainTextResponse(_MSG_ACCESS_DENIED_CONFIG_LOCK if cfg.api_warnings() else "", status_code=403)
+            return forbidden(_MSG_ACCESS_DENIED_CONFIG_LOCK)
 
         # Check if external access and if it's allowed
         if not check_access(request, access_type=self.access_type, warn_user=True):
-            return PlainTextResponse(_MSG_ACCESS_DENIED if cfg.api_warnings() else "", status_code=403)
+            return forbidden(_MSG_ACCESS_DENIED)
+
+        # An apikey on a route that does not take one: the refusals below say so rather than
+        # redirecting to the login form. Only consulted once the request is refused anyway.
+        offered_apikey = not self.check_api_key and bool(
+            request_params(request).get("apikey") or request.query_params.get("apikey")
+        )
 
         # Verify login status, only for non-key pages
         if self.check_for_login and not self.check_api_key and not check_login(request):
+            if offered_apikey:
+                log_warning_and_ip(request, T("Refused connection from:"))
+                return forbidden(_MSG_APIKEY_NOT_ON_PAGES)
             return base_redirect_response("/login")
 
-        # Some pages need the correct API key
-        if self.check_api_key and (msg := check_apikey(request, api_route=self.api_route)):
-            return PlainTextResponse(msg if cfg.api_warnings() else "", status_code=403)
+        # CSRF guard: a page POST has to echo its session's token, which only a page from
+        # this instance could have read
+        if self.check_csrf and request.method == "POST" and not validate_csrf(request):
+            # A token that simply does not match is a page left open across a restart
+            if presented_csrf_token(request) and not offered_apikey:
+                logging.info(
+                    "Stale session token from %s, the page will reload for a fresh one", client_address_info(request)
+                )
+            else:
+                log_warning_and_ip(request, T("Refused connection from:"))
+            return forbidden(_MSG_APIKEY_NOT_ON_PAGES if offered_apikey else _MSG_MISSING_SESSION)
+
+        # The /api route: session cookie or apikey, which returns the response to send
+        if self.check_api_key and (error_response := check_apikey(request)):
+            return error_response
 
         return None
 
@@ -545,26 +475,6 @@ class SecurityMiddleware:
 def forbidden(message: str) -> PlainTextResponse:
     """403 response, carrying the reason only when api_warnings is enabled."""
     return PlainTextResponse(message if cfg.api_warnings() else "", status_code=403)
-
-
-# Disable over-active logging for the form parser
-logging.getLogger("python_multipart.multipart").setLevel(logging.WARNING)
-
-
-##############################################################################
-# Helper redirect functions
-##############################################################################
-
-
-def base_redirect_response(root: str = "", **kwargs) -> RedirectResponse:
-    """Create a Starlette RedirectResponse with SABnzbd URL base and query parameters"""
-    url = url_for(root, **kwargs)
-
-    # Log the redirect if API logging is enabled
-    if cfg.api_logging():
-        logging.debug("Redirecting to %s", url)
-
-    return RedirectResponse(url=url, status_code=302)
 
 
 ##############################################################################
@@ -600,21 +510,36 @@ def main_index(request: Request):
         return base_redirect_response("/wizard")
 
 
-@secured_expose(route="/shutdown", check_api_key=True)
+@secured_expose(route="/shutdown")
 async def shutdown(request: Request):
-    # Check for PID
-    pid_in = request_params(request).get("pid")
-    if pid_in and int_conv(pid_in) != os.getpid():
-        return PlainTextResponse("Incorrect PID for this instance, remove PID from URL to initiate shutdown.")
+    """Shut down and show a goodbye page, for UI users; automation should use the
+    mode=shutdown API-call. Only a POST shuts down, authorized like any other page POST, so a
+    stale bookmark or a cross-site link cannot trigger one."""
+    if request.method != "POST":
+        return base_redirect_response("/")
 
     await halt_and_shutdown()
     return PlainTextResponse(T("SABnzbd shutdown finished"))
 
 
-@secured_expose(route="/api", check_api_key=True, api_route=True, access_type=1)
+# check_csrf=False: check_apikey enforces the rule for this route
+@secured_expose(route="/api", check_api_key=True, check_csrf=False, access_type=1)
 async def api(request: Request):
     """Redirect to API-handler, we check the access_type in the API-handler"""
     return await api_handler(request_params(request), request.state.api_call)
+
+
+@secured_expose(route="/log", methods=["POST"])
+def log(request: Request):
+    """Download the log plus a sanitized copy of the ini, for the Help window's log button.
+
+    A page route rather than the mode=showlog API-call because the interface navigates here,
+    and a navigation cannot carry the CSRF header, only the field a page route accepts.
+
+    POST although it changes nothing, so nothing sensitive is served without a token: a GET
+    would be reachable as a cross-site navigation, which could make a victim download their
+    own log. Automation keeps using mode=showlog with an apikey."""
+    return build_log_response()
 
 
 @secured_expose(route="/scriptlog", methods=["GET"])
@@ -671,8 +596,9 @@ def wizard_index(request: Request):
 
 @secured_expose(route="/wizard/one", check_configlock=True, methods=["GET", "POST"])
 def wizard_page_one(request: Request):
-    """Accept language and show server page"""
-    if request_params(request).get("lang"):
+    """Accept language (POSTed by the index page form) and show server page.
+    A GET only renders the page, e.g. when navigating back from page two."""
+    if request.method == "POST" and request_params(request).get("lang"):
         cfg.language.set(request_params(request).get("lang"))
 
     info = build_header(sabnzbd.WIZARD_DIR, request=request)
@@ -715,9 +641,12 @@ def wizard_page_one(request: Request):
 
 @secured_expose(route="/wizard/two", check_configlock=True, methods=["GET", "POST"])
 def wizard_page_two(request: Request):
-    """Accept server and show the final page for restart"""
+    """Accept server (POSTed by the page one form) and show the final page for restart.
+    A GET only renders the page: handle_server mutates its parameters, which is
+    only valid for the mutable form MultiDict of a POST, and saving state on GET
+    would invite replays from the browser history."""
     # Save server details if submitted — no host means the user skipped server setup
-    if request_params(request).get("host"):
+    if request.method == "POST" and request_params(request).get("host"):
         handle_server(request_params(request))
 
     # Show Restart screen
@@ -791,48 +720,73 @@ def get_access_info(request: Optional[Request] = None) -> list[str]:
 ##############################################################################
 
 
-@secured_expose(route="/login", check_for_login=False)
+# check_csrf=False: logging in is the one state-changing request from a client that has
+# never held a session
+@secured_expose(route="/login", check_for_login=False, check_csrf=False)
 async def login_index(request: Request):
     # Already logged in, or no username/password set at all
     if check_login(request):
         return base_redirect_response("/")
 
+    # Check login info
     error = None
+    status_code = 200
+    retry_after = 0
     if request.method == "POST":
-        username = request_params(request).get("username")
-        password = request_params(request).get("password")
-        remember_me = bool(request_params(request).get("remember_me", False))
+        if retry_after := login_cooldown_remaining(request):
+            # Refused without looking at what was submitted
+            error = T("Too many failed login attempts, try again later.")
+            status_code = 429
+            logging.warning(T("Login attempt refused, too many failures from %s"), client_address_info(request))
+        else:
+            username = request_params(request).get("username")
+            password = request_params(request).get("password")
+            remember_me = bool(request_params(request).get("remember_me", False))
 
-        if username == cfg.username() and password == cfg.password():
-            # Create redirect response
-            response = base_redirect_response("/")
-            # Save login cookie
-            set_login_cookie(request, response, remember_me=remember_me)
-            # Log the success
-            logging.info("Successful login from %s", client_address_info(request))
-            return response
-        elif username or password:
-            error = T("Authentication failed, check username/password.")
-            # Warn about the potential security problem
-            logging.warning(T("Unsuccessful login attempt from %s"), client_address_info(request))
+            # Both fields are always compared, so nothing leaks which one matched
+            username_ok = constant_time_equals(username or "", cfg.username())
+            password_ok = constant_time_equals(password or "", cfg.password())
+            if username_ok and password_ok:
+                # Proved it knows the password
+                clear_login_failures(request)
+                # Create redirect response
+                response = base_redirect_response("/")
+                create_session(request, response, remember_me=remember_me)
+                logging.info("Successful login from %s", client_address_info(request))
+                return response
+            elif username or password:
+                error = T("Authentication failed, check username/password.")
+                record_login_failure(request)
+                # Warn about the potential security problem
+                logging.warning(T("Unsuccessful login attempt from %s"), client_address_info(request))
 
     # Show login. Building the header and rendering the Cheetah template are
     # blocking work, so keep them off the event loop.
     def render_login_page():
-        info = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
+        info = build_header(sabnzbd.WEB_DIR_CONFIG)
         info["error"] = error
-        return template_filtered_response(
+        response = template_filtered_response(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "login", "main.tmpl"),
             search_list=info,
+            status_code=status_code,
         )
+        if retry_after:
+            # How long the cooldown has left
+            response.headers["Retry-After"] = str(retry_after)
+        return response
 
     return await run_in_threadpool(render_login_page)
 
 
-@secured_expose(route="/logout", check_for_login=False, methods=["GET"])
-def logout_index(request: Request):
+@secured_expose(route="/logout", methods=["POST"])
+async def logout(request: Request):
+    """Clear the session and return to the main page. POST-only and the UI submits it
+    as a form, like /shutdown, and authorized like any other page POST — the login
+    check (or the CSRF guard when no credentials are set) requires the SameSite=Strict
+    session cookie, which a cross-site page cannot send, so a stray GET (an <img> or
+    link prefetch) or a forged cross-site form cannot log the user out."""
     response = base_redirect_response("/")
-    set_login_cookie(request, response, remove=True)
+    clear_session(request, response)
     return response
 
 
@@ -896,7 +850,7 @@ def index_config_folders(request: Request):
     )
 
 
-@secured_expose(route="/config/folders/save", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/folders/save", check_configlock=True, methods=["POST"])
 def config_folder_save(request: Request):
     for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
         if msg := config.get_config("misc", kw).set(request_params(request).get(kw)):
@@ -974,7 +928,7 @@ def index_config_switches(request: Request):
     )
 
 
-@secured_expose(route="/config/switches/save", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/switches/save", check_configlock=True, methods=["POST"])
 def config_switches_save(request: Request):
     for kw in SWITCH_LIST:
         if msg := config.get_config("misc", kw).set(request_params(request).get(kw)):
@@ -1075,7 +1029,7 @@ def index_config_special(request: Request):
     )
 
 
-@secured_expose(route="/config/special/save", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/special/save", check_configlock=True, methods=["POST"])
 def config_special_save(request: Request):
     for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
         if msg := config.get_config("misc", kw).set(request_params(request).get(kw)):
@@ -1136,13 +1090,16 @@ def index_config_general(request: Request):
 
     conf["nzb_key"] = cfg.nzb_key()
 
+    # The one page that displays the apikey, which is no longer part of build_header
+    conf["apikey"] = cfg.api_key()
+
     return template_filtered_response(
         file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_general.tmpl"),
         search_list=conf,
     )
 
 
-@secured_expose(route="/config/general/save", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/general/save", check_configlock=True, methods=["POST"])
 def config_general_save(request: Request):
     # Handle general options
     for kw in GENERAL_LIST:
@@ -1160,7 +1117,7 @@ def config_general_save(request: Request):
     return report(request_params(request), data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
 
 
-@secured_expose(route="/config/general/upload_config", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/general/upload_config", check_configlock=True, methods=["POST"])
 async def config_upload_backup(request: Request):
     """Restore a config backup"""
     config_backup_file = request_params(request).get("config_backup_file")
@@ -1230,24 +1187,24 @@ def index_config_server(request: Request):
     )
 
 
-@secured_expose(route="/config/server/add_server", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/server/add_server", check_configlock=True, methods=["POST"])
 def config_server_add(request: Request):
     return handle_server(request_params(request), new_svr=True)
 
 
-@secured_expose(route="/config/server/save_server", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/server/save_server", check_configlock=True, methods=["POST"])
 def config_server_save(request: Request):
     return handle_server(request_params(request))
 
 
-@secured_expose(route="/config/server/delete_server", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/server/delete_server", check_configlock=True, methods=["POST"])
 def config_server_del(request: Request):
     kw = {"section": "servers", "keyword": request_params(request).get("server")}
     del_from_section(kw)
     return base_redirect_response("/config/server")
 
 
-@secured_expose(route="/config/server/clear_server", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/server/clear_server", check_configlock=True, methods=["POST"])
 def config_server_clr(request: Request):
     server = request_params(request).get("server")
     if server:
@@ -1255,7 +1212,7 @@ def config_server_clr(request: Request):
     return base_redirect_response("/config/server")
 
 
-@secured_expose(route="/config/server/toggle_server", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/server/toggle_server", check_configlock=True, methods=["POST"])
 def config_server_toggle(request: Request):
     server = request_params(request).get("server")
     if server:
@@ -1469,7 +1426,7 @@ def config_rss_index(request: Request):
     )
 
 
-@secured_expose(route="/config/rss/save_rss_rate", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/save_rss_rate", check_configlock=True, methods=["POST"])
 def config_rss_save_rss_rate(request: Request):
     """Save changed RSS automatic readout rate"""
     cfg.rss_rate.set(request_params(request).get("rss_rate"))
@@ -1478,7 +1435,7 @@ def config_rss_save_rss_rate(request: Request):
     return base_redirect_response(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/upd_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/upd_rss_feed", check_configlock=True, methods=["POST"])
 def config_rss_upd_rss_feed(request: Request):
     """Update Feed level attributes,
     legacy version: ignores 'enable' parameter
@@ -1500,7 +1457,7 @@ def config_rss_upd_rss_feed(request: Request):
     return _rss_redirect(params.get("feed"))
 
 
-@secured_expose(route="/config/rss/save_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/save_rss_feed", check_configlock=True, methods=["POST"])
 def config_rss_save_rss_feed(request: Request):
     """Update Feed level attributes"""
     params = request_params(request)
@@ -1527,7 +1484,7 @@ def config_rss_save_rss_feed(request: Request):
     return base_redirect_response(_RSS_ROOT, feed=feed_name) if feed_name else base_redirect_response(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/toggle_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/toggle_rss_feed", check_configlock=True, methods=["POST"])
 def config_rss_toggle_rss_feed(request: Request):
     """Toggle automatic read-out flag of Feed"""
     params = request_params(request)
@@ -1545,7 +1502,7 @@ def config_rss_toggle_rss_feed(request: Request):
         return base_redirect_response(_RSS_ROOT, feed=feed) if feed else base_redirect_response(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/add_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/add_rss_feed", check_configlock=True, methods=["POST"])
 def config_rss_add_rss_feed(request: Request):
     """Add one new RSS feed definition"""
     params = request_params(request)
@@ -1576,14 +1533,14 @@ def config_rss_add_rss_feed(request: Request):
         return base_redirect_response(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/upd_rss_filter", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/upd_rss_filter", check_configlock=True, methods=["POST"])
 def config_rss_upd_rss_filter(request: Request):
     """Save updated filter definition"""
     do_upd_rss_filter(dict(request_params(request)))
     return _rss_redirect(request_params(request).get("feed"))
 
 
-@secured_expose(route="/config/rss/del_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/del_rss_feed", check_configlock=True, methods=["POST"])
 def config_rss_del_rss_feed(request: Request):
     """Remove complete RSS feed"""
     feed = request_params(request).get("feed")
@@ -1594,14 +1551,14 @@ def config_rss_del_rss_feed(request: Request):
     return base_redirect_response(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/del_rss_filter", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/del_rss_filter", check_configlock=True, methods=["POST"])
 def config_rss_del_rss_filter(request: Request):
     """Remove one RSS filter"""
     do_del_rss_filter(dict(request_params(request)))
     return _rss_redirect(request_params(request).get("feed"))
 
 
-@secured_expose(route="/config/rss/download_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/download_rss_feed", check_configlock=True, methods=["POST"])
 def config_rss_download_rss_feed(request: Request):
     """Force download of all matching jobs in a feed"""
     feed = request_params(request).get("feed")
@@ -1612,7 +1569,7 @@ def config_rss_download_rss_feed(request: Request):
     return _rss_flash_redirect(request, feed, msg)
 
 
-@secured_expose(route="/config/rss/clean_rss_jobs", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/clean_rss_jobs", check_configlock=True, methods=["POST"])
 def config_rss_clean_rss_jobs(request: Request):
     """Remove processed RSS jobs from UI"""
     feed = request_params(request).get("feed")
@@ -1624,7 +1581,7 @@ def config_rss_clean_rss_jobs(request: Request):
     return _rss_redirect(feed)
 
 
-@secured_expose(route="/config/rss/test_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/test_rss_feed", check_configlock=True, methods=["POST"])
 def config_rss_test_rss_feed(request: Request):
     """Read the feed content again and show results"""
     feed = request_params(request).get("feed")
@@ -1641,7 +1598,7 @@ def config_rss_test_rss_feed(request: Request):
     return PlainTextResponse(msg)
 
 
-@secured_expose(route="/config/rss/eval_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/eval_rss_feed", check_configlock=True, methods=["POST"])
 def config_rss_eval_rss_feed(request: Request):
     """Re-apply the filters to the feed"""
     feed = request_params(request).get("feed")
@@ -1651,7 +1608,7 @@ def config_rss_eval_rss_feed(request: Request):
     return _rss_redirect(feed)
 
 
-@secured_expose(route="/config/rss/download", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/download", check_configlock=True, methods=["POST"])
 def config_rss_download(request: Request):
     """Download NZB from provider (Download button)"""
     params = request_params(request)
@@ -1680,7 +1637,7 @@ def config_rss_download(request: Request):
     return _rss_redirect(feed)
 
 
-@secured_expose(route="/config/rss/rss_now", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/rss/rss_now", check_configlock=True, methods=["POST"])
 def config_rss_rss_now(request: Request):
     """Run an automatic RSS run now"""
     sabnzbd.Scheduler.force_rss()
@@ -1824,7 +1781,7 @@ def config_scheduling_index(request: Request):
     )
 
 
-@secured_expose(route="/config/scheduling/add_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/scheduling/add_schedule", check_configlock=True, methods=["POST"])
 def config_scheduling_add(request: Request):
     params = request_params(request)
     servers = config.get_servers()
@@ -1873,7 +1830,7 @@ def config_scheduling_add(request: Request):
     return base_redirect_response(_SCHED_ROOT)
 
 
-@secured_expose(route="/config/scheduling/del_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/scheduling/del_schedule", check_configlock=True, methods=["POST"])
 def config_scheduling_del(request: Request):
     schedules = cfg.schedules()
     line = request_params(request).get("line")
@@ -1885,7 +1842,7 @@ def config_scheduling_del(request: Request):
     return base_redirect_response(_SCHED_ROOT)
 
 
-@secured_expose(route="/config/scheduling/toggle_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/scheduling/toggle_schedule", check_configlock=True, methods=["POST"])
 def config_scheduling_toggle(request: Request):
     schedules = cfg.schedules()
     line = request_params(request).get("line")
@@ -1937,7 +1894,7 @@ def index_config_categories(request: Request):
     )
 
 
-@secured_expose(route="/config/categories/delete", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/categories/delete", check_configlock=True, methods=["POST"])
 def config_categories_delete(request: Request):
     kw = {
         "section": "categories",
@@ -1947,7 +1904,7 @@ def config_categories_delete(request: Request):
     return base_redirect_response("/config/categories")
 
 
-@secured_expose(route="/config/categories/save", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/categories/save", check_configlock=True, methods=["POST"])
 def config_categories_save(request: Request):
     name = request_params(request).get("name", "*")
     newname = request_params(request).get("newname", "")
@@ -2012,14 +1969,14 @@ def config_sorting_index(request: Request):
     )
 
 
-@secured_expose(route="/config/sorting/delete", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/sorting/delete", check_configlock=True, methods=["POST"])
 def config_sorting_delete(request: Request):
     kw = {"section": "sorters", "keyword": request_params(request).get("name")}
     del_from_section(kw)
     return base_redirect_response(_SORTING_ROOT)
 
 
-@secured_expose(route="/config/sorting/save_sorter", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/sorting/save_sorter", check_configlock=True, methods=["POST"])
 def config_sorting_save_sorter(request: Request):
     params = request_params(request)
     kwargs = dict(params)
@@ -2039,7 +1996,7 @@ def config_sorting_save_sorter(request: Request):
     return base_redirect_response(_SORTING_ROOT)
 
 
-@secured_expose(route="/config/sorting/toggle_sorter", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/sorting/toggle_sorter", check_configlock=True, methods=["POST"])
 def config_sorting_toggle_sorter(request: Request):
     """Toggle is_active flag of a sorter"""
     try:
@@ -2315,7 +2272,7 @@ def index_config_notify(request: Request):
     )
 
 
-@secured_expose(route="/config/notify/save", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/notify/save", check_configlock=True, methods=["POST"])
 def config_notify_save(request: Request):
     for section in NOTIFY_OPTIONS:
         for option in NOTIFY_OPTIONS[section]:
@@ -2353,19 +2310,11 @@ class XFrameOptionsMiddleware:
 
 
 class SecureSessionCookieMiddleware:
-    """Add the Secure attribute to the session cookie when the connection warrants it.
-
-    SessionMiddleware builds its cookie flags once at construction, so it cannot know
-    that TLS was terminated at a reverse proxy, which is only visible per request. It
-    is therefore mounted without https_only and wrapped by this middleware, which
-    flags the cookie using the same rule as set_login_cookie. Any other Set-Cookie
-    header is passed through untouched: the login cookies are already flagged where
-    they are set. Pure ASGI (not BaseHTTPMiddleware) to keep streaming responses
-    untouched."""
+    """Add the Secure attribute to the session cookie when the connection warrants it"""
 
     # Matches the cookie emitted by SessionMiddleware, which is mounted with
     # session_cookie=COOKIE_SESSION
-    COOKIE_PREFIX = utob(COOKIE_SESSION + "=")
+    COOKIE_PREFIX = utob(SESSION_COOKIE_FLASH + "=")
 
     def __init__(self, app):
         self.app = app
@@ -2634,7 +2583,7 @@ def create_app() -> Starlette:
         Middleware(
             SessionMiddleware,
             secret_key=secrets.token_hex(),
-            session_cookie=COOKIE_SESSION,
+            session_cookie=SESSION_COOKIE_FLASH,
             same_site="lax",
             https_only=False,
         ),

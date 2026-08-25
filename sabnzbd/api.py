@@ -36,7 +36,7 @@ from starlette.background import BackgroundTask
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import QueryParams, UploadFile
 from starlette.requests import Request
-from starlette.responses import Response, StreamingResponse
+from starlette.responses import RedirectResponse, Response, StreamingResponse
 
 # For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
 # compile due to Rust dependency. Since the output is the same, we support all modules.
@@ -786,7 +786,7 @@ def sanitize_line(line: bytes, cur_user_bytes: Optional[bytes] = None) -> bytes:
     return line
 
 
-def _api_showlog(name: str, kwargs: QueryParams) -> StreamingResponse:
+def build_log_response() -> StreamingResponse:
     """Fetch the INI and the log-data and add a message at the top"""
 
     def _generate_log():
@@ -827,6 +827,10 @@ def _api_showlog(name: str, kwargs: QueryParams) -> StreamingResponse:
         media_type="application/x-download;charset=utf-8",
         headers={"Content-Disposition": 'attachment;filename="sabnzbd.log"', "Cache-Control": "no-store"},
     )
+
+
+def _api_showlog(name: str, kwargs: QueryParams) -> StreamingResponse:
+    return build_log_response()
 
 
 def _api_get_cats(name: str, kwargs: QueryParams) -> Response:
@@ -1920,6 +1924,14 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
+def base_redirect_response(root: str = "", **kwargs) -> RedirectResponse:
+    """Create a Starlette RedirectResponse with SABnzbd URL base and query parameters"""
+    url = url_for(root, **kwargs)
+    if cfg.api_logging():
+        logging.debug("Redirecting to %s", url)
+    return RedirectResponse(url=url, status_code=302)
+
+
 def url_for(path: str = "", **kwargs) -> str:
     """Build an absolute URL below the configured URL base.
 
@@ -1983,6 +1995,9 @@ def build_header(
         header["color_scheme"] = sabnzbd.WEB_COLOR or ""
         header["confighelpuri"] = f"https://sabnzbd.org/wiki/configuration/{sabnzbd.__version__[:3]}/"
 
+        if request:
+            header["csrf_token"] = getattr(request.state, "csrf_token", "")
+
         header["pid"] = os.getpid()
         header["active_lang"] = cfg.language()
         header["rtl"] = is_rtl(header["active_lang"])
@@ -1998,7 +2013,6 @@ def build_header(
         header["power_options"] = sabnzbd.WINDOWS or sabnzbd.MACOS or sabnzbd.LINUX_POWER
         header["pp_pause_event"] = sabnzbd.Scheduler.pp_pause_event
 
-        header["apikey"] = cfg.api_key()
         header["new_release"], header["new_rel_url"] = sabnzbd.NEW_VERSION
 
         # Add the commit hash so static files are refreshed on nightly/development builds
