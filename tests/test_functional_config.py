@@ -159,12 +159,20 @@ class TestConfigCategories(SABnzbdBaseTest):
         self.open_page("http://%s:%s/config/categories" % (SAB_HOST, SAB_PORT))
 
         # Add new category
-        self.driver.find_elements(By.NAME, "newname")[1].send_keys("testCat")
+        self.driver.find_elements(By.NAME, "newname")[1].send_keys(self.category_name)
         self.selenium_wrapper(
             self.driver.find_element, By.XPATH, "//button/text()[normalize-space(.)='Add']/parent::*"
         ).click()
         self.no_page_crash()
+        self.wait_for_ajax()
+
+        # Category names are stored lowercased, so the name as typed must not come back
         assert self.category_name not in self.driver.page_source
+
+        # Reload and confirm it was really saved. Without this the test passes whether the
+        # POST was accepted or refused, because a rejected save leaves the name absent too.
+        self.open_page("http://%s:%s/config/categories" % (SAB_HOST, SAB_PORT))
+        assert self.category_name.lower() in self.driver.page_source
 
 
 class TestConfigRSS(SABnzbdBaseTest):
@@ -308,3 +316,25 @@ class TestConfigServers(SABnzbdBaseTest):
         self.open_config_servers()
         self.add_test_server()
         self.remove_server()
+
+
+class TestGlitterInterface(SABnzbdBaseTest):
+    """Glitter funnels every call through callAPI, so a wrong CSRF header fails all of them at once"""
+
+    def test_interface_loads_and_polls(self):
+        # skip_wizard because the test ini configures no servers, so / would redirect there
+        self.open_page("http://%s:%s/?skip_wizard=1" % (SAB_HOST, SAB_PORT))
+        self.wait_for_ajax()
+
+        # The token reached the page and was installed for every request. Checked because a
+        # missing csrfToken global would throw inside glitter.basic.js and stop the rest of
+        # the interface from initialising -- which leaves the overlay below hidden, so the
+        # overlay alone would not notice.
+        assert self.driver.execute_script(
+            "return csrfToken.length === 64 && ($.ajaxSettings.headers || {})['X-SABnzbd-CSRF'] === csrfToken"
+        ), "Glitter did not install the CSRF header on its API calls"
+
+        # The queue and history refresh drop this overlay over the page when they fail, so
+        # its absence is what says those calls came back authorized
+        overlay = self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "main-restarting")
+        assert not overlay.is_displayed(), "Glitter showed the reconnect overlay, so its API calls failed"

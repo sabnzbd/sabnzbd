@@ -23,6 +23,7 @@ import copy
 import io
 import os
 import shutil
+import re
 import socket
 import tempfile
 import time
@@ -261,6 +262,28 @@ def get_url_result(url="", host=SAB_HOST, port=SAB_PORT):
     """Do basic request to web page"""
     arguments = {"apikey": SAB_APIKEY}
     return requests.get("http://%s:%s/%s/" % (host, port, url), params=arguments).text
+
+
+def get_page_session(host=SAB_HOST, port=SAB_PORT) -> tuple[requests.Session, str]:
+    """Load a page as a browser would, returning the session holding its cookie and the CSRF token it rendered"""
+    session = requests.Session()
+    page = session.get("http://%s:%s/config/general" % (host, port))
+    page.raise_for_status()
+
+    # Every skin renders it into a var for its ajax calls; the quoting differs between them
+    token = re.search(r"""var csrfToken = ['"]([a-f0-9]+)['"]""", page.text)
+    assert token, "no CSRF token in the page, so a page POST cannot be built"
+    return session, token.group(1)
+
+
+def post_url_result(url="", data=None, host=SAB_HOST, port=SAB_PORT) -> str:
+    """POST to a page route the way the interface does, with a session cookie and its token"""
+    session, csrf_token = get_page_session(host, port)
+    payload = {"csrf_token": csrf_token}
+    payload.update(data or {})
+    response = session.post("http://%s:%s/%s" % (host, port, url), data=payload)
+    response.raise_for_status()
+    return response.text
 
 
 def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
@@ -502,31 +525,16 @@ class SABnzbdBaseTest:
             pass
 
     def wait_for_alert(self, timeout=15):
-        """Wait for a JS confirm()/alert dialog and return it.
-
-        Selenium's click() can return before a dialog opened synchronously in the
-        click handler is registered, and a confirm() raised from an AJAX success
-        callback only appears once the request settles. Waiting explicitly avoids
-        both races. Use this only where a dialog is guaranteed."""
+        """Wait for a JS confirm()/alert dialog and return it. Use only where a dialog is guaranteed."""
         WebDriverWait(self.driver, timeout).until(EC.alert_is_present())
         return self.driver.switch_to.alert
 
     def dismiss_restart_prompt(self, timeout=15):
-        """Dismiss the "restart required" confirmation raised after saving.
-
-        Changing username/password (and other guarded options) sets RESTART_REQ,
-        so the save callback always pops a confirm() dialog. Cancel it (= no
-        restart). The alert is guaranteed here, so wait for it deterministically."""
+        """Dismiss the "restart required" confirmation raised after saving"""
         self.wait_for_alert(timeout).dismiss()
 
     def dismiss_alert_if_present(self, timeout=15):
-        """Wait until a submitted save settles, dismissing a restart-request
-        confirm() only if one is raised.
-
-        Use where the dialog is conditional (a save that may or may not change a
-        guarded option), so its absence must not fail the test. The alert, if any,
-        is popped in the same JS turn that completes the request, so poll for either
-        terminal state and return as soon as one is reached."""
+        """Wait until a submitted save settles, dismissing a restart-request confirm() only if one is raised"""
         deadline = time.time() + timeout
         while time.time() < deadline:
             if EC.alert_is_present()(self.driver):
