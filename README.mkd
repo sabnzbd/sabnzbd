@@ -1,5 +1,37 @@
-Release Notes - SABnzbd 5.1.1
+Release Notes - SABnzbd 5.1.2
 =========================================================
+
+SABnzbd 5.1.1 and 5.1.2 resolved 3 serious vulnerabilities.
+
+## Critical remote code execution vulnerability resolved in 5.1.2 (GHSA-rgqj-28c2-gxwp)
+
+You are only affected if an untrusted party can reach the web interface.
+By default, SABnzbd is only accessible from your own device and `External internet access`
+is set to `No access`. If either of those is still at its default, or if you use a proxy
+service for authentication, you are not affected.
+
+In version 5.1.1 and earlier, an attacker who can reach the web interface could bypass
+authentication on configuration endpoints, even when SABnzbd is protected with a username
+and password. By changing SABnzbd's settings this way, an attacker could ultimately execute
+arbitrary commands on the system running SABnzbd, with the same permissions as SABnzbd itself.
+This also means that all information in SABnzbd would be exposed.
+
+See GHSA-xrfq-jhgh-wqch below for actions and mitigations.
+More information: https://sabnzbd.org/5-1-vulnerabilities
+
+## High-severity path traversal vulnerability resolved in 5.1.2 (GHSA-75g3-96fr-7p2r)
+
+You are affected if SABnzbd processes NZBs or downloads from a source you do not fully
+trust, such as a public indexer.
+
+In version 5.1.1 and earlier, a maliciously crafted PAR2 or SFV file inside a download
+could cause SABnzbd to move downloaded content outside of the job's own folder during
+post-processing. By using this to plant a file in another job's internal administration,
+an attacker could ultimately execute arbitrary commands on the system running SABnzbd,
+with the same permissions as SABnzbd itself.
+
+The only mitigation is to update, there is no configuration change that prevents this.
+More information: https://sabnzbd.org/5-1-vulnerabilities
 
 ## Critical authentication vulnerability resolved in 5.1.1 (GHSA-xrfq-jhgh-wqch)
 
@@ -25,7 +57,11 @@ sensitive information after applying the update:
 If you cannot update right away, the only mitigations are to ensure the web interface is not
 reachable by untrusted parties, or to lower `External internet access` to `Full API` or below.
 
-More information: https://sabnzbd.org/auth-bypass
+More information: https://sabnzbd.org/5-1-vulnerabilities
+
+## Other bug fixes in 5.1.2
+
+* RSS filters were not applied directly.
 
 ## Other bug fixes in 5.1.1
 
