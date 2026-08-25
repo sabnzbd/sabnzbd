@@ -69,6 +69,9 @@ from sabnzbd.decorators import conditional_cache, synchronized
 from sabnzbd.encoding import ubtou, platform_btou
 from sabnzbd.filesystem import userxbit, make_script_path, remove_file, strip_extensions, safe_fnmatch
 
+# Keep the real socket around, setting a proxy replaces socket.socket
+_ORIGINAL_SOCKET = socket.socket
+
 if sabnzbd.WINDOWS:
     try:
         import winreg
@@ -1597,6 +1600,19 @@ def run_script(script: str):
             logging.info("Failed script %s, Traceback: ", script, exc_info=True)
 
 
+class ProxiedSocket(socks.socksocket):
+    """Socket that connects through the proxy, but still reports the peer of incoming connections.
+
+    PySocks proxies a process by replacing socket.socket, and socket.accept() builds
+    accepted sockets from that same global. So sockets accepted by our web server are
+    PySocks sockets as well, and its getpeername() returns proxy_peername, which is only
+    ever set by an outgoing connect() through the proxy. Without this, every request
+    would arrive without a client address and be refused by check_access()."""
+
+    def getpeername(self):
+        return self.proxy_peername or _ORIGINAL_SOCKET.getpeername(self)
+
+
 def set_socks5_proxy():
     if cfg.socks5_proxy_url():
         proxy = urllib.parse.urlparse(cfg.socks5_proxy_url())
@@ -1609,7 +1625,7 @@ def set_socks5_proxy():
             proxy.username,
             proxy.password,
         )
-        socket.socket = socks.socksocket
+        socket.socket = ProxiedSocket
 
 
 def set_https_verification(value: bool) -> bool:
