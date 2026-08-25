@@ -9,7 +9,6 @@
         </label>
     </div>
     <form action="$url('config/switches/save')" method="post" class="fullform" autocomplete="off">
-        <input type="hidden" id="apikey" name="apikey" value="$apikey" />
         <input type="hidden" name="output" value="json" />
         <div class="section advanced-settings">
             <div class="col2">
@@ -394,9 +393,9 @@ jQuery(document).ready(function() {
 
         // Send request
         jQuery.ajax({
-            type: "GET",
+            type: "POST",
             url: "$url('api')",
-            data: "mode=set_config_default&apikey=${apikey}&output=json&keyword=" + key_container.join('&keyword=')
+            data: "mode=set_config_default&output=json&keyword=" + key_container.join('&keyword=')
         }).then(function(data) {
             // Reload page
             document.location = document.location

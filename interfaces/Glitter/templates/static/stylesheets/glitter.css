@@ -89,12 +89,27 @@ h2 {
 }
 
 .navbar-collapse.in .dropdown-menu a,
-.navbar-collapse.in .dropdown-menu a:hover {
+.navbar-collapse.in .dropdown-menu a:hover,
+.navbar-collapse.in .dropdown-menu form button,
+.navbar-collapse.in .dropdown-menu form button:hover {
     color: black !important;
 }
 
 .navbar-collapse.in .dropdown-menu a.active-on-queue-finish {
     color: white !important;
+}
+
+.dropdown-menu > li > form > button {
+    display: block;
+    width: 100%;
+    padding: 3px 20px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    font-weight: normal;
+    line-height: 1.42857143;
+    color: var(--clr-text);
+    white-space: nowrap;
 }
 
 .navbar-nav>li>a {
@@ -2409,7 +2424,9 @@ hr {
 }
 
 .dropdown-menu>li>a:hover,
-.dropdown-menu>li>a:focus {
+.dropdown-menu>li>a:focus,
+.dropdown-menu>li>form>button:hover,
+.dropdown-menu>li>form>button:focus {
     background-color: var(--clr-surface-hover);
     color: var(--clr-text);
 }

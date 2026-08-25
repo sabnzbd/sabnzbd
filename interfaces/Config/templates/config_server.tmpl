@@ -41,7 +41,6 @@
         </div>
         <div class="col1">
             <form data-form="add-server" action="$url('config/server/add_server')" method="post" autocomplete="off">
-                <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="output" value="json" />
                 <fieldset>
                     <div class="field-pair">
@@ -154,7 +153,6 @@
     <!--#set $last_prio = -1 #-->
     <!--#for $cur, $server in enumerate($servers) #-->
         <form action="$url('config/server/save_server')" method="post" class="fullform" autocomplete="off">
-            <input type="hidden" name="apikey" value="$apikey" />
             <input type="hidden" name="output" value="json" />
             <input type="hidden" name="server" value="$server['name']" />
 
@@ -644,7 +642,7 @@
             jQuery.ajax({
                 type: "POST",
                 url: "$url('config/server/toggle_server')",
-                data: {server: whichServer, apikey: "$apikey" }
+                data: {server: whichServer }
             }).done(function() {
                 // Let us leave!
                 formWasSubmitted = true;

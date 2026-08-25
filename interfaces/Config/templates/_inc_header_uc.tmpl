@@ -41,10 +41,10 @@
         var formWasSubmitted = false;
 
         // Information we need
-        var sabSession = '$apikey';
+        var csrfToken = '$csrf_token';
         var rootURL = '$url()'
         var urlBase = '${url_base}'
-        var folderBrowseUrl = "$url('api', mode='browse', output='json', apikey=$apikey)";
+        var folderBrowseUrl = "$url('api', mode='browse', output='json')";
         var folderSeperator = '#if $os.sep == '\\' then '\\\\' else '/'#'
 
         // Translations

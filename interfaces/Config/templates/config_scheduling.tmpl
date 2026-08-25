@@ -18,7 +18,6 @@ else:
             <h3>$T('addSchedule') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
         </div><!-- /col2 -->
         <form data-form="add-schedule" action="$url('config/scheduling/add_schedule')" method="post" autocomplete="off">
-        <input type="hidden" id="apikey" name="apikey" value="$apikey" />
         <div class="col1">
             <fieldset>
                 <div class="field-pair">
@@ -91,7 +90,6 @@ else:
                         <!--#for $schednum, $line in enumerate($schedlines)#-->
                             <!--#set $odd = not $odd#-->
                             <form data-form="del-schedule" action="$url('config/scheduling/del_schedule')" method="post">
-                                <input type="hidden" name="apikey" value="$apikey"/>
                                 <input type="hidden" name="line" value="$line"/>
                                 <div class="field-pair infoTableSeperator <!--#if $odd then "" else " alt"#-->">
                                     <input type="checkbox" name="schedenabled" value="$line" aria-label="$T('enabled')" aria-describedby="schedule-description-$schednum" <!--#if int($taskinfo[$schednum][5]) > 0 then 'checked="checked"' else ""#-->>
@@ -137,7 +135,7 @@ else:
         jQuery.ajax({
             type: "POST",
             url: "$url('config/scheduling/toggle_schedule')",
-            data: {line: jQuery(this).val(), apikey: "$apikey" }
+            data: {line: jQuery(this).val() }
         }).done(function() {
             // Let us leave!
             formWasSubmitted = true;

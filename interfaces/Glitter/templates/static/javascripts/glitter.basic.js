@@ -23,15 +23,17 @@ if(isMobile) {
     });
 }
 
+$.ajaxSetup({
+    headers: { "X-SABnzbd-CSRF": csrfToken }
+});
+
 // Basic API-call
 function callAPI(data, timeout = 10000) {
     // Fill basis var's
     data.output = "json";
-    data.apikey = apiKey;
     var ajaxQuery = $.ajax({
         url: "./api",
-        type: "GET",
-        cache: false,
+        type: "POST",
         data: data,
         timeout: timeout
     });

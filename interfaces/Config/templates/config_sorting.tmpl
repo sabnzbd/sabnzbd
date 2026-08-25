@@ -21,7 +21,6 @@
         <!-- SORTER $cur -->
         <div class="section <!--#if $cur != 0#-->sorter<!--#end if#-->" id="sorter_$cur" <!--#if $cur == 0#-->style="display: none;"<!--#end if#-->>
             <form action="$url('config/sorting/save_sorter')" method="post" autocomplete="off" <!--#if $cur != 0#-->class="sorting-row"<!--#end if#-->>
-                <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="order" value="$slot.order" />
                 <input type="hidden" value="$slot.name" name="name" />
                 <!--#if $cur == 0#-->
@@ -348,7 +347,6 @@
         <h3>$T('sort-quick-add'):</h3>
         <!--#if "tv" in $categories#-->
         <form action="$url('config/sorting/save_sorter')" method="post" autocomplete="off">
-            <input type="hidden" name="apikey" value="$apikey" />
             <input type="hidden" name="order" value="0" />
             <input type="hidden" name="is_active" value="1" />
             <input type="hidden" name="name" value="">
@@ -367,7 +365,6 @@
         <!--#end if#-->
         <!--#if "movies" in $categories#-->
         <form action="$url('config/sorting/save_sorter')" method="post" autocomplete="off">
-            <input type="hidden" name="apikey" value="$apikey" />
             <input type="hidden" name="order" value="0" />
             <input type="hidden" name="is_active" value="1" />
             <input type="hidden" name="name" value="">
@@ -420,7 +417,6 @@
                         job_name: jQuery('#preview_name_' + sort_nr).val(),
                         sort_string: preview_sort_string,
                         multipart_label: jQuery('#multipart_label_' + sort_nr).val(),
-                        apikey: '$apikey',
                         output: 'json'
                     },
                     success: function(data) {
@@ -510,7 +506,7 @@
             jQuery.ajax({
                 type: "POST",
                 url: "$url('config/sorting/toggle_sorter')",
-                data: {sorter: whichSorter, apikey: "$apikey" }
+                data: {sorter: whichSorter }
             }).done(function() {
                 formWasSubmitted = true;
                 formHasChanged = false;

@@ -9,7 +9,6 @@
             <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <p>$T('explain-RSS')</p>
             <form data-form="add-rss-feed" action="$url('config/rss/add_rss_feed')" method="post" autocomplete="off">
-                <input type="hidden" name="apikey" value="$apikey" />
                 <table class="catTable addRssTable">
                     <tr>
                         <th>&nbsp;</th>
@@ -39,7 +38,6 @@
     <div class="section">
         <div class="padTable">
             <form action="$url('config/rss/save_rss_feed')" method="post" autocomplete="off">
-                <input type="hidden" name="apikey" value="$apikey" />
                 <table id="subscriptions">
                     <tbody>
                         <!--#set $feeds = sorted($rss.keys(), key=lambda x: x.lower())#-->
@@ -76,7 +74,6 @@
             <!--#if $feeds#-->
             <br/>
             <form action="$url('config/rss/rss_now')" method="post" autocomplete="off">
-                <input type="hidden" name="apikey" value="$apikey" />
                 <button type="submit" class="btn btn-default readAll"><span class="glyphicon glyphicon-sort"></span> $T('button-rssNow')</button>
             </form>
             <!--#end if#-->
@@ -85,7 +82,6 @@
     <!--#end if#-->
     <div class="section">
         <form action="$url('config/rss/save_rss_rate')" method="post" autocomplete="off">
-            <input type="hidden" name="apikey" value="$apikey" />
             <div class="col1">
                 <fieldset>
                     <div class="field-pair">
@@ -117,7 +113,6 @@
             </div>
             <!--#end if#-->
             <form action="$url('config/rss/upd_rss_feed')" method="post">
-                <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="feed" value="$active_feed" />
                 <input type="hidden" name="uri" value="$rss[$feed]['uris']" />
                 <table class="catTable">
@@ -209,7 +204,6 @@
             </form>
             <!-- add new filter -->
             <form data-form="update-rss-filter" action="$url('config/rss/upd_rss_filter')" method="post">
-                <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="index" value="$rss[$feed]['filtercount']" />
                 <input type="hidden" name="feed" value="$active_feed" />
                 <table class="catTable">
@@ -286,7 +280,6 @@
             <!--#for $filter in $rss[$feed].filters#-->
                 <!--#set $odd = not $odd#-->
                 <form data-form="update-rss-filter" action="$url('config/rss/upd_rss_filter')" method="post" autocomplete="off">
-                    <input type="hidden" name="apikey" value="$apikey" />
                     <input type="hidden" name="index" value="$fnum" />
                     <input type="hidden" name="feed" value="$active_feed" />
                     <table class="catTable">
@@ -365,7 +358,6 @@
                 <!--#set $fnum = $fnum+1#-->
             <!--#end for#-->
             <form action="$url('config/rss/download_rss_feed')" method="post">
-                <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="feed" value="$active_feed" />
                 <div class="padding">
                     <button type="button" class="btn btn-default testFeed" rel="$active_feed"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
@@ -402,7 +394,6 @@
                             <td>
                                 <form data-form="download-rss-job" action="$url('config/rss/download')" method="post">
                                     <input type="hidden" value="$active_feed" name="feed" />
-                                    <input type="hidden" name="apikey" value="$apikey" />
                                     <input type="hidden" name="url" value="$job['url']" />
                                     <input type="hidden" name="nzbname" value="$job['nzbname']" />
                                     <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
@@ -446,7 +437,6 @@
                             <td>
                                 <form data-form="download-rss-job" action="$url('config/rss/download')" method="post">
                                     <input type="hidden" value="$active_feed" name="feed" />
-                                    <input type="hidden" name="apikey" value="$apikey" />
                                     <input type="hidden" name="url" value="$job['url']" />
                                     <input type="hidden" name="nzbname" value="$job['nzbname']" />
                                     <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
@@ -475,7 +465,6 @@
                 <!--#if $downloaded#-->
                 <form action="$url('config/rss/clean_rss_jobs')" method="post">
                     <input type="hidden" value="$active_feed" name="feed" />
-                    <input type="hidden" name="apikey" value="$apikey" />
                     <table class="catTable">
                         <thead>
                             <tr>
@@ -535,7 +524,6 @@
                     <span class="help-block">$T('addMultipleFeeds')</span>
                 </div>
                 <input type="hidden" name="feed" id="feed_edit_old_name" />
-                <input type="hidden" name="apikey" value="$apikey" />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> $T('cancel')</button>
@@ -590,7 +578,7 @@ jQuery(document).ready(function(){
             jQuery.ajax({
                 type: "POST",
                 url: "$url('config/rss/del_rss_feed')",
-                data: {feed: whichFeed, apikey: "$apikey" }
+                data: {feed: whichFeed }
             }).done(function( msg ) {
                 // Let us leave!
                 formWasSubmitted = true;
@@ -605,7 +593,7 @@ jQuery(document).ready(function(){
         jQuery.ajax({
             type: "POST",
             url: "$url('config/rss/toggle_rss_feed')",
-            data: {feed: whichFeed, apikey: "$apikey" }
+            data: {feed: whichFeed }
         }).done(function() {
             // Let us leave!
             formWasSubmitted = true;
@@ -645,7 +633,7 @@ jQuery(document).ready(function(){
         jQuery.ajax({
             type: "POST",
             url: "$url('config/rss/test_rss_feed')",
-            data: {feed: whichFeed, apikey: "$apikey" }
+            data: {feed: whichFeed }
         }).done(function( msg ) {
             // Let us leave!
             formWasSubmitted = true;

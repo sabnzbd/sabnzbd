@@ -31,7 +31,6 @@
 
 <div class="colmask">
     <form action="$url('config/notify/save')" method="post" class="fullform" autocomplete="off">
-    <input type="hidden" id="apikey" name="apikey" value="$apikey" />
     <input type="hidden" name="output" value="json" />
     <div class="section" id="email">
         <div class="col2">
@@ -447,7 +446,7 @@ jQuery(document).ready(function(){
         jQuery(buttonObj).attr("disabled", "disabled")
         jQuery(buttonObj).attr("aria-busy", "true")
         jQuery(buttonObj).find('span').toggleClass('glyphicon-comment glyphicon-refresh spin-glyphicon')
-        var data = { mode: buttonObj.id, apikey: '$apikey', output: 'json' };
+        var data = { mode: buttonObj.id, output: 'json' };
         jQuery(buttonObj).parents('.section').extractFormDataTo(data);
 
         // Clear up the box
@@ -455,7 +454,7 @@ jQuery(document).ready(function(){
 
         // Get the request
         jQuery.ajax({
-            type: "GET",
+            type: "POST",
             url: "$url('api')",
             data: data
         }).then(function(data) {
