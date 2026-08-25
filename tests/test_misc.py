@@ -1577,3 +1577,17 @@ class TestSetSocks5Proxy:
                 with accepted:
                     assert isinstance(accepted, misc.ProxiedSocket)
                     assert accepted.getpeername() == client.getsockname() == address
+
+    @pytest.mark.config({"socks5_proxy_url": "socks5://proxy.example:1080"})
+    def test_timeout_is_applied_to_a_socket_without_a_peer(self):
+        """PySocks only applies a timeout to the real socket when getpeername() does not
+        raise, so a listening socket must not be left blocking by setblocking(False)"""
+        misc.set_socks5_proxy()
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+            assert isinstance(listener, misc.ProxiedSocket)
+            listener.bind(("127.0.0.1", 0))
+            listener.listen(1)
+            listener.setblocking(False)
+            assert misc._ORIGINAL_SOCKET.gettimeout(listener) == 0.0
+            with pytest.raises(BlockingIOError):
+                listener.accept()

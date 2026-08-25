@@ -1603,14 +1603,16 @@ def run_script(script: str):
 class ProxiedSocket(socks.socksocket):
     """Socket that connects through the proxy, but still reports the peer of incoming connections.
 
-    PySocks proxies a process by replacing socket.socket, and socket.accept() builds
-    accepted sockets from that same global. So sockets accepted by our web server are
-    PySocks sockets as well, and its getpeername() returns proxy_peername, which is only
-    ever set by an outgoing connect() through the proxy. Without this, every request
-    would arrive without a client address and be refused by check_access()."""
+    getpeername() must stay a plain attribute read: PySocks calls it internally from
+    settimeout(), and raising OSError there for an unconnected socket leaves our
+    listening socket stuck in blocking mode."""
 
-    def getpeername(self):
-        return self.proxy_peername or _ORIGINAL_SOCKET.getpeername(self)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            self.proxy_peername = _ORIGINAL_SOCKET.getpeername(self)
+        except OSError:
+            pass
 
 
 def set_socks5_proxy():
