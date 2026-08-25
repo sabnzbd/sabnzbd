@@ -51,8 +51,31 @@ class TestNewsUnpackFunctions:
         assert not newsunpack.is_sfv_file("tests/data/only_comments.sfv")
         assert not newsunpack.is_sfv_file("tests/data/random.bin")
 
-    def test_is_sevenfile(self):
-        # False, because the command is not set
+    def test_sfv_check_blocks_path_traversal(self, tmp_path):
+        """A traversing SFV filename must not move a file out of the job directory"""
+        download_path = str(tmp_path)
+        obfuscated_name = "6f1ed002ab5595859014ebf0951522d9"
+        obfuscated_path = os.path.join(download_path, obfuscated_name)
+        with open(obfuscated_path, "wb") as test_file:
+            test_file.write(b"payload")
+
+        # SFV entry with matching crc32 but a traversing target name
+        sfv_path = os.path.join(download_path, "check.sfv")
+        with open(sfv_path, "w") as sfv_file:
+            sfv_file.write("../escaped.bin deadbeef\n")
+
+        nzf = mock.Mock(filename=obfuscated_name, filepath=obfuscated_path, crc32=0xDEADBEEF)
+        nzo = mock.Mock(download_path=download_path, finished_files=[nzf])
+
+        assert newsunpack.sfv_check([sfv_path], nzo) is False
+        assert not os.path.exists(os.path.join(download_path, os.pardir, "escaped.bin"))
+        assert os.path.exists(obfuscated_path)
+
+    def test_is_sevenfile(self, monkeypatch):
+        # False, because the command is not set. Force it explicitly: SEVENZIP_COMMAND
+        # is a module global that another test in this class may have populated via
+        # find_programs(), and under pytest-xdist tests share no ordering guarantee.
+        monkeypatch.setattr(newsunpack, "SEVENZIP_COMMAND", None)
         assert not newsunpack.SEVENZIP_COMMAND
         assert not newsunpack.is_sevenfile("tests/data/test_7zip/testfile.7z")
 
@@ -65,6 +88,7 @@ class TestNewsUnpackFunctions:
         assert newsunpack.is_sevenfile("tests/data/test_7zip/testfile.7z")
 
     def test_sevenzip(self):
+        newsunpack.find_programs(".")
         testzip = newsunpack.SevenZip("tests/data/test_7zip/testfile.7z")
         assert testzip.namelist() == ["My_Test_Download.bin"]
         # Basic check that we can get data from the 7zip

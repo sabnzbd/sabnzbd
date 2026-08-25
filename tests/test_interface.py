@@ -229,6 +229,34 @@ class TestInterfaceFunctions:
 
         _func()
 
+    @pytest.mark.config({"api_key": "the_real_api_key", "nzb_key": "the_real_nzb_key"})
+    @pytest.mark.parametrize(
+        "api_route, kwargs, expected",
+        [
+            # /api route: version/auth public, NZB-key valid for nzb-level calls
+            (True, {"mode": "version"}, None),
+            (True, {"mode": "auth"}, None),
+            (True, {"mode": "addfile", "apikey": "the_real_nzb_key"}, None),
+            (True, {"mode": "queue", "apikey": "the_real_api_key"}, None),
+            (True, {"mode": "queue"}, interface._MSG_APIKEY_REQUIRED),
+            (True, {"mode": "queue", "apikey": "wrong"}, interface._MSG_APIKEY_INCORRECT),
+            # Web-ui routes must ignore 'mode': no version/auth or NZB-key bypass
+            (False, {"mode": "version"}, interface._MSG_APIKEY_REQUIRED),
+            (False, {"mode": "auth"}, interface._MSG_APIKEY_REQUIRED),
+            (False, {"mode": "addfile", "apikey": "the_real_nzb_key"}, interface._MSG_APIKEY_INCORRECT),
+            (False, {"apikey": "the_real_api_key"}, None),
+            (False, {"mode": "version", "apikey": "the_real_api_key"}, None),
+            (False, {"apikey": "wrong"}, interface._MSG_APIKEY_INCORRECT),
+            (False, {}, interface._MSG_APIKEY_REQUIRED),
+        ],
+    )
+    def test_check_apikey_ignores_mode_off_api_route(self, api_route, kwargs, expected):
+        """'mode' is only trusted on the real /api route, not on web-ui handlers."""
+        cherrypy.request.remote.ip = "127.0.0.1"
+        cherrypy.request.headers.update({"X-Forwarded-For": None})
+        cherrypy.request.remote_label = "127.0.0.1 [test]"
+        assert interface.check_apikey(kwargs, api_route=api_route) == expected
+
     @pytest.mark.config({"verify_xff_header": False})
     def test_logout_does_not_leak_valid_cookie(self):
         """A logout must never emit a cookie/salt pair that passes check_login_cookie.

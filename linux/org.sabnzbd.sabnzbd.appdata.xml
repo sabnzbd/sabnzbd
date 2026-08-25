@@ -71,6 +71,9 @@
     <url type="faq">https://sabnzbd.org/wiki/faq</url>
     <url type="contact">https://sabnzbd.org/live-chat.html</url>
     <releases>
+        <release version="5.1.2" date="2026-08-25" type="stable">
+            <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/5.1.2</url>
+        </release>
         <release version="5.1.1" date="2026-08-18" type="stable">
             <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/5.1.1</url>
         </release>

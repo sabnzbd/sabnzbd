@@ -210,12 +210,36 @@ for i in range(1, 32):
     CH_ILLEGAL_WIN += chr(i)
 
 
-def sanitize_filename(filename: str) -> str:
+def sanitize_filename(filename: str, allow_subdirs: bool = False) -> str:
     """Return filename with illegal chars converted to legal ones
-    and with the par2 extension always in lowercase
+    and with the par2 extension always in lowercase.
+    With allow_subdirs the forward slashes that par2 uses to separate sub-directories are kept
+    and every part is sanitized on its own. The result is always local to the current folder:
+    empty parts, "." and ".." are dropped, so a leading slash or any amount of traversal can
+    never produce a name that points outside of it. The admin folder is dropped as well, so
+    it can never point into it either.
     """
     if not filename:
         return filename
+
+    if allow_subdirs:
+        # Par2 always uses a forward slash, no matter which platform created the set
+        parts = []
+        for part in filename.split("/"):
+            if part in ("", os.curdir):
+                continue
+            if part == os.pardir:
+                logging.info("Dropping directory traversal from name %s", filename)
+                continue
+            if part.lower() == JOB_ADMIN.lower():
+                # Never let a name point into the admin folder, its files are pickle-loaded
+                logging.info("Dropping admin folder from name %s", filename)
+                continue
+            parts.append(sanitize_filename(part))
+        # Nothing usable left, or no sub-directories after all
+        if not parts:
+            return "unknown"
+        return os.path.join(*parts)
 
     filename = unicode_nfc_normalize(filename)
 
@@ -453,6 +477,23 @@ def same_directory(a: str, b: str) -> int:
             return 1
         else:
             return is_subfolder
+
+
+def points_into_admin_dir(path: str, base: str) -> bool:
+    """Return True if path is, or is inside, an admin folder somewhere below base.
+    Both sides are resolved first, because the name alone cannot be trusted: on Windows
+    an NTFS 8.3 alias ("__ADMI~1") and on any platform a link point at a directory that
+    is named differently than the path says. Resolving also settles any case difference.
+    """
+    # realpath() only keeps the \\?\ prefix if it was there to begin with, so clip both
+    # sides: comparing a prefixed path to a plain one would put the admin folder out of
+    # sight and let it pass
+    try:
+        relative = os.path.relpath(clip_path(os.path.realpath(path)), clip_path(os.path.realpath(base)))
+    except ValueError:
+        # Windows only: resolving ended up on another drive, so it left base altogether
+        return True
+    return JOB_ADMIN.lower() in relative.lower().split(os.sep)
 
 
 def is_network_path(path: str) -> bool:
@@ -923,12 +964,21 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
         oldpath, _ = os.path.split(old)
         # Check not outside directory
         # In case of "same_file() == 1": same directory, so nothing to do
-        if same_directory(oldpath, path) == 0:
+        location = same_directory(oldpath, path)
+        if location == 0:
             # Outside current directory, this is most likely malicious
             logging.error(T("Blocked attempt to create directory %s"), path)
             raise OSError("Refusing to go outside directory")
-        elif same_directory(oldpath, path) == 2:
-            # Sub-directory, so create if does not yet exist:
+
+        # Refuse the admin folder, it is pickle-loaded. Check the whole new path: if the
+        # last element is the admin folder itself, the move below would put the file
+        # inside it, since shutil.move accepts a directory as its target.
+        if points_into_admin_dir(new, oldpath):
+            logging.error(T("Blocked attempt to create directory %s"), path)
+            raise OSError("Refusing to go into admin directory")
+
+        if location == 2:
+            # Sub-directory, create if does not yet exist:
             create_all_dirs(path)
 
     logging.debug('Renaming "%s" to "%s"', old, new)
