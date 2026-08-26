@@ -507,10 +507,9 @@ class Assembler(Thread):
             return False
         nzf = article.nzf
         with nzf.file_lock:
-            writer, _, direct_write = Assembler.open(nzf, True, article.file_size)
             try:
+                writer, _, direct_write = Assembler.open(nzf, True, article.file_size)
                 if not direct_write:
-                    cfg.direct_write.set(False)
                     return False
                 Assembler.write(writer, None, nzf, article, data)
             except OSError:
@@ -608,7 +607,7 @@ class Assembler(Thread):
                     set_permissions(nzf.filepath)
                     try:
                         writer.preallocate(file_size)
-                    except OSError:
+                    except sabctools.SparseUnsupported:
                         logging.debug("Sparse call failed for %s", nzf.filepath)
                         cfg.direct_write.set(False)
                         direct_write = False
