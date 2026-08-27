@@ -873,31 +873,27 @@ class Downloader(Thread):
             # Handle login problems
             block = False
             penalty = 0
-            errormsg = None
+            # Pass the server message directly on to the user
+            errormsg = T("Server %s reported: %s") % (server.host, error.msg)
             logging.debug("Server login problem: %s", error.msg)
             if error.code in (502, 400, 481, 482) and clues_too_many(error.msg):
                 # Too many connections: remove this thread and reduce thread-setting for server
                 # Plan to go back to the full number after a penalty timeout
-                errormsg = T("Too many connections to server %s [%s]") % (server.host, error.msg)
                 if server.active:
                     # Don't count this for the tries (max_art_tries) on this server
                     self.reset_nw(nw)
                     self.plan_server(server, _PENALTY_TOOMANY)
             elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
                 # Login from (too many) different IP addresses
-                errormsg = T(
-                    "Login from too many different IP addresses to server %s [%s] - https://sabnzbd.org/multiple-adresses"
-                ) % (server.host, error.msg)
+                errormsg += " - https://sabnzbd.org/multiple-adresses"
                 penalty = _PENALTY_SHARE
                 block = True
             elif error.code in (452, 481, 482, 381) or (error.code in (500, 502) and clues_login(error.msg)):
                 # Cannot login, block this server
-                errormsg = T("Failed login for server %s [%s]") % (server.host, error.msg)
                 penalty = _PENALTY_PERM
                 block = True
             elif error.code in (502, 482):
                 # Cannot connect (other reasons), block this server
-                errormsg = T("Cannot connect to server %s [%s]") % (server.host, error.msg)
                 if clues_pay(error.msg):
                     penalty = _PENALTY_PERM
                 else:
@@ -905,12 +901,12 @@ class Downloader(Thread):
                 block = True
             elif error.code == 400:
                 # Temp connection problem?
+                errormsg = None
                 logging.debug("Unspecified error 400 from server %s", server.host)
                 penalty = _PENALTY_VERYSHORT
                 block = True
             else:
                 # Unknown error, just keep trying
-                errormsg = T("Cannot connect to server %s [%s]") % (server.host, error.msg)
                 penalty = _PENALTY_UNKNOWN
                 block = True
 
