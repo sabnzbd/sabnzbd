@@ -1512,10 +1512,9 @@ def test_nntp_server_dict(kwargs: ApiParams) -> tuple[bool, str]:
         elif nntp_code < 300 or nntp_code in (411, 423, 430):
             # If no username/password set and we requested fake-article, it will return 430 Not Found
             return_status = (True, T("Connection Successful!"))
-        elif nntp_code == 502 or sabnzbd.downloader.clues_login(nntp_message):
-            return_status = (False, T("Authentication failed, check username/password."))
-        elif sabnzbd.downloader.clues_too_many(nntp_message):
-            return_status = (False, T("Too many connections, please pause downloading or try again later"))
+        else:
+            # Pass the server message directly on to the user
+            return_status = (False, nntp_message)
 
     # Fallback in case no data was received or unknown status
     if not return_status:
