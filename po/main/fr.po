@@ -276,16 +276,6 @@ msgstr "Le serveur requiert un identifiant et un mot de passe."
 msgid "Connection Successful!"
 msgstr "Connexion réussie!"
 
-#: sabnzbd/api.py, sabnzbd/interface.py
-msgid "Authentication failed, check username/password."
-msgstr "Echec d'authentification, vérifiez les identifiant/mot de passe."
-
-#: sabnzbd/api.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Trop de connexions, veuillez mettre en pause le téléchargement ou essayer "
-"plus tard"
-
 #. Warning message
 #: sabnzbd/api.py
 msgid ""
@@ -625,20 +615,8 @@ msgid "Fatal error in Downloader"
 msgstr "Erreur fatale dans le Téléchargeur"
 
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s [%s]"
-msgstr "Trop de connexions au serveur %s [%s]"
-
-#: sabnzbd/downloader.py
-msgid ""
-"Login from too many different IP addresses to server %s [%s] - "
-"https://sabnzbd.org/multiple-adresses"
+msgid "Server %s reported: %s"
 msgstr ""
-"Connexion au serveur %s [%s] à partir de trop d'adresses IP différentes - "
-"https://sabnzbd.org/multiple-adresses"
-
-#: sabnzbd/downloader.py
-msgid "Failed login for server %s [%s]"
-msgstr "Échec de la connexion au serveur %s [%s]"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -864,6 +842,10 @@ msgstr ""
 #: sabnzbd/interface.py
 msgid "Login attempt refused, too many failures from %s"
 msgstr ""
+
+#: sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Echec d'authentification, vérifiez les identifiant/mot de passe."
 
 #. Warning message
 #: sabnzbd/interface.py

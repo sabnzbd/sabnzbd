@@ -245,16 +245,6 @@ msgstr "Serwer wymaga podania nazwy użytkownika i hasła."
 msgid "Connection Successful!"
 msgstr "Połączenie udane!"
 
-#: sabnzbd/api.py, sabnzbd/interface.py
-msgid "Authentication failed, check username/password."
-msgstr "Błąd połączenia, sprawdź nazwę użytkownika i hasło."
-
-#: sabnzbd/api.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Zbyt wiele połączeń, proszę wstrzymać pobieranie lub spróbować ponownie "
-"później"
-
 #. Warning message
 #: sabnzbd/api.py
 msgid ""
@@ -567,18 +557,8 @@ msgid "Fatal error in Downloader"
 msgstr ""
 
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s [%s]"
-msgstr "Zbyt wiele połączeń do serwera %s [%s]"
-
-#: sabnzbd/downloader.py
-msgid ""
-"Login from too many different IP addresses to server %s [%s] - "
-"https://sabnzbd.org/multiple-adresses"
+msgid "Server %s reported: %s"
 msgstr ""
-
-#: sabnzbd/downloader.py
-msgid "Failed login for server %s [%s]"
-msgstr "Błąd logowania do serwera %s [%s]"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -792,6 +772,10 @@ msgstr ""
 #: sabnzbd/interface.py
 msgid "Login attempt refused, too many failures from %s"
 msgstr ""
+
+#: sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Błąd połączenia, sprawdź nazwę użytkownika i hasło."
 
 #. Warning message
 #: sabnzbd/interface.py

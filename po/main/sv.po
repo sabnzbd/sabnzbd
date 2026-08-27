@@ -244,14 +244,6 @@ msgstr "Servern kräver användarnamn och lösenord."
 msgid "Connection Successful!"
 msgstr "Anslutning lyckades!"
 
-#: sabnzbd/api.py, sabnzbd/interface.py
-msgid "Authentication failed, check username/password."
-msgstr "Autentisering misslyckades, kontrollera användarnamn och lösenord."
-
-#: sabnzbd/api.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr "För många anslutningar, pausa en nedladdning eller försök igen senare"
-
 #. Warning message
 #: sabnzbd/api.py
 msgid ""
@@ -563,18 +555,8 @@ msgid "Fatal error in Downloader"
 msgstr ""
 
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s [%s]"
-msgstr "För många anslutningar till servern %s [%s]"
-
-#: sabnzbd/downloader.py
-msgid ""
-"Login from too many different IP addresses to server %s [%s] - "
-"https://sabnzbd.org/multiple-adresses"
+msgid "Server %s reported: %s"
 msgstr ""
-
-#: sabnzbd/downloader.py
-msgid "Failed login for server %s [%s]"
-msgstr "Det gick inte att logga in på server %s [%s]"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -786,6 +768,10 @@ msgstr ""
 #: sabnzbd/interface.py
 msgid "Login attempt refused, too many failures from %s"
 msgstr ""
+
+#: sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Autentisering misslyckades, kontrollera användarnamn och lösenord."
 
 #. Warning message
 #: sabnzbd/interface.py

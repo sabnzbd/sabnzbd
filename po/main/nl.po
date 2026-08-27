@@ -268,15 +268,6 @@ msgstr "Server heeft een gebruikersnaam en een wachtwoord nodig."
 msgid "Connection Successful!"
 msgstr "Succesvol verbonden!"
 
-#: sabnzbd/api.py, sabnzbd/interface.py
-msgid "Authentication failed, check username/password."
-msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
-
-#: sabnzbd/api.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Te veel verbindingen, onderbreek het downloaden of probeer later nog eens."
-
 #. Warning message
 #: sabnzbd/api.py
 msgid ""
@@ -614,20 +605,8 @@ msgid "Fatal error in Downloader"
 msgstr "Onherstelbare fout in de Downloader"
 
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s [%s]"
-msgstr "Te veel verbindingen met server %s [%s]"
-
-#: sabnzbd/downloader.py
-msgid ""
-"Login from too many different IP addresses to server %s [%s] - "
-"https://sabnzbd.org/multiple-adresses"
+msgid "Server %s reported: %s"
 msgstr ""
-"Teveel verschillende IP-adressen probeerde in te loggen op server %s [%s] - "
-"https://sabnzbd.org/multiple-adresses"
-
-#: sabnzbd/downloader.py
-msgid "Failed login for server %s [%s]"
-msgstr "Aanmelden bij server %s mislukt [%s]"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -853,6 +832,10 @@ msgstr ""
 #: sabnzbd/interface.py
 msgid "Login attempt refused, too many failures from %s"
 msgstr ""
+
+#: sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
 
 #. Warning message
 #: sabnzbd/interface.py

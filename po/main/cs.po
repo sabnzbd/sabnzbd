@@ -268,16 +268,6 @@ msgstr "Server vyžaduje zadání uživatelského jména a hesla."
 msgid "Connection Successful!"
 msgstr "Připojení proběhlo úspěšně!"
 
-#: sabnzbd/api.py, sabnzbd/interface.py
-msgid "Authentication failed, check username/password."
-msgstr "Ověření se nezdařilo, zkontrolujte uživatelské jméno a heslo."
-
-#: sabnzbd/api.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Příliš mnoho připojení – pozastavte prosím stahování nebo to zkuste znovu "
-"později"
-
 #. Warning message
 #: sabnzbd/api.py
 msgid ""
@@ -607,20 +597,8 @@ msgid "Fatal error in Downloader"
 msgstr "Závažná chyba ve Stahování"
 
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s [%s]"
-msgstr "Příliš mnoho spojení k serveru %s [%s]"
-
-#: sabnzbd/downloader.py
-msgid ""
-"Login from too many different IP addresses to server %s [%s] - "
-"https://sabnzbd.org/multiple-adresses"
+msgid "Server %s reported: %s"
 msgstr ""
-"Příliš mnoho přihlášení ze různých IP adres na server %s [%s] – "
-"https://sabnzbd.org/multiple-adresses"
-
-#: sabnzbd/downloader.py
-msgid "Failed login for server %s [%s]"
-msgstr "Přihlášení k serveru %s se nezdařilo [%s]"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -841,6 +819,10 @@ msgstr ""
 #: sabnzbd/interface.py
 msgid "Login attempt refused, too many failures from %s"
 msgstr ""
+
+#: sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Ověření se nezdařilo, zkontrolujte uživatelské jméno a heslo."
 
 #. Warning message
 #: sabnzbd/interface.py
