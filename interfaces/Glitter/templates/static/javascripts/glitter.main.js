@@ -702,7 +702,6 @@ function ViewModel() {
         data.append("priority", $('#modal-add-nzb select[name="Priority"]').val())
         data.append("pp", $('#modal-add-nzb select[name="Processing"]').val())
         data.append("script", $('#modal-add-nzb select[name="Post-processing"]').val())
-        data.append("apikey", apiKey);
 
         // Add this one
         $.ajax({

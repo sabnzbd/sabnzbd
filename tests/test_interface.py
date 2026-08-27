@@ -23,8 +23,9 @@ import asyncio
 import inspect
 import logging
 import logging.config
+from typing import Optional
 import pytest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from starlette.requests import Request
 from starlette.datastructures import Headers, Address, QueryParams
 import uvicorn
@@ -33,16 +34,12 @@ from uvicorn.lifespan import on as lifespan_on
 from uvicorn.protocols.http import h11_impl, httptools_impl
 from uvicorn.server import ServerState
 
+import sabnzbd
+import sabnzbd.cfg as cfg
+import sabnzbd.security as security
 from sabnzbd import interface
+from tests.test_security import api_request, config_save_middleware, mock_request, page_post, store_session
 from sabnzbd.misc import is_local_addr, is_loopback_addr, xff_trusted_networks
-
-
-def create_mock_request(remote_ip: str = "127.0.0.1", headers: dict | None = None, remote_port: int = 12345):
-    """Create a mock Starlette Request object for testing"""
-    mock_request = Mock(spec=Request)
-    mock_request.client = Address(remote_ip, remote_port)
-    mock_request.headers = Headers(headers or {})
-    return mock_request
 
 
 def resolve_client(remote_ip: str, xff_header: str | None = None, remote_port: int = 12345) -> Address:
@@ -203,41 +200,33 @@ class TestInterfaceFunctions:
                 # Without XFF, only the remote IP and the local ranges setting matter
                 result = is_loopback_addr(remote_ip) or is_local_addr(remote_ip)
 
-            request = create_mock_request(remote_ip=client.host, remote_port=client.port)
+            request = mock_request(remote_ip=client.host, remote_port=client.port)
 
             if access_type <= inet_exposure:
-                assert interface.check_access(request, access_type) is True
+                assert security.check_access(request, access_type) is True
             else:
-                assert interface.check_access(request, access_type) is result
+                assert security.check_access(request, access_type) is result
 
         _func()
 
-    @pytest.mark.config({"api_key": "the_real_api_key", "nzb_key": "the_real_nzb_key"})
+    @pytest.mark.config({"api_key": "the_real_api_key", "nzb_key": "the_real_nzb_key", "api_warnings": True})
     @pytest.mark.parametrize(
-        "api_route, params, expected",
+        "params, expected",
         [
-            # /api route: version/auth public, NZB-key valid for nzb-level calls
-            (True, {"mode": "version"}, None),
-            (True, {"mode": "auth"}, None),
-            (True, {"mode": "addfile", "apikey": "the_real_nzb_key"}, None),
-            (True, {"mode": "queue", "apikey": "the_real_api_key"}, None),
-            (True, {"mode": "queue"}, interface._MSG_APIKEY_REQUIRED),
-            (True, {"mode": "queue", "apikey": "wrong"}, interface._MSG_APIKEY_INCORRECT),
-            # Web-ui routes must ignore 'mode': no version/auth or NZB-key bypass
-            (False, {"mode": "version"}, interface._MSG_APIKEY_REQUIRED),
-            (False, {"mode": "auth"}, interface._MSG_APIKEY_REQUIRED),
-            (False, {"mode": "addfile", "apikey": "the_real_nzb_key"}, interface._MSG_APIKEY_INCORRECT),
-            (False, {"apikey": "the_real_api_key"}, None),
-            (False, {"mode": "version", "apikey": "the_real_api_key"}, None),
-            (False, {"apikey": "wrong"}, interface._MSG_APIKEY_INCORRECT),
-            (False, {}, interface._MSG_APIKEY_REQUIRED),
+            ({"mode": "version"}, None),
+            ({"mode": "auth"}, None),
+            # The NZB-key is valid for nzb-level calls only
+            ({"mode": "addfile", "apikey": "the_real_nzb_key"}, None),
+            ({"mode": "queue", "apikey": "the_real_nzb_key"}, interface._MSG_APIKEY_INCORRECT),
+            ({"mode": "queue", "apikey": "the_real_api_key"}, None),
+            ({"mode": "queue"}, interface._MSG_APIKEY_REQUIRED),
+            ({"mode": "queue", "apikey": "wrong"}, interface._MSG_APIKEY_INCORRECT),
         ],
     )
-    def test_check_apikey_ignores_mode_off_api_route(self, api_route, params, expected):
-        """'mode' is only trusted on the real /api route, not on web-ui handlers."""
-        request = create_mock_request()
-        request.state.params = QueryParams(params)
-        assert interface.check_apikey(request, api_route=api_route) == expected
+    def test_apikey_on_the_api_route(self, params, expected):
+        request = mock_request(params=params)
+        response = interface.check_apikey(request)
+        assert (response.body.decode() if response else None) == expected
 
     @pytest.mark.parametrize(
         "local_ranges, xff_ips, expected_result",
@@ -297,7 +286,7 @@ class TestInterfaceFunctions:
     )
     def test_effective_client_from_xff(self, local_ranges, xff_ips, expected_result):
         def _func():
-            # The effective client IP (used for login-cookie binding and access
+            # The effective client IP (used for access
             # checks) is selected by uvicorn's ProxyHeadersMiddleware: the last
             # XFF entry that is not a trusted (local) proxy, or the first entry
             # when the whole chain is trusted. Connect from loopback, which is
@@ -312,12 +301,11 @@ class TestInterfaceFunctions:
     @pytest.mark.parametrize("inet_exposure", [0, 2, 4])
     @pytest.mark.config(lambda params: {"inet_exposure": params["inet_exposure"], "api_warnings": True})
     def test_check_access_without_client(self, access_type, inet_exposure):
-        # request.client can be None (e.g. unix sockets or some test clients);
-        # this must not raise and must fail closed for restricted access types
-        request = create_mock_request()
+        # request.client can be None on unix sockets and with some test clients
+        request = mock_request()
         request.client = None
 
-        assert interface.check_access(request, access_type, warn_user=True) is (access_type <= inet_exposure)
+        assert security.check_access(request, access_type, warn_user=True) is (access_type <= inet_exposure)
         # The logging helpers must not raise either
         interface.log_warning_and_ip(request, "txt")
 
@@ -473,19 +461,19 @@ class TestClientAddressInfo:
         ],
     )
     def test_brackets_ipv6(self, remote_ip, expected):
-        request = create_mock_request(remote_ip=remote_ip, remote_port=55170)
-        assert interface.client_address_info(request) == expected
+        request = mock_request(remote_ip=remote_ip, remote_port=55170)
+        assert security.client_address_info(request) == expected
 
     @pytest.mark.config({"verify_xff_header": True})
     def test_includes_forwarded_chain(self):
-        request = create_mock_request(remote_ip="::1", remote_port=55170, headers={"X-Forwarded-For": "8.7.6.5, ::1"})
-        assert interface.client_address_info(request) == "[::1]:55170 (X-Forwarded-For: 8.7.6.5, ::1)"
+        request = mock_request(remote_ip="::1", remote_port=55170, headers={"X-Forwarded-For": "8.7.6.5, ::1"})
+        assert security.client_address_info(request) == "[::1]:55170 (X-Forwarded-For: 8.7.6.5, ::1)"
 
     @pytest.mark.config({"verify_xff_header": False})
     def test_omits_forwarded_chain_when_not_verified(self):
         """Without verify_xff_header the header is not trusted, so it is not reported"""
-        request = create_mock_request(remote_ip="::1", remote_port=55170, headers={"X-Forwarded-For": "8.7.6.5"})
-        assert interface.client_address_info(request) == "[::1]:55170"
+        request = mock_request(remote_ip="::1", remote_port=55170, headers={"X-Forwarded-For": "8.7.6.5"})
+        assert security.client_address_info(request) == "[::1]:55170"
 
 
 class TestUseSecureCookies:
@@ -526,12 +514,12 @@ class TestUseSecureCookies:
         ],
     )
     def test_follows_request_scheme(self, scheme, host, server, expected):
-        assert interface.use_secure_cookies(self.make_request(scheme, host, server)) is expected
+        assert security.use_secure_cookies(self.make_request(scheme, host, server)) is expected
 
     @pytest.mark.config({"enable_https": True})
     def test_https_enabled_always_secure(self):
         """Serving https ourselves is enough, whatever the request looks like"""
-        assert interface.use_secure_cookies(self.make_request("http")) is True
+        assert security.use_secure_cookies(self.make_request("http")) is True
 
     @pytest.mark.config({"enable_https": False})
     def test_scheme_from_trusted_proxy(self):
@@ -541,7 +529,7 @@ class TestUseSecureCookies:
         captured = {}
 
         async def asgi_app(scope, receive, send):
-            captured["secure"] = interface.use_secure_cookies(Request(scope))
+            captured["secure"] = security.use_secure_cookies(Request(scope))
 
         def run(remote_ip: str):
             middleware = ProxyHeadersMiddleware(asgi_app, trusted_hosts=xff_trusted_networks())
@@ -562,3 +550,400 @@ class TestUseSecureCookies:
         assert run("127.0.0.1") is True
         # Untrusted peer: the header must be ignored, so no Secure on a plain connection
         assert run("8.7.6.5") is False
+
+
+class TestStaleTokenIsNotAWarning:
+
+    def _levels(self, caplog, run) -> set:
+        caplog.clear()
+        with caplog.at_level(logging.INFO, logger=""):
+            run()
+        return {record.levelname for record in caplog.records}
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0, "api_warnings": True})
+    def test_api_call_with_a_stale_token_is_only_info(self, session_store, caplog):
+        request = mock_request(security.anonymous_session_tag(), params={"mode": "queue", "name": ""}, csrf="f0" * 32)
+        levels = self._levels(caplog, lambda: interface.check_apikey(request))
+        assert "WARNING" not in levels
+        assert "INFO" in levels
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0, "api_warnings": True})
+    def test_api_call_with_no_token_still_warns(self, session_store, caplog):
+        request = api_request(security.anonymous_session_tag(), with_token=False)
+        levels = self._levels(caplog, lambda: interface.check_apikey(request))
+        assert "WARNING" in levels
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0, "api_warnings": True})
+    def test_page_post_with_a_stale_token_is_only_info(self, session_store, caplog):
+        request = page_post(security.anonymous_session_tag(), csrf="f0" * 32)
+        levels = self._levels(caplog, lambda: config_save_middleware().denied_response(request))
+        assert "WARNING" not in levels
+        assert "INFO" in levels
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0, "api_warnings": True})
+    def test_cross_site_page_post_still_warns(self, session_store, caplog):
+        levels = self._levels(caplog, lambda: config_save_middleware().denied_response(page_post()))
+        assert "WARNING" in levels
+
+
+class TestApiCsrf:
+    """A cookie-authorized API call must echo its session's CSRF token in a header"""
+
+    def _status(self, request) -> Optional[int]:
+        response = interface.check_apikey(request)
+        return response.status_code if response else None
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
+    def test_cookie_with_token_authorizes(self, session_store):
+        assert self._status(api_request(security.anonymous_session_tag())) is None
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
+    def test_cookie_without_token_is_forbidden(self, session_store):
+        """403, not 401: a reload cannot conjure up a header the client never sends"""
+        assert self._status(api_request(security.anonymous_session_tag(), with_token=False)) == 403
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
+    def test_stale_token_asks_for_a_reload(self, session_store):
+        """401, because a reload does fix this one"""
+        request = mock_request(security.anonymous_session_tag(), params={"mode": "queue", "name": ""}, csrf="f0" * 32)
+        assert self._status(request) == 401
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
+    def test_apikey_still_works_alongside_a_cookie(self, session_store):
+        """The cookie check must fall through to the key, never reject on its own"""
+        request = mock_request(
+            security.anonymous_session_tag(),
+            params={"mode": "queue", "name": "", "apikey": cfg.api_key()},
+        )
+        assert self._status(request) is None
+        # ...and with no cookie at all, which is how 3rd-party clients call it
+        assert self._status(mock_request(params={"mode": "queue", "name": "", "apikey": cfg.api_key()})) is None
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
+    def test_no_mode_is_exempt(self, session_store):
+        """There is no carve-out list, including showlog"""
+        assert self._status(api_request(security.anonymous_session_tag(), mode="showlog", with_token=False)) == 403
+        assert self._status(api_request(security.anonymous_session_tag(), mode="showlog")) is None
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
+    def test_token_outside_the_header_is_not_accepted(self, session_store):
+        """This route merges the query string into its params; page routes still take the field"""
+        tag = security.anonymous_session_tag()
+        token = security.csrf_token_for(tag)
+
+        as_parameter = mock_request(tag, params={"mode": "queue", "name": "", security.CSRF_FIELD: token})
+        assert self._status(as_parameter) == 403
+        # The same token in the header is what the frontend sends, and it is accepted
+        assert self._status(api_request(tag)) is None
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
+    def test_keyless_and_cookieless_still_reports_missing_key(self, session_store):
+        assert self._status(mock_request(params={"mode": "queue", "name": ""})) == 403
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
+    def test_apikey_is_compared_in_constant_time(self, session_store):
+        key = cfg.api_key()
+        assert self._status(mock_request(params={"mode": "queue", "name": "", "apikey": key})) is None
+        # A prefix of the real key is no better than any other wrong key
+        for wrong in (key[:-1], key[:1], "", "x" * len(key)):
+            request = mock_request(params={"mode": "queue", "name": "", "apikey": wrong})
+            assert self._status(request) == 403
+
+    @pytest.mark.parametrize("credentials", [("", ""), ("user", "pass")])
+    @pytest.mark.config(
+        lambda params: {
+            "username": params["credentials"][0],
+            "password": params["credentials"][1],
+            "inet_exposure": 0,
+            "api_warnings": True,
+        }
+    )
+    def test_apikey_does_not_open_the_page_routes(self, session_store, credentials):
+        """Refused the same way whether or not credentials are configured, and never with a redirect to the login form"""
+        request = page_post()
+        request.state.params = {"apikey": cfg.api_key()}
+        request.query_params = QueryParams("")
+
+        response = config_save_middleware().denied_response(request)
+        assert response is not None
+        assert response.status_code == 403
+        assert b"only accepted on /api" in response.body
+
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
+    def test_stray_apikey_does_not_break_a_valid_session(self, session_store):
+        store_session(session_store, "login-token")
+        request = page_post("login-token", csrf=security.csrf_token_for("login-token"))
+        request.state.params = {security.CSRF_FIELD: security.csrf_token_for("login-token")}
+        request.query_params = QueryParams("apikey=" + cfg.api_key())
+        assert config_save_middleware().denied_response(request) is None
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
+    def test_version_and_auth_skip_the_check(self, session_store):
+        for mode in ("version", "auth"):
+            assert self._status(mock_request(params={"mode": mode, "name": ""})) is None
+
+
+class TestLogRoute:
+
+    def _route(self):
+        return next(route for route in interface.INTERFACE_ROUTES if getattr(route, "path", None) == "/log")
+
+    def test_registered_as_a_guarded_post_route(self):
+        assert sorted(self._route().methods) == ["POST"]
+
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
+    def test_behind_the_login_check(self, session_store):
+        """Driven through the route as registered, so weakening the decorator fails here"""
+        route = self._route()
+        captured = {}
+
+        async def receive():
+            return {"type": "http.request", "body": b"", "more_body": False}
+
+        async def send(message):
+            if message["type"] == "http.response.start":
+                captured["status"] = message["status"]
+                captured["headers"] = Headers(raw=message["headers"])
+
+        scope = {
+            "type": "http",
+            "method": "POST",
+            "path": "/log",
+            "query_string": b"",
+            "headers": [(b"host", b"127.0.0.1:8080")],
+            "client": ("127.0.0.1", 12345),
+            "server": ("127.0.0.1", 8080),
+            "scheme": "http",
+        }
+        asyncio.run(route.app(scope, receive, send))
+        # Redirected to the login form, and the handler never ran to stream any of the log
+        assert captured["status"] == 302
+        assert captured["headers"]["location"].endswith("/login")
+
+
+# The kinds of session cookie a page POST can arrive with, resolved once the test's
+# credentials are in place
+COOKIE_NONE = "none"
+COOKIE_ANONYMOUS = "anonymous"
+COOKIE_LOGIN = "login"
+COOKIE_FORGED = "forged"
+
+
+def cookie_of_kind(kind: str, store) -> Optional[str]:
+    if kind == COOKIE_NONE:
+        return None
+    if kind == COOKIE_ANONYMOUS:
+        return security.anonymous_session_tag()
+    if kind == COOKIE_FORGED:
+        return "f0" * 32
+    store_session(store, "login-token")
+    return "login-token"
+
+
+# The CSRF token a page POST can arrive with, relative to the cookie it sends
+TOKEN_NONE = "none"
+TOKEN_MATCHING = "matching"
+TOKEN_WRONG = "wrong"
+
+
+def token_of_kind(kind: str, cookie_value: Optional[str]) -> Optional[str]:
+    if kind == TOKEN_NONE:
+        return None
+    if kind == TOKEN_WRONG:
+        return "f0" * 32
+    return security.csrf_token_for(cookie_value or "")
+
+
+class TestPagePostCsrf:
+
+    @pytest.mark.parametrize(
+        "credentials, inet_exposure, cookie, token, allowed",
+        [
+            # No credentials at all: check_login always passes, so this guard is all there is
+            (("", ""), 0, COOKIE_NONE, TOKEN_NONE, False),
+            (("", ""), 0, COOKIE_ANONYMOUS, TOKEN_MATCHING, True),
+            (("", ""), 0, COOKIE_ANONYMOUS, TOKEN_NONE, False),
+            (("", ""), 0, COOKIE_ANONYMOUS, TOKEN_WRONG, False),
+            (("", ""), 0, COOKIE_FORGED, TOKEN_MATCHING, False),
+            (("", ""), 5, COOKIE_NONE, TOKEN_NONE, False),
+            # A token with no cookie must not pass: csrf_token_for("") is computable by anyone
+            (("", ""), 0, COOKIE_NONE, TOKEN_MATCHING, False),
+            # Credentials with the login enforced
+            (("user", "pass"), 0, COOKIE_NONE, TOKEN_NONE, False),
+            (("user", "pass"), 0, COOKIE_LOGIN, TOKEN_MATCHING, True),
+            (("user", "pass"), 0, COOKIE_LOGIN, TOKEN_NONE, False),
+            # inet_exposure 5: the login is waived, so check_login passes with no cookie
+            (("user", "pass"), 5, COOKIE_NONE, TOKEN_NONE, False),
+            (("user", "pass"), 5, COOKIE_FORGED, TOKEN_MATCHING, False),
+            (("user", "pass"), 5, COOKIE_ANONYMOUS, TOKEN_MATCHING, True),
+            (("user", "pass"), 5, COOKIE_ANONYMOUS, TOKEN_NONE, False),
+            # ...without locking out a local client who does hold a real login session
+            (("user", "pass"), 5, COOKIE_LOGIN, TOKEN_MATCHING, True),
+        ],
+    )
+    @pytest.mark.config(
+        lambda params: {
+            "username": params["credentials"][0],
+            "password": params["credentials"][1],
+            "inet_exposure": params["inet_exposure"],
+        }
+    )
+    def test_config_save_post(self, session_store, credentials, inet_exposure, cookie, token, allowed):
+        cookie_value = cookie_of_kind(cookie, session_store)
+        request = page_post(cookie_value, csrf=token_of_kind(token, cookie_value))
+        response = config_save_middleware().denied_response(request)
+        assert (response is None) is allowed
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
+    def test_token_accepted_as_form_field(self, session_store):
+        """A form that navigates cannot set a header, so the body is accepted too"""
+        tag = security.anonymous_session_tag()
+        allowed = page_post(tag, csrf_field=security.csrf_token_for(tag))
+        assert config_save_middleware().denied_response(allowed) is None
+        denied = page_post(tag, csrf_field="f0" * 32)
+        assert config_save_middleware().denied_response(denied) is not None
+
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 5})
+    def test_token_is_bound_to_its_own_session(self, session_store):
+        cookie_of_kind(COOKIE_LOGIN, session_store)
+        anonymous_tag = security.anonymous_session_tag()
+
+        login_with_anonymous_token = page_post("login-token", csrf=security.csrf_token_for(anonymous_tag))
+        assert config_save_middleware().denied_response(login_with_anonymous_token) is not None
+
+        anonymous_with_login_token = page_post(anonymous_tag, csrf=security.csrf_token_for("login-token"))
+        assert config_save_middleware().denied_response(anonymous_with_login_token) is not None
+
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 5})
+    def test_external_client_still_needs_login(self, session_store):
+        """The waiver is local-only: an external POST gets no help from the anonymous tag"""
+        tag = security.anonymous_session_tag()
+        request = page_post(tag, remote_ip="9.8.7.6", csrf=security.csrf_token_for(tag))
+        assert config_save_middleware().denied_response(request) is not None
+
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
+    def test_session_is_looked_up_once_per_request(self, session_store):
+        store_session(session_store, "login-token")
+        request = page_post("login-token", csrf=security.csrf_token_for("login-token"))
+
+        with patch.object(sabnzbd.SessionStore, "get", wraps=sabnzbd.SessionStore.get) as get_session:
+            assert config_save_middleware().denied_response(request) is None
+        assert get_session.call_count == 1
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
+    def test_get_is_not_guarded(self, session_store):
+        """A first visit has no token yet, so rendering a page must not require one"""
+        assert config_save_middleware().denied_response(mock_request()) is None
+
+
+def run_page_request(cookie: Optional[str] = None, remote_ip: str = "127.0.0.1") -> tuple[list[str], str]:
+    """Drive a page route's SecurityMiddleware over a real ASGI scope, returning the Set-Cookie values it injected and the CSRF token it published"""
+
+    rendered_token = ""
+
+    async def asgi_app(scope, receive, send):
+        # Stand in for a page handler: build_header reads the token off request.state here
+        nonlocal rendered_token
+        rendered_token = scope.get("state", {}).get("csrf_token", "")
+        await send({"type": "http.response.start", "status": 200, "headers": []})
+        await send({"type": "http.response.body", "body": b"ok"})
+
+    middleware = interface.SecurityMiddleware(asgi_app, check_for_login=True, check_api_key=False, access_type=4)
+
+    headers = [(b"host", b"127.0.0.1:8080")]
+    if cookie:
+        headers.append((b"cookie", ("%s=%s" % (security.SESSION_COOKIE_USER, cookie)).encode()))
+    scope = {
+        "type": "http",
+        "method": "GET",
+        "path": "/config/general",
+        "query_string": b"",
+        "headers": headers,
+        "client": (remote_ip, 12345),
+        "server": ("127.0.0.1", 8080),
+        "scheme": "http",
+        # secured_expose always wraps SecurityMiddleware in ParamsMiddleware
+        "state": {"params": QueryParams("")},
+    }
+    captured: list[str] = []
+
+    async def send(message):
+        if message["type"] == "http.response.start":
+            captured.extend(Headers(raw=message["headers"]).getlist("set-cookie"))
+
+    asyncio.run(middleware(scope, None, send))
+    return captured, rendered_token
+
+
+def issued_session_cookies(cookie: Optional[str] = None, remote_ip: str = "127.0.0.1") -> list[str]:
+    return run_page_request(cookie=cookie, remote_ip=remote_ip)[0]
+
+
+class TestAnonymousSessionIssuing:
+
+    def _issued(self, **kwargs) -> bool:
+        return any(value.startswith(security.SESSION_COOKIE_USER + "=") for value in issued_session_cookies(**kwargs))
+
+    @pytest.mark.config({"username": "", "password": ""})
+    def test_issued_without_credentials(self, session_store):
+        assert self._issued() is True
+
+    @pytest.mark.config({"username": "", "password": ""})
+    def test_not_reissued_when_tag_already_held(self, session_store):
+        assert self._issued(cookie=security.anonymous_session_tag()) is False
+
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 5})
+    def test_issued_when_login_waived_for_local_client(self, session_store):
+        assert self._issued() is True
+
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 5})
+    def test_login_session_not_overwritten(self, session_store):
+        store_session(session_store, "login-token")
+        assert self._issued(cookie="login-token") is False
+
+
+def session_cookie_value(set_cookie_headers: list[str], fallback: Optional[str]) -> str:
+    """The session cookie the client is left holding after a response"""
+    for value in set_cookie_headers:
+        if value.startswith(security.SESSION_COOKIE_USER + "="):
+            return value.split("=", 1)[1].split(";", 1)[0]
+    return fallback or ""
+
+
+class TestRenderedTokenMatchesCookie:
+
+    def _assert_token_matches(self, cookie: Optional[str]):
+        set_cookies, rendered_token = run_page_request(cookie=cookie)
+        held = session_cookie_value(set_cookies, cookie)
+        assert rendered_token == security.csrf_token_for(held)
+        assert rendered_token, "a page rendered no usable token at all"
+
+    @pytest.mark.config({"username": "", "password": ""})
+    def test_first_load_with_no_cookie(self, session_store):
+        self._assert_token_matches(None)
+
+    @pytest.mark.config({"username": "", "password": ""})
+    def test_load_with_stale_cookie(self, session_store):
+        # A tag from before a restart rotated the key: a fresh cookie is issued
+        self._assert_token_matches("f0" * 32)
+
+    @pytest.mark.config({"username": "", "password": ""})
+    def test_steady_state_anonymous(self, session_store):
+        self._assert_token_matches(security.anonymous_session_tag())
+
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
+    def test_login_session(self, session_store):
+        store_session(session_store, "login-token")
+        self._assert_token_matches("login-token")
+
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 5})
+    def test_login_session_while_login_waived(self, session_store):
+        store_session(session_store, "login-token")
+        self._assert_token_matches("login-token")
+
+    @pytest.mark.config({"username": "", "password": ""})
+    def test_rendered_token_authorizes_the_next_post(self, session_store):
+        set_cookies, rendered_token = run_page_request()
+        held = session_cookie_value(set_cookies, None)
+        request = page_post(held, csrf=rendered_token)
+        assert config_save_middleware().denied_response(request) is None

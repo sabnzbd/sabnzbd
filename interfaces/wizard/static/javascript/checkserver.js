@@ -43,10 +43,11 @@ $(document).ready(function() {
         
         $('#serverTest').attr('aria-busy', 'true');
         $('#serverResponse').html(txtChecking);
-        $.getJSON(
-            "../api?mode=config&name=test_server&output=json",
-            $("form").serialize(),
-            function(result) {
+        $.ajax({
+            type: 'POST',
+            url: "../api?mode=config&name=test_server&output=json",
+            data: $("form").serialize(),
+            success: function(result) {
                 if (result.value.result) {
                     r = '<span class="success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> ' + result.value.message + '</span>';
                     setTestResult(true);
@@ -58,7 +59,7 @@ $(document).ready(function() {
                 $('#serverResponse').html(r);
                 $('#serverTest').attr('aria-busy', 'false');
             }
-        );
+        });
         return false;
     });
 

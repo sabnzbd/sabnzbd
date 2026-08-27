@@ -150,7 +150,6 @@ function HistoryListModel(parent) {
         data.append("nzbfile", $(form.nzbFile)[0].files[0]);
         data.append("value", $('#modal-retry-job input[name="retry_job_id"]').val());
         data.append("password", $('#retry_job_password').val());
-        data.append("apikey", apiKey);
 
         // Add
         $.ajax({

@@ -9,7 +9,6 @@
         </label>
     </div>
     <form action="$url('config/general/save')" method="post" class="fullform" autocomplete="off">
-        <input type="hidden" id="apikey" name="apikey" value="$apikey" />
         <input type="hidden" name="output" value="json" />
         <div class="section">
             <div class="col2">
@@ -222,7 +221,6 @@
     </form>
 
     <form action="$url('config/general/upload_config')" method="post" class="fullform" autocomplete="off" enctype="multipart/form-data">
-        <input type="hidden" name="apikey" value="$apikey" />
         <input type="hidden" name="output" value="json" />
         <div class="section">
             <div class="col2">
@@ -307,17 +305,16 @@ jQuery(document).ready(function(){
     safeCheck.on('change', checkSafety)
 
     // Click functions
-    jQuery('#apikey, #nzbkey').click(function () { jQuery(this).select() });
+    jQuery('#apikey_display, #nzbkey').click(function () { jQuery(this).select() });
 
     jQuery('#generate_new_apikey').click(function () {
       if (confirm("$T('confirm')")) {
         $.ajax({
           type: "POST",
           url: "$url('api')",
-          data: {mode:'config', name:'set_apikey', apikey: jQuery('#apikey').val()},
+          data: { mode: 'config', name: 'set_apikey' },
           success: function(msg){
-            jQuery('#apikey').val(msg);
-            document.location = document.location;
+            jQuery('#apikey_display').val(msg.apikey);
           }
         });
       }
@@ -327,10 +324,9 @@ jQuery(document).ready(function(){
         $.ajax({
           type: "POST",
           url: "$url('api')",
-          data: { mode:'config', name:'set_nzbkey', apikey: jQuery('#apikey').val() },
-          success: function(msg){
-            jQuery('#nzbkey').val(msg);
-            document.location = document.location;
+          data: { mode: 'config', name: 'set_nzbkey' },
+          success: function(msg) {
+            jQuery('#nzbkey').val(msg.nzbkey);
           }
         });
       }
@@ -362,7 +358,7 @@ jQuery(document).ready(function(){
         $.ajax({
             type: "POST",
             url: "$url('api')",
-            data: { mode: 'config', name: 'regenerate_certs', apikey: jQuery('#apikey').val() },
+            data: { mode: 'config', name: 'regenerate_certs' },
             success: function(msg) {
                 do_restart()
             }
@@ -400,7 +396,7 @@ jQuery(document).ready(function(){
         $.ajax({
           type: "POST",
           url: "$url('api')",
-          data: {mode:'config', name:'create_backup', output:'json', apikey: jQuery('#apikey').val()},
+          data: { mode: 'config', name: 'create_backup', output: 'json' },
           success: function(data) {
               if(data.value.result) {
                   alert("$T('backup'):\n" + data.value.message)
