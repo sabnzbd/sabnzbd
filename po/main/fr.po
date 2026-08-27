@@ -3808,6 +3808,8 @@ msgstr "Appellation"
 #: sabnzbd/skintext.py
 msgid "How much can be downloaded this Quota period (K/M/G)"
 msgstr ""
+"Quantité de données pouvant être téléchargées durant ce cycle de quota "
+"(K/M/G)"
 
 #. Reset day of the download quota
 #: sabnzbd/skintext.py
