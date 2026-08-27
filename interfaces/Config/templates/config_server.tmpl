@@ -546,7 +546,7 @@
             theButton.attr("disabled", "disabled")
             theButton.attr("aria-busy", "true")
             theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
-            resultBox.removeClass('alert-success alert-danger').html("$T('srv-testing')").show()
+            resultBox.removeClass('alert-success alert-danger').addClass('alert-info').html("$T('srv-testing')").show()
             jQuery.ajax({
                 type: "POST",
                 url: "$url('api')",
@@ -556,7 +556,7 @@
                 msg = data.value.message.replace('https://sabnzbd.org/certificate-errors', '<a href="https://sabnzbd.org/certificate-errors" class="alert-link" target="_blank">https://sabnzbd.org/certificate-errors</a>')
                 msg = msg.replace('-', '<br>')
                 // Fill the box and enable the button
-                resultBox.removeClass('alert-success alert-danger').show()
+                resultBox.removeClass('alert-info alert-success alert-danger').show()
                 resultBox.html(msg)
                 theButton.removeAttr("disabled")
                 theButton.attr("aria-busy", "false")
