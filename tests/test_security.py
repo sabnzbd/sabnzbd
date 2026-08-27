@@ -68,13 +68,22 @@ def mock_request(
     return request
 
 
+def set_csrf_header(request, token: str):
+    """Add the CSRF header to an already-built mock request"""
+    request.headers = Headers({**dict(request.headers.items()), security.CSRF_HEADER: token})
+
+
+def anonymous_csrf() -> str:
+    """The CSRF token a login-bypassed request (no cookie) must echo"""
+    return security.csrf_token_for(security._ANONYMOUS_CSRF_IDENTITY)
+
+
 def api_request(token: Optional[str] = None, *, mode: str = "queue", with_token: bool = True, **kwargs):
-    """Mock /api request authorized by a session cookie, echoing its CSRF token unless with_token is False"""
-    return mock_request(
-        token,
-        params={"mode": mode, "name": "", **kwargs},
-        csrf=security.csrf_token_for(token or "") if with_token else None,
-    )
+    """Mock /api request; echoes the CSRF token its identity expects unless with_token is False"""
+    request = mock_request(token, params={"mode": mode, "name": "", **kwargs})
+    if with_token:
+        set_csrf_header(request, security.csrf_token_for(security.csrf_identity(request)))
+    return request
 
 
 def store_session(
@@ -136,27 +145,24 @@ class TestHostileTokenValues:
         # ...and still matches what it should
         assert security.constant_time_equals("a" * 64, "a" * 64) is True
 
-    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
     def test_hostile_session_cookie_is_rejected(self, session_store):
-        """Runs on a page GET with no credentials configured, so it needs no authentication at all"""
+        """With the login enforced, a session cookie of hostile bytes matches no stored session"""
         for value in self.WIRE_HOSTILE:
-            assert security.validate_anonymous_session(mock_request(value)) is False
             assert security.validate_any_session(mock_request(value)) is False
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
     def test_hostile_csrf_token_in_header_is_rejected(self, session_store):
-        tag = security.anonymous_session_tag()
         for value in self.WIRE_HOSTILE:
-            assert security.csrf_token_matches(mock_request(tag, csrf=value)) is False
-            assert config_save_middleware().denied_response(page_post(tag, csrf=value)) is not None
+            assert security.csrf_token_matches(mock_request(csrf=value)) is False
+            assert config_save_middleware().denied_response(page_post(csrf=value)) is not None
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
     def test_hostile_csrf_token_in_form_field_is_rejected(self, session_store):
-        tag = security.anonymous_session_tag()
         for value in self.BODY_HOSTILE:
-            request = mock_request(tag, params={security.CSRF_FIELD: value})
+            request = mock_request(params={security.CSRF_FIELD: value})
             assert security.csrf_token_matches(request) is False
-            assert config_save_middleware().denied_response(page_post(tag, csrf_field=value)) is not None
+            assert config_save_middleware().denied_response(page_post(csrf_field=value)) is not None
 
     @staticmethod
     def _upload_part():
@@ -171,11 +177,10 @@ class TestHostileTokenValues:
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
     def test_csrf_token_sent_as_a_file_part_is_refused(self, session_store):
-        tag = security.anonymous_session_tag()
-        request = mock_request(tag, params={security.CSRF_FIELD: self._upload_part()})
+        request = mock_request(params={security.CSRF_FIELD: self._upload_part()})
         assert security.presented_csrf_token(request) == ""
         assert security.csrf_token_matches(request) is False
-        denied = page_post(tag, csrf_field=self._upload_part())
+        denied = page_post(csrf_field=self._upload_part())
         assert config_save_middleware().denied_response(denied) is not None
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
@@ -451,44 +456,58 @@ class TestSessionAbsoluteDeadline:
         assert interface.check_apikey(api_request("browser-token")) is None
 
 
-class TestAnonymousSession:
-    """Anonymous sessions are stateless (HMAC cookie), never database rows"""
+class TestBypassedLoginSession:
+    """With the login bypassed there is no session cookie: the request is trusted for being
+    local, and its CSRF token binds to a stable identity rather than to a cookie."""
 
     @pytest.mark.config({"username": "", "password": ""})
-    def test_valid_tag_accepted(self):
-        assert security.validate_anonymous_session(mock_request(security.anonymous_session_tag())) is True
-
-    @pytest.mark.config({"username": "", "password": ""})
-    def test_missing_or_wrong_tag_rejected(self):
-        assert security.validate_anonymous_session(mock_request(None)) is False
-        assert security.validate_anonymous_session(mock_request("forged-tag")) is False
+    def test_any_session_holds_without_cookie(self):
+        assert security.validate_any_session(mock_request(None)) is True
 
     @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
-    def test_rejected_when_credentials_configured(self):
-        # A tag minted while auth was off grants nothing once credentials are set
-        assert security.validate_anonymous_session(mock_request(security.anonymous_session_tag())) is False
+    def test_denied_without_cookie_when_login_enforced(self, session_store):
+        assert security.validate_any_session(mock_request(None)) is False
 
     @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 5})
-    def test_accepted_when_login_waived_for_local_client(self):
-        # inet_exposure 5 waives the login for local clients, so their page loads get an
-        # anonymous cookie
-        assert security.validate_anonymous_session(mock_request(security.anonymous_session_tag())) is True
-        # An external client still needs to log in, so no tag is good enough
-        external = mock_request(security.anonymous_session_tag(), remote_ip="9.8.7.6")
-        assert security.validate_anonymous_session(external) is False
+    def test_waived_for_local_client_only(self, session_store):
+        # inet_exposure 5 waives the login for local clients
+        assert security.validate_any_session(mock_request(None)) is True
+        # An external client still needs to log in
+        assert security.validate_any_session(mock_request(None, remote_ip="9.8.7.6")) is False
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
-    def test_check_apikey_accepts_anonymous_without_key(self):
-        assert interface.check_apikey(api_request(security.anonymous_session_tag())) is None
+    def test_check_apikey_accepts_csrf_without_key_or_cookie(self):
+        assert interface.check_apikey(api_request(None)) is None
+
+    @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
+    def test_check_apikey_rejects_without_csrf(self):
+        assert interface.check_apikey(api_request(None, with_token=False)) is not None
 
     @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 5})
-    def test_check_apikey_accepts_anonymous_when_login_waived(self, session_store):
-        assert interface.check_apikey(api_request(security.anonymous_session_tag())) is None
+    def test_check_apikey_accepts_waived_local_with_csrf(self, session_store):
+        assert interface.check_apikey(api_request(None)) is None
+
+
+class TestCsrfIdentity:
+    """The CSRF token binds to a session identity; a request without one never matches"""
 
     @pytest.mark.config({"username": "", "password": ""})
-    def test_create_sets_matching_cookie(self):
-        request = Mock()
-        response = Mock()
-        security.create_anonymous_session(request, response)
-        assert response.set_cookie.call_args.args[1] == security.anonymous_session_tag()
-        assert response.set_cookie.call_args.args[0] == security.SESSION_COOKIE_USER
+    def test_bypassed_login_uses_the_stable_identity(self):
+        assert security.csrf_identity(mock_request(None)) == security._ANONYMOUS_CSRF_IDENTITY
+
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
+    def test_session_cookie_is_the_identity(self):
+        # The cookie value stands as the identity whether or not it names a live session
+        assert security.csrf_identity(mock_request("some-token")) == "some-token"
+
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
+    def test_no_identity_when_login_enforced_without_cookie(self):
+        assert security.csrf_identity(mock_request(None)) == ""
+
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
+    def test_empty_identity_never_matches(self, session_store):
+        """The token for the empty identity is computable only by this instance, yet a
+        request that carries no identity must still be refused (guards direct callers)."""
+        request = mock_request(csrf=security.csrf_token_for(""))
+        assert security.csrf_identity(request) == ""
+        assert security.csrf_token_matches(request) is False

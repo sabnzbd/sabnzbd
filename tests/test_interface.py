@@ -38,7 +38,15 @@ import sabnzbd
 import sabnzbd.cfg as cfg
 import sabnzbd.security as security
 from sabnzbd import interface
-from tests.test_security import api_request, config_save_middleware, mock_request, page_post, store_session
+from tests.test_security import (
+    anonymous_csrf,
+    api_request,
+    config_save_middleware,
+    mock_request,
+    page_post,
+    set_csrf_header,
+    store_session,
+)
 from sabnzbd.misc import is_local_addr, is_loopback_addr, xff_trusted_networks
 
 
@@ -562,20 +570,20 @@ class TestStaleTokenIsNotAWarning:
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0, "api_warnings": True})
     def test_api_call_with_a_stale_token_is_only_info(self, session_store, caplog):
-        request = mock_request(security.anonymous_session_tag(), params={"mode": "queue", "name": ""}, csrf="f0" * 32)
+        request = mock_request(params={"mode": "queue", "name": ""}, csrf="f0" * 32)
         levels = self._levels(caplog, lambda: interface.check_apikey(request))
         assert "WARNING" not in levels
         assert "INFO" in levels
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0, "api_warnings": True})
     def test_api_call_with_no_token_still_warns(self, session_store, caplog):
-        request = api_request(security.anonymous_session_tag(), with_token=False)
+        request = api_request(None, with_token=False)
         levels = self._levels(caplog, lambda: interface.check_apikey(request))
         assert "WARNING" in levels
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0, "api_warnings": True})
     def test_page_post_with_a_stale_token_is_only_info(self, session_store, caplog):
-        request = page_post(security.anonymous_session_tag(), csrf="f0" * 32)
+        request = page_post(csrf="f0" * 32)
         levels = self._levels(caplog, lambda: config_save_middleware().denied_response(request))
         assert "WARNING" not in levels
         assert "INFO" in levels
@@ -587,34 +595,32 @@ class TestStaleTokenIsNotAWarning:
 
 
 class TestApiCsrf:
-    """A cookie-authorized API call must echo its session's CSRF token in a header"""
+    """A cookie-authorized API call must echo its session's CSRF token in a header; with the
+    login bypassed the token stands alone, bound to a stable identity and carrying no cookie"""
 
     def _status(self, request) -> Optional[int]:
         response = interface.check_apikey(request)
         return response.status_code if response else None
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
-    def test_cookie_with_token_authorizes(self, session_store):
-        assert self._status(api_request(security.anonymous_session_tag())) is None
+    def test_token_without_cookie_authorizes(self, session_store):
+        assert self._status(api_request(None)) is None
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
-    def test_cookie_without_token_is_forbidden(self, session_store):
+    def test_missing_token_is_forbidden(self, session_store):
         """403, not 401: a reload cannot conjure up a header the client never sends"""
-        assert self._status(api_request(security.anonymous_session_tag(), with_token=False)) == 403
+        assert self._status(api_request(None, with_token=False)) == 403
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
     def test_stale_token_asks_for_a_reload(self, session_store):
-        """401, because a reload does fix this one"""
-        request = mock_request(security.anonymous_session_tag(), params={"mode": "queue", "name": ""}, csrf="f0" * 32)
+        """401, because a reload does fix this one: a page from before a key rotation"""
+        request = mock_request(params={"mode": "queue", "name": ""}, csrf="f0" * 32)
         assert self._status(request) == 401
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
     def test_apikey_still_works_alongside_a_cookie(self, session_store):
         """The cookie check must fall through to the key, never reject on its own"""
-        request = mock_request(
-            security.anonymous_session_tag(),
-            params={"mode": "queue", "name": "", "apikey": cfg.api_key()},
-        )
+        request = mock_request("f0" * 32, params={"mode": "queue", "name": "", "apikey": cfg.api_key()})
         assert self._status(request) is None
         # ...and with no cookie at all, which is how 3rd-party clients call it
         assert self._status(mock_request(params={"mode": "queue", "name": "", "apikey": cfg.api_key()})) is None
@@ -622,19 +628,16 @@ class TestApiCsrf:
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
     def test_no_mode_is_exempt(self, session_store):
         """There is no carve-out list, including showlog"""
-        assert self._status(api_request(security.anonymous_session_tag(), mode="showlog", with_token=False)) == 403
-        assert self._status(api_request(security.anonymous_session_tag(), mode="showlog")) is None
+        assert self._status(api_request(None, mode="showlog", with_token=False)) == 403
+        assert self._status(api_request(None, mode="showlog")) is None
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
     def test_token_outside_the_header_is_not_accepted(self, session_store):
         """This route merges the query string into its params; page routes still take the field"""
-        tag = security.anonymous_session_tag()
-        token = security.csrf_token_for(tag)
-
-        as_parameter = mock_request(tag, params={"mode": "queue", "name": "", security.CSRF_FIELD: token})
+        as_parameter = mock_request(params={"mode": "queue", "name": "", security.CSRF_FIELD: anonymous_csrf()})
         assert self._status(as_parameter) == 403
         # The same token in the header is what the frontend sends, and it is accepted
-        assert self._status(api_request(tag)) is None
+        assert self._status(api_request(None)) is None
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
     def test_keyless_and_cookieless_still_reports_missing_key(self, session_store):
@@ -724,7 +727,6 @@ class TestLogRoute:
 # The kinds of session cookie a page POST can arrive with, resolved once the test's
 # credentials are in place
 COOKIE_NONE = "none"
-COOKIE_ANONYMOUS = "anonymous"
 COOKIE_LOGIN = "login"
 COOKIE_FORGED = "forged"
 
@@ -732,26 +734,24 @@ COOKIE_FORGED = "forged"
 def cookie_of_kind(kind: str, store) -> Optional[str]:
     if kind == COOKIE_NONE:
         return None
-    if kind == COOKIE_ANONYMOUS:
-        return security.anonymous_session_tag()
     if kind == COOKIE_FORGED:
         return "f0" * 32
     store_session(store, "login-token")
     return "login-token"
 
 
-# The CSRF token a page POST can arrive with, relative to the cookie it sends
+# The CSRF token a page POST can arrive with, relative to the identity it presents
 TOKEN_NONE = "none"
 TOKEN_MATCHING = "matching"
 TOKEN_WRONG = "wrong"
 
 
-def token_of_kind(kind: str, cookie_value: Optional[str]) -> Optional[str]:
-    if kind == TOKEN_NONE:
-        return None
-    if kind == TOKEN_WRONG:
-        return "f0" * 32
-    return security.csrf_token_for(cookie_value or "")
+def apply_token_of_kind(kind: str, request):
+    """Set the request's CSRF header to the given kind, relative to its own identity"""
+    if kind == TOKEN_MATCHING:
+        set_csrf_header(request, security.csrf_token_for(security.csrf_identity(request)))
+    elif kind == TOKEN_WRONG:
+        set_csrf_header(request, "f0" * 32)
 
 
 class TestPagePostCsrf:
@@ -759,24 +759,22 @@ class TestPagePostCsrf:
     @pytest.mark.parametrize(
         "credentials, inet_exposure, cookie, token, allowed",
         [
-            # No credentials at all: check_login always passes, so this guard is all there is
+            # Login bypassed: there is no cookie, so the CSRF token alone gates the POST
             (("", ""), 0, COOKIE_NONE, TOKEN_NONE, False),
-            (("", ""), 0, COOKIE_ANONYMOUS, TOKEN_MATCHING, True),
-            (("", ""), 0, COOKIE_ANONYMOUS, TOKEN_NONE, False),
-            (("", ""), 0, COOKIE_ANONYMOUS, TOKEN_WRONG, False),
-            (("", ""), 0, COOKIE_FORGED, TOKEN_MATCHING, False),
+            (("", ""), 0, COOKIE_NONE, TOKEN_MATCHING, True),
+            (("", ""), 0, COOKIE_NONE, TOKEN_WRONG, False),
             (("", ""), 5, COOKIE_NONE, TOKEN_NONE, False),
-            # A token with no cookie must not pass: csrf_token_for("") is computable by anyone
-            (("", ""), 0, COOKIE_NONE, TOKEN_MATCHING, False),
-            # Credentials with the login enforced
+            # Credentials with the login enforced: a valid session cookie is required
             (("user", "pass"), 0, COOKIE_NONE, TOKEN_NONE, False),
+            # A matching token with no session cookie still fails the login check
+            (("user", "pass"), 0, COOKIE_NONE, TOKEN_MATCHING, False),
             (("user", "pass"), 0, COOKIE_LOGIN, TOKEN_MATCHING, True),
             (("user", "pass"), 0, COOKIE_LOGIN, TOKEN_NONE, False),
-            # inet_exposure 5: the login is waived, so check_login passes with no cookie
+            # A forged cookie is no session, even with the token that matches its identity
+            (("user", "pass"), 0, COOKIE_FORGED, TOKEN_MATCHING, False),
+            # inet_exposure 5: the login is waived for local clients, so no cookie is needed
             (("user", "pass"), 5, COOKIE_NONE, TOKEN_NONE, False),
-            (("user", "pass"), 5, COOKIE_FORGED, TOKEN_MATCHING, False),
-            (("user", "pass"), 5, COOKIE_ANONYMOUS, TOKEN_MATCHING, True),
-            (("user", "pass"), 5, COOKIE_ANONYMOUS, TOKEN_NONE, False),
+            (("user", "pass"), 5, COOKIE_NONE, TOKEN_MATCHING, True),
             # ...without locking out a local client who does hold a real login session
             (("user", "pass"), 5, COOKIE_LOGIN, TOKEN_MATCHING, True),
         ],
@@ -789,36 +787,35 @@ class TestPagePostCsrf:
         }
     )
     def test_config_save_post(self, session_store, credentials, inet_exposure, cookie, token, allowed):
-        cookie_value = cookie_of_kind(cookie, session_store)
-        request = page_post(cookie_value, csrf=token_of_kind(token, cookie_value))
+        request = page_post(cookie_of_kind(cookie, session_store))
+        apply_token_of_kind(token, request)
         response = config_save_middleware().denied_response(request)
         assert (response is None) is allowed
 
     @pytest.mark.config({"username": "", "password": "", "inet_exposure": 0})
     def test_token_accepted_as_form_field(self, session_store):
         """A form that navigates cannot set a header, so the body is accepted too"""
-        tag = security.anonymous_session_tag()
-        allowed = page_post(tag, csrf_field=security.csrf_token_for(tag))
+        allowed = page_post(None, csrf_field=anonymous_csrf())
         assert config_save_middleware().denied_response(allowed) is None
-        denied = page_post(tag, csrf_field="f0" * 32)
+        denied = page_post(None, csrf_field="f0" * 32)
         assert config_save_middleware().denied_response(denied) is not None
 
     @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 5})
     def test_token_is_bound_to_its_own_session(self, session_store):
-        cookie_of_kind(COOKIE_LOGIN, session_store)
-        anonymous_tag = security.anonymous_session_tag()
+        store_session(session_store, "login-token")
 
-        login_with_anonymous_token = page_post("login-token", csrf=security.csrf_token_for(anonymous_tag))
+        # A login session's cookie carrying the anonymous token (the wrong identity) is refused
+        login_with_anonymous_token = page_post("login-token", csrf=anonymous_csrf())
         assert config_save_middleware().denied_response(login_with_anonymous_token) is not None
 
-        anonymous_with_login_token = page_post(anonymous_tag, csrf=security.csrf_token_for("login-token"))
-        assert config_save_middleware().denied_response(anonymous_with_login_token) is not None
+        # And the login token presented with no cookie (the anonymous identity) is refused
+        no_cookie_with_login_token = page_post(None, csrf=security.csrf_token_for("login-token"))
+        assert config_save_middleware().denied_response(no_cookie_with_login_token) is not None
 
     @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 5})
     def test_external_client_still_needs_login(self, session_store):
-        """The waiver is local-only: an external POST gets no help from the anonymous tag"""
-        tag = security.anonymous_session_tag()
-        request = page_post(tag, remote_ip="9.8.7.6", csrf=security.csrf_token_for(tag))
+        """The waiver is local-only: an external POST gets no help from the CSRF token"""
+        request = page_post(None, remote_ip="9.8.7.6", csrf=anonymous_csrf())
         assert config_save_middleware().denied_response(request) is not None
 
     @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
@@ -875,75 +872,52 @@ def run_page_request(cookie: Optional[str] = None, remote_ip: str = "127.0.0.1")
     return captured, rendered_token
 
 
-def issued_session_cookies(cookie: Optional[str] = None, remote_ip: str = "127.0.0.1") -> list[str]:
-    return run_page_request(cookie=cookie, remote_ip=remote_ip)[0]
+class TestPageLoadIssuesNoSessionCookie:
+    """Page loads never set a session cookie; login sessions come only from the login form"""
 
-
-class TestAnonymousSessionIssuing:
-
-    def _issued(self, **kwargs) -> bool:
-        return any(value.startswith(security.SESSION_COOKIE_USER + "=") for value in issued_session_cookies(**kwargs))
+    def _session_cookies(self, **kwargs) -> list[str]:
+        set_cookies, _ = run_page_request(**kwargs)
+        return [value for value in set_cookies if value.startswith(security.SESSION_COOKIE_USER + "=")]
 
     @pytest.mark.config({"username": "", "password": ""})
-    def test_issued_without_credentials(self, session_store):
-        assert self._issued() is True
-
-    @pytest.mark.config({"username": "", "password": ""})
-    def test_not_reissued_when_tag_already_held(self, session_store):
-        assert self._issued(cookie=security.anonymous_session_tag()) is False
+    def test_none_issued_when_login_bypassed(self, session_store):
+        assert self._session_cookies() == []
 
     @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 5})
-    def test_issued_when_login_waived_for_local_client(self, session_store):
-        assert self._issued() is True
+    def test_none_issued_for_waived_local_client(self, session_store):
+        assert self._session_cookies() == []
 
     @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 5})
-    def test_login_session_not_overwritten(self, session_store):
+    def test_login_session_left_untouched(self, session_store):
         store_session(session_store, "login-token")
-        assert self._issued(cookie="login-token") is False
+        assert self._session_cookies(cookie="login-token") == []
 
 
-def session_cookie_value(set_cookie_headers: list[str], fallback: Optional[str]) -> str:
-    """The session cookie the client is left holding after a response"""
-    for value in set_cookie_headers:
-        if value.startswith(security.SESSION_COOKIE_USER + "="):
-            return value.split("=", 1)[1].split(";", 1)[0]
-    return fallback or ""
+class TestRenderedToken:
+    """The token a page renders is the one that authorizes its next POST"""
 
-
-class TestRenderedTokenMatchesCookie:
-
-    def _assert_token_matches(self, cookie: Optional[str]):
-        set_cookies, rendered_token = run_page_request(cookie=cookie)
-        held = session_cookie_value(set_cookies, cookie)
-        assert rendered_token == security.csrf_token_for(held)
+    def _rendered(self, cookie: Optional[str] = None, remote_ip: str = "127.0.0.1") -> str:
+        _set_cookies, rendered_token = run_page_request(cookie=cookie, remote_ip=remote_ip)
         assert rendered_token, "a page rendered no usable token at all"
+        return rendered_token
 
     @pytest.mark.config({"username": "", "password": ""})
-    def test_first_load_with_no_cookie(self, session_store):
-        self._assert_token_matches(None)
-
-    @pytest.mark.config({"username": "", "password": ""})
-    def test_load_with_stale_cookie(self, session_store):
-        # A tag from before a restart rotated the key: a fresh cookie is issued
-        self._assert_token_matches("f0" * 32)
-
-    @pytest.mark.config({"username": "", "password": ""})
-    def test_steady_state_anonymous(self, session_store):
-        self._assert_token_matches(security.anonymous_session_tag())
+    def test_bypassed_binds_to_the_stable_identity(self, session_store):
+        # No cookie is needed: the token binds to the stable anonymous identity
+        assert self._rendered(None) == anonymous_csrf()
 
     @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
-    def test_login_session(self, session_store):
+    def test_login_session_binds_to_its_cookie(self, session_store):
         store_session(session_store, "login-token")
-        self._assert_token_matches("login-token")
+        assert self._rendered("login-token") == security.csrf_token_for("login-token")
 
     @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 5})
     def test_login_session_while_login_waived(self, session_store):
         store_session(session_store, "login-token")
-        self._assert_token_matches("login-token")
+        assert self._rendered("login-token") == security.csrf_token_for("login-token")
 
     @pytest.mark.config({"username": "", "password": ""})
     def test_rendered_token_authorizes_the_next_post(self, session_store):
-        set_cookies, rendered_token = run_page_request()
-        held = session_cookie_value(set_cookies, None)
-        request = page_post(held, csrf=rendered_token)
+        rendered = self._rendered(None)
+        request = page_post(None, csrf=rendered)
         assert config_save_middleware().denied_response(request) is None

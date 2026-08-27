@@ -42,7 +42,7 @@ _MSG_APIKEY_NOT_ON_PAGES = (
 _MSG_SESSION_EXPIRED = "Session expired, reload the page"
 
 
-# Holds a database-backed login token, or the anonymous tag when the login is bypassed
+# Holds the login token for an authenticated session; absent where the login is bypassed
 SESSION_COOKIE_USER = "sabnzbd_user"
 # The SessionMiddleware cookie, used for RSS flash messages only. Not authentication.
 SESSION_COOKIE_FLASH = "sabnzbd_flash"
@@ -59,15 +59,15 @@ LOGIN_LOCKOUT_TIME = 300  # 5 minutes
 # {host: (failures, cooldown_expiry)} cooldown_expiry uses the monotonic clock
 _login_attempts: dict[str, tuple[int, float]] = {}
 
-# Anonymous sessions are issued where the login is bypassed, so the frontend can still authenticate by cookie.
-_ANONYMOUS_SESSION_KEY = secrets.token_bytes(32)
-
-# A token is hmac(_CSRF_KEY, cookie_value), so it is bound to its session and dies with it.
+# A token is hmac(_CSRF_KEY, identity), so it is bound to its session and dies with it.
 # The key is regenerated each run, leaving a page open across a restart with a stale token.
 # The token is rendered into the page and echoed back in the header or a field.
 _CSRF_KEY = secrets.token_bytes(32)
 CSRF_HEADER = "X-SABnzbd-CSRF"
 CSRF_FIELD = "csrf_token"
+# A login-bypassed request carries no session cookie; its CSRF token binds to this stable
+# identity instead. _CSRF_KEY, not this value, is the secret that makes the token unguessable.
+_ANONYMOUS_CSRF_IDENTITY = "anonymous"
 
 
 def client_address(request: Request) -> Address:
@@ -202,35 +202,17 @@ def login_bypassed(request: Request) -> bool:
     return cfg.inet_exposure() == 5 and check_access(request, access_type=6)
 
 
-def anonymous_session_tag() -> str:
-    """The stateless anonymous session cookie value for this run"""
-    return hmac.new(_ANONYMOUS_SESSION_KEY, b"anonymous-session", hashlib.sha256).hexdigest()
+def csrf_identity(request: Request) -> str:
+    """The value a request's CSRF token binds to: its session cookie, or a stable constant
+    when the login is bypassed and no session cookie is present."""
+    if cookie := request.cookies.get(SESSION_COOKIE_USER, ""):
+        return cookie
+    return _ANONYMOUS_CSRF_IDENTITY if login_bypassed(request) else ""
 
 
-def validate_anonymous_session(request: Request) -> bool:
-    """Return True when the login is bypassed for this request and it carries a valid
-    anonymous session cookie."""
-    if not login_bypassed(request):
-        return False
-    return constant_time_equals(request.cookies.get(SESSION_COOKIE_USER, ""), anonymous_session_tag())
-
-
-def create_anonymous_session(request: Request, response: Response):
-    """Set the stateless anonymous session cookie on the response"""
-    response.set_cookie(
-        SESSION_COOKIE_USER,
-        anonymous_session_tag(),
-        path="/",
-        httponly=True,
-        secure=use_secure_cookies(request),
-        samesite="strict",
-        max_age=SESSION_DURATION,
-    )
-
-
-def csrf_token_for(cookie_value: str) -> str:
-    """The CSRF token belonging to a session cookie value"""
-    return hmac.new(_CSRF_KEY, utob(cookie_value), hashlib.sha256).hexdigest()
+def csrf_token_for(identity: str) -> str:
+    """The CSRF token belonging to a session identity"""
+    return hmac.new(_CSRF_KEY, utob(identity), hashlib.sha256).hexdigest()
 
 
 def presented_csrf_token(request: Request, header_only: bool = False) -> str:
@@ -243,10 +225,12 @@ def presented_csrf_token(request: Request, header_only: bool = False) -> str:
 
 
 def csrf_token_matches(request: Request, header_only: bool = False) -> bool:
-    """Whether the request echoes the CSRF token belonging to the cookie it sent"""
-    return constant_time_equals(
+    """Whether the request echoes the CSRF token belonging to its identity. A request
+    with no identity never matches, so a direct caller cannot bypass that guard."""
+    identity = csrf_identity(request)
+    return bool(identity) and constant_time_equals(
         presented_csrf_token(request, header_only=header_only),
-        csrf_token_for(request.cookies.get(SESSION_COOKIE_USER, "")),
+        csrf_token_for(identity),
     )
 
 
@@ -309,19 +293,6 @@ def _validate_session(request: Request) -> bool:
 
 
 def validate_any_session(request: Request) -> bool:
-    """Return True when the request carries a session cookie this instance issued"""
-    return validate_anonymous_session(request) or validate_session(request)
-
-
-def _anonymous_session_sender(request: Request, send):
-    """Wrap an ASGI send so the anonymous session cookie is added to the response start"""
-    carrier = Response()
-    create_anonymous_session(request, carrier)
-    cookie_headers = [(key, value) for key, value in carrier.raw_headers if key == b"set-cookie"]
-
-    async def send_with_cookie(message):
-        if message["type"] == "http.response.start":
-            message["headers"] = list(message.get("headers", [])) + cookie_headers
-        await send(message)
-
-    return send_with_cookie
+    """Return True when the request may act as a session: the login is bypassed, or it
+    carries a valid session cookie this instance issued."""
+    return login_bypassed(request) or validate_session(request)
