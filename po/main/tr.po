@@ -814,12 +814,21 @@ msgstr ""
 "https://sabnzbd.org/wiki/advanced/direct-write"
 
 #: sabnzbd/interface.py
-msgid "Refused connection from:"
-msgstr "Şuradan bağlantı reddedildi:"
-
-#: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Şuradan \"%s\" makine ismi ile bağlantı reddedildi:"
+
+#: sabnzbd/interface.py
+msgid ""
+"API Key incorrect, Use the api key from Config->General in your 3rd party "
+"program:"
+msgstr ""
+"API anahtarı yanlış, 3. taraf programınızda Yapılandırma->Genel'den api "
+"anahtarını kullanın:"
+
+#. Warning message
+#: sabnzbd/interface.py, sabnzbd/security.py
+msgid "Refused connection from:"
+msgstr "Şuradan bağlantı reddedildi:"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -830,12 +839,13 @@ msgstr ""
 "programınıza girin:"
 
 #: sabnzbd/interface.py
-msgid ""
-"API Key incorrect, Use the api key from Config->General in your 3rd party "
-"program:"
+msgid "Too many failed login attempts, try again later."
 msgstr ""
-"API anahtarı yanlış, 3. taraf programınızda Yapılandırma->Genel'den api "
-"anahtarını kullanın:"
+
+#. Warning message
+#: sabnzbd/interface.py
+msgid "Login attempt refused, too many failures from %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/interface.py

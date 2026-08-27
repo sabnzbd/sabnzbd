@@ -839,12 +839,21 @@ msgstr ""
 "https://sabnzbd.org/wiki/advanced/direct-write"
 
 #: sabnzbd/interface.py
-msgid "Refused connection from:"
-msgstr "Abgelehnte Verbindung von:"
-
-#: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Verbindung vom Host \"%s\" abgelehnt von:"
+
+#: sabnzbd/interface.py
+msgid ""
+"API Key incorrect, Use the api key from Config->General in your 3rd party "
+"program:"
+msgstr ""
+"API-Schlüssel ungültig. Bitte API-Schlüssel aus Einstellungen->Allgemein in "
+"die externe Anwendung eingeben:"
+
+#. Warning message
+#: sabnzbd/interface.py, sabnzbd/security.py
+msgid "Refused connection from:"
+msgstr "Abgelehnte Verbindung von:"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -855,12 +864,13 @@ msgstr ""
 " externe Anwendung eingeben:"
 
 #: sabnzbd/interface.py
-msgid ""
-"API Key incorrect, Use the api key from Config->General in your 3rd party "
-"program:"
+msgid "Too many failed login attempts, try again later."
 msgstr ""
-"API-Schlüssel ungültig. Bitte API-Schlüssel aus Einstellungen->Allgemein in "
-"die externe Anwendung eingeben:"
+
+#. Warning message
+#: sabnzbd/interface.py
+msgid "Login attempt refused, too many failures from %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/interface.py

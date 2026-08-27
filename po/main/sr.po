@@ -754,11 +754,19 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Refused connection from:"
+msgid "Refused connection with hostname \"%s\" from:"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Refused connection with hostname \"%s\" from:"
+msgid ""
+"API Key incorrect, Use the api key from Config->General in your 3rd party "
+"program:"
+msgstr ""
+"API кључ је погрешан, унети у спољни програм API кључ из Подешавања->Опште:"
+
+#. Warning message
+#: sabnzbd/interface.py, sabnzbd/security.py
+msgid "Refused connection from:"
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -769,11 +777,13 @@ msgstr ""
 "API кључ недостаје, унети у спољни програм API кључ из Подешавање->Опште:"
 
 #: sabnzbd/interface.py
-msgid ""
-"API Key incorrect, Use the api key from Config->General in your 3rd party "
-"program:"
+msgid "Too many failed login attempts, try again later."
 msgstr ""
-"API кључ је погрешан, унети у спољни програм API кључ из Подешавања->Опште:"
+
+#. Warning message
+#: sabnzbd/interface.py
+msgid "Login attempt refused, too many failures from %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/interface.py

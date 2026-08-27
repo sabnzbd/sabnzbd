@@ -809,12 +809,21 @@ msgstr ""
 "https://sabnzbd.org/wiki/advanced/direct-write"
 
 #: sabnzbd/interface.py
-msgid "Refused connection from:"
-msgstr "Odmítnuto spojení z:"
-
-#: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Odmítnuté spojení s hostem \"%s\" z:"
+
+#: sabnzbd/interface.py
+msgid ""
+"API Key incorrect, Use the api key from Config->General in your 3rd party "
+"program:"
+msgstr ""
+"Nesprávný klíč API. Zadejte prosím klíč API z nabídky „Nastavení -> Obecné“ "
+"do svého programu třetí strany:"
+
+#. Warning message
+#: sabnzbd/interface.py, sabnzbd/security.py
+msgid "Refused connection from:"
+msgstr "Odmítnuto spojení z:"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -825,12 +834,13 @@ msgstr ""
 "svého programu třetí strany:"
 
 #: sabnzbd/interface.py
-msgid ""
-"API Key incorrect, Use the api key from Config->General in your 3rd party "
-"program:"
+msgid "Too many failed login attempts, try again later."
 msgstr ""
-"Nesprávný klíč API. Zadejte prosím klíč API z nabídky „Nastavení -> Obecné“ "
-"do svého programu třetí strany:"
+
+#. Warning message
+#: sabnzbd/interface.py
+msgid "Login attempt refused, too many failures from %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/interface.py

@@ -756,12 +756,19 @@ msgstr ""
 "不支持稀疏文件。有关详细信息和可能的解决方案，请参阅：https://sabnzbd.org/wiki/advanced/direct-write"
 
 #: sabnzbd/interface.py
-msgid "Refused connection from:"
-msgstr "拒绝来自以下的连接："
-
-#: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "拒绝来自主机名 \"%s\" 的连接："
+
+#: sabnzbd/interface.py
+msgid ""
+"API Key incorrect, Use the api key from Config->General in your 3rd party "
+"program:"
+msgstr "API Key 不正确，请在第三方程序中使用“配置”->“常规”中的 api key:"
+
+#. Warning message
+#: sabnzbd/interface.py, sabnzbd/security.py
+msgid "Refused connection from:"
+msgstr "拒绝来自以下的连接："
 
 #: sabnzbd/interface.py
 msgid ""
@@ -770,10 +777,13 @@ msgid ""
 msgstr "缺 API Key，请将“配置”->“常规”中的 api key 输入到第三方程序中:"
 
 #: sabnzbd/interface.py
-msgid ""
-"API Key incorrect, Use the api key from Config->General in your 3rd party "
-"program:"
-msgstr "API Key 不正确，请在第三方程序中使用“配置”->“常规”中的 api key:"
+msgid "Too many failed login attempts, try again later."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/interface.py
+msgid "Login attempt refused, too many failures from %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/interface.py

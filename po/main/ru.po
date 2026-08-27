@@ -757,11 +757,20 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Refused connection from:"
+msgid "Refused connection with hostname \"%s\" from:"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Refused connection with hostname \"%s\" from:"
+msgid ""
+"API Key incorrect, Use the api key from Config->General in your 3rd party "
+"program:"
+msgstr ""
+"Неправильный ключ API. Используйте в сторонней программе ключ API из раздела"
+" «Настройка -> Общие»:"
+
+#. Warning message
+#: sabnzbd/interface.py, sabnzbd/security.py
+msgid "Refused connection from:"
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -773,12 +782,13 @@ msgstr ""
 "«Настройка -> Общие»:"
 
 #: sabnzbd/interface.py
-msgid ""
-"API Key incorrect, Use the api key from Config->General in your 3rd party "
-"program:"
+msgid "Too many failed login attempts, try again later."
 msgstr ""
-"Неправильный ключ API. Используйте в сторонней программе ключ API из раздела"
-" «Настройка -> Общие»:"
+
+#. Warning message
+#: sabnzbd/interface.py
+msgid "Login attempt refused, too many failures from %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/interface.py

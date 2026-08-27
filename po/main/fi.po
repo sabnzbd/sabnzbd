@@ -760,11 +760,20 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Refused connection from:"
+msgid "Refused connection with hostname \"%s\" from:"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Refused connection with hostname \"%s\" from:"
+msgid ""
+"API Key incorrect, Use the api key from Config->General in your 3rd party "
+"program:"
+msgstr ""
+"API avain virheellinen, käytä Asetukset->Yleiset löytyvää api avainta "
+"käyttämääsi kolmannen osapuolen ohjelmaan:"
+
+#. Warning message
+#: sabnzbd/interface.py, sabnzbd/security.py
+msgid "Refused connection from:"
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -776,12 +785,13 @@ msgstr ""
 "käyttämääsi kolmannen osapuolen ohjelmaan:"
 
 #: sabnzbd/interface.py
-msgid ""
-"API Key incorrect, Use the api key from Config->General in your 3rd party "
-"program:"
+msgid "Too many failed login attempts, try again later."
 msgstr ""
-"API avain virheellinen, käytä Asetukset->Yleiset löytyvää api avainta "
-"käyttämääsi kolmannen osapuolen ohjelmaan:"
+
+#. Warning message
+#: sabnzbd/interface.py
+msgid "Login attempt refused, too many failures from %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/interface.py

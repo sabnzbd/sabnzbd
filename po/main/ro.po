@@ -780,12 +780,21 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Refused connection from:"
-msgstr ""
-
-#: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Conectare refuzată cu gazda „%s” de la:"
+
+#: sabnzbd/interface.py
+msgid ""
+"API Key incorrect, Use the api key from Config->General in your 3rd party "
+"program:"
+msgstr ""
+"Cheie API incorectă, Folosiţi cheia api din Configurare->General în "
+"programul dumneavoastră terţ:"
+
+#. Warning message
+#: sabnzbd/interface.py, sabnzbd/security.py
+msgid "Refused connection from:"
+msgstr ""
 
 #: sabnzbd/interface.py
 msgid ""
@@ -796,12 +805,13 @@ msgstr ""
 "Configurare->General în programul dumneavoastră terţ"
 
 #: sabnzbd/interface.py
-msgid ""
-"API Key incorrect, Use the api key from Config->General in your 3rd party "
-"program:"
+msgid "Too many failed login attempts, try again later."
 msgstr ""
-"Cheie API incorectă, Folosiţi cheia api din Configurare->General în "
-"programul dumneavoastră terţ:"
+
+#. Warning message
+#: sabnzbd/interface.py
+msgid "Login attempt refused, too many failures from %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/interface.py
