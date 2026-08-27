@@ -83,6 +83,7 @@ from sabnzbd.version import __version__, __baseline__
 # Now we can import safely
 import sabnzbd.misc as misc
 import sabnzbd.filesystem as filesystem
+import sabnzbd.writemonitor
 import sabnzbd.powersup as powersup
 import sabnzbd.encoding as encoding
 import sabnzbd.config as config
@@ -130,6 +131,7 @@ BPSMeter: sabnzbd.bpsmeter.BPSMeter
 RSSReader: sabnzbd.rss.RSSReader
 Scheduler: sabnzbd.scheduler.Scheduler
 SessionStore: sabnzbd.sessionstore.SessionStore
+WriteMonitor: sabnzbd.writemonitor.WriteMonitor
 
 # For backwards compatibility with pre-5.0 queue files
 sys.modules["sabnzbd.nzbstuff"] = sabnzbd.nzb
@@ -253,6 +255,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     # Set call backs for Config items
     cfg.cache_limit.callback(cfg.new_limit)
     cfg.direct_write.callback(cfg.new_direct_write)
+    cfg.download_dir.callback(cfg.new_storage_dir)
     cfg.web_host.callback(cfg.guard_restart)
     cfg.web_port.callback(cfg.guard_restart)
     cfg.web_dir.callback(cfg.guard_restart)
@@ -306,6 +309,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.RSSReader = sabnzbd.rss.RSSReader()
     sabnzbd.Scheduler = sabnzbd.scheduler.Scheduler()
     sabnzbd.SessionStore = sabnzbd.sessionstore.SessionStore()
+    sabnzbd.WriteMonitor = sabnzbd.writemonitor.WriteMonitor()
 
     # Run startup tasks
     sabnzbd.NzbQueue.read_queue(repair)

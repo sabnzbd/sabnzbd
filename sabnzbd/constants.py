@@ -53,7 +53,7 @@ ATTRIB_FILE = "SABnzbd_attrib"
 NZO_FILE = "SABnzbd_nzo_data"
 REPAIR_REQUEST = "repair-all.sab"
 
-SABCTOOLS_VERSION_REQUIRED = "9.7.0"
+SABCTOOLS_VERSION_REQUIRED = "9.7.1"
 
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = "history%s.db" % DB_HISTORY_VERSION
@@ -105,16 +105,19 @@ CONFIG_BACKUP_HTTPS = {  # "basename": "associated setting"
     "server.chain": "https_chain",
 }
 
-# Constants affecting download performance
-DEF_MAX_ASSEMBLER_QUEUE = 12
-SOFT_ASSEMBLER_QUEUE_LIMIT = 0.5
+# How often the downloader updates its meters and reconsiders the delay
+DOWNLOADER_TICK = 0.05
+# Longest the downloader sleeps in one pass to let the disk catch up
+ASSEMBLER_MAX_DELAY = 0.5
+# Fraction of the measured write rate the downloader aims for, so the backlog shrinks
+# rather than merely holding
+ASSEMBLER_DRAIN_MARGIN = 0.9
 # Percentage of cache to use before adding file to assembler
 ASSEMBLER_TRIGGER_PERCENTAGE = 0.05
 # Files kept open for writing at once. Handles are cached so an article does not cost an
 # open/close pair, but they are a limited resource shared with every socket the
 # downloader holds, so the cache is bounded rather than growing with the queue.
 ASSEMBLER_MAX_OPEN_WRITERS = 32
-ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE = 1.5
 ASSEMBLER_WRITE_INTERVAL = 5.0
 NNTP_BUFFER_SIZE = int(256 * KIBI)
 NTTP_MAX_BUFFER_SIZE = int(10 * MEBI)
