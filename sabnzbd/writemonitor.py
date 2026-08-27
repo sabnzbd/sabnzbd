@@ -74,8 +74,6 @@ class WriteMonitor:
         self.retry_after = RETRY_AFTER
         self.retry_at = 0.0
         self.sampled_at = 0.0
-        # Counters as of the previous sample
-        self.seen = (0, 0, 0)
         self.reset()
 
     @synchronized()
@@ -97,7 +95,8 @@ class WriteMonitor:
     def rebaseline(self):
         """Start counting writes from this moment, keeping what they have cost so far"""
         self.slow_samples = 0
-        self.seen = self.read_counters()
+        # Take what has been written since the last sample and drop it
+        sabctools.write_stats(reset=True)
         # So the next sample measures from here, not from whenever the process started
         self.sampled_at = time.monotonic()
 
@@ -109,7 +108,8 @@ class WriteMonitor:
             return
         self.sampled_at = now
 
-        _, written, nanos = self.consume_counters()
+        stats = sabctools.write_stats(reset=True)
+        written, nanos = stats["bytes"], stats["nanos"]
         cost = nanos / written if written >= MIN_COST_BYTES and nanos > 0 else None
         if cost is not None:
             self.cost = cost if self.cost is None else EMA_ALPHA * cost + (1 - EMA_ALPHA) * self.cost
@@ -146,19 +146,6 @@ class WriteMonitor:
         self.cost = None
         self.throughput = 0.0
         self.window.clear()
-
-    @staticmethod
-    def read_counters() -> tuple[int, int, int]:
-        """Writes, bytes and nanoseconds every file has cost since sabctools loaded"""
-        stats = sabctools.write_stats()
-        return stats["count"], stats["bytes"], stats["nanos"]
-
-    def consume_counters(self) -> tuple[int, int, int]:
-        """The same three, but only since the previous sample"""
-        current = self.read_counters()
-        interval = tuple(now - before for now, before in zip(current, self.seen))
-        self.seen = current
-        return interval
 
     def demote(self):
         """Hold articles in the cache again, and wait longer before trying once more"""
