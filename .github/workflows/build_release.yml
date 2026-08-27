@@ -214,6 +214,7 @@ jobs:
         env:
           AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
           REDDIT_TOKEN: ${{ secrets.REDDIT_TOKEN }}
+          LINUXSERVER_WEBHOOK_TOKEN: ${{ secrets.LINUXSERVER_WEBHOOK_TOKEN }}
         run: |
           pip3 install -r builder/release-requirements.txt --no-dependencies
           python3 builder/release.py
