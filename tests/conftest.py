@@ -32,8 +32,6 @@ from warnings import warn
 
 import pytest
 import requests
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options as ChromeOptions
 
 import sabnzbd
 import sabnzbd.sessionstore as sessionstore
@@ -211,24 +209,8 @@ def run_sabnzbd(clean_cache_dir, compiled_language_files, request):
 
 
 @pytest.fixture(scope="session")
-def run_sabnews_and_selenium(request):
-    """Start SABNews and Selenium/Chromedriver, shared across the pytest session."""
-    # We only try Chrome for consistent results
-    driver_options = ChromeOptions()
-
-    # Headless during CI testing
-    if "CI" in os.environ:
-        driver_options.browser_version = "127"
-        driver_options.add_argument("--headless")
-        driver_options.add_argument("--no-sandbox")
-
-        # Useful for stability on Linux/macOS, doesn't work on Windows
-        if not sys.platform.startswith("win"):
-            driver_options.add_argument("--single-process")
-
-    # Start the driver and pass it on to all the classes
-    driver = webdriver.Chrome(options=driver_options)
-
+def run_sabnews(request):
+    """Start SABNews, shared across the pytest session."""
     # Start SABNews on this worker's own host/port so parallel workers don't
     # collide on a single fixed newsserver port.
     sabnews_process = subprocess.Popen(
@@ -242,8 +224,7 @@ def run_sabnews_and_selenium(request):
         ]
     )
 
-    # Now we run the tests
-    yield driver
+    yield
 
     # Shutdown SABNews
     try:
@@ -251,14 +232,6 @@ def run_sabnews_and_selenium(request):
         sabnews_process.communicate(timeout=10)
     except Exception as err:
         warn("Failed to shutdown the sabnews process: %s" % err)
-
-    # Shutdown Selenium/Chrome
-    try:
-        driver.close()
-        driver.quit()
-    except Exception as err:
-        # If something else fails, this can cause very non-informative long tracebacks
-        warn("Failed to shutdown the selenium/chromedriver process: %s" % err)
 
 
 @pytest.fixture(scope="class")

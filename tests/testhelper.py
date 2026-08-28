@@ -29,21 +29,15 @@ import socket
 import tempfile
 import time
 import uuid
-from http.client import RemoteDisconnected
 from concurrent.futures import ThreadPoolExecutor
 from typing import BinaryIO, Optional, Callable
 
 import pytest
 from random import choice, randint
 import requests
-from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from playwright.sync_api import Page, expect
 from string import ascii_lowercase, digits
 from unittest import mock
-from urllib3.exceptions import ProtocolError
 import xmltodict
 from werkzeug import Request
 from werkzeug.utils import send_from_directory
@@ -522,72 +516,43 @@ class AddingNZBsTestBase:
 @pytest.mark.usefixtures("run_sabnzbd")
 class SABnzbdBaseTest:
     @pytest.fixture(autouse=True)
-    def _setup_driver(self, run_sabnews_and_selenium):
-        self.driver = run_sabnews_and_selenium
+    def _setup_page(self, run_sabnews, page: Page):
+        self.page = page
 
     def no_page_crash(self):
         # Do a base test if CherryPy did not report test
-        assert "500 Internal Server Error" not in self.driver.title
+        assert "500 Internal Server Error" not in self.page.title()
 
     def open_page(self, url):
         # Open a page and test for crash
-        self.driver.get(url)
+        self.page.goto(url)
         self.no_page_crash()
 
-    def scroll_to_top(self):
-        self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
-        try:
-            wait = WebDriverWait(self.driver, 2)
-            wait.until(lambda driver_wait: self.driver.execute_script("return window.scrollY") == 0)
-        except RemoteDisconnected:
-            pass
+    def click_expecting_dialog(self, locator, accept: bool = False, timeout: int = 15):
+        """Click something that raises a JS confirm()/alert and answer it.
 
-    def wait_for_alert(self, timeout=15):
-        """Wait for a JS confirm()/alert dialog and return it. Use only where a dialog is guaranteed."""
-        WebDriverWait(self.driver, timeout).until(EC.alert_is_present())
-        return self.driver.switch_to.alert
+        The handler is registered before the click: a confirm() raised synchronously from
+        the click handler blocks the page, so click() only returns once it is answered.
+        """
+        answered = []
 
-    def dismiss_restart_prompt(self, timeout=15):
-        """Dismiss the "restart required" confirmation raised after saving"""
-        self.wait_for_alert(timeout).dismiss()
+        def handle_dialog(dialog):
+            answered.append(dialog.message)
+            if accept:
+                dialog.accept()
+            else:
+                dialog.dismiss()
 
-    def dismiss_alert_if_present(self, timeout=15):
-        """Wait until a submitted save settles, dismissing a restart-request confirm() only if one is raised"""
+        self.page.once("dialog", handle_dialog)
+        locator.click()
+
+        # Wait through Playwright, which is what dispatches the event
         deadline = time.time() + timeout
-        while time.time() < deadline:
-            if EC.alert_is_present()(self.driver):
-                self.driver.switch_to.alert.dismiss()
-                return
-            try:
-                if self.driver.execute_script("return jQuery.active") == 0:
-                    return
-            except (RemoteDisconnected, ProtocolError):
-                return
-            time.sleep(0.1)
-        pytest.fail("Config save did not settle within %s seconds" % timeout)
+        while not answered and time.time() < deadline:
+            self.page.wait_for_timeout(100)
 
-    def wait_for_ajax(self):
-        # We catch common nonsense errors from Selenium
-        try:
-            wait = WebDriverWait(self.driver, 15)
-            wait.until(lambda driver_wait: self.driver.execute_script("return jQuery.active") == 0)
-            wait.until(lambda driver_wait: self.driver.execute_script("return document.readyState") == "complete")
-        except (RemoteDisconnected, ProtocolError):
-            pass
-
-    @staticmethod
-    def selenium_wrapper(func, *args):
-        """Wrapper with retries for more stable Selenium"""
-        for _ in range(3):
-            try:
-                return func(*args)
-            except WebDriverException as e:
-                prior_exception = e
-                # Try again in 2 seconds!
-                time.sleep(2)
-                pass
-        else:
-            raise prior_exception
+        if not answered:
+            pytest.fail("No dialog was raised within %s seconds" % timeout)
 
 
 class DownloadFlowBasics(SABnzbdBaseTest):
@@ -602,43 +567,35 @@ class DownloadFlowBasics(SABnzbdBaseTest):
     def start_wizard(self):
         # Language-selection
         self.open_page("http://%s:%s/wizard/" % (SAB_HOST, SAB_PORT))
-        self.selenium_wrapper(self.driver.find_element, By.ID, "en").click()
-        self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, "button.btn.btn-default").click()
+        self.page.locator("#en").click()
+        self.page.locator("button.btn.btn-default").click()
 
         # Fill server-info
         self.no_page_crash()
-        host_inp = self.selenium_wrapper(self.driver.find_element, By.NAME, "host")
-        host_inp.clear()
-        host_inp.send_keys(SAB_NEWSSERVER_HOST)
+        self.page.locator("[name='host']").fill(SAB_NEWSSERVER_HOST)
 
         # Disable SSL for testing
-        self.selenium_wrapper(self.driver.find_element, By.NAME, "ssl").click()
+        self.page.locator("[name='ssl']").click()
 
         # This will fail if the translations failed to compile!
-        self.selenium_wrapper(self.driver.find_element, By.PARTIAL_LINK_TEXT, "Advanced Settings").click()
+        self.page.locator("a:has-text('Advanced Settings')").click()
 
         # Change port
-        port_inp = self.selenium_wrapper(self.driver.find_element, By.NAME, "port")
-        port_inp.clear()
-        port_inp.send_keys(SAB_NEWSSERVER_PORT)
+        port_inp = self.page.locator("[name='port']")
+        port_inp.fill(str(SAB_NEWSSERVER_PORT))
 
         # Test server-check
-        server_response = self.selenium_wrapper(self.driver.find_element, By.ID, "serverResponse")
-        self.selenium_wrapper(self.driver.find_element, By.ID, "serverTest").click()
-        wait_for(
-            lambda: "Connection Successful" in server_response.text,
-            timeout=5,
-            err_msg="The connection test was not successful",
-        )
+        self.page.locator("#serverTest").click()
+        expect(self.page.locator("#serverResponse")).to_contain_text("Connection Successful", timeout=5000)
 
         # Final page done
-        self.selenium_wrapper(self.driver.find_element, By.ID, "next-button").click()
+        self.page.locator("#next-button").click()
         self.no_page_crash()
-        check_result = self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "quoteBlock").text
-        assert "http://%s:%s" % (SAB_HOST, SAB_PORT) in check_result
+        # The first block lists the access URLs; the others are the download folders
+        expect(self.page.locator(".quoteBlock").first).to_contain_text("http://%s:%s" % (SAB_HOST, SAB_PORT))
 
         # Go to SAB!
-        self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, ".btn.btn-success").click()
+        self.page.locator(".btn.btn-success").click()
         self.no_page_crash()
 
     def download_nzb(self, nzb_dir: str, file_output: list[str], dir_name_as_job_name: bool = False):
