@@ -107,8 +107,6 @@ from sabnzbd.security import (
     _MSG_APIKEY_NOT_ON_PAGES,
     _MSG_MISSING_SESSION,
     _MSG_SESSION_EXPIRED,
-    _anonymous_session_sender,
-    anonymous_session_tag,
     check_access,
     clear_login_failures,
     clear_session,
@@ -116,6 +114,7 @@ from sabnzbd.security import (
     client_address_info,
     constant_time_equals,
     create_session,
+    csrf_identity,
     csrf_token_for,
     csrf_token_matches,
     login_bypassed,
@@ -280,9 +279,10 @@ def check_apikey(request: Request) -> Optional[Response]:
         )
         return forbidden(_MSG_APIKEY_INCORRECT)
 
-    if SESSION_COOKIE_USER in request.cookies:
-        # A cookie was presented, so this is a browser
-        stale_token = presented_csrf_token(request, header_only=True)
+    # A session cookie or a presented CSRF token marks this as a browser rather than a
+    # 3rd-party client. With the login bypassed there is no cookie, so the token stands in.
+    stale_token = presented_csrf_token(request, header_only=True)
+    if SESSION_COOKIE_USER in request.cookies or stale_token:
         if stale_token:
             logging.info(
                 "Stale session token from %s, the page will reload for a fresh one", client_address_info(request)
@@ -414,20 +414,9 @@ class SecurityMiddleware:
             request = Request(scope, receive)
             if response := self.denied_response(request):
                 return await response(scope, receive, send)
-            # Where the login is bypassed, issue an anonymous cookie on the UI pages, unless
-            # the client already holds a session. Injected into the response start.
-            if (
-                self.check_for_login
-                and not self.check_api_key
-                and login_bypassed(request)
-                and not validate_any_session(request)
-            ):
-                send = _anonymous_session_sender(request, send)
-                # The page is rendered before that Set-Cookie reaches the client, so its
-                # token has to belong to the cookie being issued, not the one that arrived
-                request.state.csrf_token = csrf_token_for(anonymous_session_tag())
-            else:
-                request.state.csrf_token = csrf_token_for(request.cookies.get(SESSION_COOKIE_USER, ""))
+            # The page renders this token; a login-bypassed request with no cookie binds it
+            # to a stable identity, so it stays valid across requests without any cookie.
+            request.state.csrf_token = csrf_token_for(csrf_identity(request))
         await self.app(scope, receive, send)
 
     def denied_response(self, request: Request) -> Optional[Response]:
