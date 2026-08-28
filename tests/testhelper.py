@@ -19,6 +19,7 @@
 tests.testhelper - Basic helper functions
 """
 
+import asyncio
 import copy
 import io
 import os
@@ -29,6 +30,7 @@ import tempfile
 import time
 import uuid
 from http.client import RemoteDisconnected
+from concurrent.futures import ThreadPoolExecutor
 from typing import BinaryIO, Optional, Callable
 
 import pytest
@@ -62,6 +64,22 @@ from sabnzbd.misc import pp_to_opts
 import sabnzbd.filesystem as filesystem
 
 import tests.sabnews
+
+
+def run_async(coro):
+    """Run a coroutine to completion, also when the thread already has a running loop.
+
+    Playwright's sync API keeps a loop running for as long as a browser fixture is alive,
+    which makes asyncio.run() refuse to start another one in the same thread.
+    """
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(coro)
+
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        return pool.submit(asyncio.run, coro).result()
+
 
 SAB_HOST = "127.0.0.1"
 SAB_NEWSSERVER_HOST = "127.0.0.1"
