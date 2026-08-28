@@ -123,11 +123,15 @@ class ApiTestFunctions:
         result = run(
             os.path.join(SAB_DATA_DIR, "tavern", test_name + ".yaml"),
             tavern_global_cfg={"variables": dict(vars)},
+            # A pytest session inside a pytest test: pytest-playwright wraps every test in a
+            # soft-assertion scope, and Playwright refuses to nest those
             pytest_args=[
                 "--tavern-file-path-regex",
                 "api_.*.yaml",
                 "--ignore-glob",
                 os.path.join(SAB_BASE_DIR, "cache*"),
+                "-p",
+                "no:playwright",
             ],
         )
         assert result is result.OK
