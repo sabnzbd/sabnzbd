@@ -40,12 +40,15 @@ h2 {
 
 .container {
     margin-top: 1em;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .main-navbar {
     margin-bottom: 2px;
     z-index: 999;
-
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .navbar.main-navbar {
@@ -1993,8 +1996,34 @@ input[name="nzbURL"] {
     padding-top: 5px;
 }
 
+/* Tighten the gaps between the main containers */
+.container-compact .main-navbar {
+    margin-top: 3px;
+}
+
+.container-compact:not(.container-tabbed) .main-content {
+    padding-top: 0;
+    margin-bottom: 15px;
+}
+
+.container-compact .queue,
+.container-compact .history,
+.container-compact .queue-messages {
+    padding: 4px 6px;
+    margin-bottom: 6px;
+}
+
+.container-compact .queue-footer,
+.container-compact .history-footer {
+    padding: 0;
+}
+
+.container-compact .table {
+    margin-bottom: 3px;
+}
+
 .container-full-width .container {
-    width: calc(100% - 60px);
+    width: calc(100% - 40px);
 }
 
 /***
