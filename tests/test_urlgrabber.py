@@ -19,19 +19,72 @@
 tests.test_urlgrabber - Testing functions in urlgrabber.py
 """
 
+import base64
+
+import binascii
 import json
+import re
 import urllib.error
 import urllib.parse
 
 import pytest
-import pytest_httpbin
+from pytest_httpserver import HTTPServer
+from werkzeug import Request, Response
 
 import sabnzbd
 import sabnzbd.urlgrabber as urlgrabber
 import sabnzbd.cfg as cfg
 
 
-@pytest_httpbin.use_class_based_httpbin
+def _json_response(payload, status: int = 200) -> Response:
+    return Response(json.dumps(payload), status=status, content_type="application/json")
+
+
+def _basic_auth_credentials(request: Request):
+    """Return the (username, password) of the Basic auth header, or None"""
+    scheme, _, payload = request.headers.get("Authorization", "").partition(" ")
+    if scheme.lower() != "basic":
+        return None
+    try:
+        # Credentials are sent as utf-8, so they may contain non-ascii characters
+        username, _, password = base64.b64decode(payload).decode("utf-8").partition(":")
+    except (binascii.Error, UnicodeDecodeError, ValueError):
+        return None
+    return username, password
+
+
+def _request_handler(request: Request) -> Response:
+    """Handle the (subset of the) httpbin endpoints used by the tests below"""
+    if request.path.startswith("/status/"):
+        return Response(status=int(request.path[len("/status/") :]))
+
+    if request.path == "/user-agent":
+        return _json_response({"user-agent": request.headers.get("User-Agent")})
+
+    if request.path.startswith("/basic-auth/"):
+        username, _, password = request.path[len("/basic-auth/") :].partition("/")
+        if _basic_auth_credentials(request) != (username, password):
+            return Response(status=401, headers={"WWW-Authenticate": 'Basic realm="Test"'})
+        return _json_response({"authenticated": True, "user": username})
+
+    if request.path in ("/", "/headers") or request.path.startswith("/anything"):
+        return _json_response({"headers": dict(request.headers), "url": request.url})
+
+    return Response(status=404)
+
+
+@pytest.fixture(scope="class")
+def local_server(request):
+    """Local webserver serving a minimal, httpbin-like API on a random port"""
+    server = HTTPServer(host="127.0.0.1")
+    server.expect_request(re.compile(r".*")).respond_with_handler(_request_handler)
+    server.start()
+    request.cls.server = server
+    yield
+    server.stop()
+
+
+@pytest.mark.usefixtures("local_server")
 class TestBuildRequest:
     def test_empty(self):
         with pytest.raises(ValueError):
@@ -83,27 +136,27 @@ class TestBuildRequest:
     def test_http_basic(self):
         # Use selftest_host for the most basic URL
         self._runner("http://" + cfg.selftest_host(), 200)
-        # Repeat with httpbin, which runs on a random non-standard port
-        self._runner(self.httpbin.url, 200)
+        # Repeat with the local server, which runs on a random non-standard port
+        self._runner(self.server.url_for("/"), 200)
 
     def test_https_basic(self):
-        # Use a real HTTPS server; httpbin_secure uses a self-signed cert
+        # Use a real HTTPS server, since the local server only serves plain HTTP
         self._runner("https://" + cfg.selftest_host(), 200)
         # Repeat with the port explicitly specified
         self._runner("https://" + cfg.selftest_host() + ":443/", 200)
 
     def test_http_code(self):
         # Make the server reply with a non-standard status code
-        self._runner(self.httpbin.url + "/status/242", 242)
+        self._runner(self.server.url_for("/status/242"), 242)
 
     def test_user_agent(self):
         # Verify the User-Agent string
-        assert ("SABnzbd/%s" % sabnzbd.__version__) in self._runner(self.httpbin.url + "/user-agent", 200, True)
+        assert ("SABnzbd/%s" % sabnzbd.__version__) in self._runner(self.server.url_for("/user-agent"), 200, True)
 
     def test_http_userpass(self):
         usr = "abcdefghijklm01234"
         pwd = "56789nopqrstuvwxyz"
-        common = "@" + self.httpbin.host + ":" + str(self.httpbin.port) + "/basic-auth/" + usr + "/" + pwd
+        common = "@" + self.server.host + ":" + str(self.server.port) + "/basic-auth/" + usr + "/" + pwd
         self._runner("http://" + usr + ":" + pwd + common, 200)
         with pytest.raises(urllib.error.HTTPError):
             # Authorisation should fail
@@ -111,34 +164,34 @@ class TestBuildRequest:
 
     def test_http_userpass_email(self):
         for usr, pwd in [("nobody@example.org", "secret!"), ("USER", "P@SS"), ("a@B.cd", "e@F.gh")]:
-            host = "http://" + usr + ":" + pwd + "@" + self.httpbin.host + ":" + str(self.httpbin.port)
+            host = "http://" + usr + ":" + pwd + "@" + self.server.host + ":" + str(self.server.port)
             self._runner(host + "/basic-auth/" + usr + "/" + pwd, 200)
 
     def test_http_userpass_non_ascii(self):
         usr = "유즈넷"
         pwd = "َอักษรไทย"
-        host = "http://" + usr + ":" + pwd + "@" + self.httpbin.host + ":" + str(self.httpbin.port)
+        host = "http://" + usr + ":" + pwd + "@" + self.server.host + ":" + str(self.server.port)
         path = "/basic-auth/" + urllib.parse.quote(usr) + "/" + urllib.parse.quote(pwd)
         self._runner(host + path, 200)
 
     def test_http_user_only(self):
-        h = self._runner("http://root@" + self.httpbin.host + ":" + str(self.httpbin.port) + "/headers", 200, True)
+        h = self._runner("http://root@" + self.server.host + ":" + str(self.server.port) + "/headers", 200, True)
         self._check_auth(h)
 
     def test_http_pass_only(self):
-        h = self._runner("http://:pass@" + self.httpbin.host + ":" + str(self.httpbin.port) + "/headers", 200, True)
+        h = self._runner("http://:pass@" + self.server.host + ":" + str(self.server.port) + "/headers", 200, True)
         self._check_auth(h)
 
     def test_http_userpass_empty(self):
         # Add colon and at-sign but no username or password
-        host = "http://:@" + self.httpbin.host + ":" + str(self.httpbin.port)
+        host = "http://:@" + self.server.host + ":" + str(self.server.port)
         h = self._runner(host + "/headers", 200, True)
         self._check_auth(h)
 
     def test_http_params_etc(self):
-        self._runner(self.httpbin.url + "/anything/test/this.html?urlgrabber=test#says_hi", 200)
+        self._runner(self.server.url_for("/anything/test/this.html?urlgrabber=test#says_hi"), 200)
         # Add all possible elements, even unnecessary authorisation parameters
-        host = "http://abcdefghijklm:nopqrstuvwxyz@" + self.httpbin.host + ":" + str(self.httpbin.port)
+        host = "http://abcdefghijklm:nopqrstuvwxyz@" + self.server.host + ":" + str(self.server.port)
         path = "/anything/goes/even/params.like;this?testing=urlgrabber&more=tests#longpath"
         self._runner(host + path, 200)
 
@@ -152,13 +205,13 @@ class TestBuildRequest:
 
     def test_http_invalid_scheme(self):
         with pytest.raises(urllib.error.URLError):
-            self._runner("_://" + self.httpbin.host + ":" + str(self.httpbin.port) + "/")
+            self._runner("_://" + self.server.host + ":" + str(self.server.port) + "/")
 
     def test_http_not_found(self):
         with pytest.raises(urllib.error.HTTPError):
-            self._runner(self.httpbin.url + "/status/404", 404)
+            self._runner(self.server.url_for("/status/404"), 404)
         with pytest.raises(urllib.error.HTTPError):
-            self._runner(self.httpbin.url + "/no/such/file", 404)
+            self._runner(self.server.url_for("/no/such/file"), 404)
 
 
 class TestFilenameFromDispositionHeader:
