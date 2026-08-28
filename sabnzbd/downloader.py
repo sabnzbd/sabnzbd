@@ -57,8 +57,6 @@ _SERVER_CHECK_DELAY = 0.5
 _ARTICLE_PREFETCH = 20
 # Only report the disk holding the download up once delay is this many seconds
 _ASSEMBLER_DELAY_REPORT = 0.2
-# Minimum expected size of TCP receive buffer
-_DEFAULT_CHUNK_SIZE = 32768
 
 TIMER_LOCK = RLock()
 
@@ -256,7 +254,6 @@ class Downloader(Thread):
         "paused",
         "bandwidth_limit",
         "bandwidth_perc",
-        "sleep_time",
         "paused_for_postproc",
         "shutdown",
         "server_restarts",
@@ -264,8 +261,6 @@ class Downloader(Thread):
         "selector",
         "servers",
         "timers",
-        "last_max_chunk_size",
-        "max_chunk_size",
     )
 
     def __init__(self, paused=False):
@@ -285,15 +280,6 @@ class Downloader(Thread):
 
         # Rate-limits the delay logging, which is otherwise once per pass
         self.next_delay_log: float = 0.0
-
-        # Used to see if we can add a slowdown to the Downloader-loop
-        self.sleep_time: float = 0.0
-        self.sleep_time_set()
-        cfg.downloader_sleep_time.callback(self.sleep_time_set)
-
-        # Sleep check variables
-        self.last_max_chunk_size: int = 0
-        self.max_chunk_size: int = _DEFAULT_CHUNK_SIZE
 
         self.paused_for_postproc: bool = False
         self.shutdown: bool = False
@@ -506,10 +492,6 @@ class Downloader(Thread):
                 cfg.receive_threads.set(4)
                 logging.info("Receive threads set to 4")
 
-    def sleep_time_set(self):
-        self.sleep_time = cfg.downloader_sleep_time() * 0.0001
-        logging.debug("Sleep time: %f seconds", self.sleep_time)
-
     def no_active_jobs(self) -> bool:
         """Is the queue paused or is it paused but are there still forced items?"""
         return self.paused and not sabnzbd.NzbQueue.has_forced_jobs()
@@ -692,15 +674,6 @@ class Downloader(Thread):
                         logging.info("Shutting down")
                         break
 
-                # If less data than possible was received then it should be ok to sleep a bit
-                if self.sleep_time:
-                    if self.last_max_chunk_size > self.max_chunk_size:
-                        self.max_chunk_size = self.last_max_chunk_size
-                    elif self.last_max_chunk_size < self.max_chunk_size / 3:
-                        time.sleep(self.sleep_time)
-                        now = time.time()
-                    self.last_max_chunk_size = 0
-
                 # Use select to find sockets ready for reading/writing
                 if self.selector.get_map():
                     if events := self.selector.select(timeout=1.0):
@@ -712,7 +685,6 @@ class Downloader(Thread):
                     BPSMeter.reset()
                     sabnzbd.WriteMonitor.forget_rate()
                     time.sleep(0.1)
-                    self.max_chunk_size = _DEFAULT_CHUNK_SIZE
                     with DOWNLOADER_CV:
                         while (
                             (sabnzbd.NzbQueue.is_empty() or self.no_active_jobs() or self.paused_for_postproc)
@@ -823,8 +795,6 @@ class Downloader(Thread):
 
         with DOWNLOADER_LOCK:
             sabnzbd.BPSMeter.update(server.id, bytes_received)
-            if bytes_received > self.last_max_chunk_size:
-                self.last_max_chunk_size = bytes_received
             # Check speedlimit
             if (
                 self.bandwidth_limit
