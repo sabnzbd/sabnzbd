@@ -5,7 +5,6 @@ selenium
 requests
 pyfakefs
 werkzeug
-pytest-httpbin
 pytest-httpserver
 flaky
 xmltodict
