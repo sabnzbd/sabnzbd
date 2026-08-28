@@ -19,7 +19,6 @@
 tests.test_api - Tests for API functions
 """
 
-import asyncio
 import os
 from functools import cached_property
 import pytest
@@ -37,13 +36,13 @@ import sabnzbd
 import sabnzbd.database as db
 from sabnzbd.constants import DB_HISTORY_NAME, DEF_ADMIN_DIR, PP_LOOKUP, AddNzbFileResult, Status
 from sabnzbd.misc import pp_to_opts
-from tests.testhelper import FakeHistoryDB, SAB_CACHE_DIR
+from tests.testhelper import FakeHistoryDB, SAB_CACHE_DIR, run_async
 from tests.test_interface import resolve_client
 
 
 def run_api_handler(kwargs) -> Response:
     """Run the (async) api_handler to completion, like the /api route does"""
-    return asyncio.run(api.api_handler(kwargs))
+    return run_async(api.api_handler(kwargs))
 
 
 class TestApiInternals:
@@ -207,7 +206,7 @@ def run_get_request_params(method, query_string="", body=b"", content_type=None,
         return {"type": "http.request", "body": body, "more_body": False}
 
     request = Request(scope, receive)
-    return asyncio.run(interface.get_request_params(request, merge_query=merge_query))
+    return run_async(interface.get_request_params(request, merge_query=merge_query))
 
 
 FORM = "application/x-www-form-urlencoded"

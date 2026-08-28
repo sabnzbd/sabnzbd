@@ -19,7 +19,6 @@
 tests.test_security - Testing authentication, sessions and the CSRF token
 """
 
-import asyncio
 import io
 import time
 from typing import Optional
@@ -33,6 +32,8 @@ import sabnzbd
 import sabnzbd.cfg as cfg
 import sabnzbd.security as security
 from sabnzbd import interface
+
+from tests.testhelper import run_async
 
 
 def mock_request(
@@ -312,7 +313,7 @@ class TestLoginRateLimiting:
             patch("sabnzbd.interface.template_filtered_response") as render,
             patch("sabnzbd.security.create_session") as create_session,
         ):
-            asyncio.run(interface.login_index(request))
+            run_async(interface.login_index(request))
 
         # No session handed out, despite the credentials being exactly right
         create_session.assert_not_called()
@@ -327,12 +328,12 @@ class TestLoginRateLimiting:
             patch("sabnzbd.interface.build_header", return_value={}),
             patch("sabnzbd.interface.template_filtered_response") as render,
         ):
-            asyncio.run(interface.login_index(wrong))
+            run_async(interface.login_index(wrong))
         assert render.call_args.kwargs["status_code"] == 200
         assert security._login_attempts["127.0.0.1"][0] == 1
 
         right = login_post(username="user", password="pass")
-        asyncio.run(interface.login_index(right))
+        run_async(interface.login_index(right))
         assert "127.0.0.1" not in security._login_attempts
 
     def test_cooldown_remaining_counts_down_and_rounds_up(self):
@@ -386,7 +387,7 @@ class TestLoginRateLimiting:
                 side_effect=lambda **kwargs: HTMLResponse("", status_code=kwargs["status_code"]),
             ),
         ):
-            response = asyncio.run(interface.login_index(request))
+            response = run_async(interface.login_index(request))
 
         assert response.status_code == 429
         assert 0 < int(response.headers["Retry-After"]) <= security.LOGIN_LOCKOUT_TIME + 1

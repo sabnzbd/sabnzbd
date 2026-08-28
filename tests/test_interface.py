@@ -19,7 +19,6 @@
 tests.test_interface - Testing functions in interface.py
 """
 
-import asyncio
 import inspect
 import logging
 import logging.config
@@ -49,6 +48,8 @@ from tests.test_security import (
 )
 from sabnzbd.misc import is_local_addr, is_loopback_addr, xff_trusted_networks
 
+from tests.testhelper import run_async
+
 
 def resolve_client(remote_ip: str, xff_header: str | None = None, remote_port: int = 12345) -> Address:
     """Pass a connection through uvicorn's ProxyHeadersMiddleware, configured
@@ -63,7 +64,7 @@ def resolve_client(remote_ip: str, xff_header: str | None = None, remote_port: i
     if xff_header:
         headers.append((b"x-forwarded-for", xff_header.encode("latin1")))
     scope = {"type": "http", "client": (remote_ip, remote_port), "headers": headers}
-    asyncio.run(middleware(scope, None, None))
+    run_async(middleware(scope, None, None))
     return Address(*captured["client"])
 
 
@@ -367,7 +368,7 @@ def feed_raw_request(protocol_class, data: bytes):
         protocol.connection_made(transport)
         protocol.data_received(data)
 
-    asyncio.run(_run())
+    run_async(_run())
 
 
 class TestUvicornLogging:
@@ -551,7 +552,7 @@ class TestUseSecureCookies:
                 "server": ("127.0.0.1", 8080),
                 "headers": [(b"host", b"sab.example.com"), (b"x-forwarded-proto", b"https")],
             }
-            asyncio.run(middleware(scope, None, None))
+            run_async(middleware(scope, None, None))
             return captured["secure"]
 
         # Trusted proxy: the forwarded scheme is honoured
@@ -718,7 +719,7 @@ class TestLogRoute:
             "server": ("127.0.0.1", 8080),
             "scheme": "http",
         }
-        asyncio.run(route.app(scope, receive, send))
+        run_async(route.app(scope, receive, send))
         # Redirected to the login form, and the handler never ran to stream any of the log
         assert captured["status"] == 302
         assert captured["headers"]["location"].endswith("/login")
@@ -868,7 +869,7 @@ def run_page_request(cookie: Optional[str] = None, remote_ip: str = "127.0.0.1")
         if message["type"] == "http.response.start":
             captured.extend(Headers(raw=message["headers"]).getlist("set-cookie"))
 
-    asyncio.run(middleware(scope, None, send))
+    run_async(middleware(scope, None, send))
     return captured, rendered_token
 
 
