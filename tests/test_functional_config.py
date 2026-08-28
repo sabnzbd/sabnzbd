@@ -47,6 +47,8 @@ class TestBasicPages(SABnzbdBaseTest):
             self.open_page("http://%s:%s/%s" % (SAB_HOST, SAB_PORT, test_url))
 
     def test_base_submit_pages(self):
+        # The save button is re-enabled on a 1s timer that is only scheduled once the response lands
+        self.page.clock.install()
         test_urls_with_submit = [
             "config/general",
             "config/folders",
@@ -62,14 +64,15 @@ class TestBasicPages(SABnzbdBaseTest):
             submit_btn = self.page.locator(".saveButton:visible").first
             expect(submit_btn).to_be_visible()
 
-            # Click the right button
-            submit_btn.click()
+            with self.page.expect_response(lambda r: r.request.method == "POST"):
+                submit_btn.click()
+            self.page.clock.run_for(1000)
 
             # For Specials page we get redirected after save, so check for no crash
             if "special" in test_url:
                 self.no_page_crash()
             else:
-                # For others if all is fine, button will be back to normal in 1 second
+                # For others if all is fine, the button will be back to normal
                 expect(submit_btn).to_have_text("Save Changes", timeout=1500)
 
 
@@ -127,9 +130,9 @@ class TestConfigCategories(SABnzbdBaseTest):
 
         # Add new category
         self.page.locator("[name='newname']").nth(1).fill(self.category_name)
-        self.page.locator("xpath=//button/text()[normalize-space(.)='Add']/parent::*").click()
+        with self.page.expect_response(lambda r: r.request.method == "POST"):
+            self.page.locator("xpath=//button/text()[normalize-space(.)='Add']/parent::*").click()
         self.no_page_crash()
-        self.page.wait_for_load_state("networkidle")
 
         # Category names are stored lowercased, so the name as typed must not come back
         assert self.category_name not in self.page.content()
