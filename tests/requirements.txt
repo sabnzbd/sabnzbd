@@ -1,7 +1,8 @@
 # Testing requirements
 pytest
 setuptools
-selenium
+pytest-playwright
+playwright>=1.55
 requests
 pyfakefs
 werkzeug

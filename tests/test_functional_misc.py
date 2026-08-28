@@ -56,7 +56,7 @@ class TestShowLogging(SABnzbdBaseTest):
 
     def test_showlog(self):
         """Test the output of the filtered-log button"""
-        # Basic URL-fetching, easier than Selenium file download
+        # Basic URL-fetching, easier than driving a browser file download
         self._assert_is_the_log(get_api_result("showlog"))
 
     def test_log_page_route(self):
