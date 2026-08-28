@@ -654,10 +654,13 @@ def get_access_info(request: Optional[Request] = None) -> list[str]:
     host = socket.gethostname().lower()
     socks = [host]
 
-    try:
-        addresses = socket.getaddrinfo(host, None)
-    except Exception:
-        addresses = []
+    # Only the wildcard hosts below use these, and the lookup stalls where the hostname does not resolve
+    addresses = []
+    if web_host in ("0.0.0.0", "::"):
+        try:
+            addresses = socket.getaddrinfo(host, None)
+        except Exception:
+            pass
 
     if web_host == "0.0.0.0":
         # Grab a list of all ips for the hostname
