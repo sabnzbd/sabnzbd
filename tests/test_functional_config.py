@@ -19,7 +19,7 @@
 tests.test_functional_config - Basic testing if Config pages work
 """
 
-from playwright.sync_api import expect
+from playwright.sync_api import Error as PlaywrightError, expect
 from pytest_httpserver import HTTPServer
 
 
@@ -248,11 +248,12 @@ class TestConfigServers(SABnzbdBaseTest):
         # Remove the first server and accept the confirmation
         self.click_expecting_dialog(self.page.locator(".delServer").first, accept=True)
 
-        # Check that it's gone
+        # Check that it's gone. Deleting reloads, so a read can land mid-navigation and raise
         wait_for(
             lambda: self.server_name not in self.page.content(),
-            timeout=2,
+            timeout=5,
             err_msg=f"Page still contains '{self.server_name}'",
+            suppress=(PlaywrightError,),
         )
 
     def test_add_and_remove_server(self):
