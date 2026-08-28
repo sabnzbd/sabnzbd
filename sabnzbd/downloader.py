@@ -677,9 +677,7 @@ class Downloader(Thread):
                 # Use select to find sockets ready for reading/writing
                 if self.selector.get_map():
                     if events := self.selector.select(timeout=1.0):
-                        for key, ev in events:
-                            nw = key.data
-                            process_nw_queue.put((nw, ev, nw.generation))
+                        process_nw_queue.put_multiple([(key.data, ev, key.data.generation) for key, ev in events])
                 else:
                     events = []
                     BPSMeter.reset()
@@ -694,6 +692,7 @@ class Downloader(Thread):
                         ):
                             DOWNLOADER_CV.wait()
 
+                now = time.time()
                 if now > next_bpsmeter_update:
                     # Do not update statistics and check levels every loop
                     BPSMeter.update()

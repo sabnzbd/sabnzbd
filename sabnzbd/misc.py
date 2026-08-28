@@ -239,7 +239,7 @@ class MultiAddQueue(queue.Queue):
         with self.not_full:
             self.queue.extend(multiple_items)
             self.unfinished_tasks += len(multiple_items)
-            self.not_empty.notify()
+            self.not_empty.notify(len(multiple_items))
 
 
 def cat_pp_script_sanitizer(
