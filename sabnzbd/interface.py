@@ -2537,17 +2537,28 @@ async def not_found_redirect(request: Request, exc):
     return base_redirect_response("/")
 
 
+class CachedStaticFiles(StaticFiles):
+    """Static files the browser may hold indefinitely, as $url() versions every reference"""
+
+    def file_response(self, *args, **kwargs) -> Response:
+        response = super().file_response(*args, **kwargs)
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return response
+
+
 def create_app() -> Starlette:
     """Build the Starlette application"""
     interface_routes = [
         *INTERFACE_ROUTES,
-        Mount("/static", app=StaticFiles(directory=os.path.join(sabnzbd.WEB_DIR, "static")), name="static"),
+        Mount("/static", app=CachedStaticFiles(directory=os.path.join(sabnzbd.WEB_DIR, "static")), name="static"),
         Mount(
-            "/staticcfg", app=StaticFiles(directory=os.path.join(sabnzbd.WEB_DIR_CONFIG, "staticcfg")), name="staticcfg"
+            "/staticcfg",
+            app=CachedStaticFiles(directory=os.path.join(sabnzbd.WEB_DIR_CONFIG, "staticcfg")),
+            name="staticcfg",
         ),
         Mount(
             "/wizard/static",
-            app=StaticFiles(directory=os.path.join(sabnzbd.WIZARD_DIR, "static")),
+            app=CachedStaticFiles(directory=os.path.join(sabnzbd.WIZARD_DIR, "static")),
             name="wizard_static",
         ),
     ]
