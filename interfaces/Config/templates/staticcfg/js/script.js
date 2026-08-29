@@ -296,7 +296,7 @@ function do_restart() {
     $('.main-restarting .restarting-url').text(urlTotal)
 
     // Initiate restart
-    $.ajax({ url: '../../api?mode=restart', type: 'POST',
+    $.ajax({ url: rootURL + 'api?mode=restart', type: 'POST',
         complete: function() {
             // Keep counter of failures
             var loopCounter = 0;
