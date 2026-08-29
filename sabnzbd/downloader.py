@@ -822,12 +822,9 @@ class Downloader(Thread):
         if nw.generation != generation:
             return
 
-        server = nw.server
-
-        with DOWNLOADER_LOCK:
-            sabnzbd.BPSMeter.update(server.id, bytes_received)
-            if bytes_received > self.last_max_chunk_size:
-                self.last_max_chunk_size = bytes_received
+        sabnzbd.BPSMeter.update(nw.server.id, bytes_received)
+        if self.sleep_time and bytes_received > self.last_max_chunk_size:
+            self.last_max_chunk_size = bytes_received
 
         # Check speedlimit on a lock of its own, so a connection being held back does not also hold up the Downloader
         if self.bandwidth_limit and sabnzbd.BPSMeter.bps + sabnzbd.BPSMeter.sum_cached_amount > self.bandwidth_limit:
