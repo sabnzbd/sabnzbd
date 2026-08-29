@@ -932,6 +932,29 @@ class TestTarUnpack:
         assert not [f for f in extracted_files if os.path.basename(f) in dropped]
         assert not [f for f in complete_contents if os.path.basename(f) in dropped]
 
+    def test_pre_existing_link_in_destination(self, tmp_path):
+        """A link left in the folder by another unpacker cannot be used to write a member
+        through it, because tarfile.data_filter() resolves the destination"""
+        base = str(tmp_path)
+        extraction_path = os.path.join(base, "dest")
+        outside = os.path.join(base, "outside")
+        os.mkdir(extraction_path)
+        os.mkdir(outside)
+        os.symlink(outside, os.path.join(extraction_path, "sub"))
+
+        tar_path = os.path.join(base, "prelink.tar")
+        with tarfile.open(tar_path, "w") as tar:
+            info = tarfile.TarInfo("sub/evil.txt")
+            info.size = 4
+            tar.addfile(info, io.BytesIO(b"evil"))
+
+        nzo = TestRarUnpack._create_test_nzo(extraction_path)
+        error_code, extracted_files = newsunpack.tar_extract(nzo, tar_path, extraction_path, False)
+
+        assert error_code == 1, "TAR extraction should fail"
+        assert not extracted_files
+        assert not os.listdir(outside)
+
     def test_owner_permissions_sanitized_tar_unpack(self, tmp_path):
         tar_path = tmp_path / "owner.tar"
 
