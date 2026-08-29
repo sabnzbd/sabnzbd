@@ -36,8 +36,8 @@
         <link rel="stylesheet" type="text/css" href="$url('static/bootstrap/css/bootstrap.min.css', v=$cache_buster)" />
         <link rel="stylesheet" type="text/css" href="$url('static/stylesheets/glitter.css', v=$cache_buster)" />
         <link rel="stylesheet" type="text/css" href="$url('static/stylesheets/glitter.mobile.css', v=$cache_buster)" media="all and (max-width: 768px)" />
-        <!--#if $color_scheme not in ('Light', '') #-->
-        <link rel="stylesheet" type="text/css" href="$url('static/stylesheets/colorschemes/' + $color_scheme + '.css', v=$cache_buster)"/>
+        <!--#if $color_scheme_file#-->
+        <link rel="stylesheet" type="text/css" href="$url('static/stylesheets/colorschemes/' + $color_scheme_file, v=$cache_buster)" media="$color_scheme_media" />
         <!--#end if#-->
 
         <!-- Make translations available in scripts -->

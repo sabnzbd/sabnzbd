@@ -29,8 +29,8 @@
     <link rel="stylesheet" type="text/css" href="$url('staticcfg/bootstrap/css/bootstrap.min.css', v=$cache_buster)" />
     <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/chartist.min.css', v=$cache_buster)" />
     <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/style.css', v=$cache_buster)" />
-    <!--#if $color_scheme not in ('Light', '') #-->
-    <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/' + $color_scheme + '.css', v=$cache_buster)" />
+    <!--#if $color_scheme_file#-->
+    <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/' + $color_scheme_file, v=$cache_buster)" media="$color_scheme_media" />
     <!--#end if#-->
 
     <link rel="shortcut icon" href="$url('staticcfg/ico/favicon.ico', v=$cache_buster)" />

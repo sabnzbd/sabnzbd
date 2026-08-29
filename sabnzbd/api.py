@@ -1992,6 +1992,9 @@ def build_header(
 
         header["uptime"] = calc_age(sabnzbd.START)
         header["color_scheme"] = sabnzbd.WEB_COLOR or ""
+        color_scheme_file = "Night" if sabnzbd.WEB_COLOR == "Auto" else sabnzbd.WEB_COLOR
+        header["color_scheme_file"] = f"{color_scheme_file}.css" if color_scheme_file not in ("", "Light") else ""
+        header["color_scheme_media"] = "(prefers-color-scheme: dark)" if sabnzbd.WEB_COLOR == "Auto" else "all"
         header["confighelpuri"] = f"https://sabnzbd.org/wiki/configuration/{sabnzbd.__version__[:3]}/"
 
         if request:
