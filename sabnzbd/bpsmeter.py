@@ -21,6 +21,7 @@ sabnzbd.bpsmeter - bpsmeter
 
 import time
 import logging
+from threading import Lock
 import re
 from collections import deque
 from itertools import islice, repeat
@@ -38,6 +39,8 @@ BPS_LIST_MAX = 275
 
 RE_DAY = re.compile(r"^\s*(\d+)[^:]*")
 RE_HHMM = re.compile(r"(\d+):(\d+)\s*$")
+
+BPSMETER_LOCK = Lock()
 
 
 def tomorrow(t: float) -> float:
@@ -275,91 +278,98 @@ class BPSMeter:
         """Update counters for "server" with "amount" bytes"""
         # Add amount to temporary storage
         if server:
-            self.cached_amount[server] += amount
-            self.sum_cached_amount += amount
+            with BPSMETER_LOCK:
+                self.cached_amount[server] += amount
+                self.sum_cached_amount += amount
             return
 
         t = time.time()
+        quota_spent = False
 
-        if t > self.end_of_day:
-            # Current day passed, get new end of day
-            self.day_label = time.strftime("%Y-%m-%d")
-            self.end_of_day = tomorrow(t) - 1.0
-            self.day_total = {}
+        with BPSMETER_LOCK:
+            if t > self.end_of_day:
+                # Current day passed, get new end of day
+                self.day_label = time.strftime("%Y-%m-%d")
+                self.end_of_day = tomorrow(t) - 1.0
+                self.day_total = {}
 
-            # Reset delayed counters so they don't go too high
-            self.delayed_assembler = 0
+                # Reset delayed counters so they don't go too high
+                self.delayed_assembler = 0
 
-            # Check end of week and end of month
-            if t > self.end_of_week:
-                self.week_total = {}
-                self.end_of_week = next_week(t) - 1.0
-            if t > self.end_of_month:
-                self.month_total = {}
-                self.end_of_month = next_month(t) - 1.0
+                # Check end of week and end of month
+                if t > self.end_of_week:
+                    self.week_total = {}
+                    self.end_of_week = next_week(t) - 1.0
+                if t > self.end_of_month:
+                    self.month_total = {}
+                    self.end_of_month = next_month(t) - 1.0
 
-            # Need to reset all counters
-            for server in sabnzbd.Downloader.servers[:]:
-                self.init_server_stats(server.id)
+                # Need to reset all counters
+                for server in sabnzbd.Downloader.servers[:]:
+                    self.init_server_stats(server.id)
 
-        # Cache dict references for faster access
-        day_total = self.day_total
-        week_total = self.week_total
-        month_total = self.month_total
-        grand_total = self.grand_total
-        timeline_total = self.timeline_total
-        cached_amount = self.cached_amount
-        server_bps = self.server_bps
+            # Cache dict references for faster access
+            day_total = self.day_total
+            week_total = self.week_total
+            month_total = self.month_total
+            grand_total = self.grand_total
+            timeline_total = self.timeline_total
+            cached_amount = self.cached_amount
+            server_bps = self.server_bps
 
-        start_time = self.start_time
-        last_update = self.last_update
-        # Minimum epsilon to avoid division by zero
-        dt_total = max(t - start_time, 1e-6)
-        dt_last = max(last_update - start_time, 1e-6)
+            start_time = self.start_time
+            last_update = self.last_update
+            # Minimum epsilon to avoid division by zero
+            dt_total = max(t - start_time, 1e-6)
+            dt_last = max(last_update - start_time, 1e-6)
 
-        # Add amounts that have been stored temporarily to statistics
-        for srv in self.cached_amount:
-            if cached := self.cached_amount[srv]:
-                day_total[srv] += cached
-                week_total[srv] += cached
-                month_total[srv] += cached
-                grand_total[srv] += cached
-                timeline_total[srv][self.day_label] += cached
+            # Add amounts that have been stored temporarily to statistics
+            for srv in self.cached_amount:
+                if cached := self.cached_amount[srv]:
+                    day_total[srv] += cached
+                    week_total[srv] += cached
+                    month_total[srv] += cached
+                    grand_total[srv] += cached
+                    timeline_total[srv][self.day_label] += cached
 
-                # Reset for next time
-                cached_amount[srv] = 0
+                    # Reset for next time
+                    cached_amount[srv] = 0
 
-            # Update server bps
-            server_bps[srv] = (server_bps[srv] * dt_last + cached) / dt_total
+                # Update server bps
+                server_bps[srv] = (server_bps[srv] * dt_last + cached) / dt_total
 
-        # Quota check
-        total_cached = self.sum_cached_amount
-        if self.have_quota and self.quota_enabled:
-            self.left -= total_cached
+            # Quota check
+            total_cached = self.sum_cached_amount
+            if self.have_quota and self.quota_enabled:
+                self.left -= total_cached
+                quota_spent = True
+
+            # Speedometer
+            self.bps = (self.bps * dt_last + total_cached) / dt_total
+
+            self.sum_cached_amount = 0
+            self.last_update = t
+
+            check_time = t - 5.0
+
+            if start_time < check_time:
+                self.start_time = check_time
+
+            if self.bps < 0.01:
+                self.reset()
+
+            elif self.log_time < check_time:
+                logging.debug("Speed: %sB/s", to_units(self.bps))
+                self.log_time = t
+
+            if self.speed_log_time < (t - 1.0):
+                self.add_empty_time()
+                self.bps_list.append(int(self.bps / KIBI))
+                self.speed_log_time = t
+
+        # Pausing reaches back into the Downloader, so it happens after the lock is released
+        if quota_spent:
             self.check_quota()
-
-        # Speedometer
-        self.bps = (self.bps * dt_last + total_cached) / dt_total
-
-        self.sum_cached_amount = 0
-        self.last_update = t
-
-        check_time = t - 5.0
-
-        if start_time < check_time:
-            self.start_time = check_time
-
-        if self.bps < 0.01:
-            self.reset()
-
-        elif self.log_time < check_time:
-            logging.debug("Speed: %sB/s", to_units(self.bps))
-            self.log_time = t
-
-        if self.speed_log_time < (t - 1.0):
-            self.add_empty_time()
-            self.bps_list.append(int(self.bps / KIBI))
-            self.speed_log_time = t
 
     def register_server_article_tried(self, server: str):
         """Keep track how many articles were tried for each server"""
