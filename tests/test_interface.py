@@ -257,6 +257,18 @@ class TestInterfaceFunctions:
         cherrypy.request.remote_label = "127.0.0.1 [test]"
         assert interface.check_apikey(kwargs, api_route=api_route) == expected
 
+    def test_secured_expose_hides_wrapped_function(self):
+        """The unprotected function must not be reachable below the wrapper"""
+
+        class DummyPage:
+            @interface.secured_expose(check_api_key=True, api_route=True, access_type=1)
+            def api(self, **kwargs):
+                return "protected handler executed"
+
+        assert not hasattr(DummyPage.api, "__wrapped__")
+        assert not any(getattr(value, "exposed", False) for value in vars(DummyPage.api).values())
+        assert not hasattr(interface.MainPage.api, "__wrapped__")
+
     @pytest.mark.config({"verify_xff_header": False})
     def test_logout_does_not_leak_valid_cookie(self):
         """A logout must never emit a cookie/salt pair that passes check_login_cookie.

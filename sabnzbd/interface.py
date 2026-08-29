@@ -125,11 +125,11 @@ def secured_expose(
             access_type=access_type,
         )
 
-    # Expose to cherrypy
-    wrap_func.exposed = True
-
     @functools.wraps(wrap_func)
     def internal_wrap(*args, **kwargs):
+        if len(args) > 1:
+            raise cherrypy.NotFound()
+
         # Label for logging in this and other functions, handling X-Forwarded-For
         # The cherrypy.request object allows adding custom attributes
         if cherrypy.request.headers.get("X-Forwarded-For"):
@@ -194,6 +194,9 @@ def secured_expose(
         # All good, cool!
         return wrap_func(*args, **kwargs)
 
+    # Expose only the wrapper to cherrypy
+    del internal_wrap.__wrapped__
+    internal_wrap.exposed = True
     return internal_wrap
 
 

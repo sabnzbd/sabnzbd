@@ -29,6 +29,7 @@ from random import choice, randint, sample
 from warnings import warn
 
 import pytest
+import requests
 from tavern.core import run
 
 import sabnzbd
@@ -326,6 +327,22 @@ class TestOtherApi(ApiTestFunctions):
         assert "Last-Translator" in self._get_api_json("translate", extra_args={"value": ""})["value"]
         # Restore language setting to default
         assert self._get_api_json("set_config_default", extra_args={"keyword": "language"})["status"] is True
+
+    @pytest.mark.parametrize("path", ["__wrapped__", "__wrapped__/x"])
+    def test_api_wrapped_not_dispatchable(self, path):
+        """The unprotected handler below secured_expose must not be reachable via the URL"""
+        response = requests.get(
+            "http://%s:%s/api/%s" % (SAB_HOST, SAB_PORT, path),
+            params={
+                "self": "x",
+                "mode": "get_config",
+                "section": "misc",
+                "keyword": "download_dir",
+                "output": "json",
+            },
+        )
+        assert response.status_code == 404
+        assert "download_dir" not in response.text
 
     def test_api_get_clear_warnings(self):
         # Trigger warnings by sending requests with a truncated apikey
