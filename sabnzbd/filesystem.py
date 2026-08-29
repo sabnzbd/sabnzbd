@@ -496,6 +496,13 @@ def points_into_admin_dir(path: str, base: str) -> bool:
     return JOB_ADMIN.lower() in relative.lower().split(os.sep)
 
 
+def points_outside(root: str, path: str) -> bool:
+    """Return True if the file at path does not end up inside root.
+    Both sides are resolved, so a root that is itself a link is fine, a link inside it is not.
+    """
+    return same_directory(os.path.realpath(root), os.path.dirname(os.path.realpath(path))) == 0
+
+
 def is_network_path(path: str) -> bool:
     """Check weither a path is a network path.
     On Windows, use win32 functions to detect users that try to avoid this detection by using a mapped drive letter.
@@ -963,9 +970,7 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     if create_local_directories:
         oldpath, _ = os.path.split(old)
         # Check not outside directory
-        # In case of "same_file() == 1": same directory, so nothing to do
-        location = same_directory(oldpath, path)
-        if location == 0:
+        if points_outside(oldpath, new):
             # Outside current directory, this is most likely malicious
             logging.error(T("Blocked attempt to create directory %s"), path)
             raise OSError("Refusing to go outside directory")
@@ -977,7 +982,7 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
             logging.error(T("Blocked attempt to create directory %s"), path)
             raise OSError("Refusing to go into admin directory")
 
-        if location == 2:
+        if not os.path.isdir(path):
             # Sub-directory, create if does not yet exist:
             create_all_dirs(path)
 

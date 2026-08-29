@@ -567,6 +567,42 @@ class TestPointsIntoAdminDir:
         assert not os.listdir(admin_dir)
 
 
+class TestPointsOutside:
+    def test_inside(self, tmp_path):
+        base = str(tmp_path)
+        assert not filesystem.points_outside(base, os.path.join(base, "file.bin"))
+        assert not filesystem.points_outside(base, os.path.join(base, "sub", "file.bin"))
+
+    def test_outside(self, tmp_path):
+        base = str(tmp_path)
+        assert filesystem.points_outside(base, os.path.join(base, os.pardir, "file.bin"))
+        assert filesystem.points_outside(base, os.path.join(base, "sub", os.pardir, os.pardir, "file.bin"))
+
+    def test_root_reached_through_a_link_is_fine(self, tmp_path):
+        """The download and complete folder are allowed to be a link"""
+        base = str(tmp_path)
+        real = os.path.join(base, "real")
+        os.mkdir(real)
+        link = os.path.join(base, "link")
+        os.symlink(real, link)
+
+        assert not filesystem.points_outside(link, os.path.join(link, "file.bin"))
+        assert not filesystem.points_outside(link, os.path.join(real, "file.bin"))
+        assert not filesystem.points_outside(real, os.path.join(link, "file.bin"))
+        assert filesystem.points_outside(link, os.path.join(link, os.pardir, "file.bin"))
+
+    def test_link_inside_the_root_cannot_redirect(self, tmp_path):
+        base = str(tmp_path)
+        root = os.path.join(base, "root")
+        os.mkdir(root)
+        os.symlink(base, os.path.join(root, "up"))
+        os.symlink(".", os.path.join(root, "pivot"))
+
+        assert filesystem.points_outside(root, os.path.join(root, "up", "file.bin"))
+        assert filesystem.points_outside(root, os.path.join(root, "pivot", os.pardir, "file.bin"))
+        assert not filesystem.points_outside(root, os.path.join(root, "pivot", "file.bin"))
+
+
 class TestFirstExistingPath:
     def test_existing_path(self, tmp_path):
         assert filesystem.first_existing_path(str(tmp_path)) == str(tmp_path)
@@ -1364,6 +1400,31 @@ class TestRenamer:
 
         # Cleanup working directory
         shutil.rmtree(dirname)
+
+    def test_link_cannot_redirect_rename(self, tmp_path):
+        """The filesystem resolves a link before it handles "..", so "pivot/.." lands one
+        level higher than normalizing the path on its own suggests"""
+        base = str(tmp_path)
+        dirname = os.path.join(base, "job")
+        os.mkdir(dirname)
+        os.symlink(".", os.path.join(dirname, "pivot"))
+
+        filename = os.path.join(dirname, "myfile.txt")
+        Path(filename).touch()
+        escaped = os.path.join(base, "escaped.bin")
+        with pytest.raises(OSError):
+            filesystem.renamer(
+                filename, os.path.join(dirname, "pivot", "..", "escaped.bin"), create_local_directories=True
+            )
+        assert os.path.isfile(filename)
+        assert not os.path.exists(escaped)
+
+        # A link that leaves the directory outright is no stepping stone either
+        os.symlink(base, os.path.join(dirname, "outside"))
+        with pytest.raises(OSError):
+            filesystem.renamer(filename, os.path.join(dirname, "outside", "escaped.bin"), create_local_directories=True)
+        assert os.path.isfile(filename)
+        assert not os.path.exists(escaped)
 
 
 class TestUnwantedExtensions:
