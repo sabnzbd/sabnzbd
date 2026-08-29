@@ -1144,6 +1144,9 @@ def tar_extract(nzo: NzbObject, tar_path: str, extraction_path: str, one_folder:
 
     def tar_filter(member: tarfile.TarInfo, path: str) -> Optional[tarfile.TarInfo]:
         """Applies tarfile.data_filter, removes unwanted permissions and can prevent overwrites"""
+        if not member.isreg() and not member.isdir():
+            logging.info("Skipping %s from tar file, it is not a file or folder", member.name)
+            return None
         member = tarfile.data_filter(member, path)
         if member is not None and member.isreg():
             member = member.replace(mode=member.mode & ~UNWANTED_FILE_PERMISSIONS)
