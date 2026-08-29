@@ -162,6 +162,13 @@ class TestFileFolderNameSanitizer:
             "/../",
             "...",
             "....",
+            # Whitespace must not hide a part from the checks, it is stripped while sanitizing
+            " .. /test.rar",
+            " .. / .. /etc/shadow",
+            "sub/ .. / .. /test.rar",
+            "\t..\t/test.rar",
+            "\xa0../test.rar",
+            " .. ",
         ],
     )
     @pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
@@ -188,6 +195,10 @@ class TestFileFolderNameSanitizer:
             JOB_ADMIN.lower() + "/__verified__",
             "sub/" + JOB_ADMIN + "/__verified__",
             JOB_ADMIN + "/deeper/__verified__",
+            # Whitespace must not hide a part from the checks, it is stripped while sanitizing
+            " " + JOB_ADMIN + " /__verified__",
+            "\t" + JOB_ADMIN + "\t/__verified__",
+            "sub/ " + JOB_ADMIN.lower() + " /__verified__",
         ],
     )
     @pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
