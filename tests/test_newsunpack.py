@@ -868,6 +868,47 @@ class TestTarUnpack:
         assert error_code == 1, "TAR extraction should fail"
         assert not extracted_files
 
+    def test_link_members_skipped_tar_unpack(self, tmp_path):
+        """A download never needs links, and even one that stays inside the folder is enough
+        to redirect a later rename out of it, so they are dropped instead of extracted"""
+        tar_path = tmp_path / "links.tar"
+
+        with tarfile.open(tar_path, "w") as tar:
+            info = tarfile.TarInfo("file.txt")
+            info.size = 4
+            tar.addfile(info, io.BytesIO(b"test"))
+            # tarfile.data_filter() allows this one: the target stays inside the folder
+            pivot = tarfile.TarInfo("pivot")
+            pivot.type = tarfile.SYMTYPE
+            pivot.linkname = "."
+            tar.addfile(pivot)
+            hardlink = tarfile.TarInfo("hardlink.txt")
+            hardlink.type = tarfile.LNKTYPE
+            hardlink.linkname = "file.txt"
+            tar.addfile(hardlink)
+
+        tar_files = ["links.tar"]
+        expected_files = {"file.txt"}
+
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
+            self._run_tar_unpack(str(tmp_path), tar_files)
+        )
+
+        self._assert_successful_extraction(
+            error_code,
+            extracted_files,
+            complete_contents,
+            download_contents,
+            temp_complete_dir,
+            expected_files,
+            should_delete_original=True,
+            original_files=tar_files,
+        )
+
+        dropped = {"pivot", "hardlink.txt"}
+        assert not [f for f in extracted_files if os.path.basename(f) in dropped]
+        assert not [f for f in complete_contents if os.path.basename(f) in dropped]
+
     def test_owner_permissions_sanitized_tar_unpack(self, tmp_path):
         tar_path = tmp_path / "owner.tar"
 
