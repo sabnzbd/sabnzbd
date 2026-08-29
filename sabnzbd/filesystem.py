@@ -226,6 +226,8 @@ def sanitize_filename(filename: str, allow_subdirs: bool = False) -> str:
         # Par2 always uses a forward slash, no matter which platform created the set
         parts = []
         for part in filename.split("/"):
+            # Sanitize first, the checks below run on the stripped name
+            part = sanitize_filename(part)
             if part in ("", os.curdir):
                 continue
             if part == os.pardir:
@@ -235,7 +237,7 @@ def sanitize_filename(filename: str, allow_subdirs: bool = False) -> str:
                 # Never let a name point into the admin folder, its files are pickle-loaded
                 logging.info("Dropping admin folder from name %s", filename)
                 continue
-            parts.append(sanitize_filename(part))
+            parts.append(part)
         # Nothing usable left, or no sub-directories after all
         if not parts:
             return "unknown"
