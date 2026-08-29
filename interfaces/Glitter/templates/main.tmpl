@@ -25,12 +25,12 @@
         <meta name="msapplication-navbutton-color" content="#000000" />
         <meta name="theme-color" content="#000000" />
 
-        <link rel="apple-touch-icon" sizes="76x76" href="$url('staticcfg/ico/apple-touch-icon-76x76-precomposed.png')" />
-        <link rel="apple-touch-icon" sizes="120x120" href="$url('staticcfg/ico/apple-touch-icon-120x120-precomposed.png')" />
-        <link rel="apple-touch-icon" sizes="152x152" href="$url('staticcfg/ico/apple-touch-icon-152x152-precomposed.png')" />
-        <link rel="apple-touch-icon" sizes="180x180" href="$url('staticcfg/ico/apple-touch-icon-180x180-precomposed.png')" />
-        <link rel="apple-touch-icon" sizes="192x192" href="$url('staticcfg/ico/android-192x192.png')" />
-        <link rel="mask-icon" href="$url('staticcfg/ico/safari-pinned-tab.svg')" color="#383F45">
+        <link rel="apple-touch-icon" sizes="76x76" href="$url('staticcfg/ico/apple-touch-icon-76x76-precomposed.png', v=$cache_buster)" />
+        <link rel="apple-touch-icon" sizes="120x120" href="$url('staticcfg/ico/apple-touch-icon-120x120-precomposed.png', v=$cache_buster)" />
+        <link rel="apple-touch-icon" sizes="152x152" href="$url('staticcfg/ico/apple-touch-icon-152x152-precomposed.png', v=$cache_buster)" />
+        <link rel="apple-touch-icon" sizes="180x180" href="$url('staticcfg/ico/apple-touch-icon-180x180-precomposed.png', v=$cache_buster)" />
+        <link rel="apple-touch-icon" sizes="192x192" href="$url('staticcfg/ico/android-192x192.png', v=$cache_buster)" />
+        <link rel="mask-icon" href="$url('staticcfg/ico/safari-pinned-tab.svg', v=$cache_buster)" color="#383F45">
         <link rel="shortcut icon" type="image/ico" href="$url('staticcfg/ico/favicon.ico', v=$cache_buster)" data-bind="attr: { 'href': SABIcon }" />
 
         <link rel="stylesheet" type="text/css" href="$url('static/bootstrap/css/bootstrap.min.css', v=$cache_buster)" />
@@ -44,6 +44,7 @@
         <script type="text/javascript">
             var csrfToken = "$csrf_token";
             var displayLang = "$active_lang";
+            var dateScriptUrl = "$url('static/javascripts/date.min.js', v=$cache_buster)";
             var sabSpeedHistory = [$bytespersec_list];
             var newRelease = "$new_release";
             var newReleaseUrl = "$new_rel_url";

@@ -425,7 +425,7 @@ function ViewModel() {
     self.openCustomPauseTime = function() {
         // Was it loaded already?
         if (!Date.i18n) {
-            jQuery.getScript('./static/javascripts/date.min.js').then(function() {
+            jQuery.getScript(dateScriptUrl).then(function() {
                 // After loading we start again
                 self.openCustomPauseTime()
             })
