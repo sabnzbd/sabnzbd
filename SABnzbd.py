@@ -1325,6 +1325,7 @@ def main():
     }
 
     appconfig = {
+        "/": {"request.dispatch": sabnzbd.interface.SecureDispatcher()},
         "/api": {
             "tools.auth_basic.on": False,
             "tools.response_headers.on": True,
