@@ -19,6 +19,9 @@
 util.apireg - Registration of API connection info
 """
 
+import hashlib
+import os
+import sys
 import winreg
 from typing import Optional, Tuple
 
@@ -47,8 +50,8 @@ LANGUAGE_MAP = {
 }
 
 
-def reg_info(user: bool) -> Tuple[int, str]:
-    """Return the registry hive and key path for the API info
+def reg_info(user: bool, inifile: str) -> Tuple[int, str]:
+    """Return the registry hive and key path for the API info of one instance
 
     The URL of a running instance is stored so that a second start of SABnzbd
     (for example by double-clicking an NZB) can hand off to the running instance
@@ -56,19 +59,24 @@ def reg_info(user: bool) -> Tuple[int, str]:
     but a Windows Service runs under a service account whose HKCU is invisible
     to the desktop user, so it uses the machine-wide service key in HKLM instead.
     Readers check HKCU first and fall back to HKLM to find either kind of instance.
+
+    Each config file gets its own subkey, so instances running side by side on
+    separate configs do not share an entry.
     """
+    # Subkey names cannot contain a path separator
+    instance = hashlib.sha256(os.path.normcase(os.path.abspath(inifile)).encode("utf-8")).hexdigest()
     if user:
         # Normally use the USER part of the registry
-        return winreg.HKEY_CURRENT_USER, r"Software\SABnzbd\api"
+        return winreg.HKEY_CURRENT_USER, r"Software\SABnzbd\api\%s" % instance
     # A Windows Service will use the service key instead
-    return winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Services\SABnzbd\api"
+    return winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Services\SABnzbd\api\%s" % instance
 
 
-def get_connection_info(user: bool = True) -> Optional[str]:
-    """Return URL of the running SABnzbd instance
+def get_connection_info(inifile: str, user: bool = True) -> Optional[str]:
+    """Return URL of the running SABnzbd instance using inifile
     'user' == True will first try user's registry, otherwise system is used
     """
-    section, keypath = reg_info(user)
+    section, keypath = reg_info(user, inifile)
     try:
         with winreg.OpenKey(section, keypath) as key:
             url, _ = winreg.QueryValueEx(key, "url")
@@ -79,29 +87,29 @@ def get_connection_info(user: bool = True) -> Optional[str]:
 
     # Nothing in user's registry, try system registry
     if user:
-        return get_connection_info(user=False)
+        return get_connection_info(inifile, user=False)
     return None
 
 
-def set_connection_info(url: str, user: bool = True):
+def set_connection_info(url: str, inifile: str, user: bool = True):
     """Set API info in registry"""
-    section, keypath = reg_info(user)
+    section, keypath = reg_info(user, inifile)
     try:
         with winreg.CreateKey(section, keypath) as key:
             winreg.SetValueEx(key, "url", None, winreg.REG_SZ, url)
     except OSError:
         if user:
-            set_connection_info(url, user=False)
+            set_connection_info(url, inifile, user=False)
 
 
-def del_connection_info(user: bool = True):
+def del_connection_info(inifile: str, user: bool = True):
     """Remove API info from registry"""
-    section, keypath = reg_info(user)
+    section, keypath = reg_info(user, inifile)
     try:
         winreg.DeleteKey(section, keypath)
     except OSError:
         if user:
-            del_connection_info(user=False)
+            del_connection_info(inifile, user=False)
 
 
 def get_install_lng() -> str:
@@ -115,5 +123,5 @@ def get_install_lng() -> str:
 
 
 if __name__ == "__main__":
-    print(f"URL = {get_connection_info()}")
+    print(f"URL = {get_connection_info(sys.argv[1])}")
     print(f"Language = {get_install_lng()}")

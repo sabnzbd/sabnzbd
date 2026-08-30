@@ -1009,7 +1009,7 @@ def main():
     # Windows instance is reachable through registry
     url = None
     if sabnzbd.WINDOWS and not new_instance:
-        url = get_connection_info()
+        url = get_connection_info(inifile)
         if url and check_for_sabnzbd(url, upload_nzbs, autobrowser):
             exit_sab(0)
 
@@ -1271,7 +1271,7 @@ def main():
 
     if sabnzbd.WINDOWS:
         # Write URL for uploads and version check directly to registry
-        set_connection_info(f"{sabnzbd.BROWSER_URL}/api?apikey={sabnzbd.cfg.api_key()}")
+        set_connection_info(f"{sabnzbd.BROWSER_URL}/api?apikey={sabnzbd.cfg.api_key()}", inifile)
 
     if pid_path or pid_file:
         sabnzbd.pid_file(pid_path, pid_file, web_port)

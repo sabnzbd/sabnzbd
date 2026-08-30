@@ -359,7 +359,7 @@ def halt():
 
         # Remove registry information
         if sabnzbd.WINDOWS:
-            del_connection_info()
+            del_connection_info(config.CONFIG.filename)
 
         sabnzbd.zconfig.remove_server()
         sabnzbd.utils.ssdp.stop_ssdp()
