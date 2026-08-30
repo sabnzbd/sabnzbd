@@ -30,19 +30,36 @@ import sabnzbd.utils.apireg as ar
 
 
 class TestAPIReg:
-    def test_set_get_connection_info_user(self):
+    def test_set_get_connection_info_user(self, tmp_path):
         """Test the saving of the URL in USER-registery
         We can't test the SYSTEM one.
         """
-
+        inifile = str(tmp_path / "sabnzbd.ini")
         test_url = "sab_test:8080"
-        ar.set_connection_info(test_url, True)
-        assert ar.get_connection_info(True) == test_url
-        assert not ar.get_connection_info(False)
+        ar.set_connection_info(test_url, inifile, True)
+        assert ar.get_connection_info(inifile, True) == test_url
+        assert not ar.get_connection_info(inifile, False)
 
         # Remove and check if gone
-        ar.del_connection_info(True)
-        assert not ar.get_connection_info(True)
+        ar.del_connection_info(inifile, True)
+        assert not ar.get_connection_info(inifile, True)
+
+    def test_connection_info_is_per_config_file(self, tmp_path):
+        """Instances on separate config files must not see each other's URL"""
+        first_ini = str(tmp_path / "first" / "sabnzbd.ini")
+        second_ini = str(tmp_path / "second" / "sabnzbd.ini")
+        ar.set_connection_info("sab_test:8080", first_ini, True)
+        ar.set_connection_info("sab_test:9090", second_ini, True)
+
+        assert ar.get_connection_info(first_ini, True) == "sab_test:8080"
+        assert ar.get_connection_info(second_ini, True) == "sab_test:9090"
+
+        ar.del_connection_info(first_ini, True)
+        assert not ar.get_connection_info(first_ini, True)
+        assert ar.get_connection_info(second_ini, True) == "sab_test:9090"
+
+        ar.del_connection_info(second_ini, True)
+        assert not ar.get_connection_info(second_ini, True)
 
     def test_get_install_lng(self):
         """Not much to test yet.."""
