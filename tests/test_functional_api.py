@@ -123,7 +123,12 @@ class ApiTestFunctions:
         result = run(
             os.path.join(SAB_DATA_DIR, "tavern", test_name + ".yaml"),
             tavern_global_cfg={"variables": dict(vars)},
-            pytest_args=["--tavern-file-path-regex", "api_.*.yaml"],
+            pytest_args=[
+                "--tavern-file-path-regex",
+                "api_.*.yaml",
+                "--ignore-glob",
+                os.path.join(SAB_BASE_DIR, "cache*"),
+            ],
         )
         assert result is result.OK
 
