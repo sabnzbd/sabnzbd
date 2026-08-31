@@ -22,7 +22,7 @@ sabnzbd.downloader - download engine
 import logging
 import selectors
 from collections import deque
-from threading import Thread, RLock, current_thread
+from threading import Thread, Lock, RLock, current_thread
 import socket
 import sys
 import ssl
@@ -59,6 +59,7 @@ _ARTICLE_PREFETCH = 20
 _ASSEMBLER_DELAY_REPORT = 0.2
 
 TIMER_LOCK = RLock()
+BANDWIDTH_LOCK = Lock()
 
 
 class Server:
@@ -794,11 +795,10 @@ class Downloader(Thread):
 
         with DOWNLOADER_LOCK:
             sabnzbd.BPSMeter.update(server.id, bytes_received)
-            # Check speedlimit
-            if (
-                self.bandwidth_limit
-                and sabnzbd.BPSMeter.bps + sabnzbd.BPSMeter.sum_cached_amount > self.bandwidth_limit
-            ):
+
+        # Check speedlimit on a lock of its own, so a connection being held back does not also hold up the Downloader
+        if self.bandwidth_limit and sabnzbd.BPSMeter.bps + sabnzbd.BPSMeter.sum_cached_amount > self.bandwidth_limit:
+            with BANDWIDTH_LOCK:
                 sabnzbd.BPSMeter.update()
                 while self.bandwidth_limit and sabnzbd.BPSMeter.bps > self.bandwidth_limit:
                     time.sleep(0.01)
