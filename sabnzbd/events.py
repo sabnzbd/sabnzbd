@@ -144,10 +144,13 @@ def publish_threadsafe(event: str, data: Any):
 
 def snapshot() -> dict[str, Any]:
     """The parts of the state that are the same for every client, and cheap to read"""
+    anfo = sabnzbd.ArticleCache.cache_info()
     return {
-        # Same fields the queue carries, so the interface formats speed in one place
+        # Same fields the queue carries, so the interface formats them in one place
         "speed": to_units(sabnzbd.BPSMeter.bps),
         "kbpersec": "%.2f" % (sabnzbd.BPSMeter.bps / KIBI),
+        "cache_art": str(anfo.article_sum),
+        "cache_size": to_units(anfo.cache_size, "B"),
         "paused": sabnzbd.Downloader.paused,
         "queue_bytes_left": sabnzbd.NzbQueue.remaining(),
         "queue_slots": sabnzbd.NzbQueue.actives(),

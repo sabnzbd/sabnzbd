@@ -1416,6 +1416,8 @@ function ViewModel() {
         self.eventSource.addEventListener('status', function(message) {
             var status = JSON.parse(message.data)
             self.applySpeed(status.speed, status.kbpersec)
+            self.cacheSize(status.cache_size)
+            self.cacheArticles(status.cache_art)
             self.eventReceived()
         })
         self.eventSource.addEventListener('resync', function() {

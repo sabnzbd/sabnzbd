@@ -369,7 +369,6 @@ config_conversion_version = OptionNumber("misc", "config_conversion_version", de
 
 # This should be here so it's initialized first when the config is read
 helpful_warnings = OptionBool("misc", "helpful_warnings", True)
-enable_sse = OptionBool("misc", "enable_sse", True)
 
 queue_complete = OptionStr("misc", "queue_complete")
 queue_complete_pers = OptionBool("misc", "queue_complete_pers", False)
@@ -563,6 +562,7 @@ enable_season_sorting = OptionBool("misc", "enable_season_sorting", True)
 verify_xff_header = OptionBool("misc", "verify_xff_header", True, protect=True)
 direct_write = OptionBool("misc", "direct_write", True)
 direct_decode = OptionBool("misc", "direct_decode", True)
+enable_sse = OptionBool("misc", "enable_sse", True)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
