@@ -723,6 +723,7 @@ class Downloader(Thread):
                         ):
                             DOWNLOADER_CV.wait()
 
+                now = time.time()
                 if now > next_bpsmeter_update:
                     # Do not update statistics and check levels every loop
                     BPSMeter.update()
