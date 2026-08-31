@@ -79,6 +79,7 @@ class SubscriptionGroup:
         self.history_order: list[str] = []
         self.history_seeded = False
         self.history_update = 0
+        self.joined = False
 
 
 _groups: dict[StreamOptions, SubscriptionGroup] = {}
@@ -96,11 +97,10 @@ def subscribe(options: StreamOptions) -> asyncio.Queue:
     if not (group := _groups.get(options)):
         group = _groups[options] = SubscriptionGroup(options)
     else:
-        # A joiner has no rows yet, and deltas alone would never give it any. Sending
-        # the whole view again costs the others one frame and keeps every subscriber
-        # reading the same baseline.
-        group.queue_seeded = False
-        group.history_seeded = False
+        # A joiner has no rows yet, and deltas alone would never give it any. Only note
+        # it here: the flags themselves belong to the producer, which builds frames on a
+        # worker thread, and writing them from both sides loses whichever wrote first.
+        group.joined = True
 
     subscriber = asyncio.Queue(maxsize=SUBSCRIBER_BACKLOG)
     group.subscribers.add(subscriber)
@@ -254,6 +254,12 @@ async def _run():
         for group in list(_groups.values()):
             if not group.subscribers:
                 continue
+            if group.joined:
+                # Sending the whole view again costs the others one frame and keeps
+                # every subscriber reading the same baseline
+                group.queue_seeded = False
+                group.history_seeded = False
+                group.joined = False
             try:
                 frames = await run_in_threadpool(build_frames, group)
             except Exception:
