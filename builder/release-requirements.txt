@@ -1,6 +1,6 @@
 # All sub-dependencies are listed below and installed with --no-dependencies for security
 PyGithub==2.9.1
-praw==8.0.2
+praw==8.0.3
 pefile==2024.8.26
 
 # PyGithub dependencies
@@ -17,7 +17,7 @@ update-checker==1.0.0
 websocket-client==1.9.0
 
 # requests dependencies
-charset_normalizer==3.4.9
+charset_normalizer==3.5.1
 idna==3.18
 certifi==2026.7.22
 
