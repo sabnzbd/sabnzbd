@@ -63,6 +63,8 @@ from sabnzbd.misc import (
     calc_age,
     int_conv,
     safe_strip,
+    bool_conv,
+    clean_comma_separated_list,
     get_base_url,
     is_ipv4_addr,
     is_ipv6_addr,
@@ -2602,6 +2604,25 @@ class CachedStaticFiles(StaticFiles):
         return response
 
 
+def stream_options(kwargs: QueryParams) -> sabnzbd.events.StreamOptions:
+    """Read the view a subscriber wants from its query, same names the API uses"""
+    return sabnzbd.events.StreamOptions(
+        start=int_conv(kwargs.get("start")),
+        limit=int_conv(kwargs.get("limit")),
+        search=kwargs.get("search") or None,
+        categories=tuple(clean_comma_separated_list(kwargs.get("cat") or kwargs.get("category"))),
+        priorities=tuple(clean_comma_separated_list(kwargs.get("priority"))),
+        statuses=tuple(clean_comma_separated_list(kwargs.get("status"))),
+        history_start=int_conv(kwargs.get("history_start")),
+        history_limit=int_conv(kwargs.get("history_limit")),
+        history_search=kwargs.get("history_search") or None,
+        history_categories=tuple(clean_comma_separated_list(kwargs.get("history_cat"))),
+        history_statuses=tuple(clean_comma_separated_list(kwargs.get("history_status"))),
+        failed_only=bool_conv(kwargs.get("failed_only")),
+        archive=bool_conv(kwargs.get("archive")),
+    )
+
+
 @secured_expose(route="/events", methods=["GET"])
 async def event_stream(request: Request):
     """Stream state changes, so the interface does not have to ask for them.
@@ -2612,8 +2633,10 @@ async def event_stream(request: Request):
     if not cfg.enable_sse():
         return forbidden(T("Server-sent events are disabled"))
 
+    options = stream_options(request_params(request))
+
     async def generate():
-        subscriber = sabnzbd.events.subscribe()
+        subscriber = sabnzbd.events.subscribe(options)
         try:
             yield "retry: 5000\n\n"
             yield sabnzbd.events.format_message("status", await run_in_threadpool(sabnzbd.events.snapshot))
@@ -2627,7 +2650,7 @@ async def event_stream(request: Request):
                     break
                 yield sabnzbd.events.format_message(event, data)
         finally:
-            sabnzbd.events.unsubscribe(subscriber)
+            sabnzbd.events.unsubscribe(options, subscriber)
 
     return StreamingResponse(
         generate(),

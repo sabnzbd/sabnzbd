@@ -22,11 +22,14 @@ sabnzbd.events - Server-sent events for the web interface
 import asyncio
 import json
 import logging
+import zlib
+from dataclasses import dataclass
 from typing import Any, Optional
 
 from starlette.concurrency import run_in_threadpool
 
 import sabnzbd
+import sabnzbd.api
 
 # How often the state is sampled, matching the default refresh rate
 SAMPLE_INTERVAL = 1.0
@@ -37,7 +40,46 @@ HEARTBEAT_INTERVAL = 15.0
 # Enough for a slow reader to catch up, few enough to notice one that never will
 SUBSCRIBER_BACKLOG = 20
 
-_subscribers: set[asyncio.Queue] = set()
+
+@dataclass(frozen=True)
+class StreamOptions:
+    """The arguments a subscriber wants its queue and history built with.
+
+    Frozen so that subscribers asking for the same view share one group, and the
+    building is done once for all of them instead of once each.
+    """
+
+    start: int = 0
+    limit: int = 0
+    search: Optional[str] = None
+    categories: tuple[str, ...] = ()
+    priorities: tuple[str, ...] = ()
+    statuses: tuple[str, ...] = ()
+    history_start: int = 0
+    history_limit: int = 0
+    history_search: Optional[str] = None
+    history_categories: tuple[str, ...] = ()
+    history_statuses: tuple[str, ...] = ()
+    failed_only: bool = False
+    archive: bool = False
+
+
+class SubscriptionGroup:
+    """Every subscriber wanting the same view, and the rows last sent to them"""
+
+    def __init__(self, options: StreamOptions):
+        self.options = options
+        self.subscribers: set[asyncio.Queue] = set()
+        self.queue_baseline: dict[str, int] = {}
+        self.queue_order: list[str] = []
+        self.queue_seeded = False
+        self.history_baseline: dict[str, int] = {}
+        self.history_order: list[str] = []
+        self.history_seeded = False
+        self.history_update = 0
+
+
+_groups: dict[StreamOptions, SubscriptionGroup] = {}
 _producer: Optional[asyncio.Task] = None
 _last_snapshot: dict[str, Any] = {}
 
@@ -47,24 +89,35 @@ def format_message(event: str, data: Any) -> str:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n"
 
 
-def subscribe() -> asyncio.Queue:
+def subscribe(options: StreamOptions) -> asyncio.Queue:
     """Register a stream and hand back the queue it should read"""
+    if not (group := _groups.get(options)):
+        group = _groups[options] = SubscriptionGroup(options)
+    else:
+        # A joiner has no rows yet, and deltas alone would never give it any. Sending
+        # the whole view again costs the others one frame and keeps every subscriber
+        # reading the same baseline.
+        group.queue_seeded = False
+        group.history_seeded = False
+
     subscriber = asyncio.Queue(maxsize=SUBSCRIBER_BACKLOG)
-    _subscribers.add(subscriber)
+    group.subscribers.add(subscriber)
     return subscriber
 
 
-def unsubscribe(subscriber: asyncio.Queue):
-    _subscribers.discard(subscriber)
+def unsubscribe(options: StreamOptions, subscriber: asyncio.Queue):
+    if group := _groups.get(options):
+        group.subscribers.discard(subscriber)
+        if not group.subscribers:
+            del _groups[options]
 
 
 def subscriber_count() -> int:
-    return len(_subscribers)
+    return sum(len(group.subscribers) for group in _groups.values())
 
 
-def publish(event: str, data: Any):
-    """Hand an event to every stream, from within the event loop"""
-    for subscriber in _subscribers:
+def _deliver(subscribers, event: str, data: Any):
+    for subscriber in subscribers:
         try:
             subscriber.put_nowait((event, data))
         except asyncio.QueueFull:
@@ -73,6 +126,12 @@ def publish(event: str, data: Any):
             while not subscriber.empty():
                 subscriber.get_nowait()
             subscriber.put_nowait(("resync", {}))
+
+
+def publish(event: str, data: Any):
+    """Hand an event to every stream, from within the event loop"""
+    for group in list(_groups.values()):
+        _deliver(group.subscribers, event, data)
 
 
 def publish_threadsafe(event: str, data: Any):
@@ -92,13 +151,93 @@ def snapshot() -> dict[str, Any]:
     }
 
 
+def row_fingerprint(row: dict[str, Any]) -> int:
+    return zlib.crc32(json.dumps(row, sort_keys=True, default=str).encode())
+
+
+def row_delta(rows: list[dict[str, Any]], baseline: dict[str, int]) -> tuple[list[str], list[int], dict[str, int]]:
+    """Split rows into the order they are in and the indexes that differ from the baseline"""
+    order: list[str] = []
+    changed: list[int] = []
+    fingerprints: dict[str, int] = {}
+    for index, row in enumerate(rows):
+        key = row.get("nzo_id") or str(index)
+        fingerprint = row_fingerprint(row)
+        order.append(key)
+        fingerprints[key] = fingerprint
+        if baseline.get(key) != fingerprint:
+            changed.append(index)
+    return order, changed, fingerprints
+
+
+def _frame(payload: dict[str, Any], rows_key: str, rows, order, previous_order, seeded) -> dict[str, Any]:
+    """A full payload the first time, and only what moved after that"""
+    if not seeded:
+        return {"type": "init", rows_key: payload}
+
+    delta = dict(payload)
+    delta["slots"] = rows
+    frame = {"type": "delta", rows_key: delta}
+    if order != previous_order:
+        # Sent even when empty: without it a page that drained to nothing looks the
+        # same as a page that did not change, and the client keeps showing the rows
+        frame["order"] = order
+    return frame
+
+
+def build_frames(group: SubscriptionGroup) -> list[tuple[str, dict[str, Any]]]:
+    """Build this group's queue and history frames, called off the event loop"""
+    options = group.options
+    frames = []
+
+    queue = sabnzbd.api.build_queue(
+        start=options.start,
+        limit=options.limit,
+        search=options.search,
+        categories=list(options.categories) or None,
+        priorities=list(options.priorities) or None,
+        statuses=list(options.statuses) or None,
+    )
+    slots = queue.get("slots", [])
+    order, changed, fingerprints = row_delta(slots, group.queue_baseline)
+    previous_order, seeded = group.queue_order, group.queue_seeded
+    group.queue_baseline, group.queue_order, group.queue_seeded = fingerprints, order, True
+    if not seeded or changed or order != previous_order:
+        frames.append(("queue", _frame(queue, "queue", [slots[i] for i in changed], order, previous_order, seeded)))
+
+    # The counter only moves when something in the history did
+    history_update = sabnzbd.LAST_HISTORY_UPDATE
+    if history_update != group.history_update or not group.history_seeded:
+        group.history_update = history_update
+        history = sabnzbd.api.build_history_payload(
+            start=options.history_start,
+            limit=options.history_limit,
+            search=options.history_search,
+            categories=list(options.history_categories) or None,
+            statuses=list(options.history_statuses) or None,
+            failed_only=options.failed_only,
+            archive=options.archive,
+        )
+        slots = history.get("slots", [])
+        order, changed, fingerprints = row_delta(slots, group.history_baseline)
+        previous_order, seeded = group.history_order, group.history_seeded
+        group.history_baseline, group.history_order, group.history_seeded = fingerprints, order, True
+        if not seeded or changed or order != previous_order:
+            frames.append(
+                ("history", _frame(history, "history", [slots[i] for i in changed], order, previous_order, seeded))
+            )
+
+    return frames
+
+
 async def _run():
-    """Sample the state and publish it whenever it differs from the last sample"""
+    """Sample the state and publish what changed, once per group of identical views"""
     global _last_snapshot
     while True:
         await asyncio.sleep(SAMPLE_INTERVAL)
-        if not _subscribers:
+        if not _groups:
             continue
+
         try:
             current = await run_in_threadpool(snapshot)
         except Exception:
@@ -107,6 +246,17 @@ async def _run():
         if current != _last_snapshot:
             _last_snapshot = current
             publish("status", current)
+
+        for group in list(_groups.values()):
+            if not group.subscribers:
+                continue
+            try:
+                frames = await run_in_threadpool(build_frames, group)
+            except Exception:
+                logging.info("Failed to build events for a subscription", exc_info=True)
+                continue
+            for event, data in frames:
+                _deliver(group.subscribers, event, data)
 
 
 def start():
@@ -131,10 +281,11 @@ async def stop():
             pass
         _producer = None
 
-    for subscriber in list(_subscribers):
-        try:
-            subscriber.put_nowait((None, None))
-        except asyncio.QueueFull:
-            pass
-    _subscribers.clear()
+    for group in list(_groups.values()):
+        for subscriber in group.subscribers:
+            try:
+                subscriber.put_nowait((None, None))
+            except asyncio.QueueFull:
+                pass
+    _groups.clear()
     _last_snapshot = {}
