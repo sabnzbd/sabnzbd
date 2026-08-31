@@ -369,6 +369,7 @@ config_conversion_version = OptionNumber("misc", "config_conversion_version", de
 
 # This should be here so it's initialized first when the config is read
 helpful_warnings = OptionBool("misc", "helpful_warnings", True)
+enable_sse = OptionBool("misc", "enable_sse", True)
 
 queue_complete = OptionStr("misc", "queue_complete")
 queue_complete_pers = OptionBool("misc", "queue_complete_pers", False)

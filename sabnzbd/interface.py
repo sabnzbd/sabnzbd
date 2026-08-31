@@ -20,6 +20,7 @@ sabnzbd.interface - webinterface
 """
 
 import asyncio
+import contextlib
 import os
 import re
 import secrets
@@ -37,7 +38,14 @@ from starlette.applications import Starlette
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import MultiDict, MutableHeaders, QueryParams
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse, Response, FileResponse
+from starlette.responses import (
+    HTMLResponse,
+    RedirectResponse,
+    PlainTextResponse,
+    Response,
+    FileResponse,
+    StreamingResponse,
+)
 from starlette.middleware import Middleware
 from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -75,6 +83,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.newsunpack
 import sabnzbd.nzbsearch
+import sabnzbd.events
 import sabnzbd.utils.ssdp
 from sabnzbd.get_addrinfo import get_fastest_addrinfo
 from sabnzbd.constants import (
@@ -2507,6 +2516,14 @@ class ThreadedServer(uvicorn.Server):
         self._startup_done = threading.Event()
         super().__init__(*args, **kwargs)
 
+    async def shutdown(self, sockets=None):
+        # Release the streams before uvicorn starts waiting for connections to close,
+        # which it does before running the lifespan shutdown. A stream never ends by
+        # itself, so leaving this to the lifespan hangs the restart until the client
+        # gives up.
+        await sabnzbd.events.stop()
+        await super().shutdown(sockets=sockets)
+
     async def startup(self, sockets=None):
         await super().startup(sockets=sockets)
         protocol = functools.partial(
@@ -2585,6 +2602,52 @@ class CachedStaticFiles(StaticFiles):
         return response
 
 
+@secured_expose(route="/events", methods=["GET"])
+async def event_stream(request: Request):
+    """Stream state changes, so the interface does not have to ask for them.
+
+    Deliberately not an api.py mode: every API response allows any origin, which must
+    never apply to a stream carrying queue contents.
+    """
+    if not cfg.enable_sse():
+        return forbidden(T("Server-sent events are disabled"))
+
+    async def generate():
+        subscriber = sabnzbd.events.subscribe()
+        try:
+            yield "retry: 5000\n\n"
+            yield sabnzbd.events.format_message("status", await run_in_threadpool(sabnzbd.events.snapshot))
+            while True:
+                try:
+                    event, data = await asyncio.wait_for(subscriber.get(), timeout=sabnzbd.events.HEARTBEAT_INTERVAL)
+                except (asyncio.TimeoutError, TimeoutError):
+                    yield ": ping\n\n"
+                    continue
+                if event is None:
+                    break
+                yield sabnzbd.events.format_message(event, data)
+        finally:
+            sabnzbd.events.unsubscribe(subscriber)
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-store, no-transform",
+            # Tell nginx not to sit on the stream waiting for a full buffer
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+@contextlib.asynccontextmanager
+async def events_lifespan(app: Starlette):
+    """Run the event sampler for as long as the server does"""
+    sabnzbd.events.start()
+    yield
+    await sabnzbd.events.stop()
+
+
 def create_app() -> Starlette:
     """Build the Starlette application"""
     interface_routes = [
@@ -2635,4 +2698,5 @@ def create_app() -> Starlette:
         middleware=middleware,
         routes=routes,
         exception_handlers={404: not_found_redirect},
+        lifespan=events_lifespan,
     )
