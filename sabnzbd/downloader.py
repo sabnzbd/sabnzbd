@@ -23,7 +23,7 @@ import logging
 import queue
 import selectors
 from collections import deque
-from threading import Thread, RLock, current_thread
+from threading import Thread, Lock, RLock, current_thread
 import socket
 import sys
 import ssl
@@ -62,6 +62,7 @@ _ASSEMBLER_DELAY_REPORT = 0.2
 _DEFAULT_CHUNK_SIZE = 32768
 
 TIMER_LOCK = RLock()
+BANDWIDTH_LOCK = Lock()
 
 
 class Server:
@@ -827,11 +828,10 @@ class Downloader(Thread):
             sabnzbd.BPSMeter.update(server.id, bytes_received)
             if bytes_received > self.last_max_chunk_size:
                 self.last_max_chunk_size = bytes_received
-            # Check speedlimit
-            if (
-                self.bandwidth_limit
-                and sabnzbd.BPSMeter.bps + sabnzbd.BPSMeter.sum_cached_amount > self.bandwidth_limit
-            ):
+
+        # Check speedlimit on a lock of its own, so a connection being held back does not also hold up the Downloader
+        if self.bandwidth_limit and sabnzbd.BPSMeter.bps + sabnzbd.BPSMeter.sum_cached_amount > self.bandwidth_limit:
+            with BANDWIDTH_LOCK:
                 sabnzbd.BPSMeter.update()
                 while self.bandwidth_limit and sabnzbd.BPSMeter.bps > self.bandwidth_limit:
                     time.sleep(0.01)
