@@ -323,7 +323,9 @@ function ViewModel() {
 
     // Set new update timer
     self.setNextUpdate = function() {
-        self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
+        // While the stream is delivering, polling is only a safety net
+        var rate = self.eventsLive ? self.eventsIdleRate : parseInt(self.refreshRate());
+        self.interval = setTimeout(self.refresh, rate * 1000);
     }
 
     // Refresh function
@@ -1322,6 +1324,122 @@ function ViewModel() {
     }, 60 * 1000)
 
     /***
+        Server-sent events
+    ***/
+    // Polling stays the fallback, and only steps back once the stream has actually
+    // delivered something. A buffering proxy hands us onopen and then silence.
+    self.eventsIdleRate = 30
+    self.eventSource = null
+    self.eventWatchdog = null
+    self.eventsLive = false
+    self.queueCache = null
+    self.historyCache = null
+
+    // The stream is built for one view, so paging, searching or filtering reconnects it
+    self.eventQuery = function() {
+        var args = {
+            start: self.queue.pagination.currentStart(),
+            limit: parseInt(self.queue.paginationLimit()),
+            history_start: self.history.pagination.currentStart(),
+            history_limit: parseInt(self.history.paginationLimit()),
+            failed_only: self.history.showFailed() * 1,
+            archive: self.history.showArchive() * 1
+        }
+        if (self.queue.searchTerm()) {
+            parseSearchQuery(args, self.queue.searchTerm(), ["cat", "category", "priority", "status"])
+        }
+        if (self.history.searchTerm()) {
+            var historyArgs = {}
+            parseSearchQuery(historyArgs, self.history.searchTerm(), ["cat", "category", "status"])
+            args.history_search = historyArgs.search
+            args.history_cat = historyArgs.cat || historyArgs.category
+            args.history_status = historyArgs.status
+        }
+        return $.param(args)
+    }
+
+    // Rebuild the full payload the models expect from the rows the server sent
+    self.applyFrame = function(cache, frame, key) {
+        var payload = frame[key]
+        if (frame.type === 'init' || !cache) return payload
+
+        var rows = {}
+        $.each(cache.slots || [], function() { rows[this.nzo_id] = this })
+        $.each(payload.slots || [], function() { rows[this.nzo_id] = this })
+
+        var order = frame.order || $.map(cache.slots || [], function(slot) { return slot.nzo_id })
+        var merged = $.extend({}, cache, payload)
+        merged.slots = $.map(order, function(id) { return rows[id] })
+        return merged
+    }
+
+    self.eventReceived = function() {
+        self.eventsLive = true
+        clearTimeout(self.eventWatchdog)
+        // Twice the server's heartbeat, so one missed beat is not a disconnect
+        self.eventWatchdog = setTimeout(self.eventsFailed, 35 * 1000)
+        clearTimeout(self.interval)
+        self.setNextUpdate()
+    }
+
+    self.eventsFailed = function() {
+        self.eventsLive = false
+        clearTimeout(self.eventWatchdog)
+        clearTimeout(self.interval)
+        self.setNextUpdate()
+    }
+
+    self.startEvents = function() {
+        if (!window.EventSource) return
+        self.stopEvents()
+
+        self.eventSource = new EventSource('./events?' + self.eventQuery())
+        self.eventSource.addEventListener('ping', self.eventReceived)
+        self.eventSource.addEventListener('resync', function() {
+            self.queueCache = self.historyCache = null
+            self.refresh(true)
+        })
+        self.eventSource.addEventListener('queue', function(message) {
+            var frame = JSON.parse(message.data)
+            self.queueCache = self.applyFrame(self.queueCache, frame, 'queue')
+            self.updateQueue({ queue: self.queueCache })
+            self.eventReceived()
+        })
+        self.eventSource.addEventListener('history', function(message) {
+            var frame = JSON.parse(message.data)
+            self.historyCache = self.applyFrame(self.historyCache, frame, 'history')
+            self.history.lastUpdate = self.historyCache.last_history_update
+            self.updateHistory({ history: self.historyCache })
+            self.eventReceived()
+        })
+        self.eventSource.onerror = function() {
+            if (self.eventSource && self.eventSource.readyState === EventSource.CLOSED) self.eventsFailed()
+        }
+    }
+
+    self.stopEvents = function() {
+        clearTimeout(self.eventWatchdog)
+        if (self.eventSource) {
+            self.eventSource.close()
+            self.eventSource = null
+        }
+        self.queueCache = self.historyCache = null
+    }
+
+    // Reconnect on anything that changes which rows the stream should carry
+    self.reconnectEvents = function() {
+        if (self.eventSource) self.startEvents()
+    }
+
+    ko.utils.arrayForEach([
+        self.queue.pagination.currentStart, self.queue.paginationLimit, self.queue.searchTerm,
+        self.history.pagination.currentStart, self.history.paginationLimit, self.history.searchTerm,
+        self.history.showFailed, self.history.showArchive
+    ], function(view) {
+        view.subscribe(self.reconnectEvents)
+    })
+
+    /***
         End of main functions, start of the fun!
     ***/
     // Trigger first refresh
@@ -1329,6 +1447,9 @@ function ViewModel() {
 
     // And refresh now!
     self.refresh()
+
+    // Take over from polling once the first rows arrive
+    self.startEvents()
 
     // Special options for (non) mobile
     if (isMobile) {

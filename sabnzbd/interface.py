@@ -2644,7 +2644,10 @@ async def event_stream(request: Request):
                 try:
                     event, data = await asyncio.wait_for(subscriber.get(), timeout=sabnzbd.events.HEARTBEAT_INTERVAL)
                 except (asyncio.TimeoutError, TimeoutError):
-                    yield ": ping\n\n"
+                    # A named event rather than a comment, which EventSource hides from
+                    # the page: the client cannot tell a quiet queue from a proxy that
+                    # is sitting on the stream unless it sees the heartbeat
+                    yield sabnzbd.events.format_message("ping", {})
                     continue
                 if event is None:
                     break
