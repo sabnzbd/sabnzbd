@@ -33,7 +33,6 @@ import socket
 import time
 import datetime
 import inspect
-import queue
 import html
 import ipaddress
 import sabctools
@@ -43,7 +42,7 @@ import rarfile
 import hashlib
 from threading import Thread, RLock
 from collections.abc import Iterable
-from typing import Any, AnyStr, Optional, Collection
+from typing import Any, AnyStr, Optional
 from functools import lru_cache
 
 from hachoir.parser import createParser as hachoir_create_parser
@@ -229,17 +228,6 @@ def cmp(x: Any, y: Any) -> int:
     """
 
     return (x > y) - (x < y)
-
-
-class MultiAddQueue(queue.Queue):
-    def put_multiple(self, multiple_items: Collection):
-        """Take advantage of the dequeue used by Queue that has a very
-        fast extend method to add multiple items at once.
-        See: https://github.com/sabnzbd/sabnzbd/discussions/2704"""
-        with self.not_full:
-            self.queue.extend(multiple_items)
-            self.unfinished_tasks += len(multiple_items)
-            self.not_empty.notify()
 
 
 def cat_pp_script_sanitizer(

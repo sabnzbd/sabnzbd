@@ -20,6 +20,7 @@ sabnzbd.downloader - download engine
 """
 
 import logging
+import queue
 import selectors
 from collections import deque
 from threading import Thread, RLock, current_thread
@@ -38,7 +39,7 @@ from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV, DOWN
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import from_units, helpful_warning, int_conv, MultiAddQueue, to_units
+from sabnzbd.misc import from_units, helpful_warning, int_conv, to_units
 from sabnzbd.get_addrinfo import get_fastest_addrinfo, AddrInfo
 
 # Timeout penalty in minutes for each cause
@@ -589,7 +590,7 @@ class Downloader(Thread):
         check_server_expiration()
 
         # Initialize queue and threads
-        process_nw_queue = MultiAddQueue()
+        process_nw_queue = queue.Queue()
         for _ in range(cfg.receive_threads()):
             # Started as daemon, so we don't need any shutdown logic in the worker
             # The Downloader code will make sure shutdown is handled gracefully
@@ -738,7 +739,7 @@ class Downloader(Thread):
         except Exception:
             logging.error(T("Fatal error in Downloader"), exc_info=True)
 
-    def process_nw_worker(self, nw_queue: MultiAddQueue):
+    def process_nw_worker(self, nw_queue: queue.Queue):
         """Worker for the daemon thread to process results.
         Wrapped in try/except because in case of an exception, logging
         might get lost and the queue.join() would block forever."""
