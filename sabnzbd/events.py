@@ -30,6 +30,8 @@ from starlette.concurrency import run_in_threadpool
 
 import sabnzbd
 import sabnzbd.api
+from sabnzbd.constants import KIBI
+from sabnzbd.misc import to_units
 
 # How often the state is sampled, matching the default refresh rate
 SAMPLE_INTERVAL = 1.0
@@ -143,7 +145,9 @@ def publish_threadsafe(event: str, data: Any):
 def snapshot() -> dict[str, Any]:
     """The parts of the state that are the same for every client, and cheap to read"""
     return {
-        "speed": int(sabnzbd.BPSMeter.bps),
+        # Same fields the queue carries, so the interface formats speed in one place
+        "speed": to_units(sabnzbd.BPSMeter.bps),
+        "kbpersec": "%.2f" % (sabnzbd.BPSMeter.bps / KIBI),
         "paused": sabnzbd.Downloader.paused,
         "queue_bytes_left": sabnzbd.NzbQueue.remaining(),
         "queue_slots": sabnzbd.NzbQueue.actives(),

@@ -203,51 +203,7 @@ function ViewModel() {
         }
 
         // Re-format the speed
-        var speedSplit = response.queue.speed.split(/\s/);
-        self.speed(parseFloat(speedSplit[0]));
-        self.speedMetric(speedSplit[1]);
-
-        // Update sparkline data
-        if (self.speedHistory.length >= 275) {
-            // Remove first one
-            self.speedHistory.shift();
-        }
-        // Add
-        self.speedHistory.push(parseInt(response.queue.kbpersec));
-
-        // Is sparkline visible? Not on small mobile devices..
-        if ($('.sparkline-container').css('display') !== 'none') {
-            // Make sparkline
-            if (self.speedHistory.length === 1) {
-                // We only use speedhistory from SAB if we use global settings
-                // Otherwise SAB doesn't know the refresh rate
-                if (!self.useGlobalOptions()) {
-                    sabSpeedHistory = [];
-                } else {
-                    // Update internally
-                    self.speedHistory = sabSpeedHistory;
-                }
-
-                // Create
-                $('.sparkline').peity("line", {
-                    width: 275,
-                    height: 32,
-                    fill: '#9DDB72',
-                    stroke: '#AAFFAA',
-                    values: sabSpeedHistory
-                })
-
-                // Add option to open the server details tab
-                $('.sparkline-container').click(function() {
-                    $('a[href="#modal-options"]').trigger('click')
-                    $('a[href="#options_connections"]').trigger('click')
-                })
-
-            } else {
-                // Update
-                $('.sparkline').text(self.speedHistory.join(",")).change()
-            }
-        }
+        self.applySpeed(response.queue.speed, response.queue.kbpersec);
 
         /***
             Speedlimit
@@ -313,6 +269,67 @@ function ViewModel() {
 
         // Update queue rows
         self.queue.updateFromData(response.queue);
+    }
+
+    // The sparkline is a time series, so it has to advance on the clock. Events only
+    // arrive when something changed, which would leave gaps whenever the speed held
+    // steady and nothing at all while the queue sat idle.
+    self.currentKbPerSec = 0;
+    self.sparklineTicker = null;
+
+    self.applySpeed = function(speed, kbpersec) {
+        var speedSplit = speed.split(/\s/);
+        self.speed(parseFloat(speedSplit[0]));
+        self.speedMetric(speedSplit[1]);
+        self.currentKbPerSec = parseInt(kbpersec);
+    }
+
+    self.updateSparkline = function() {
+        if (self.speedHistory.length >= 275) {
+            // Remove first one
+            self.speedHistory.shift();
+        }
+        // Add
+        self.speedHistory.push(self.currentKbPerSec);
+
+        // Is sparkline visible? Not on small mobile devices..
+        if ($('.sparkline-container').css('display') !== 'none') {
+            // Make sparkline
+            if (self.speedHistory.length === 1) {
+                // We only use speedhistory from SAB if we use global settings
+                // Otherwise SAB doesn't know the refresh rate
+                if (!self.useGlobalOptions()) {
+                    sabSpeedHistory = [];
+                } else {
+                    // Update internally
+                    self.speedHistory = sabSpeedHistory;
+                }
+
+                // Create
+                $('.sparkline').peity("line", {
+                    width: 275,
+                    height: 32,
+                    fill: '#9DDB72',
+                    stroke: '#AAFFAA',
+                    values: sabSpeedHistory
+                })
+
+                // Add option to open the server details tab
+                $('.sparkline-container').click(function() {
+                    $('a[href="#modal-options"]').trigger('click')
+                    $('a[href="#options_connections"]').trigger('click')
+                })
+
+            } else {
+                // Update
+                $('.sparkline').text(self.speedHistory.join(",")).change()
+            }
+        }
+    }
+
+    self.startSparkline = function() {
+        clearInterval(self.sparklineTicker);
+        self.sparklineTicker = setInterval(self.updateSparkline, parseInt(self.refreshRate()) * 1000);
     }
 
     // Update history items
@@ -607,6 +624,7 @@ function ViewModel() {
     self.refreshRate.subscribe(function(newValue) {
         // Refresh now
         self.refresh();
+        self.startSparkline();
 
         // Save in config if global-settings
         if (self.useGlobalOptions()) {
@@ -1395,6 +1413,11 @@ function ViewModel() {
 
         self.eventSource = new EventSource('./events?' + self.eventQuery())
         self.eventSource.addEventListener('ping', self.eventReceived)
+        self.eventSource.addEventListener('status', function(message) {
+            var status = JSON.parse(message.data)
+            self.applySpeed(status.speed, status.kbpersec)
+            self.eventReceived()
+        })
         self.eventSource.addEventListener('resync', function() {
             self.queueCache = self.historyCache = null
             self.refresh(true)
@@ -1450,6 +1473,9 @@ function ViewModel() {
 
     // Take over from polling once the first rows arrive
     self.startEvents()
+
+    // Keep the speed graph moving whichever way the numbers arrive
+    self.startSparkline()
 
     // Special options for (non) mobile
     if (isMobile) {
