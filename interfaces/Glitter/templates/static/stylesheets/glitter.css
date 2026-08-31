@@ -93,9 +93,7 @@ h2 {
 }
 
 .navbar-collapse.in .dropdown-menu a,
-.navbar-collapse.in .dropdown-menu a:hover,
-.navbar-collapse.in .dropdown-menu form button,
-.navbar-collapse.in .dropdown-menu form button:hover {
+.navbar-collapse.in .dropdown-menu a:hover {
     color: black !important;
 }
 
@@ -106,7 +104,7 @@ h2 {
 .dropdown-menu > li > form > button {
     display: block;
     width: 100%;
-    padding: 3px 20px;
+    padding: 5px 15px 5px 25px;
     border: 0;
     background: transparent;
     text-align: left;
@@ -114,6 +112,12 @@ h2 {
     line-height: 1.42857143;
     color: var(--clr-text);
     white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+    .dropdown-menu > li > form > button {
+        padding: 3px 20px;
+    }
 }
 
 .navbar-nav>li>a {
