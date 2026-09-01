@@ -13,7 +13,7 @@
         <div class="section">
             <div class="col2">
                 <h3>$T('webServer') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-                <p><b>$T('restartRequired')</b></p>
+                <p><b>$T('webRestartRequired')</b></p>
             </div><!-- /col2 -->
             <div class="col1">
                 <fieldset>
@@ -100,7 +100,6 @@
         <div class="section">
             <div class="col2">
                 <h3>$T('security') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-                <p><b>$T('restartRequired')</b></p>
             </div><!-- /col2 -->
             <div class="col1">
                 <fieldset>
@@ -354,13 +353,13 @@ jQuery(document).ready(function(){
             return;
         }
 
-        // Submit request and then restart
+        // Submit request and then wait for the web-interface to pick up the new certificate
         $.ajax({
             type: "POST",
             url: "$url('api')",
             data: { mode: 'config', name: 'regenerate_certs' },
             success: function(msg) {
-                do_restart()
+                await_web_restart()
             }
         });
 

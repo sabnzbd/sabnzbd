@@ -270,6 +270,7 @@ SKIN_TEXT = {
     "restarting-webui": TT("Restarting the web-interface..."),
     # Config->General
     "restartRequired": TT("Changes will require a SABnzbd restart!"),
+    "webRestartRequired": TT("Changes will restart the web-interface!"),
     "webServer": TT("SABnzbd Web Server"),
     "opt-host": TT("SABnzbd Host"),
     "explain-host": TT("Host SABnzbd should listen on."),
@@ -293,7 +294,7 @@ SKIN_TEXT = {
     "explain-https_port": TT("If empty, the standard port will only listen to HTTPS."),
     "opt-https_cert": TT("HTTPS Certificate"),
     "explain-https_cert": TT("File name or path to HTTPS Certificate."),
-    "explain-new-cert": TT("Generate new self-signed certificate and key. Requires SABnzbd restart!"),
+    "explain-new-cert": TT("Generate new self-signed certificate and key. Restarts the web-interface!"),
     "opt-https_key": TT("HTTPS Key"),
     "explain-https_key": TT("File name or path to HTTPS Key."),
     "opt-https_chain": TT("HTTPS Chain Certifcates"),
