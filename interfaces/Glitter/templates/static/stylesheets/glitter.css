@@ -1,28 +1,40 @@
 :root {
+    /* Follow the OS by default (Auto); forced by data-color-scheme below */
+    color-scheme: light dark;
+
     /* Border radius scale */
     --radius-sm: 4px;   /* small elements: progress bars */
     --radius-md: 6px;   /* search bar, multi-edit toolbar, file controls */
     --radius-lg: 8px;   /* cards, modals, notification box */
 
-    /* Color palette — light mode defaults; override in Night.css */
-    --clr-page-bg:        #E4E4E4;           /* body/page background */
-    --clr-surface:        #FFFFFF;            /* cards, modals, notification box */
-    --clr-surface-alt:    #F9F9F9;           /* multi-edit toolbar, alternating rows */
-    --clr-surface-hover:  #f6f6f6;             /* hovered rows, inputs, buttons */
-    --clr-border:         rgba(0,0,0,0.12);  /* card outlines */
-    --clr-border-subtle:  #EBEBEB;             /* table row separators, inner borders */
-    --clr-text:           #333333;            /* primary body text */
-    --clr-text-muted:     #888888;            /* secondary / dimmed text */
-    --clr-error:          red;                /* errors, failed downloads */
-    --clr-input-bg:       #FFFFFF;            /* form inputs, buttons */
-    --clr-input-border:   #CCCCCC;            /* input/search borders */
-    --clr-dropdown-bg:    #FFFFFF;            /* dropdown menus */
-    --clr-modal-bg:       #FFFFFF;            /* modal body/footer */
-    --clr-table-bg:       #F5F5F5;            /* table and even-row background */
-    --clr-table-row-alt:  #FDFDFD;           /* odd striped row background */
-    --clr-progress-track: #f6f6f6;           /* progress bar track */
-    --clr-toggle-active:   #f9ca33;          /* toggle knob track: on  */
-    --clr-toggle-inactive: #aaaaaa;          /* toggle knob track: off */
+    /* Color palette — light-dark(light value, dark value) */
+    --clr-page-bg:        light-dark(#E4E4E4, black);              /* body/page background */
+    --clr-surface:        light-dark(#FFFFFF, #727272);            /* cards, modals, notification box */
+    --clr-surface-alt:    light-dark(#F9F9F9, #444444);            /* multi-edit toolbar, alternating rows */
+    --clr-surface-hover:  light-dark(#f6f6f6, #666666);            /* hovered rows, inputs, buttons */
+    --clr-border:         light-dark(rgba(0,0,0,0.12), #808080);   /* card outlines */
+    --clr-border-subtle:  light-dark(#EBEBEB, #252525);            /* table row separators, inner borders */
+    --clr-text:           light-dark(#333333, #EBEBEB);            /* primary body text */
+    --clr-text-muted:     light-dark(#888888, #D6D6D6);            /* secondary / dimmed text */
+    --clr-error:          light-dark(red, #F95151);                /* errors, failed downloads */
+    --clr-input-bg:       light-dark(#FFFFFF, #555555);            /* form inputs, buttons */
+    --clr-input-border:   light-dark(#CCCCCC, #252525);            /* input/search borders */
+    --clr-dropdown-bg:    light-dark(#FFFFFF, #727272);            /* dropdown menus */
+    --clr-modal-bg:       light-dark(#FFFFFF, #727272);            /* modal body/footer */
+    --clr-table-bg:       light-dark(#F5F5F5, #555555);            /* table and even-row background */
+    --clr-table-row-alt:  light-dark(#FDFDFD, #444444);            /* odd striped row background */
+    --clr-progress-track: light-dark(#f6f6f6, #DADADA);            /* progress bar track */
+    --clr-toggle-active:   #f9ca33;                                /* toggle knob track: on  */
+    --clr-toggle-inactive: light-dark(#aaaaaa, #666666);           /* toggle knob track: off */
+}
+
+/* The server renders the configured scheme into this attribute (main.tmpl); empty/unknown = Auto */
+html[data-color-scheme="light" i] {
+    color-scheme: light;
+}
+
+html[data-color-scheme="night" i] {
+    color-scheme: dark;
 }
 
 body {
@@ -238,8 +250,8 @@ li.dropdown {
     height: 24px;
     top: -7px;
     cursor: ew-resize;
-    background-color: #767676;
-    border: 1px solid white;
+    background-color: light-dark(#767676, #969696);
+    border: 1px solid light-dark(white, #969696);
     margin-left: -.25em;
 }
 
@@ -346,7 +358,7 @@ li.dropdown {
 .main-restarting.in {
     text-align: center;
     opacity: 0.9;
-    color: black;
+    color: light-dark(black, white);
     z-index: 2000;
     padding: 15% 1em 1em;
 }
@@ -387,7 +399,8 @@ li.dropdown {
     width: 400px;
     top: 40px;
     left: -370px;
-    background: white;
+    background: light-dark(white, #555555);
+    color: var(--clr-text);
     border: 1px solid rgba(0,0,0,.2);
     border-radius: var(--radius-md);
     transition-duration: 0.3s;
@@ -1335,7 +1348,7 @@ tr.queue-item>td:first-child>a {
 }
 
 .processing-download > div {
-    background-color: #333;
+    background-color: var(--clr-text);
     height: 100%;
     width: 2px;
     float: left;
@@ -2343,9 +2356,16 @@ legend {
 .pagination li.active a:hover,
 .pagination li.active span:hover,
 .pagination>li>span:hover {
-    background-color: var(--clr-table-bg);
+    background-color: var(--clr-surface-hover);
     border: 1px solid var(--clr-border-subtle);
     color: var(--clr-text);
+}
+
+.pagination>li>a:focus,
+.pagination>li>a:hover {
+    color: var(--clr-text);
+    background-color: var(--clr-surface-hover);
+    border-color: var(--clr-border-subtle);
 }
 
 .pagination>li>a,
@@ -2421,6 +2441,7 @@ legend {
 .modal-footer {
     margin-top: 0;
     background-color: var(--clr-modal-bg);
+    border-top: 1px solid light-dark(#e5e5e5, rgb(131, 131, 131));
 }
 
 .modal-dialog {
@@ -2438,11 +2459,22 @@ legend {
 }
 
 legend {
-    border-color: var(--clr-text-muted);
+    border-color: light-dark(#888888, #C6C6C6);
 }
 
 hr {
-    border-color: var(--clr-text-muted);
+    border-color: light-dark(#888888, #C6C6C6);
+}
+
+/* Bootstrap's `a:focus { outline: 5px auto -webkit-focus-ring-color }` renders as a
+   heavy dark ring once color-scheme is declared. Replace it with a subtle themed
+   outline shown only for keyboard focus, matching the toggle-switch focus style. */
+a:focus {
+    outline: none !important;
+}
+a:focus-visible {
+    outline: 2px solid var(--clr-toggle-active) !important;
+    outline-offset: 2px !important;
 }
 
 /***
@@ -2556,4 +2588,226 @@ h2 small {
 ::placeholder {
     color: var(--clr-text) !important;
     opacity: 0.5 !important;
+}
+
+/***
+    Dark-mode structural rules
+    Colors live in the light-dark() tokens above; these are the rules that cannot
+    be expressed as a color value. The two blocks below MUST stay identical:
+    the first applies when Night is forced, the second when the OS is dark and Light is not forced.
+***/
+html[data-color-scheme="night" i] {
+    /* Links and glyphicons inside links */
+    a, a:active,
+    a:hover,
+    a:focus,
+    .btn:not(.btn-danger):active,
+    .hover-button.glyphicon-play,
+    .hover-button.glyphicon-stop,
+    legend,
+    #modal-options legend label,
+    #modal-options legend a,
+    #modal-item-files .item-files-table .progress small,
+    .text-muted {
+        color: var(--clr-text);
+    }
+
+    /* Navbar needs structural dark-mode overrides */
+    nav {
+        background-color: #444444 !important;
+        border-radius: var(--radius-lg);
+    }
+
+    nav .btn {
+        background-color: #E4E4E4;
+        border-color: #5D5D5D !important;
+    }
+
+    nav .btn:active {
+        /* Restore bootstrap default */
+        color: #333 !important;
+    }
+
+    @media (max-width: 767px) {
+        nav {
+            background-color: black !important;
+        }
+    }
+
+    /* Collapse dropdown loses border in dark mode */
+    .navbar-collapse.in .dropdown-menu {
+        border: none;
+    }
+
+    /* Tab controls — dark-mode specific colours */
+    .max-speed-input-clear,
+    .max-speed-input-clear:hover,
+    .fileControls a {
+        color: black;
+    }
+
+    .nav-tabs>li.active>a,
+    .nav-tabs>li.active>a:focus,
+    .nav-tabs>li.active>a:hover,
+    .nav-tabs>li>a:hover,
+    .nav-tabs>li>a:focus {
+        background-color: #ddd;
+        color: #555 !important;
+        box-shadow: 0px -1px 1px 1px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Opacity */
+    .hover-button,
+    .fileControls a:hover {
+        opacity: 0.7;
+    }
+
+    .form-control[disabled] {
+        opacity: 0.65;
+    }
+
+    /* Focus ring uses white glow in dark mode */
+    .form-control:focus,
+    input[type="submit"]:focus,
+    button:focus {
+        box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
+        outline: initial;
+    }
+
+    /* Compact layout progress shadow boost */
+    .container-compact .progress,
+    .container-compact .queue .progress-bar {
+        box-shadow: inset 1px 0px 1px rgba(0, 0, 0, 1);
+    }
+
+    /* Help table transparent bg override */
+    #modal-help table td,
+    #modal-help table {
+        background-color: transparent;
+    }
+
+    /* File items table structural */
+    #modal-item-files .item-files-table td {
+        border-bottom: none !important;
+    }
+
+    #modal-item-files .item-files-table {
+        border-bottom: 1px solid black;
+    }
+
+    /* History/queue tab switcher */
+    .history-queue-swicher .nav-tabs>li>a,
+    .history-queue-swicher .nav-tabs>li.active>a {
+        border-bottom: none;
+        margin-bottom: 1px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-color-scheme="light" i]) {
+        /* Links and glyphicons inside links */
+        a, a:active,
+        a:hover,
+        a:focus,
+        .btn:not(.btn-danger):active,
+        .hover-button.glyphicon-play,
+        .hover-button.glyphicon-stop,
+        legend,
+        #modal-options legend label,
+        #modal-options legend a,
+        #modal-item-files .item-files-table .progress small,
+        .text-muted {
+            color: var(--clr-text);
+        }
+
+        /* Navbar needs structural dark-mode overrides */
+        nav {
+            background-color: #444444 !important;
+            border-radius: var(--radius-lg);
+        }
+
+        nav .btn {
+            background-color: #E4E4E4;
+            border-color: #5D5D5D !important;
+        }
+
+        nav .btn:active {
+            /* Restore bootstrap default */
+            color: #333 !important;
+        }
+
+        @media (max-width: 767px) {
+            nav {
+                background-color: black !important;
+            }
+        }
+
+        /* Collapse dropdown loses border in dark mode */
+        .navbar-collapse.in .dropdown-menu {
+            border: none;
+        }
+
+        /* Tab controls — dark-mode specific colours */
+        .max-speed-input-clear,
+        .max-speed-input-clear:hover,
+        .fileControls a {
+            color: black;
+        }
+
+        .nav-tabs>li.active>a,
+        .nav-tabs>li.active>a:focus,
+        .nav-tabs>li.active>a:hover,
+        .nav-tabs>li>a:hover,
+        .nav-tabs>li>a:focus {
+            background-color: #ddd;
+            color: #555 !important;
+            box-shadow: 0px -1px 1px 1px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Opacity */
+        .hover-button,
+        .fileControls a:hover {
+            opacity: 0.7;
+        }
+
+        .form-control[disabled] {
+            opacity: 0.65;
+        }
+
+        /* Focus ring uses white glow in dark mode */
+        .form-control:focus,
+        input[type="submit"]:focus,
+        button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
+            outline: initial;
+        }
+
+        /* Compact layout progress shadow boost */
+        .container-compact .progress,
+        .container-compact .queue .progress-bar {
+            box-shadow: inset 1px 0px 1px rgba(0, 0, 0, 1);
+        }
+
+        /* Help table transparent bg override */
+        #modal-help table td,
+        #modal-help table {
+            background-color: transparent;
+        }
+
+        /* File items table structural */
+        #modal-item-files .item-files-table td {
+            border-bottom: none !important;
+        }
+
+        #modal-item-files .item-files-table {
+            border-bottom: 1px solid black;
+        }
+
+        /* History/queue tab switcher */
+        .history-queue-swicher .nav-tabs>li>a,
+        .history-queue-swicher .nav-tabs>li.active>a {
+            border-bottom: none;
+            margin-bottom: 1px;
+        }
+    }
 }

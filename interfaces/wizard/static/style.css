@@ -4,17 +4,31 @@
     --radius-md: 6px;   /* search bar, multi-edit toolbar, file controls */
     --radius-lg: 8px;   /* cards, modals, notification box */
 
-    /* Color palette — light mode defaults; overridden by Night.css */
-    --clr-page-bg:       #E4E4E4;
-    --clr-surface:       #FFFFFF;
-    --clr-surface-alt:   #F5F5F5;
-    --clr-surface-hover: #E4E4E4;
-    --clr-border:        rgba(0, 0, 0, 0.2);
-    --clr-text:          #000000;
-    --clr-text-muted:    #777777;
-    --clr-link:          #555555;
+    /* Follow the OS by default (Auto); forced by data-color-scheme below */
+    color-scheme: light dark;
+
+    /* Color palette — light-dark(light value, dark value) */
+    --clr-page-bg:       light-dark(#E4E4E4, black);
+    --clr-surface:       light-dark(#FFFFFF, #303030);
+    --clr-surface-alt:   light-dark(#F5F5F5, #444444);
+    --clr-surface-hover: light-dark(#E4E4E4, #666666);
+    --clr-border:        light-dark(rgba(0, 0, 0, 0.2), #555555);
+    --clr-text:          light-dark(#000000, #EBEBEB);
+    --clr-text-muted:    light-dark(#777777, #c7c7c7);
+    --clr-link:          light-dark(#555555, #63a7e1);
+    --clr-input-bg:      light-dark(#FFFFFF, #555555);
+    --clr-input-border:  light-dark(#cccccc, #252525);
     --clr-toggle-active:   #f9ca33;
-    --clr-toggle-inactive: #aaaaaa;
+    --clr-toggle-inactive: light-dark(#aaaaaa, #666666);
+}
+
+/* The server renders the configured scheme into this attribute; empty/unknown = Auto */
+html[data-color-scheme="light" i] {
+    color-scheme: light;
+}
+
+html[data-color-scheme="night" i] {
+    color-scheme: dark;
 }
 
 body {
@@ -82,10 +96,10 @@ a[target="_blank"] {
     color: #00cc22;
 }
 .failed {
-    color: red !important;
+    color: light-dark(red, #ff3333) !important;
 }
 #rightGreyText {
-    color: #ccc;
+    color: light-dark(#cccccc, #c7c7c7);
     width: 100%;
     text-align: right;
     padding-top: 3px;
@@ -199,7 +213,25 @@ a:visited,
 }
 .btn {
     min-width: 150px;
-    box-shadow: 1px 0px 1px rgba(0,0,0,.1);
+    box-shadow: 1px 0px 1px light-dark(rgba(0,0,0,.1), rgba(255,255,255,.1));
+}
+
+.btn-default,
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="url"],
+select,
+textarea {
+    background-color: var(--clr-input-bg);
+    color: var(--clr-text);
+    border-color: var(--clr-input-border);
+}
+
+::placeholder {
+    color: var(--clr-text) !important;
+    opacity: 0.5;
 }
 .btn .glyphicon,
 a .glyphicon {
@@ -207,4 +239,74 @@ a .glyphicon {
 }
 small {
     color: var(--clr-text-muted);
+}
+
+/***
+    Dark-mode structural rules
+    Colors live in the light-dark() tokens above; these are the rules that cannot
+    be expressed as a color value. The two blocks below MUST stay identical:
+    the first applies when Night is forced, the second when the OS is dark and Light is not forced.
+***/
+html[data-color-scheme="night" i] {
+    .language:hover,
+    .quoteBlock,
+    .server-disabled,
+    #serverResponse {
+        background-color: var(--clr-surface-alt) !important;
+        color: var(--clr-text) !important;
+    }
+
+    .quoteBlock a,
+    .help-block,
+    a.wizard-advanced-settings {
+        color: var(--clr-text);
+    }
+
+    #inner {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Focus / active border */
+    .btn-default:focus,
+    .form-control:focus,
+    input:focus,
+    textarea:focus,
+    select:focus {
+        border-color: #707070 !important;
+        outline: initial !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-color-scheme="light" i]) {
+        .language:hover,
+        .quoteBlock,
+        .server-disabled,
+        #serverResponse {
+            background-color: var(--clr-surface-alt) !important;
+            color: var(--clr-text) !important;
+        }
+
+        .quoteBlock a,
+        .help-block,
+        a.wizard-advanced-settings {
+            color: var(--clr-text);
+        }
+
+        #inner {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Focus / active border */
+        .btn-default:focus,
+        .form-control:focus,
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #707070 !important;
+            outline: initial !important;
+            box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
+        }
+    }
 }

@@ -1,29 +1,40 @@
 :root {
+    /* Follow the OS by default (Auto); forced by data-color-scheme below */
+    color-scheme: light dark;
+
     /* Border radius scale */
     --radius-sm:    4px;   /* dropdowns */
     --radius-md:    4px;   /* inputs, buttons, section headers */
     --radius-lg:    6px;   /* cards, modals */
 
-    /* Color palette — light mode defaults; override in Night.css */
-    --clr-page-bg:         #E4E4E4;   /* body/page background */
-    --clr-surface:         #FFFFFF;   /* cards/sections (.section, #addFeed, etc.) */
-    --clr-surface-alt:     #F8F8F8;  /* alternating rows, .alt elements */
-    --clr-surface-hover:   #f6f6f6;  /* hovered rows and buttons */
-    --clr-border:          #dfdede;  /* card/section borders */
-    --clr-border-subtle:   #E5E5E5;  /* inner dividers (#subscriptions, data-row) */
-    --clr-text:            #000000;  /* primary body text */
-    --clr-text-muted:      #666666;  /* secondary text (.col2 p, .feed-row td) */
-    --clr-error:           red;       /* errors, failed items */
-    --clr-link:            inherit;   /* links (Bootstrap default in light) */
-    --clr-input-bg:        #FFFFFF;   /* form inputs, buttons */
-    --clr-input-border:    #d4d0c8;  /* input borders */
-    --clr-toggle-active:   #f9ca33;  /* accent color (toggles, focus rings) */
-    --clr-toggle-inactive: #aaaaaa;  /* toggle track when off */
-    --clr-dropdown-bg:     #FFFFFF;   /* dropdown menus */
-    --clr-modal-bg:        #FFFFFF;   /* modal body/footer */
-    --clr-modal-header-bg: #3C3C3C;  /* modal header (dark in both themes) */
-    --clr-table-bg:        #FFFFFF;   /* table background */
-    --clr-table-row-alt:   #F8F8F8;  /* alternating table row background */
+    /* Color palette — light-dark(light value, dark value) */
+    --clr-page-bg:         light-dark(#E4E4E4, black);     /* body/page background */
+    --clr-surface:         light-dark(#FFFFFF, #303030);   /* cards/sections (.section, #addFeed, etc.) */
+    --clr-surface-alt:     light-dark(#F8F8F8, #444444);   /* alternating rows, .alt elements */
+    --clr-surface-hover:   light-dark(#f6f6f6, #666666);   /* hovered rows and buttons */
+    --clr-border:          light-dark(#dfdede, #555555);   /* card/section borders */
+    --clr-border-subtle:   light-dark(#E5E5E5, #252525);   /* inner dividers (#subscriptions, data-row) */
+    --clr-text:            light-dark(#000000, #EBEBEB);   /* primary body text */
+    --clr-text-muted:      light-dark(#666666, #c7c7c7);   /* secondary text (.col2 p, .feed-row td) */
+    --clr-error:           light-dark(red, #ff3333);       /* errors, failed items */
+    --clr-input-bg:        light-dark(#FFFFFF, #555555);   /* form inputs, buttons */
+    --clr-input-border:    light-dark(#d4d0c8, #252525);   /* input borders */
+    --clr-toggle-active:   #f9ca33;                        /* accent color (toggles, focus rings) */
+    --clr-toggle-inactive: light-dark(#aaaaaa, #666666);   /* toggle track when off */
+    --clr-dropdown-bg:     light-dark(#FFFFFF, #444444);   /* dropdown menus */
+    --clr-modal-bg:        light-dark(#FFFFFF, #727272);   /* modal body/footer */
+    --clr-modal-header-bg: #3C3C3C;                        /* modal header (dark in both themes) */
+    --clr-table-bg:        light-dark(#FFFFFF, #555555);   /* table background */
+    --clr-table-row-alt:   light-dark(#F8F8F8, #444444);   /* alternating table row background */
+}
+
+/* The server renders the configured scheme into this attribute; empty/unknown = Auto */
+html[data-color-scheme="light" i] {
+    color-scheme: light;
+}
+
+html[data-color-scheme="night" i] {
+    color-scheme: dark;
 }
 
 body {
@@ -31,6 +42,18 @@ body {
     background-color: var(--clr-page-bg);
     color: var(--clr-text);
 }
+
+/* Bootstrap's `a:focus { outline: 5px auto -webkit-focus-ring-color }` renders as a
+   heavy dark ring once color-scheme is declared. Replace it with a subtle themed
+   outline shown only for keyboard focus, matching the toggle-switch focus style. */
+a:focus {
+    outline: none;
+}
+a:focus-visible {
+    outline: 2px solid var(--clr-toggle-active);
+    outline-offset: 2px;
+}
+
 #logo {
     display: block;
     margin: 3px auto auto;
@@ -702,6 +725,10 @@ input:has(+ .clearBtn) {
 }
 #filebrowser_modal .list-group-item {
     font-weight: bold;
+}
+#filebrowser_modal a.list-group-item:hover,
+#filebrowser_modal a.list-group-item:focus {
+    background-color: var(--clr-surface-hover);
 }
 #filebrowser_modal .list-group-item span {
     margin-right: 10px;
@@ -1598,5 +1625,593 @@ html[dir="rtl"] .Scheduling form[data-form="add-schedule"] input[type="checkbox"
     ul.tabs a {
         padding-left: 5px;
         padding-right: 5px;
+    }
+}
+
+/***
+    Dark-mode structural rules
+    Colors live in the light-dark() tokens above; these are the rules that cannot
+    be expressed as a color value. The two blocks below MUST stay identical:
+    the first applies when Night is forced, the second when the OS is dark and Light is not forced.
+***/
+html[data-color-scheme="night" i] {
+    /* Links use a custom colour in dark mode */
+    a:not(.btn) {
+        color: #63a7e1;
+    }
+
+    /* Buttons get a subtle white shadow in dark mode for depth */
+    .btn {
+        box-shadow: 1px 1px 1px rgba(255, 255, 255, .1);
+    }
+
+    /* Borders on interactive controls */
+    .btn:not(.btn-danger),
+    .btn-default,
+    input,
+    select,
+    textarea,
+    .advanced-button,
+    .list-group-item {
+        border-color: var(--clr-input-border) !important;
+    }
+
+    .advanced-button {
+        background-color: var(--clr-surface-alt);
+    }
+
+    /* Sidebar section header */
+    .col2 h3 {
+        background: none repeat scroll 0 0 var(--clr-surface-alt);
+    }
+
+    /* Various elements that need the alt surface */
+    .catTable,
+    .dropdown-menu .divider,
+    .Key tr:nth-child(odd),
+    .language:hover,
+    .navbar-default .navbar-nav>.open>a,
+    .navbar-default .navbar-nav>.open>a:focus,
+    .navbar-default .navbar-nav>.open>a:hover,
+    .navbar-default .navbar-nav>li>a.active,
+    .navbar-default .navbar-nav>li>a:hover,
+    .navbar-default .navbar-nav>li>a:focus,
+    .navbar-logo:hover,
+    .quoteBlock,
+    .server-disabled,
+    #serverResponse,
+    .table>tbody>tr:nth-child(odd),
+    .table-striped>tbody>tr:nth-child(odd),
+    ul.tabs li.active a,
+    select[disabled],
+    select:hover {
+        background-color: var(--clr-surface-alt) !important;
+        color: var(--clr-text) !important;
+    }
+
+    /* Button hovers */
+    .btn:not(.btn-danger):hover,
+    .btn:not(.btn-danger):active:focus {
+        background-color: var(--clr-surface-hover);
+    }
+
+    .btn:not(.btn-danger):active {
+        color: var(--clr-text);
+    }
+
+    /* Error / failed colour */
+    .failed {
+        color: var(--clr-error) !important;
+    }
+
+    /* Secondary text */
+    #rightGreyText,
+    small {
+        color: var(--clr-text-muted) !important;
+    }
+
+    /* Controls and form elements using input bg */
+    .advanced-buttonSeperator,
+    .alt,
+    .infoTableSeperator.alt,
+    .btn:not(.btn-danger),
+    .btn-default.disabled:active,
+    .btn-default.disabled:focus,
+    .btn-default.disabled:hover,
+    a.btn.btn-default,
+    select.form-control,
+    .form-control[disabled],
+    .input-group-addon,
+    #inner,
+    .navbar-default,
+    .search-box input,
+    .select,
+    .table-striped>tbody>tr:nth-child(even),
+    .table>tbody>tr:nth-child(even),
+    .tab-pane tr:nth-child(odd),
+    textarea,
+    ul.tabs a.active,
+    a.list-group-item,
+    .dropdown-menu>li>a,
+    input[type="text"],
+    input[type="email"],
+    input[type="url"],
+    input[type="date"],
+    input[type="number"],
+    input[type="password"],
+    input[disabled],
+    select {
+        background-color: var(--clr-input-bg);
+        color: var(--clr-text);
+    }
+
+    .Categories form.sorting-row:nth-child(2n-1) tr {
+         background-color: var(--clr-surface);
+    }
+
+    /* Focus / active border */
+    .btn-default:focus,
+    .form-control:focus,
+    input:focus,
+    textarea:focus,
+    select:focus {
+        border-color: #707070 !important;
+        outline: initial !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
+    }
+
+    /* Modal backdrop */
+    .modal-backdrop {
+        background-color: #262626 !important;
+    }
+
+    /* Table structural */
+    .Key tr,
+    .Config .table {
+        border: none;
+    }
+
+    .table>tbody>tr>td,
+    .table>tbody>tr>th,
+    .infoTableSeperator,
+    .data-row {
+        border-top: none;
+    }
+
+    .modal-footer {
+        border-top: 1px solid rgb(131 131 131);
+    }
+
+    hr {
+        border-top: 1px solid var(--clr-border);
+    }
+
+    /* Danger button dark border */
+    .btn-danger {
+        border-color: #7b2b28;
+    }
+
+    /* Section borders */
+    .tab-content .catTable tbody,
+    ul.tabs a,
+    .section,
+    #addFeed,
+    #addFeedContent,
+    #subscriptions,
+    .RSS form[data-form="add-rss-feed"] tr:nth-child(even),
+    .Config .table {
+        border: 1px solid var(--clr-border);
+    }
+
+    /* Hover states */
+    .Categories form:first-of-type tr:last-of-type,
+    .default,
+    .dropdown-menu>li>a:focus,
+    .dropdown-menu>li>a:hover {
+        background-color: var(--clr-surface-hover);
+    }
+
+    /* Elements using primary text colour */
+    .activeRSS,
+    .activeRSS a,
+    .activeRSS a:visited,
+    .btn-default,
+    .checkbox label,
+    .feed-row td,
+    .help-block,
+    #content,
+    .navbar-default .navbar-nav>li>a,
+    .navbar-default .navbar-nav>li>a>.glyphicon,
+    .path,
+    .Servers .ct-label,
+    .time,
+    .main-restarting.in,
+    #search-dropdown .dropdown-header,
+    ul.tabs a,
+    a.wizard-advanced-settings,
+    .quoteBlock a,
+    a.main-helplink,
+    .col2 h3 a,
+    .text-center a,
+    .text-center a:hover {
+        color: var(--clr-text);
+    }
+
+    /* Remove backgrounds on container/content wrappers */
+    .container,
+    #content {
+        background-color: unset !important;
+    }
+
+    /* Server chart lines */
+    .Servers .ct-series-a .ct-line,
+    .Servers .ct-series-a .ct-point {
+        stroke: var(--clr-text);
+    }
+
+    /* Sections/cards use dark surface */
+    #inner,
+    .section,
+    #addFeed,
+    #addFeedContent {
+        background-color: var(--clr-surface);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* Active tab uses card surface */
+    .nav.nav-tabs li a {
+        color: var(--clr-text);
+    }
+
+    .nav.nav-tabs li a:hover {
+        background-color: var(--clr-surface-alt);
+        border-color: var(--clr-border);
+        border-bottom: none;
+    }
+
+    .nav.nav-tabs li.active a,
+    .nav.nav-tabs li.active a:hover {
+        border-color: var(--clr-border);
+        border-bottom: none;
+        background-color: var(--clr-surface);
+        color: var(--clr-text);
+    }
+
+    /* QR modal needs light background */
+    #modal_qr .modal-body {
+        background-color: #EBEBEB;
+    }
+
+    /* RSS icon */
+    .rss-icon-svg {
+        fill: white;
+    }
+
+    .rss-symbol {
+        fill: var(--clr-input-bg);
+    }
+
+    /* Placeholder */
+    ::placeholder {
+        color: var(--clr-text) !important;
+        opacity: 0.5;
+    }
+
+    /* Tooltip — inverted (light tooltip on dark page) */
+    .tooltip-inner {
+        background-color: #E4E4E4 !important;
+        color: #000 !important;
+    }
+
+    .tooltip.bottom .tooltip-arrow {
+        border-bottom-color: #E4E4E4 !important;
+    }
+
+    .tooltip.top .tooltip-arrow {
+        border-top-color: #E4E4E4 !important;
+    }
+
+    .tooltip.left .tooltip-arrow {
+        border-left-color: #E4E4E4 !important;
+    }
+
+    .tooltip.right .tooltip-arrow {
+        border-right-color: #E4E4E4 !important;
+    }
+
+    .Special .glyphicon-asterisk {
+        color: #E4E4E4 !important;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-color-scheme="light" i]) {
+        /* Links use a custom colour in dark mode */
+        a:not(.btn) {
+            color: #63a7e1;
+        }
+
+        /* Buttons get a subtle white shadow in dark mode for depth */
+        .btn {
+            box-shadow: 1px 1px 1px rgba(255, 255, 255, .1);
+        }
+
+        /* Borders on interactive controls */
+        .btn:not(.btn-danger),
+        .btn-default,
+        input,
+        select,
+        textarea,
+        .advanced-button,
+        .list-group-item {
+            border-color: var(--clr-input-border) !important;
+        }
+
+        .advanced-button {
+            background-color: var(--clr-surface-alt);
+        }
+
+        /* Sidebar section header */
+        .col2 h3 {
+            background: none repeat scroll 0 0 var(--clr-surface-alt);
+        }
+
+        /* Various elements that need the alt surface */
+        .catTable,
+        .dropdown-menu .divider,
+        .Key tr:nth-child(odd),
+        .language:hover,
+        .navbar-default .navbar-nav>.open>a,
+        .navbar-default .navbar-nav>.open>a:focus,
+        .navbar-default .navbar-nav>.open>a:hover,
+        .navbar-default .navbar-nav>li>a.active,
+        .navbar-default .navbar-nav>li>a:hover,
+        .navbar-default .navbar-nav>li>a:focus,
+        .navbar-logo:hover,
+        .quoteBlock,
+        .server-disabled,
+        #serverResponse,
+        .table>tbody>tr:nth-child(odd),
+        .table-striped>tbody>tr:nth-child(odd),
+        ul.tabs li.active a,
+        select[disabled],
+        select:hover {
+            background-color: var(--clr-surface-alt) !important;
+            color: var(--clr-text) !important;
+        }
+
+        /* Button hovers */
+        .btn:not(.btn-danger):hover,
+        .btn:not(.btn-danger):active:focus {
+            background-color: var(--clr-surface-hover);
+        }
+
+        .btn:not(.btn-danger):active {
+            color: var(--clr-text);
+        }
+
+        /* Error / failed colour */
+        .failed {
+            color: var(--clr-error) !important;
+        }
+
+        /* Secondary text */
+        #rightGreyText,
+        small {
+            color: var(--clr-text-muted) !important;
+        }
+
+        /* Controls and form elements using input bg */
+        .advanced-buttonSeperator,
+        .alt,
+        .infoTableSeperator.alt,
+        .btn:not(.btn-danger),
+        .btn-default.disabled:active,
+        .btn-default.disabled:focus,
+        .btn-default.disabled:hover,
+        a.btn.btn-default,
+        select.form-control,
+        .form-control[disabled],
+        .input-group-addon,
+        #inner,
+        .navbar-default,
+        .search-box input,
+        .select,
+        .table-striped>tbody>tr:nth-child(even),
+        .table>tbody>tr:nth-child(even),
+        .tab-pane tr:nth-child(odd),
+        textarea,
+        ul.tabs a.active,
+        a.list-group-item,
+        .dropdown-menu>li>a,
+        input[type="text"],
+        input[type="email"],
+        input[type="url"],
+        input[type="date"],
+        input[type="number"],
+        input[type="password"],
+        input[disabled],
+        select {
+            background-color: var(--clr-input-bg);
+            color: var(--clr-text);
+        }
+
+        .Categories form.sorting-row:nth-child(2n-1) tr {
+             background-color: var(--clr-surface);
+        }
+
+        /* Focus / active border */
+        .btn-default:focus,
+        .form-control:focus,
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #707070 !important;
+            outline: initial !important;
+            box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
+        }
+
+        /* Modal backdrop */
+        .modal-backdrop {
+            background-color: #262626 !important;
+        }
+
+        /* Table structural */
+        .Key tr,
+        .Config .table {
+            border: none;
+        }
+
+        .table>tbody>tr>td,
+        .table>tbody>tr>th,
+        .infoTableSeperator,
+        .data-row {
+            border-top: none;
+        }
+
+        .modal-footer {
+            border-top: 1px solid rgb(131 131 131);
+        }
+
+        hr {
+            border-top: 1px solid var(--clr-border);
+        }
+
+        /* Danger button dark border */
+        .btn-danger {
+            border-color: #7b2b28;
+        }
+
+        /* Section borders */
+        .tab-content .catTable tbody,
+        ul.tabs a,
+        .section,
+        #addFeed,
+        #addFeedContent,
+        #subscriptions,
+        .RSS form[data-form="add-rss-feed"] tr:nth-child(even),
+        .Config .table {
+            border: 1px solid var(--clr-border);
+        }
+
+        /* Hover states */
+        .Categories form:first-of-type tr:last-of-type,
+        .default,
+        .dropdown-menu>li>a:focus,
+        .dropdown-menu>li>a:hover {
+            background-color: var(--clr-surface-hover);
+        }
+
+        /* Elements using primary text colour */
+        .activeRSS,
+        .activeRSS a,
+        .activeRSS a:visited,
+        .btn-default,
+        .checkbox label,
+        .feed-row td,
+        .help-block,
+        #content,
+        .navbar-default .navbar-nav>li>a,
+        .navbar-default .navbar-nav>li>a>.glyphicon,
+        .path,
+        .Servers .ct-label,
+        .time,
+        .main-restarting.in,
+        #search-dropdown .dropdown-header,
+        ul.tabs a,
+        a.wizard-advanced-settings,
+        .quoteBlock a,
+        a.main-helplink,
+        .col2 h3 a,
+        .text-center a,
+        .text-center a:hover {
+            color: var(--clr-text);
+        }
+
+        /* Remove backgrounds on container/content wrappers */
+        .container,
+        #content {
+            background-color: unset !important;
+        }
+
+        /* Server chart lines */
+        .Servers .ct-series-a .ct-line,
+        .Servers .ct-series-a .ct-point {
+            stroke: var(--clr-text);
+        }
+
+        /* Sections/cards use dark surface */
+        #inner,
+        .section,
+        #addFeed,
+        #addFeedContent {
+            background-color: var(--clr-surface);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* Active tab uses card surface */
+        .nav.nav-tabs li a {
+            color: var(--clr-text);
+        }
+
+        .nav.nav-tabs li a:hover {
+            background-color: var(--clr-surface-alt);
+            border-color: var(--clr-border);
+            border-bottom: none;
+        }
+
+        .nav.nav-tabs li.active a,
+        .nav.nav-tabs li.active a:hover {
+            border-color: var(--clr-border);
+            border-bottom: none;
+            background-color: var(--clr-surface);
+            color: var(--clr-text);
+        }
+
+        /* QR modal needs light background */
+        #modal_qr .modal-body {
+            background-color: #EBEBEB;
+        }
+
+        /* RSS icon */
+        .rss-icon-svg {
+            fill: white;
+        }
+
+        .rss-symbol {
+            fill: var(--clr-input-bg);
+        }
+
+        /* Placeholder */
+        ::placeholder {
+            color: var(--clr-text) !important;
+            opacity: 0.5;
+        }
+
+        /* Tooltip — inverted (light tooltip on dark page) */
+        .tooltip-inner {
+            background-color: #E4E4E4 !important;
+            color: #000 !important;
+        }
+
+        .tooltip.bottom .tooltip-arrow {
+            border-bottom-color: #E4E4E4 !important;
+        }
+
+        .tooltip.top .tooltip-arrow {
+            border-top-color: #E4E4E4 !important;
+        }
+
+        .tooltip.left .tooltip-arrow {
+            border-left-color: #E4E4E4 !important;
+        }
+
+        .tooltip.right .tooltip-arrow {
+            border-right-color: #E4E4E4 !important;
+        }
+
+        .Special .glyphicon-asterisk {
+            color: #E4E4E4 !important;
+        }
     }
 }
