@@ -90,7 +90,8 @@ class SABnzbdDelegate(NSObject):
             time.sleep(0.5)
 
         # Set this thread as default handler for notification actions
-        DefaultUserNotificationCenter.setDelegate_(self)
+        if DefaultUserNotificationCenter:
+            DefaultUserNotificationCenter.setDelegate_(self)
 
         # Do we want the menu
         if sabnzbd.cfg.tray_icon():
@@ -557,6 +558,9 @@ class SABnzbdDelegate(NSObject):
         button_action: Optional[str] = None,
     ):
         """Send a macOS notification, optionally with 1 action button"""
+        if not DefaultUserNotificationCenter:
+            return
+
         notification = NSUserNotification.alloc().init()
         notification.setTitle_(title)
         notification.setSubtitle_(subtitle)
