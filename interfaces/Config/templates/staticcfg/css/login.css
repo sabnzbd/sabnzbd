@@ -1,19 +1,32 @@
 :root {
-    /* Light mode defaults — overridden by Night.css */
-    --clr-page-bg:    #E4E4E4;
-    --clr-surface:    #FFFFFF;
-    --clr-input-bg:   #FFFFFF;
-    --clr-border:     rgba(0, 0, 0, 0.15);
-    --clr-text:       #000000;
-    --clr-text-muted: #636363;
+    /* Follow the OS by default (Auto); forced by data-color-scheme below */
+    color-scheme: light dark;
+
+    /* Color palette — light-dark(light value, dark value) */
+    --clr-page-bg:    light-dark(#E4E4E4, black);
+    --clr-surface:    light-dark(#FFFFFF, #303030);
+    --clr-input-bg:   light-dark(#FFFFFF, #555555);
+    --clr-border:     light-dark(rgba(0, 0, 0, 0.15), #555555);
+    --clr-text:       light-dark(#000000, #EBEBEB);
+    --clr-text-muted: light-dark(#636363, #c7c7c7);
     --radius-lg:      8px;
     --clr-toggle-active:   #f9ca33;
-    --clr-toggle-inactive: #aaaaaa;
+    --clr-toggle-inactive: light-dark(#aaaaaa, #666666);
+}
+
+/* The server renders the configured scheme into this attribute; empty/unknown = Auto */
+html[data-color-scheme="light" i] {
+    color-scheme: light;
+}
+
+html[data-color-scheme="night" i] {
+    color-scheme: dark;
 }
 
 body {
     overflow-y: scroll;
     background-color: var(--clr-page-bg);
+    color: var(--clr-text);
 }
 
 .logo-header {
@@ -58,10 +71,23 @@ body {
     margin-top: 5px
 }
 
+.form-signin input,
+.form-signin .btn {
+    background-color: var(--clr-input-bg);
+    color: var(--clr-text);
+    border-color: light-dark(#ccc, #252525);
+}
+
 .form-signin .btn {
     width: 100%;
     margin-top: 10px;
     font-weight: bold;
+    box-shadow: 1px 1px 1px light-dark(transparent, rgba(255, 255, 255, .1));
+}
+
+::placeholder {
+    color: var(--clr-text) !important;
+    opacity: 0.5;
 }
 
 .btn .glyphicon {
@@ -110,4 +136,70 @@ input[type="checkbox"]:focus-visible {
     outline: 2px solid var(--clr-toggle-active);
     outline-offset: 2px;
     border-radius: 10px;
+}
+
+/***
+    Dark-mode structural rules
+    Colors live in the light-dark() tokens above; these are the rules that cannot
+    be expressed as a color value. The two blocks below MUST stay identical:
+    the first applies when Night is forced, the second when the OS is dark and Light is not forced.
+***/
+html[data-color-scheme="night" i] {
+    /* Focus / active border */
+    .form-signin input:focus,
+    .form-signin .btn:focus {
+        border-color: #707070 !important;
+        outline: initial !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
+    }
+
+    .text-center a,
+    .text-center a:hover {
+        color: var(--clr-text);
+    }
+
+    /* Tooltip — inverted (light tooltip on dark page) */
+    .tooltip-inner {
+        background-color: #E4E4E4 !important;
+        color: #000 !important;
+    }
+
+    .tooltip.bottom .tooltip-arrow {
+        border-bottom-color: #E4E4E4 !important;
+    }
+
+    .tooltip.top .tooltip-arrow {
+        border-top-color: #E4E4E4 !important;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-color-scheme="light" i]) {
+        /* Focus / active border */
+        .form-signin input:focus,
+        .form-signin .btn:focus {
+            border-color: #707070 !important;
+            outline: initial !important;
+            box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .text-center a,
+        .text-center a:hover {
+            color: var(--clr-text);
+        }
+
+        /* Tooltip — inverted (light tooltip on dark page) */
+        .tooltip-inner {
+            background-color: #E4E4E4 !important;
+            color: #000 !important;
+        }
+
+        .tooltip.bottom .tooltip-arrow {
+            border-bottom-color: #E4E4E4 !important;
+        }
+
+        .tooltip.top .tooltip-arrow {
+            border-top-color: #E4E4E4 !important;
+        }
+    }
 }

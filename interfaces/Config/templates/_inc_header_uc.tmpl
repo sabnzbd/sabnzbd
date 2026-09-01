@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="$active_lang" #if $rtl#dir="rtl"#end if#>
+<html lang="$active_lang" #if $rtl#dir="rtl"#end if# data-color-scheme="$color_scheme">
 <head>
     <title>
         SABnzbd $T('menu-config')
@@ -29,9 +29,6 @@
     <link rel="stylesheet" type="text/css" href="$url('staticcfg/bootstrap/css/bootstrap.min.css', v=$cache_buster)" />
     <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/chartist.min.css', v=$cache_buster)" />
     <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/style.css', v=$cache_buster)" />
-    <!--#if $color_scheme not in ('Light', '') #-->
-    <link rel="stylesheet" type="text/css" href="$url('staticcfg/css/' + $color_scheme + '.css', v=$cache_buster)" />
-    <!--#end if#-->
 
     <link rel="shortcut icon" href="$url('staticcfg/ico/favicon.ico', v=$cache_buster)" />
 
