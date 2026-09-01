@@ -1092,8 +1092,6 @@ def main():
     sabnzbd.WEB_DIR_CONFIG = identify_web_template(DEF_STD_CONFIG)
     sabnzbd.WIZARD_DIR = os.path.join(sabnzbd.DIR_INTERFACES, "wizard")
 
-    sabnzbd.WEB_COLOR = sabnzbd.cfg.web_color()
-
     # Handle the several tray icons
     if sabnzbd.cfg.tray_icon() and not sabnzbd.DAEMON and not sabnzbd.WIN_SERVICE:
         if sabnzbd.WINDOWS:

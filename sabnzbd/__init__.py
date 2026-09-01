@@ -168,7 +168,6 @@ NO_DOWNLOADING = False  # When essentials are missing (SABCTools/par2/unrar)
 WEB_DIR = None
 WEB_DIR_CONFIG = None
 WIZARD_DIR = None
-WEB_COLOR = None
 SABSTOP = False
 RESTART_REQ = False
 PAUSED_ALL = False
@@ -258,7 +257,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.download_dir.callback(cfg.new_storage_dir)
     cfg.web_host.callback(cfg.guard_restart)
     cfg.web_port.callback(cfg.guard_restart)
-    cfg.web_color.callback(cfg.guard_restart)
     cfg.url_base.callback(trigger_restart)
     cfg.log_dir.callback(cfg.guard_restart)
     cfg.https_port.callback(cfg.guard_restart)
