@@ -1350,6 +1350,7 @@ function ViewModel() {
     self.eventSource = null
     self.eventWatchdog = null
     self.eventsLive = false
+    self.resyncCount = 0
     self.queueCache = null
     self.historyCache = null
 
@@ -1421,7 +1422,17 @@ function ViewModel() {
             self.eventReceived()
         })
         self.eventSource.addEventListener('resync', function() {
-            self.queueCache = self.historyCache = null
+            // The server dropped what we were too slow to read, and it still holds the
+            // baseline our next delta would be built against. Only a fresh subscription
+            // gets a keyframe, and a client that keeps falling behind is better off
+            // polling, which never queues work it cannot finish.
+            self.resyncCount++
+            if (self.resyncCount > 3) {
+                self.stopEvents()
+                self.eventsFailed()
+                return
+            }
+            self.startEvents()
             self.refresh(true)
         })
         self.eventSource.addEventListener('queue', function(message) {
