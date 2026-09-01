@@ -2061,7 +2061,7 @@ def build_header(
             header["url"] = url_for
 
         header["uptime"] = calc_age(sabnzbd.START)
-        header["color_scheme"] = sabnzbd.WEB_COLOR or ""
+        header["color_scheme"] = cfg.web_color()
         header["confighelpuri"] = f"https://sabnzbd.org/wiki/configuration/{sabnzbd.__version__[:3]}/"
 
         if request:
