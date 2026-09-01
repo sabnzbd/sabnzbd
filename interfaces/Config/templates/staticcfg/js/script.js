@@ -356,6 +356,13 @@ function do_restart() {
         }
     });
 }
+// New credentials take effect at once, so this session no longer has access
+function go_to_login() {
+    // Let us leave without the unsaved-changes prompt
+    formWasSubmitted = true;
+    formHasChanged = false;
+    location.href = rootURL + 'login';
+}
 // The web server restarts itself to pick up the new settings, so only wait for it
 function await_web_restart() {
     // Show overlay
@@ -451,6 +458,8 @@ $(document).ready(function () {
                 if(confirm(configTranslate.needRestart + "\n" + configTranslate.buttonRestart + " SABnzbd?")) {
                     // No more questions
                     do_restart();
+                } else if(json.value.login_req) {
+                    go_to_login();
                 } else {
                     $('#config_err_msg').text(" ");
                     setTimeout(config_success, 1000);
@@ -458,6 +467,8 @@ $(document).ready(function () {
             } else if(json.value && json.value.web_restart_req) {
                 // Only the web-interface restarts, so just wait for it to come back
                 await_web_restart();
+            } else if(json.value && json.value.login_req) {
+                go_to_login();
             } else if(form && form.is('[data-reload-on-save]')) {
                 // Values changed that are rendered by the server, so reload the page
                 $('#config_err_msg').text(" ");

@@ -92,9 +92,9 @@ class TestConfigLogin(SABnzbdBaseTest):
         self.page.locator("input[data-hide='username']").fill("test_username")
         self.page.locator("input[data-hide='password']").fill("test_password")
 
-        # Credentials apply straight away, so saving is all it takes
-        with self.page.expect_response(lambda r: r.request.method == "POST"):
-            self.page.locator(".saveButton").first.click()
+        # Credentials apply straight away, so the session is dropped and we land on the login page
+        self.page.locator(".saveButton").first.click()
+        self.page.wait_for_url(re.compile(r"/login"))
 
         # Open any page and check if we get redirected
         self.open_page("http://%s:%s/config/general" % (SAB_HOST, SAB_PORT))
