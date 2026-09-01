@@ -347,6 +347,13 @@ function do_restart() {
         }
     });
 }
+// New credentials take effect at once, so this session no longer has access
+function go_to_login() {
+    // Let us leave without the unsaved-changes prompt
+    formWasSubmitted = true;
+    formHasChanged = false;
+    location.href = rootURL + 'login';
+}
 
 // Remove obfuscation
 function removeObfuscation() {
@@ -431,10 +438,14 @@ $(document).ready(function () {
                 if(confirm(configTranslate.needRestart + "\n" + configTranslate.buttonRestart + " SABnzbd?")) {
                     // No more questions
                     do_restart();
+                } else if(json.value.login_req) {
+                    go_to_login();
                 } else {
                     $('#config_err_msg').text(" ");
                     setTimeout(config_success, 1000);
                 }
+            } else if(json.value && json.value.login_req) {
+                go_to_login();
             } else if(form && form.is('[data-reload-on-save]')) {
                 // Values changed that are rendered by the server, so reload the page
                 $('#config_err_msg').text(" ");

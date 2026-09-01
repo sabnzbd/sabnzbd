@@ -112,6 +112,7 @@ from sabnzbd.security import (
     client_address_info,
     constant_time_equals,
     create_session,
+    credential_fingerprint,
     csrf_identity,
     csrf_token_for,
     csrf_token_matches,
@@ -1092,6 +1093,8 @@ def index_config_general(request: Request):
 
 @secured_expose(route="/config/general/save", check_configlock=True, methods=["POST"])
 def config_general_save(request: Request):
+    credentials = credential_fingerprint()
+
     # Handle general options
     for kw in GENERAL_LIST:
         if msg := config.get_config("misc", kw).set(request_params(request).get(kw)):
@@ -1101,7 +1104,15 @@ def config_general_save(request: Request):
     cfg.password.set(request_params(request).get("password"))
 
     config.save_config()
-    return report(request_params(request), data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
+    return report(
+        request_params(request),
+        data={
+            "success": True,
+            "restart_req": sabnzbd.RESTART_REQ,
+            # New credentials dropped every session, including the one that saved them
+            "login_req": credential_fingerprint() != credentials and not login_bypassed(request),
+        },
+    )
 
 
 @secured_expose(route="/config/general/upload_config", check_configlock=True, methods=["POST"])
