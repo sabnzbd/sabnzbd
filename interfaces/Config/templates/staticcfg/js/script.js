@@ -274,10 +274,8 @@ function loadFavicons() {
         }
     })
 }
-function do_restart() {
-    // Show overlay
-    $('.main-restarting').show()
-
+// Where the web-interface is expected to be once it comes back
+function restart_target_url() {
     // Check if we need redirect
     // Uses == on purpose, because val() returns string and data() returns int!
     var switchedHTTPS = ($('#enable_https').is(':checked') === ($('#enable_https').data('original') === undefined))
@@ -286,22 +284,67 @@ function do_restart() {
     // Are we on settings page or did nothing change?
     if(!$('body').hasClass('General') || (!switchedHTTPS && portsUnchanged)) {
         // Same as before
-        var urlTotal = window.location.origin + urlBase
-    } else {
-        // Protocol and port depend on http(s) setting
-        if($('#enable_https').is(':checked') && (window.location.protocol === 'https:' || !$('#https_port').val())) {
-            // Https on and we visited this page from HTTPS
-            var urlProtocol = 'https:';
-            var urlPort = $('#https_port').val() ? $('#https_port').val() : $('#port').val();
-        } else {
-            // Regular
-            var urlProtocol = 'http:';
-            var urlPort = $('#port').val();
-        }
-
-        // We cannot make a good guess for the IP, so at least we assume that stays the same
-        var urlTotal = urlProtocol + '//' + window.location.hostname + ':' + urlPort + urlBase;
+        return window.location.origin + urlBase
     }
+
+    // Protocol and port depend on http(s) setting
+    if($('#enable_https').is(':checked') && (window.location.protocol === 'https:' || !$('#https_port').val())) {
+        // Https on and we visited this page from HTTPS
+        var urlProtocol = 'https:';
+        var urlPort = $('#https_port').val() ? $('#https_port').val() : $('#port').val();
+    } else {
+        // Regular
+        var urlProtocol = 'http:';
+        var urlPort = $('#port').val();
+    }
+
+    // We cannot make a good guess for the IP, so at least we assume that stays the same
+    return urlProtocol + '//' + window.location.hostname + ':' + urlPort + urlBase;
+}
+
+// Poll until the web-interface answers again and then go there
+function await_web_interface(urlTotal) {
+    // Keep counter of failures
+    var loopCounter = 0;
+
+    // Now we try until we can connect
+    setInterval(function() {
+        loopCounter = loopCounter+1;
+        // We skip the first one so we give it time to shutdown
+        if(loopCounter < 2) {
+            return
+        }
+        $.ajax({ url: urlTotal,
+            success: function() {
+                // Back to base
+                location.href = urlTotal;
+            },
+            error: function(status, text) {
+                // Too many failures and we give up
+                if(loopCounter >= 10) {
+                    // If the port has changed 'Access-Control-Allow-Origin' header will not allow
+                    // us to check if the server is back up. So after 10 failures (20 sec) we redirect
+                    // anyway in the hopes it works anyway..
+                    location.href = urlTotal;
+                }
+            }
+        })
+    }, 2000)
+
+    // Exception if we go from HTTPS to HTTP
+    // (this is not allowed by browsers and all of the above will be ignored)
+    if(urlTotal.indexOf(window.location.protocol + '//') !== 0) {
+        // Saftey redirect after 20 sec
+        setTimeout(function() {
+            location.href = urlTotal;
+        }, 20*1000)
+    }
+}
+function do_restart() {
+    // Show overlay
+    $('.main-restarting').show()
+
+    var urlTotal = restart_target_url()
 
     // Show where we are going to connect
     $('.main-restarting .restarting-url').text(urlTotal)
@@ -309,43 +352,20 @@ function do_restart() {
     // Initiate restart
     $.ajax({ url: rootURL + 'api?mode=restart', type: 'POST',
         complete: function() {
-            // Keep counter of failures
-            var loopCounter = 0;
-
-            // Now we try until we can connect
-            setInterval(function() {
-                loopCounter = loopCounter+1;
-                // We skip the first one so we give it time to shutdown
-                if(loopCounter < 2) {
-                    return
-                }
-                $.ajax({ url: urlTotal,
-                    success: function() {
-                        // Back to base
-                        location.href = urlTotal;
-                    },
-                    error: function(status, text) {
-                        // Too many failures and we give up
-                        if(loopCounter >= 10) {
-                            // If the port has changed 'Access-Control-Allow-Origin' header will not allow
-                            // us to check if the server is back up. So after 10 failures (20 sec) we redirect
-                            // anyway in the hopes it works anyway..
-                            location.href = urlTotal;
-                        }
-                    }
-                })
-            }, 2000)
-
-            // Exception if we go from HTTPS to HTTP
-            // (this is not allowed by browsers and all of the above will be ignored)
-            if(window.location.protocol !== urlProtocol) {
-                // Saftey redirect after 20 sec
-                setTimeout(function() {
-                    location.href = urlTotal;
-                }, 20*1000)
-            }
+            await_web_interface(urlTotal)
         }
     });
+}
+// The web server restarts itself to pick up the new settings, so only wait for it
+function await_web_restart() {
+    // Show overlay
+    $('.main-restarting .restarting-what').text(configTranslate.restartingWebUI)
+    $('.main-restarting').show()
+
+    var urlTotal = restart_target_url()
+    $('.main-restarting .restarting-url').text(urlTotal)
+
+    await_web_interface(urlTotal)
 }
 
 // Remove obfuscation
@@ -435,6 +455,9 @@ $(document).ready(function () {
                     $('#config_err_msg').text(" ");
                     setTimeout(config_success, 1000);
                 }
+            } else if(json.value && json.value.web_restart_req) {
+                // Only the web-interface restarts, so just wait for it to come back
+                await_web_restart();
             } else if(form && form.is('[data-reload-on-save]')) {
                 // Values changed that are rendered by the server, so reload the page
                 $('#config_err_msg').text(" ");

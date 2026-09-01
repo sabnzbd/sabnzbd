@@ -170,6 +170,7 @@ WEB_DIR_CONFIG = None
 WIZARD_DIR = None
 SABSTOP = False
 RESTART_REQ = False
+WEB_SERVER_RESTART_REQ = False
 PAUSED_ALL = False
 TRIGGER_RESTART = False  # To trigger restart for Scheduler, WinService and Mac
 WINTRAY = None  # Thread for the Windows SysTray icon
@@ -255,15 +256,15 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.cache_limit.callback(cfg.new_limit)
     cfg.direct_write.callback(cfg.new_direct_write)
     cfg.download_dir.callback(cfg.new_storage_dir)
-    cfg.web_host.callback(cfg.guard_restart)
-    cfg.web_port.callback(cfg.guard_restart)
-    cfg.url_base.callback(trigger_restart)
+    cfg.web_host.callback(cfg.guard_web_server_restart)
+    cfg.web_port.callback(cfg.guard_web_server_restart)
+    cfg.url_base.callback(cfg.guard_web_server_restart)
     cfg.log_dir.callback(cfg.guard_restart)
-    cfg.https_port.callback(cfg.guard_restart)
-    cfg.https_cert.callback(cfg.guard_restart)
-    cfg.https_key.callback(cfg.guard_restart)
-    cfg.https_chain.callback(cfg.guard_restart)
-    cfg.enable_https.callback(cfg.guard_restart)
+    cfg.https_port.callback(cfg.guard_web_server_restart)
+    cfg.https_cert.callback(cfg.guard_web_server_restart)
+    cfg.https_key.callback(cfg.guard_web_server_restart)
+    cfg.https_chain.callback(cfg.guard_web_server_restart)
+    cfg.enable_https.callback(cfg.guard_web_server_restart)
     cfg.socks5_proxy_url.callback(cfg.guard_restart)
     cfg.top_only.callback(cfg.guard_top_only)
     cfg.pause_on_post_processing.callback(cfg.guard_pause_on_pp)
@@ -540,7 +541,11 @@ def delayed_startup_actions():
     # Drop leftover records of feeds that are no longer configured
     sabnzbd.rss.purge_removed_feeds()
 
-    # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only
+    start_broadcast()
+
+
+def start_broadcast():
+    """Announce the web-interface over SSDP and Bonjour, unless it only listens on localhost"""
     if sabnzbd.cfg.enable_broadcast() and not misc.is_localhost(cfg.web_host()):
         # Try to find a LAN IP address for SSDP/Bonjour
         if misc.is_lan_addr(cfg.web_host()):
@@ -579,6 +584,13 @@ def delayed_startup_actions():
                 "SABnzbd %s" % sabnzbd.__version__,
                 ssdp_broadcast_interval=sabnzbd.cfg.ssdp_broadcast_interval(),
             )
+
+
+def restart_broadcast():
+    """Re-announce the web-interface, so a changed address is advertised"""
+    sabnzbd.zconfig.remove_server()
+    sabnzbd.utils.ssdp.stop_ssdp()
+    start_broadcast()
 
 
 def check_all_tasks():

@@ -1138,7 +1138,7 @@ def _api_config_regenerate_certs(value: str, kwargs: QueryParams) -> Response:
         https_cert = sabnzbd.cfg.https_cert.get_path()
         https_key = sabnzbd.cfg.https_key.get_path()
         result = create_https_certificates(https_cert, https_key)
-        sabnzbd.RESTART_REQ = True
+        sabnzbd.WEB_SERVER_RESTART_REQ = True
     return report(kwargs, data=result)
 
 

@@ -267,6 +267,7 @@ SKIN_TEXT = {
     "backup": TT("Backup"),  #: Indicates that server is Backup server in Status page
     "readwiki": TT("Read the Wiki Help on this!"),
     "restarting-sab": TT("Restarting SABnzbd..."),
+    "restarting-webui": TT("Restarting the web-interface..."),
     # Config->General
     "restartRequired": TT("Changes will require a SABnzbd restart!"),
     "webServer": TT("SABnzbd Web Server"),

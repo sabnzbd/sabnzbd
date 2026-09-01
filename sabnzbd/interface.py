@@ -1040,7 +1040,10 @@ def config_special_save(request: Request):
             return report(request_params(request), error=msg)
 
     config.save_config()
-    return report(request_params(request))
+    return report(
+        request_params(request),
+        data={"success": True, "web_restart_req": sabnzbd.WEB_SERVER_RESTART_REQ},
+    )
 
 
 ##############################################################################
@@ -1100,7 +1103,14 @@ def config_general_save(request: Request):
     cfg.password.set(request_params(request).get("password"))
 
     config.save_config()
-    return report(request_params(request), data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
+    return report(
+        request_params(request),
+        data={
+            "success": True,
+            "restart_req": sabnzbd.RESTART_REQ,
+            "web_restart_req": sabnzbd.WEB_SERVER_RESTART_REQ,
+        },
+    )
 
 
 @secured_expose(route="/config/general/upload_config", check_configlock=True, methods=["POST"])
