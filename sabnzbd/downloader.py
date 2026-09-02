@@ -702,7 +702,6 @@ class Downloader(Thread):
                         self.max_chunk_size = self.last_max_chunk_size
                     elif self.last_max_chunk_size * 3 < self.max_chunk_size:
                         time.sleep(self.sleep_time)
-                        now = time.time()
                     self.last_max_chunk_size = 0
 
                 # Use select to find sockets ready for reading/writing
