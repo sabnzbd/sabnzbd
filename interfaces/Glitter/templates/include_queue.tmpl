@@ -232,7 +232,7 @@
 
     <div class="input-group search-box" data-bind="visible: queue.hasQueueSearch" style="display: none;">
         <input type="text" class="form-control" placeholder="$T('Glitter-search')" aria-label="$T('Glitter-search')" required data-bind="textInput: queue.searchTerm, event: { keydown: queue.clearSearchTerm }" />
-        <a href="#" data-bind="click: queue.clearSearchTerm, attr: { 'aria-label': queue.searchTerm() ? '$T('Glitter-clearSearch')' : '$T('Glitter-search')' }">
+        <a href="#" data-tooltip="true" data-html="true" data-placement="right" title="$T('Glitter-searchExplain')" data-bind="click: queue.clearSearchTerm, attr: { 'aria-label': queue.searchTerm() ? '$T('Glitter-clearSearch')' : '$T('Glitter-search')' }">
             <span class="glyphicon" data-bind="css: { 'glyphicon-search' : !queue.searchTerm(), 'glyphicon-remove' : queue.searchTerm() }"></span>
         </a>
     </div>
