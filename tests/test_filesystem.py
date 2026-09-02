@@ -614,6 +614,39 @@ class TestPointsOutside:
         assert not filesystem.points_outside(root, os.path.join(root, "pivot", "file.bin"))
 
 
+class TestMoveToPath:
+    def test_link_in_a_parent_cannot_redirect(self, tmp_path):
+        """A linked directory in the path redirects the move just like a linked leaf"""
+        base = str(tmp_path)
+        root = os.path.join(base, "complete")
+        outside = os.path.join(base, "outside")
+        os.makedirs(root)
+        os.makedirs(outside)
+        os.symlink(outside, os.path.join(root, "sub"))
+
+        source = os.path.join(base, "source.bin")
+        Path(source).touch()
+        ok, new_path = filesystem.move_to_path(source, os.path.join(root, "sub", "moved.bin"), root=root)
+
+        assert not ok
+        assert not new_path
+        assert os.path.isfile(source)
+        assert not os.listdir(outside)
+
+    def test_move_inside_the_root_still_works(self, tmp_path):
+        base = str(tmp_path)
+        root = os.path.join(base, "complete")
+        os.makedirs(root)
+        source = os.path.join(base, "source.bin")
+        Path(source).touch()
+
+        ok, new_path = filesystem.move_to_path(source, os.path.join(root, "sub", "moved.bin"), root=root)
+
+        assert ok
+        assert os.path.isfile(new_path)
+        assert not os.path.isfile(source)
+
+
 class TestFirstExistingPath:
     def test_existing_path(self, tmp_path):
         assert filesystem.first_existing_path(str(tmp_path)) == str(tmp_path)
@@ -1044,6 +1077,16 @@ class TestGetUniqueDirFilename:
         assert first_filename == "/some/filename.1"
         fake_fs.create_file(first_filename)
         assert filesystem.get_unique_filename(test_file) == "/some/filename.2"
+
+    def test_dangling_link_is_taken(self, tmp_path):
+        """A link whose target is missing still occupies the name, and handing it out would
+        write through it to wherever it points"""
+        base = str(tmp_path)
+        test_file = os.path.join(base, "file.name")
+        Path(test_file).touch()
+        os.symlink(os.path.join(base, "does_not_exist"), os.path.join(base, "file.1.name"))
+
+        assert filesystem.get_unique_filename(test_file) == os.path.join(base, "file.2.name")
 
 
 @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows specific tests")

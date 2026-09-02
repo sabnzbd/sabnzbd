@@ -1452,7 +1452,7 @@ class NzbObject(TryList):
         candidate = filename
         path = os.path.join(directory, candidate)
         num = 1
-        while candidate in self.filenames or os.path.exists(path):
+        while candidate in self.filenames or os.path.lexists(path):
             candidate = f"{base_name}.{num}{ext}"
             path = os.path.join(directory, candidate)
             num += 1
