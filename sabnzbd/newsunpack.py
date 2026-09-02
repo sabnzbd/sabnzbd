@@ -70,6 +70,7 @@ from sabnzbd.filesystem import (
     create_all_dirs,
     UNWANTED_FILE_PERMISSIONS,
     get_unique_filename,
+    points_outside,
 )
 from sabnzbd.nzb import NzbObject, NzbFile
 import sabnzbd.cfg as cfg
@@ -510,7 +511,7 @@ def file_join(nzo: NzbObject, workdir_complete: str, joinables: list[str]) -> tu
             joinable_sets[joinable_set].sort()
 
             # If par2 already did the work, just remove the files
-            if os.path.exists(joinable_set):
+            if os.path.lexists(joinable_set):
                 logging.debug("file_join(): Skipping %s, (probably) joined by par2", joinable_set)
                 if nzo.delete:
                     clean_up_joinables(current)
@@ -527,6 +528,12 @@ def file_join(nzo: NzbObject, workdir_complete: str, joinables: list[str]) -> tu
             if workdir_complete:
                 filename = filename.replace(nzo.download_path, workdir_complete)
             logging.debug("file_join(): Assembling %s", filename)
+
+            join_root = workdir_complete or nzo.download_path
+            if points_outside(join_root, filename):
+                raise OSError("Refusing to join into %s, it points outside %s" % (filename, join_root))
+            if os.path.islink(filename):
+                raise OSError("Refusing to join into %s, it is a link" % filename)
 
             # Join the segments
             with open(filename, "ab") as joined_file:
@@ -1156,6 +1163,9 @@ def tar_extract(nzo: NzbObject, tar_path: str, extraction_path: str, one_folder:
                 member = member.replace(
                     name=os.path.relpath(get_unique_filename(os.path.join(path, member.name)), path)
                 )
+            if points_outside(path, os.path.join(path, member.name)):
+                logging.info("Skipping %s from tar file, it points outside %s", member.name, path)
+                return None
             new_files.append(os.path.join(extraction_path, member.name))
         return member
 

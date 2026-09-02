@@ -844,7 +844,7 @@ def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> str | bool
     if n:
         new_path = "%s.%s" % (path, n)
 
-    if not os.path.exists(new_path):
+    if not os.path.lexists(new_path):
         if create_dir:
             return create_all_dirs(new_path, apply_permissions=True)
         else:
@@ -861,7 +861,7 @@ def get_unique_filename(path: str) -> str:
     num = 1
     new_path, filename = os.path.split(path)
     name, ext = os.path.splitext(filename)
-    while os.path.exists(path):
+    while os.path.lexists(path):
         filename = "%s.%d%s" % (name, num, ext)
         num += 1
         path = os.path.join(new_path, filename)
@@ -881,8 +881,9 @@ def listdir_full(input_dir: str, recursive: bool = True) -> list[str]:
     return filelist
 
 
-def move_to_path(path: str, new_path: str) -> tuple[bool, Optional[str]]:
+def move_to_path(path: str, new_path: str, root: Optional[str] = None) -> tuple[bool, Optional[str]]:
     """Move a file to a new path, optionally give unique filename
+    With root the destination has to resolve to a location inside it
     Return (ok, new_path)
     """
     ok = True
@@ -898,6 +899,11 @@ def move_to_path(path: str, new_path: str) -> tuple[bool, Optional[str]]:
         new_path = get_unique_filename(new_path)
 
     if new_path:
+        if root and points_outside(root, new_path):
+            logging.error(T("Failed moving %s to %s"), clip_path(path), clip_path(new_path))
+            logging.info("Refusing to move %s, it points outside %s", new_path, root)
+            return False, None
+
         logging.debug("Moving (overwrite: %s) %s => %s", overwrite, path, new_path)
         if not os.path.exists(new_path_dir):
             create_all_dirs(os.path.dirname(new_path), apply_permissions=True)

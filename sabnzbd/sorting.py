@@ -648,7 +648,7 @@ def move_to_parent_directory(workdir: str, files: list[str]) -> tuple[str, bool,
             # Not inside the directory we move, keep as-is
             moved_files.append(path)
             continue
-        ok, new_path = move_to_path(path, path.replace(workdir, dest))
+        ok, new_path = move_to_path(path, path.replace(workdir, dest), root=dest)
         if not ok:
             return dest, False, moved_files + files[nr:]
         if new_path:
