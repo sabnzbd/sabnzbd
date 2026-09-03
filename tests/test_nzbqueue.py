@@ -40,6 +40,7 @@ from sabnzbd.constants import (
     NORMAL_PRIORITY,
     HIGH_PRIORITY,
     FORCE_PRIORITY,
+    REPAIR_PRIORITY,
 )
 from sabnzbd.database import HistoryDB
 from sabnzbd.downloader import Server
@@ -625,6 +626,28 @@ class TestNzbQueue:
         queue.switch(jobs[0].nzo_id, value2)
 
         assert self.get_queue_order(queue) == expected_order
+
+    @pytest.mark.parametrize("via_set_priority", [False, True])
+    def test_forced_jobs_go_first_and_repair_jobs_go_last(self, queue, via_set_priority):
+        """A forced job is the most recent thing the user asked for, repair re-adds must not starve"""
+        for priority, expected in (
+            (FORCE_PRIORITY, ["job-c", "job-b", "job-a"]),
+            (REPAIR_PRIORITY, ["job-a", "job-b", "job-c"]),
+        ):
+            queue = NzbQueue()
+            for name in "abc":
+                nzo = make_dummy_nzo(name, priority=NORMAL_PRIORITY if via_set_priority else priority)
+                queue.add(nzo, save=False, quiet=True)
+                if via_set_priority:
+                    queue.set_priority([nzo.nzo_id], priority)
+
+            assert self.get_queue_order(queue) == expected
+
+    def test_repair_outranks_forced(self, queue):
+        queue.add(make_dummy_nzo("forced", priority=FORCE_PRIORITY), save=False, quiet=True)
+        queue.add(make_dummy_nzo("repair", priority=REPAIR_PRIORITY), save=False, quiet=True)
+
+        assert self.get_queue_order(queue) == ["job-repair", "job-forced"]
 
     def test_has_forced_jobs_true_when_forced_and_active(self, queue):
         forced = make_dummy_nzo("forced", priority=FORCE_PRIORITY)
