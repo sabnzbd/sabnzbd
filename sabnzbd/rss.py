@@ -989,7 +989,10 @@ class RSSReader:
             if readout:
                 gen = self.fetch_rss(feed, uris)
             else:
-                gen = repo.get_feed_jobs(feed=feed)
+                # Read all stored jobs before evaluating them: each evaluation writes
+                # through its own connection, which would otherwise be blocked by the
+                # still-open read cursor ("database is locked")
+                gen = list(repo.get_feed_jobs(feed=feed))
 
             # Evaluate rules and apply side effects
             try:
