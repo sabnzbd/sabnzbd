@@ -989,9 +989,7 @@ class RSSReader:
             if readout:
                 gen = self.fetch_rss(feed, uris)
             else:
-                # Read all stored jobs before evaluating them: each evaluation writes
-                # through its own connection, which would otherwise be blocked by the
-                # still-open read cursor ("database is locked")
+                # Materialize before evaluating: each write needs the read cursor closed
                 gen = list(repo.get_feed_jobs(feed=feed))
 
             # Evaluate rules and apply side effects
