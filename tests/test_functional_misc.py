@@ -39,17 +39,13 @@ from tests.testhelper import (
     SABnzbdBaseTest,
     create_and_read_nzb_fp,
     get_api_result,
-    get_url_result,
+    post_url_result,
     wait_for,
 )
 
 
 class TestShowLogging(SABnzbdBaseTest):
-    def test_showlog(self):
-        """Test the output of the filtered-log button"""
-        # Basic URL-fetching, easier than Selenium file download
-        log_result = get_api_result("showlog")
-
+    def _assert_is_the_log(self, log_result: str):
         # Make sure it has basic log stuff
         assert "The log" in log_result
         assert "Full executable path" in log_result
@@ -57,6 +53,15 @@ class TestShowLogging(SABnzbdBaseTest):
         # Make sure sabnzbd.ini was appended
         assert "__encoding__ = utf-8" in log_result
         assert "[misc]" in log_result
+
+    def test_showlog(self):
+        """Test the output of the filtered-log button"""
+        # Basic URL-fetching, easier than driving a browser file download
+        self._assert_is_the_log(get_api_result("showlog"))
+
+    def test_log_page_route(self):
+        """The interface reaches the log through /log as a form POST, not the mode=showlog API-call"""
+        self._assert_is_the_log(post_url_result("log"))
 
 
 class TestQueueRepair(SABnzbdBaseTest):
@@ -230,8 +235,8 @@ class TestDaemonizing(SABnzbdBaseTest):
         assert os.path.getsize(error_log_path) < 1024
 
         try:
-            # Let's shut it down and give it some time to do so
-            get_url_result("shutdown", daemon_host, daemon_port)
+            # Let's shut it down via the API and give it some time to do so
+            get_api_result("shutdown", daemon_host, daemon_port)
             wait_for(
                 lambda: not os.path.exists(pid_file),
                 timeout=3,

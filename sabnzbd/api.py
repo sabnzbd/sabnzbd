@@ -36,7 +36,7 @@ from starlette.background import BackgroundTask
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import QueryParams, UploadFile
 from starlette.requests import Request
-from starlette.responses import Response, StreamingResponse
+from starlette.responses import RedirectResponse, Response, StreamingResponse
 
 # For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
 # compile due to Rust dependency. Since the output is the same, we support all modules.
@@ -786,7 +786,7 @@ def sanitize_line(line: bytes, cur_user_bytes: Optional[bytes] = None) -> bytes:
     return line
 
 
-def _api_showlog(name: str, kwargs: QueryParams) -> StreamingResponse:
+def build_log_response() -> StreamingResponse:
     """Fetch the INI and the log-data and add a message at the top"""
 
     def _generate_log():
@@ -827,6 +827,10 @@ def _api_showlog(name: str, kwargs: QueryParams) -> StreamingResponse:
         media_type="application/x-download;charset=utf-8",
         headers={"Content-Disposition": 'attachment;filename="sabnzbd.log"', "Cache-Control": "no-store"},
     )
+
+
+def _api_showlog(name: str, kwargs: QueryParams) -> StreamingResponse:
+    return build_log_response()
 
 
 def _api_get_cats(name: str, kwargs: QueryParams) -> Response:
@@ -1564,10 +1568,9 @@ def test_nntp_server_dict(kwargs: QueryParams) -> tuple[bool, str]:
         elif nntp_code < 300 or nntp_code in (411, 423, 430):
             # If no username/password set and we requested fake-article, it will return 430 Not Found
             return_status = (True, T("Connection Successful!"))
-        elif nntp_code == 502 or sabnzbd.downloader.clues_login(nntp_message):
-            return_status = (False, T("Authentication failed, check username/password."))
-        elif sabnzbd.downloader.clues_too_many(nntp_message):
-            return_status = (False, T("Too many connections, please pause downloading or try again later"))
+        else:
+            # Pass the server message directly on to the user
+            return_status = (False, nntp_message)
 
     # Fallback in case no data was received or unknown status
     if not return_status:
@@ -1934,7 +1937,15 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
-def url_for(path: str = "", request: Optional[Request] = None, absolute: bool = True, **kwargs) -> str:
+def base_redirect_response(root: str = "", **kwargs) -> RedirectResponse:
+    """Create a Starlette RedirectResponse with SABnzbd URL base and query parameters"""
+    url = url_for(root, **kwargs)
+    if cfg.api_logging():
+        logging.debug("Redirecting to %s", url)
+    return RedirectResponse(url=url, status_code=302)
+
+
+def url_for(path: str = "", **kwargs) -> str:
     """Build an absolute URL below the configured URL base.
 
     Templates reach this as $url(...), so a link never depends on the depth of the
@@ -1952,8 +1963,6 @@ def url_for(path: str = "", request: Optional[Request] = None, absolute: bool = 
     # so normalising the path to a single leading slash is enough to join them
     url = cfg.url_base() + "/" + path.lstrip("/")
 
-    if absolute:
-        url = url_origin(request) + url
     if kwargs:
         url = "%s?%s" % (url, urllib.parse.urlencode(kwargs))
     if fragment:
@@ -1978,22 +1987,6 @@ def url_netloc(host: Optional[str], scheme: str, port: Optional[int]) -> str:
     return "%s:%s" % (host, port)
 
 
-def url_origin(request: Optional[Request] = None) -> str:
-    """The scheme://host[:port] SABnzbd was reached by, for use in absolute URLs.
-
-    Taken from the request when there is one: uvicorn's ProxyHeadersMiddleware has
-    already applied X-Forwarded-Proto by then (when verify_xff_header is enabled), so
-    this stays correct behind a reverse proxy terminating TLS on another port. Without
-    a request there is nothing to observe, so fall back to the configured scheme and
-    port on localhost."""
-    if request:
-        return "%s://%s" % (request.url.scheme, url_netloc(request.url.hostname, request.url.scheme, request.url.port))
-
-    scheme = "https" if cfg.enable_https() else "http"
-    port = cfg.https_port() if cfg.enable_https() else cfg.web_port()
-    return "%s://%s" % (scheme, url_netloc("localhost", scheme, port))
-
-
 def build_header(
     webdir: str = "",
     for_template: bool = True,
@@ -2009,20 +2002,14 @@ def build_header(
         if trans_functions:
             header["T"] = Ttemplate
             header["Tspec"] = Tspec
-
-            # Bound to this request so $url() can see the scheme and host it was reached by.
-            # Deliberately a closure rather than functools.partial: template_filtered_response
-            # deep-copies the search list, and deepcopy treats a function as atomic but walks a
-            # partial's keywords -- which would drag in the request's scope, the app and its
-            # whole route graph, and blow the recursion limit.
-            def bound_url_for(path: str = "", **kwargs) -> str:
-                return url_for(path, request=request, **kwargs)
-
-            header["url"] = bound_url_for
+            header["url"] = url_for
 
         header["uptime"] = calc_age(sabnzbd.START)
         header["color_scheme"] = sabnzbd.WEB_COLOR or ""
         header["confighelpuri"] = f"https://sabnzbd.org/wiki/configuration/{sabnzbd.__version__[:3]}/"
+
+        if request:
+            header["csrf_token"] = getattr(request.state, "csrf_token", "")
 
         header["pid"] = os.getpid()
         header["active_lang"] = cfg.language()
@@ -2039,7 +2026,6 @@ def build_header(
         header["power_options"] = sabnzbd.WINDOWS or sabnzbd.MACOS or sabnzbd.LINUX_POWER
         header["pp_pause_event"] = sabnzbd.Scheduler.pp_pause_event
 
-        header["apikey"] = cfg.api_key()
         header["new_release"], header["new_rel_url"] = sabnzbd.NEW_VERSION
 
         # Add the commit hash so static files are refreshed on nightly/development builds

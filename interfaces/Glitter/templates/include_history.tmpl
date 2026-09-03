@@ -138,7 +138,7 @@
 
     <div class="input-group search-box">
         <input type="text" class="form-control" placeholder="$T('Glitter-search')" aria-label="$T('Glitter-search')" required data-bind="textInput: history.searchTerm, event: { keydown: history.clearSearchTerm }" />
-        <a href="#" data-bind="click: history.clearSearchTerm, attr: { 'aria-label': history.searchTerm() ? '$T('Glitter-clearSearch')' : '$T('Glitter-search')' }">
+        <a href="#" data-tooltip="true" data-html="true" data-placement="right" title="$T('Glitter-searchExplain')" data-bind="click: history.clearSearchTerm, attr: { 'aria-label': history.searchTerm() ? '$T('Glitter-clearSearch')' : '$T('Glitter-search')' }">
             <span class="glyphicon" data-bind="css: { 'glyphicon-search' : !history.searchTerm(), 'glyphicon-remove' : history.searchTerm() }"></span>
         </a>
     </div>

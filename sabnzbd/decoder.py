@@ -60,6 +60,15 @@ class BadUu(Exception):
     pass
 
 
+class SinkFailed(Exception):
+    """A streamed article could not be written, so nothing was kept.
+
+    Deliberately not a BadYenc: that handler inspects the response lines and can decide
+    the article was fine after all, which would mark an article as successful when it
+    is not on disk anywhere.
+    """
+
+
 def decode(article: Article, decoder: sabctools.NNTPResponse):
     decoded_data: Optional[bytearray] = None
     nzo = article.nzf.nzo
@@ -107,6 +116,28 @@ def decode(article: Article, decoder: sabctools.NNTPResponse):
         if search_new_server(article):
             return
 
+    except SinkFailed:
+        # The file went away under the article, so it has to be fetched again. Any
+        # part of it already written is overwritten at the same offsets next time.
+        logging.info("Could not write %s to its file, fetching it again", art_id)
+
+        if search_new_server(article):
+            return
+
+    except OSError as error:
+        # The same response the assembler gives a failed write. Fetching the article
+        # again cannot fix a full disk, and doing so would spend its retries and then
+        # fail the job as incomplete - so pause instead and leave the article to be
+        # picked up again once there is room.
+        if sabnzbd.filesystem.out_of_space(error):
+            logging.error(T("Disk full! Forcing Pause"))
+        else:
+            logging.error(T("Disk error on creating file %s"), error.filename)
+        logging.info("Traceback: ", exc_info=True)
+        sabnzbd.Downloader.pause()
+        article.allow_new_fetcher()
+        return
+
     except (BadYenc, ValueError):
         # Handles precheck and badly formed articles
         if nzo.precheck and decoder.status_code == 223:
@@ -151,13 +182,33 @@ def decode(article: Article, decoder: sabctools.NNTPResponse):
         sabnzbd.ArticleCache.save_article(article, decoded_data)
         article.decoded = True
     elif not nzo.precheck:
-        # Nothing to save
+        # Either there was nothing to save, or the decoder streamed it straight to the
+        # file. Both are on disk as far as the rest of the pipeline is concerned; the
+        # assembler advances past an on_disk article on its own when it next runs.
         article.on_disk = True
 
     sabnzbd.NzbQueue.register_article(article, article_success)
 
 
-def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> bytearray:
+def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[bytearray]:
+    """Record what the decoder produced.
+
+    data is None when the article was streamed straight to its file rather than
+    decoded into memory. Everything the caller needs is still reported - sizes, offset,
+    CRC - so the only difference is that there is nothing left to cache or assemble.
+    """
+    # The job was deleted while the article was arriving, or the write failed. The
+    # decoder consumed the response anyway so the connection survives, but nothing was
+    # kept, so this is a failed article rather than one on disk.
+    if response.sink_failed:
+        # A closed file means the job went away while the article was arriving, and it
+        # only needs fetching again. Anything else is a real disk error - a full disk,
+        # most often - and is re-raised as the OSError it came from so it gets the same
+        # handling as a failed write from the assembler.
+        if isinstance(response.sink_error, OSError):
+            raise response.sink_error
+        raise SinkFailed
+
     # Let SABCTools do all the heavy lifting
     decoded_data = response.data
     article.file_size = response.file_size
@@ -169,8 +220,10 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> bytearray
     # Assume it is yenc
     nzf.type = "yenc"
 
-    # Only set the name if it was found and not obfuscated
-    if not nzf.filename_checked and (file_name := response.file_name):
+    # Only set the name if it was found and not obfuscated. Streamed articles never
+    # reach here: a sink is only handed out once the filename has been checked, exactly
+    # because this needs the bytes.
+    if decoded_data is not None and not nzf.filename_checked and (file_name := response.file_name):
         # Set the md5-of-16k if this is the first article
         if article.lowest_partnum:
             nzf.md5of16k = hashlib.md5(memoryview(decoded_data)[:16384]).digest()
@@ -182,6 +235,8 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> bytearray
     # CRC check
     if (crc := response.crc) is None:
         logging.info("CRC Error in %s", article.article)
+        # A streamed article is already on disk, so there is nothing to hand back; the
+        # bytes stay put either way, so par2 has the same chance of repairing it
         raise BadData(decoded_data)
 
     article.crc32 = crc

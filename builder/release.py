@@ -21,6 +21,7 @@ import re
 
 import github
 import praw
+import requests
 
 from common import (
     RELEASE_VERSION,
@@ -185,6 +186,20 @@ if RELEASE_THIS and gh_token:
         # Merge pull-request
         print("Merging pull request in sabnzbd/sabnzbd.github.io for the update")
         update_pr.merge(merge_method="squash")
+
+    # Trigger the Docker image build at linuxserver.io
+    # Branch "develop" builds the pre-releases, "master" the stable releases
+    if linuxserver_token := os.environ.get("LINUXSERVER_WEBHOOK_TOKEN", ""):
+        linuxserver_branch = "develop" if PRERELEASE else "master"
+        print("Triggering linuxserver.io Docker build for branch %s" % linuxserver_branch)
+        requests.post(
+            "https://ci.linuxserver.io/generic-webhook-trigger/invoke?sabnzbd",
+            headers={"Authorization": "Bearer %s" % linuxserver_token},
+            json={"branch": linuxserver_branch},
+            timeout=30,
+        ).raise_for_status()
+    else:
+        print("Missing LINUXSERVER_WEBHOOK_TOKEN")
 
     # Only with GitHub success we proceed to Reddit
     if reddit_token := os.environ.get("REDDIT_TOKEN", ""):

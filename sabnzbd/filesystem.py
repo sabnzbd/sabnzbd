@@ -19,6 +19,7 @@
 sabnzbd.misc - filesystem operations
 """
 
+import errno
 import gzip
 import os
 import pickle
@@ -36,7 +37,7 @@ import ctypes
 import random
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Any, Optional, BinaryIO
+from typing import Any, Iterable, Optional, BinaryIO
 
 try:
     import win32api
@@ -210,12 +211,36 @@ for i in range(1, 32):
     CH_ILLEGAL_WIN += chr(i)
 
 
-def sanitize_filename(filename: str) -> str:
+def sanitize_filename(filename: str, allow_subdirs: bool = False) -> str:
     """Return filename with illegal chars converted to legal ones
-    and with the par2 extension always in lowercase
+    and with the par2 extension always in lowercase.
+    With allow_subdirs the forward slashes that par2 uses to separate sub-directories are kept
+    and every part is sanitized on its own. The result is always local to the current folder:
+    empty parts, "." and ".." are dropped, so a leading slash or any amount of traversal can
+    never produce a name that points outside of it. The admin folder is dropped as well, so
+    it can never point into it either.
     """
     if not filename:
         return filename
+
+    if allow_subdirs:
+        # Par2 always uses a forward slash, no matter which platform created the set
+        parts = []
+        for part in filename.split("/"):
+            if part in ("", os.curdir):
+                continue
+            if part == os.pardir:
+                logging.info("Dropping directory traversal from name %s", filename)
+                continue
+            if part.lower() == JOB_ADMIN.lower():
+                # Never let a name point into the admin folder, its files are pickle-loaded
+                logging.info("Dropping admin folder from name %s", filename)
+                continue
+            parts.append(sanitize_filename(part))
+        # Nothing usable left, or no sub-directories after all
+        if not parts:
+            return "unknown"
+        return os.path.join(*parts)
 
     filename = unicode_nfc_normalize(filename)
 
@@ -455,6 +480,23 @@ def same_directory(a: str, b: str) -> int:
             return is_subfolder
 
 
+def points_into_admin_dir(path: str, base: str) -> bool:
+    """Return True if path is, or is inside, an admin folder somewhere below base.
+    Both sides are resolved first, because the name alone cannot be trusted: on Windows
+    an NTFS 8.3 alias ("__ADMI~1") and on any platform a link point at a directory that
+    is named differently than the path says. Resolving also settles any case difference.
+    """
+    # realpath() only keeps the \\?\ prefix if it was there to begin with, so clip both
+    # sides: comparing a prefixed path to a plain one would put the admin folder out of
+    # sight and let it pass
+    try:
+        relative = os.path.relpath(clip_path(os.path.realpath(path)), clip_path(os.path.realpath(base)))
+    except ValueError:
+        # Windows only: resolving ended up on another drive, so it left base altogether
+        return True
+    return JOB_ADMIN.lower() in relative.lower().split(os.sep)
+
+
 def is_network_path(path: str) -> bool:
     """Check weither a path is a network path.
     On Windows, use win32 functions to detect users that try to avoid this detection by using a mapped drive letter.
@@ -498,11 +540,16 @@ TAR_RE = re.compile(r"\.(tar$)", re.I)
 
 
 def build_filelists(
-    workdir: Optional[str], workdir_complete: Optional[str] = None, check_both: bool = False, check_rar: bool = True
+    workdir: Optional[str],
+    workdir_complete: Optional[str] = None,
+    check_both: bool = False,
+    check_rar: bool = True,
+    extra_dirs: Iterable[str] = (),
 ) -> tuple[list[str], list[str], list[str], list[str], list[str]]:
     """Build filelists, if workdir_complete has files, ignore workdir.
     Optionally scan both directories.
     Optionally test content to establish RAR-ness
+    The workdir itself is never scanned recursively, only the extra_dirs are looked at as well
     """
     sevens, joinables, rars, ts, filelist, tars = ([], [], [], [], [], [])
 
@@ -511,6 +558,10 @@ def build_filelists(
 
     if workdir and (not filelist or check_both):
         filelist.extend(listdir_full(workdir, recursive=False))
+        # Par2-renames can move files into a folder of their own. Those folders are the only
+        # sub-folders of the workdir we know about, anything else is left alone on purpose.
+        for extra_dir in extra_dirs:
+            filelist.extend(listdir_full(extra_dir, recursive=False))
 
     for file in filelist:
         # Extra check for rar (takes CPU/disk)
@@ -923,12 +974,21 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
         oldpath, _ = os.path.split(old)
         # Check not outside directory
         # In case of "same_file() == 1": same directory, so nothing to do
-        if same_directory(oldpath, path) == 0:
+        location = same_directory(oldpath, path)
+        if location == 0:
             # Outside current directory, this is most likely malicious
             logging.error(T("Blocked attempt to create directory %s"), path)
             raise OSError("Refusing to go outside directory")
-        elif same_directory(oldpath, path) == 2:
-            # Sub-directory, so create if does not yet exist:
+
+        # Refuse the admin folder, it is pickle-loaded. Check the whole new path: if the
+        # last element is the admin folder itself, the move below would put the file
+        # inside it, since shutil.move accepts a directory as its target.
+        if points_into_admin_dir(new, oldpath):
+            logging.error(T("Blocked attempt to create directory %s"), path)
+            raise OSError("Refusing to go into admin directory")
+
+        if location == 2:
+            # Sub-directory, create if does not yet exist:
             create_all_dirs(path)
 
     logging.debug('Renaming "%s" to "%s"', old, new)
@@ -1124,6 +1184,44 @@ def get_new_id(prefix: str, folder: str, check_list: Optional[list] = None) -> s
     raise IOError
 
 
+# Allowlist of every global our pickles may reference: safe data types and our persisted classes.
+# Explicit, not a "sabnzbd.*" wildcard, which would also admit gadget classes (e.g. a __del__
+# that runs os.kill). sabnzbd.nzbstuff is the pre-refactor module path (compat shim).
+_SAFE_GLOBALS = {
+    ("datetime", "datetime"),
+    ("datetime", "date"),
+    ("datetime", "time"),
+    ("datetime", "timedelta"),
+    ("datetime", "timezone"),
+    ("time", "struct_time"),
+    ("os", "stat_result"),
+    ("collections", "OrderedDict"),
+    ("collections", "defaultdict"),
+    ("collections", "deque"),
+    ("builtins", "set"),
+    ("builtins", "frozenset"),
+    ("builtins", "bytearray"),
+    ("builtins", "complex"),
+    ("copyreg", "_reconstructor"),
+    ("sabnzbd.nzb.object", "NzbObject"),
+    ("sabnzbd.nzb.file", "NzbFile"),
+    ("sabnzbd.nzb.article", "Article"),
+    ("sabnzbd.par2file", "FilePar2Info"),
+    ("sabnzbd.nzbstuff", "NzbObject"),
+    ("sabnzbd.nzbstuff", "NzbFile"),
+    ("sabnzbd.nzbstuff", "Article"),
+}
+
+
+class RestrictedUnpickler(pickle.Unpickler):
+    """Unpickler restricted to an allowlist, so a hostile pickle cannot run code"""
+
+    def find_class(self, module, name):
+        if (module, name) in _SAFE_GLOBALS:
+            return super().find_class(module, name)
+        raise pickle.UnpicklingError("Refusing to unpickle %s.%s" % (module, name))
+
+
 def save_data(data: Any, _id: str, path: str, do_pickle: bool = True, silent: bool = False):
     """Save data to a diskfile"""
     if not silent:
@@ -1172,11 +1270,7 @@ def load_data(
     try:
         with open(path, "rb") as data_file:
             if do_pickle:
-                try:
-                    data = pickle.load(data_file, encoding=sabnzbd.encoding.CODEPAGE)
-                except UnicodeDecodeError:
-                    # Could be Python 2 data that we can load using old encoding
-                    data = pickle.load(data_file, encoding="latin1")
+                data = RestrictedUnpickler(data_file, encoding=sabnzbd.encoding.CODEPAGE).load()
             elif mutable:
                 data = bytearray(os.fstat(data_file.fileno()).st_size)
                 data_file.readinto(data)
@@ -1361,6 +1455,27 @@ def check_sparse_and_disable(test_dir: str) -> bool:
     return True
 
 
+@lru_cache(maxsize=16)
+def is_rotational(path: str) -> Optional[bool]:
+    """Does the kernel say the disk behind this path seeks?"""
+    if sabnzbd.WINDOWS:
+        return None
+
+    try:
+        device = os.stat(path).st_dev
+        node = "/sys/dev/block/%d:%d" % (os.major(device), os.minor(device))
+        for candidate in (node, os.path.dirname(os.path.realpath(node))):
+            try:
+                with open(os.path.join(candidate, "queue", "rotational")) as flag:
+                    return flag.read().strip() == "1"
+            except OSError:
+                continue
+    except OSError:
+        pass
+
+    return None
+
+
 def get_win_drives() -> list[str]:
     """Return list of detected drives, adapted from:
     http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
@@ -1505,6 +1620,21 @@ def is_sparse(path: str) -> bool:
         pass
 
     return False
+
+
+def out_of_space(error: OSError) -> bool:
+    """Did this write fail because there is nowhere to put the data?
+
+    A full filesystem and an exhausted quota are the same thing to a user, and both are
+    fixed by freeing space rather than by retrying, so they are reported together.
+
+    Windows has more than one way to say it and maps only some of them onto an errno,
+    so the native codes are checked as well: 39 ERROR_HANDLE_DISK_FULL, 112
+    ERROR_DISK_FULL, 1295 ERROR_DISK_QUOTA_EXCEEDED.
+    """
+    if error.errno in (errno.ENOSPC, getattr(errno, "EDQUOT", None)):
+        return True
+    return sabnzbd.WINDOWS and getattr(error, "winerror", None) in (39, 112, 1295)
 
 
 def is_sparse_supported(check_dir: str) -> bool:

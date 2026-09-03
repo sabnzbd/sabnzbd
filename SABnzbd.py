@@ -1009,7 +1009,7 @@ def main():
     # Windows instance is reachable through registry
     url = None
     if sabnzbd.WINDOWS and not new_instance:
-        url = get_connection_info()
+        url = get_connection_info(inifile)
         if url and check_for_sabnzbd(url, upload_nzbs, autobrowser):
             exit_sab(0)
 
@@ -1086,6 +1086,9 @@ def main():
             rollover_log = logging.handlers.RotatingFileHandler(
                 sabnzbd.LOGFILE, "a+", sabnzbd.cfg.log_size(), sabnzbd.cfg.log_backups()
             )
+            # Set the level here as well as on the logger, so records that were
+            # created at a higher level and lowered afterwards are also dropped
+            rollover_log.setLevel(LOGLEVELS[logging_level + 1])
             rollover_log.setFormatter(logging.Formatter(logformat))
             logger.addHandler(rollover_log)
 
@@ -1221,38 +1224,12 @@ def main():
             if full_path := getattr(sabnzbd.cfg, setting).get_path():
                 sabnzbd.CONFIG_BACKUP_HTTPS_OK.append(full_path)
 
-    # Catch logging using SABnzbd handlers
-    # Format: https://github.com/encode/uvicorn/blob/d43afed1cfa018a85c83094da8a2dd29f656d676/uvicorn/config.py#L82-L114
-    uvicorn_logging_config = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "formatters": {
-            "access": {
-                "()": "uvicorn.logging.AccessFormatter",
-                "fmt": '%(asctime)s::%(levelname)s::%(client_addr)s - "%(request_line)s" %(status_code)s',
-                "use_colors": False,
-            },
-        },
-        "handlers": {},
-        "loggers": {
-            "uvicorn": {"propagate": True},
-            "uvicorn.error": {"propagate": True},
-            "uvicorn.access": {"propagate": False, "level": "INFO"},
-        },
-    }
-
     # Do we want web-server access logging? Cannot be done via the config
     if weblogging:
         sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_ACCESSFILE)
-        uvicorn_logging_config["handlers"]["access_file"] = {
-            "class": "logging.handlers.RotatingFileHandler",
-            "formatter": "access",
-            "filename": sabnzbd.WEBLOGFILE,
-            "maxBytes": sabnzbd.cfg.log_size(),
-            "backupCount": sabnzbd.cfg.log_backups(),
-            "encoding": "utf-8",
-        }
-        uvicorn_logging_config["loggers"]["uvicorn.access"]["handlers"] = ["access_file"]
+
+    # Catch logging using SABnzbd handlers
+    uvicorn_logging_config = sabnzbd.interface.uvicorn_logging_config(sabnzbd.WEBLOGFILE)
 
     # Claim the port here rather than letting uvicorn do it, because this is the
     # first point where the host and port are final. Everything before this was
@@ -1294,7 +1271,7 @@ def main():
 
     if sabnzbd.WINDOWS:
         # Write URL for uploads and version check directly to registry
-        set_connection_info(f"{sabnzbd.BROWSER_URL}/api?apikey={sabnzbd.cfg.api_key()}")
+        set_connection_info(f"{sabnzbd.BROWSER_URL}/api?apikey={sabnzbd.cfg.api_key()}", inifile)
 
     if pid_path or pid_file:
         sabnzbd.pid_file(pid_path, pid_file, web_port)
@@ -1342,6 +1319,8 @@ def main():
             logger.setLevel(level)
             if console_logging:
                 console.setLevel(level)
+            if not no_file_log:
+                rollover_log.setLevel(level)
 
         # 300 sec polling tasks
         if not timer % 100:

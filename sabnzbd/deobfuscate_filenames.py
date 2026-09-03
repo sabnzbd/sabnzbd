@@ -72,7 +72,12 @@ def decode_par2(parfile: str) -> list[str]:
                 new_path = os.path.join(dirname, md5of16k[file_md5of16k])
                 # Make sure it's a unique name
                 unique_filename = get_unique_filename(new_path)
-                renamer(filepath, unique_filename)
+                # Untrusted par2 name: contain it, skip on traversal
+                try:
+                    renamer(filepath, unique_filename, create_local_directories=True)
+                except OSError:
+                    logging.info("Skipping par2 rename of %s to %s", filepath, unique_filename)
+                    continue
                 new_files.append(unique_filename)
     return new_files
 

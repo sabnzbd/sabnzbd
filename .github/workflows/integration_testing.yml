@@ -67,5 +67,7 @@ jobs:
         python -m pip install --upgrade pip wheel
         pip install -r requirements.txt --no-dependencies
         pip install --upgrade -r tests/requirements.txt
+    - name: Install Playwright browser
+      run: python -m playwright install chromium --with-deps
     - name: Test SABnzbd
       run: pytest -n auto --dist loadscope

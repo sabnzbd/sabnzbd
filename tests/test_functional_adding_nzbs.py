@@ -20,16 +20,19 @@ tests.test_functional_adding_nzbs - Tests for settings interaction when adding N
 """
 
 import os
-import shutil
 import stat
 import sys
-import time
 from functools import cached_property
 from random import choice, randint, sample
 
 import pytest
 
-from tests.testhelper import SAB_CACHE_DIR, create_nzb, get_api_result, random_name
+from tests.testhelper import (
+    MIN_FILESIZE,
+    SAB_CACHE_DIR,
+    AddingNZBsTestBase,
+    get_api_result,
+)
 
 from sabnzbd.constants import (
     PAUSED_PRIORITY,
@@ -111,10 +114,6 @@ ALL_PRIOS = {
     REPAIR_PRIORITY: "Repair",
 }
 
-# Min/max size for random files used in generated NZBs (bytes)
-MIN_FILESIZE = 128
-MAX_FILESIZE = 1024
-
 # Tags to randomise category/script/nzb name
 CAT_RANDOM = os.urandom(4).hex()
 SCRIPT_RANDOM = os.urandom(4).hex()
@@ -146,22 +145,10 @@ def pause_and_clear():
 
 
 @pytest.mark.usefixtures("run_sabnzbd", "pause_and_clear")
-class TestAddingNZBs:
+class TestAddingNZBs(AddingNZBsTestBase):
     @cached_property
     def config(self):
         return ModuleVars()
-
-    def _api_set_config(self, keyword, value):
-        """Shorthand for the API-call to change the config settings"""
-        json = get_api_result(
-            mode="set_config",
-            extra_arguments={
-                "section": "misc",
-                "keyword": keyword,
-                "value": value,
-            },
-        )
-        assert value == json["config"]["misc"][keyword]
 
     def _setup_script_dir(self):
         self.config.SCRIPT_DIR = os.path.join(SAB_CACHE_DIR, "scripts" + SCRIPT_RANDOM)
@@ -227,19 +214,6 @@ class TestAddingNZBs:
             },
         )
         assert ("*", priority) == (json["config"]["categories"][0]["name"], json["config"]["categories"][0]["priority"])
-
-    def _create_random_nzb(self, metadata=None):
-        # Create some simple, unique nzb
-        job_dir = os.path.join(SAB_CACHE_DIR, "NZB" + os.urandom(8).hex())
-        try:
-            os.mkdir(job_dir)
-            job_file = "%s.bin" % random_name()
-            with open(os.path.join(job_dir, job_file), "wb") as f:
-                f.write(os.urandom(randint(MIN_FILESIZE, MAX_FILESIZE)))
-        except Exception:
-            pytest.fail("Failed to create random nzb")
-
-        return create_nzb(job_dir, metadata=metadata)
 
     def _create_meta_nzb(self, cat_meta):
         return self._create_random_nzb(metadata={"category": cat_meta})
@@ -572,26 +546,6 @@ class TestAddingNZBs:
 
         # Unset size limit
         self._api_set_config("size_limit", "")
-
-    def _add_backup_directory(self):
-        # Set an nzb backup directory
-        backup_dir = os.path.join(SAB_CACHE_DIR, "nzb_backup_dir" + os.urandom(4).hex())
-        self._api_set_config("nzb_backup_dir", backup_dir)
-        return backup_dir
-
-    def _clear_and_reset_backup_directory(self, backup_dir):
-        # Reset duplicate handling (0), nzb_backup_dir ("")
-        get_api_result(mode="set_config_default", extra_arguments={"keyword": ["no_dupes", "nzb_backup_dir"]})
-
-        # Remove backup_dir
-        for timer in range(0, 5):
-            try:
-                shutil.rmtree(backup_dir)
-                break
-            except OSError:
-                time.sleep(1)
-        else:
-            pytest.fail("Failed to erase nzb_backup_dir %s" % backup_dir)
 
     @pytest.mark.parametrize("prio_def_cat", sample(VALID_DEFAULT_PRIORITIES, 2))
     @pytest.mark.parametrize("prio_add", PRIO_OPTS_ADD)

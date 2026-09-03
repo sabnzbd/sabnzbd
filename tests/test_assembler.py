@@ -20,6 +20,7 @@ tests.test_assembler - Testing functions in assembler.py
 """
 
 import os
+import threading
 from types import SimpleNamespace
 from typing import NamedTuple, Optional
 from unittest import mock
@@ -29,7 +30,7 @@ import pytest
 
 import sabnzbd
 from sabnzbd.assembler import Assembler
-from sabnzbd.constants import GIGI
+from sabnzbd.constants import ASSEMBLER_MAX_OPEN_WRITERS, GIGI
 from sabnzbd.filesystem import Diskspace
 from sabnzbd.misc import pp_to_opts
 from sabnzbd.nzb import Article, NzbFile, NzbObject
@@ -749,3 +750,123 @@ class TestDiskspaceCheckScenarios:
             assert result.required_space is None
         else:
             assert result.required_space == pytest.approx(expect_required)
+
+
+class TestWriterCache:
+    """Handles are cached so an article does not cost an open and a close, which is the
+    dominant syscall cost of a write at the rates this is built for. The risks are all
+    about lifetime: a leaked handle, or one closed while a thread is still writing."""
+
+    @pytest.fixture
+    def assembler(self):
+        try:
+            sabnzbd.Assembler = Assembler()
+            yield sabnzbd.Assembler
+        finally:
+            sabnzbd.Assembler.close_all_writers()
+            del sabnzbd.Assembler
+
+    @staticmethod
+    def make_nzf(tmp_path, name):
+        nzf = mock.Mock()
+        nzf.nzf_id = name
+        nzf.filepath = str(tmp_path / name)
+        nzf.writer = None
+        return nzf
+
+    def test_the_same_handle_is_reused(self, assembler, tmp_path):
+        nzf = self.make_nzf(tmp_path, "reused")
+        first = assembler.get_writer(nzf)
+        assert assembler.get_writer(nzf) is first
+        assert nzf.writer is first
+
+    def test_each_file_gets_its_own_handle(self, assembler, tmp_path):
+        one = self.make_nzf(tmp_path, "one")
+        two = self.make_nzf(tmp_path, "two")
+        assert assembler.get_writer(one) is not assembler.get_writer(two)
+
+    def test_close_writer_releases_it(self, assembler, tmp_path):
+        nzf = self.make_nzf(tmp_path, "closed")
+        writer = assembler.get_writer(nzf)
+        assembler.close_writer(nzf)
+        assert nzf.writer is None
+        assert writer.closed is True
+        assert nzf.nzf_id not in assembler.open_writers
+
+    def test_close_writer_is_safe_without_one(self, assembler, tmp_path):
+        assembler.close_writer(self.make_nzf(tmp_path, "never_opened"))
+
+    def test_a_finished_file_gives_its_handle_back(self, assembler, tmp_path):
+        """clear_ready_bytes runs as a file completes, just before post-processing
+        reads, renames or deletes it"""
+        nzf = self.make_nzf(tmp_path, "finished")
+        writer = assembler.get_writer(nzf)
+        assembler.clear_ready_bytes(nzf)
+        assert nzf.writer is None
+        assert writer.closed is True
+
+    def test_the_cache_is_bounded(self, assembler, tmp_path):
+        """Handles are shared with every socket the downloader holds, so the cache
+        cannot be allowed to grow with the queue"""
+        files = [self.make_nzf(tmp_path, "file%d" % index) for index in range(ASSEMBLER_MAX_OPEN_WRITERS + 10)]
+        for nzf in files:
+            assembler.get_writer(nzf)
+
+        assert len(assembler.open_writers) == ASSEMBLER_MAX_OPEN_WRITERS
+        # Oldest evicted, newest kept
+        assert files[0].writer is None
+        assert files[-1].writer is not None
+
+    def test_eviction_drops_rather_than_closes(self, assembler, tmp_path):
+        """A thread may be inside a write on the handle being evicted. Closing it would
+        turn that write into an error; dropping the reference lets it close once the
+        write returns."""
+        victim = self.make_nzf(tmp_path, "victim")
+        held = assembler.get_writer(victim)  # a caller still holding it, mid-write
+
+        for index in range(ASSEMBLER_MAX_OPEN_WRITERS + 1):
+            assembler.get_writer(self.make_nzf(tmp_path, "filler%d" % index))
+
+        assert victim.writer is None, "should have been evicted"
+        assert held.closed is False, "evicting must not close a handle in use"
+        # And it still works for whoever is holding it
+        assert held.write(b"still valid", 0) == 11
+
+    def test_use_keeps_a_handle_from_being_evicted(self, assembler, tmp_path):
+        """Least recently used, so a file being actively written is not the one dropped"""
+        busy = self.make_nzf(tmp_path, "busy")
+        assembler.get_writer(busy)
+
+        for index in range(ASSEMBLER_MAX_OPEN_WRITERS - 1):
+            assembler.get_writer(self.make_nzf(tmp_path, "other%d" % index))
+            assembler.get_writer(busy)
+
+        assembler.get_writer(self.make_nzf(tmp_path, "one_too_many"))
+        assert busy.writer is not None
+
+    def test_close_all_writers(self, assembler, tmp_path):
+        files = [self.make_nzf(tmp_path, "shutdown%d" % index) for index in range(5)]
+        writers = [assembler.get_writer(nzf) for nzf in files]
+        assembler.close_all_writers()
+
+        assert not assembler.open_writers
+        assert all(nzf.writer is None for nzf in files)
+        assert all(writer.closed for writer in writers)
+
+    def test_concurrent_get_writer_returns_one_handle(self, assembler, tmp_path):
+        """Receive threads and the assembler thread both reach for the same file"""
+        nzf = self.make_nzf(tmp_path, "contended")
+        seen = []
+        barrier = threading.Barrier(8)
+
+        def fetch():
+            barrier.wait()
+            seen.append(assembler.get_writer(nzf))
+
+        threads = [threading.Thread(target=fetch) for _ in range(8)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        assert len({id(writer) for writer in seen}) == 1

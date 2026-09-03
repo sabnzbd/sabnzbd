@@ -19,26 +19,25 @@
 tests.testhelper - Basic helper functions
 """
 
+import asyncio
 import copy
 import io
 import os
+import shutil
+import re
 import socket
+import tempfile
 import time
 import uuid
-from http.client import RemoteDisconnected
+from concurrent.futures import ThreadPoolExecutor
 from typing import BinaryIO, Optional, Callable
 
 import pytest
 from random import choice, randint
 import requests
-from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from playwright.sync_api import Page, expect
 from string import ascii_lowercase, digits
 from unittest import mock
-from urllib3.exceptions import ProtocolError
 import xmltodict
 from werkzeug import Request
 from werkzeug.utils import send_from_directory
@@ -59,6 +58,22 @@ from sabnzbd.misc import pp_to_opts
 import sabnzbd.filesystem as filesystem
 
 import tests.sabnews
+
+
+def run_async(coro):
+    """Run a coroutine to completion, also when the thread already has a running loop.
+
+    Playwright's sync API keeps a loop running for as long as a browser fixture is alive,
+    which makes asyncio.run() refuse to start another one in the same thread.
+    """
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(coro)
+
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        return pool.submit(asyncio.run, coro).result()
+
 
 SAB_HOST = "127.0.0.1"
 SAB_NEWSSERVER_HOST = "127.0.0.1"
@@ -261,6 +276,28 @@ def get_url_result(url="", host=SAB_HOST, port=SAB_PORT):
     return requests.get("http://%s:%s/%s/" % (host, port, url), params=arguments).text
 
 
+def get_page_session(host=SAB_HOST, port=SAB_PORT) -> tuple[requests.Session, str]:
+    """Load a page as a browser would, returning the session holding its cookie and the CSRF token it rendered"""
+    session = requests.Session()
+    page = session.get("http://%s:%s/config/general" % (host, port))
+    page.raise_for_status()
+
+    # Every skin renders it into a var for its ajax calls; the quoting differs between them
+    token = re.search(r"""var csrfToken = ['"]([a-f0-9]+)['"]""", page.text)
+    assert token, "no CSRF token in the page, so a page POST cannot be built"
+    return session, token.group(1)
+
+
+def post_url_result(url="", data=None, host=SAB_HOST, port=SAB_PORT) -> str:
+    """POST to a page route the way the interface does, with a session cookie and its token"""
+    session, csrf_token = get_page_session(host, port)
+    payload = {"csrf_token": csrf_token}
+    payload.update(data or {})
+    response = session.post("http://%s:%s/%s" % (host, port, url), data=payload)
+    response.raise_for_status()
+    return response.text
+
+
 def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
     """Build request to SABnzbd"""
     arguments = {"apikey": SAB_APIKEY, "mode": mode}
@@ -274,21 +311,22 @@ def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
     return r.text
 
 
-def create_nzb(nzb_dir: str, metadata: Optional[dict[str, str]] = None) -> str:
+def create_nzb(nzb_dir: str, metadata: Optional[dict[str, str]] = None, output_file: Optional[str] = None) -> str:
     """Create NZB from directory using SABNews"""
     nzb_dir_full = os.path.join(SAB_DATA_DIR, nzb_dir)
-    return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full, metadata=metadata)
+    return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full, metadata=metadata, output_file=output_file)
 
 
 def create_and_read_nzb_fp(nzbdir: str, metadata: Optional[dict[str, str]] = None) -> BinaryIO:
-    """Create NZB, return data and delete file"""
-    # Create NZB-file to import
-    nzb_path = create_nzb(nzbdir, metadata)
-    with open(nzb_path, "rb") as nzb_data_fp:
-        nzb_data = nzb_data_fp.read()
-    # Remove the created NZB-file
-    os.remove(nzb_path)
-    return io.BytesIO(nzb_data)
+    """Create NZB and return its data, leaving no file behind"""
+    # Write the NZB to its own temporary directory. The input directories are shared
+    # between tests, so writing it there has tests running in parallel reading and
+    # removing each other's file. Leaving it out of there also keeps it from ending up
+    # in the next NZB created from the same input.
+    with tempfile.TemporaryDirectory() as nzb_output_dir:
+        nzb_path = create_nzb(nzbdir, metadata, output_file=os.path.join(nzb_output_dir, "test.nzb"))
+        with open(nzb_path, "rb") as nzb_data_fp:
+            return io.BytesIO(nzb_data_fp.read())
 
 
 def httpserver_handler_data_dir(request: Request):
@@ -421,88 +459,100 @@ class FakeHistoryDB(db.HistoryDB):
             )
 
 
-@pytest.mark.usefixtures("run_sabnzbd", "run_sabnews_and_selenium")
+# Min/max size for random files used in generated NZBs (bytes)
+MIN_FILESIZE = 128
+MAX_FILESIZE = 1024
+
+
+class AddingNZBsTestBase:
+    """Helpers shared by the functional tests that add NZBs to a running SABnzbd"""
+
+    def _api_set_config(self, keyword, value):
+        """Shorthand for the API-call to change the config settings"""
+        json = get_api_result(
+            mode="set_config",
+            extra_arguments={
+                "section": "misc",
+                "keyword": keyword,
+                "value": value,
+            },
+        )
+        assert value == json["config"]["misc"][keyword]
+
+    def _create_random_nzb(self, metadata=None):
+        # Create some simple, unique nzb
+        job_dir = os.path.join(SAB_CACHE_DIR, "NZB" + os.urandom(8).hex())
+        try:
+            os.mkdir(job_dir)
+            job_file = "%s.bin" % random_name()
+            with open(os.path.join(job_dir, job_file), "wb") as f:
+                f.write(os.urandom(randint(MIN_FILESIZE, MAX_FILESIZE)))
+        except Exception:
+            pytest.fail("Failed to create random nzb")
+
+        return create_nzb(job_dir, metadata=metadata)
+
+    def _add_backup_directory(self):
+        # Set an nzb backup directory
+        backup_dir = os.path.join(SAB_CACHE_DIR, "nzb_backup_dir" + os.urandom(4).hex())
+        self._api_set_config("nzb_backup_dir", backup_dir)
+        return backup_dir
+
+    def _clear_and_reset_backup_directory(self, backup_dir):
+        # Reset duplicate handling (0), nzb_backup_dir ("")
+        get_api_result(mode="set_config_default", extra_arguments={"keyword": ["no_dupes", "nzb_backup_dir"]})
+
+        # Remove backup_dir
+        for timer in range(0, 5):
+            try:
+                shutil.rmtree(backup_dir)
+                break
+            except OSError:
+                time.sleep(1)
+        else:
+            pytest.fail("Failed to erase nzb_backup_dir %s" % backup_dir)
+
+
+@pytest.mark.usefixtures("run_sabnzbd")
 class SABnzbdBaseTest:
-    driver = None
+    @pytest.fixture(autouse=True)
+    def _setup_page(self, run_sabnews, page: Page):
+        self.page = page
 
     def no_page_crash(self):
         # Do a base test if CherryPy did not report test
-        assert "500 Internal Server Error" not in self.driver.title
+        assert "500 Internal Server Error" not in self.page.title()
 
     def open_page(self, url):
         # Open a page and test for crash
-        self.driver.get(url)
+        self.page.goto(url)
         self.no_page_crash()
 
-    def scroll_to_top(self):
-        self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
-        try:
-            wait = WebDriverWait(self.driver, 2)
-            wait.until(lambda driver_wait: self.driver.execute_script("return window.scrollY") == 0)
-        except RemoteDisconnected:
-            pass
+    def click_expecting_dialog(self, locator, accept: bool = False, timeout: int = 15):
+        """Click something that raises a JS confirm()/alert and answer it.
 
-    def wait_for_alert(self, timeout=15):
-        """Wait for a JS confirm()/alert dialog and return it.
+        The handler is registered before the click: a confirm() raised synchronously from
+        the click handler blocks the page, so click() only returns once it is answered.
+        """
+        answered = []
 
-        Selenium's click() can return before a dialog opened synchronously in the
-        click handler is registered, and a confirm() raised from an AJAX success
-        callback only appears once the request settles. Waiting explicitly avoids
-        both races. Use this only where a dialog is guaranteed."""
-        WebDriverWait(self.driver, timeout).until(EC.alert_is_present())
-        return self.driver.switch_to.alert
+        def handle_dialog(dialog):
+            answered.append(dialog.message)
+            if accept:
+                dialog.accept()
+            else:
+                dialog.dismiss()
 
-    def dismiss_restart_prompt(self, timeout=15):
-        """Dismiss the "restart required" confirmation raised after saving.
+        self.page.once("dialog", handle_dialog)
+        locator.click()
 
-        Changing username/password (and other guarded options) sets RESTART_REQ,
-        so the save callback always pops a confirm() dialog. Cancel it (= no
-        restart). The alert is guaranteed here, so wait for it deterministically."""
-        self.wait_for_alert(timeout).dismiss()
-
-    def dismiss_alert_if_present(self, timeout=15):
-        """Wait until a submitted save settles, dismissing a restart-request
-        confirm() only if one is raised.
-
-        Use where the dialog is conditional (a save that may or may not change a
-        guarded option), so its absence must not fail the test. The alert, if any,
-        is popped in the same JS turn that completes the request, so poll for either
-        terminal state and return as soon as one is reached."""
+        # Wait through Playwright, which is what dispatches the event
         deadline = time.time() + timeout
-        while time.time() < deadline:
-            if EC.alert_is_present()(self.driver):
-                self.driver.switch_to.alert.dismiss()
-                return
-            try:
-                if self.driver.execute_script("return jQuery.active") == 0:
-                    return
-            except (RemoteDisconnected, ProtocolError):
-                return
-            time.sleep(0.1)
-        pytest.fail("Config save did not settle within %s seconds" % timeout)
+        while not answered and time.time() < deadline:
+            self.page.wait_for_timeout(100)
 
-    def wait_for_ajax(self):
-        # We catch common nonsense errors from Selenium
-        try:
-            wait = WebDriverWait(self.driver, 15)
-            wait.until(lambda driver_wait: self.driver.execute_script("return jQuery.active") == 0)
-            wait.until(lambda driver_wait: self.driver.execute_script("return document.readyState") == "complete")
-        except (RemoteDisconnected, ProtocolError):
-            pass
-
-    @staticmethod
-    def selenium_wrapper(func, *args):
-        """Wrapper with retries for more stable Selenium"""
-        for _ in range(3):
-            try:
-                return func(*args)
-            except WebDriverException as e:
-                prior_exception = e
-                # Try again in 2 seconds!
-                time.sleep(2)
-                pass
-        else:
-            raise prior_exception
+        if not answered:
+            pytest.fail("No dialog was raised within %s seconds" % timeout)
 
 
 class DownloadFlowBasics(SABnzbdBaseTest):
@@ -517,43 +567,35 @@ class DownloadFlowBasics(SABnzbdBaseTest):
     def start_wizard(self):
         # Language-selection
         self.open_page("http://%s:%s/wizard/" % (SAB_HOST, SAB_PORT))
-        self.selenium_wrapper(self.driver.find_element, By.ID, "en").click()
-        self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, "button.btn.btn-default").click()
+        self.page.locator("#en").click()
+        self.page.locator("button.btn.btn-default").click()
 
         # Fill server-info
         self.no_page_crash()
-        host_inp = self.selenium_wrapper(self.driver.find_element, By.NAME, "host")
-        host_inp.clear()
-        host_inp.send_keys(SAB_NEWSSERVER_HOST)
+        self.page.locator("[name='host']").fill(SAB_NEWSSERVER_HOST)
 
         # Disable SSL for testing
-        self.selenium_wrapper(self.driver.find_element, By.NAME, "ssl").click()
+        self.page.locator("[name='ssl']").click()
 
         # This will fail if the translations failed to compile!
-        self.selenium_wrapper(self.driver.find_element, By.PARTIAL_LINK_TEXT, "Advanced Settings").click()
+        self.page.locator("a:has-text('Advanced Settings')").click()
 
         # Change port
-        port_inp = self.selenium_wrapper(self.driver.find_element, By.NAME, "port")
-        port_inp.clear()
-        port_inp.send_keys(SAB_NEWSSERVER_PORT)
+        port_inp = self.page.locator("[name='port']")
+        port_inp.fill(str(SAB_NEWSSERVER_PORT))
 
         # Test server-check
-        server_response = self.selenium_wrapper(self.driver.find_element, By.ID, "serverResponse")
-        self.selenium_wrapper(self.driver.find_element, By.ID, "serverTest").click()
-        wait_for(
-            lambda: "Connection Successful" in server_response.text,
-            timeout=5,
-            err_msg="The connection test was not successful",
-        )
+        self.page.locator("#serverTest").click()
+        expect(self.page.locator("#serverResponse")).to_contain_text("Connection Successful", timeout=5000)
 
         # Final page done
-        self.selenium_wrapper(self.driver.find_element, By.ID, "next-button").click()
+        self.page.locator("#next-button").click()
         self.no_page_crash()
-        check_result = self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "quoteBlock").text
-        assert "http://%s:%s" % (SAB_HOST, SAB_PORT) in check_result
+        # The first block lists the access URLs; the others are the download folders
+        expect(self.page.locator(".quoteBlock").first).to_contain_text("http://%s:%s" % (SAB_HOST, SAB_PORT))
 
         # Go to SAB!
-        self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, ".btn.btn-success").click()
+        self.page.locator(".btn.btn-success").click()
         self.no_page_crash()
 
     def download_nzb(self, nzb_dir: str, file_output: list[str], dir_name_as_job_name: bool = False):

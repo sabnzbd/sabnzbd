@@ -33,7 +33,6 @@ import socket
 import time
 import datetime
 import inspect
-import queue
 import html
 import ipaddress
 import sabctools
@@ -43,7 +42,7 @@ import rarfile
 import hashlib
 from threading import Thread, RLock
 from collections.abc import Iterable
-from typing import Any, AnyStr, Optional, Collection
+from typing import Any, AnyStr, Optional
 from functools import lru_cache
 
 from hachoir.parser import createParser as hachoir_create_parser
@@ -62,6 +61,7 @@ from sabnzbd.constants import (
     DEF_ARTICLE_CACHE_MAX,
     REPAIR_REQUEST,
     GUESSIT_SORT_TYPES,
+    PP_LOOKUP,
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -230,22 +230,11 @@ def cmp(x: Any, y: Any) -> int:
     return (x > y) - (x < y)
 
 
-class MultiAddQueue(queue.Queue):
-    def put_multiple(self, multiple_items: Collection):
-        """Take advantage of the dequeue used by Queue that has a very
-        fast extend method to add multiple items at once.
-        See: https://github.com/sabnzbd/sabnzbd/discussions/2704"""
-        with self.not_full:
-            self.queue.extend(multiple_items)
-            self.unfinished_tasks += len(multiple_items)
-            self.not_empty.notify()
-
-
 def cat_pp_script_sanitizer(
     cat: Optional[str] = None,
     pp: Optional[int | str] = None,
     script: Optional[str] = None,
-) -> tuple[Optional[int | str], Optional[str], Optional[str]]:
+) -> tuple[Optional[str], Optional[int], Optional[str]]:
     """Basic sanitizer from outside input to a bit more predictable values"""
     # * and Default are valid values
     if safe_lower(cat) in ("", "none"):
@@ -254,6 +243,11 @@ def cat_pp_script_sanitizer(
     # Cannot use "not pp" because pp can also be 0
     if safe_lower(pp) in ("", "-1", "none"):
         pp = None
+    else:
+        # Only accept a valid pp value (key of PP_LOOKUP)
+        pp = int_conv(pp)
+        if pp not in PP_LOOKUP:
+            pp = None
 
     # Check for valid script is performed in NzbObject init
     if not script or safe_lower(script) == "default":

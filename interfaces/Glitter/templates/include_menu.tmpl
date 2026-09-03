@@ -104,14 +104,28 @@
                     <li><a href="#modal-help" data-toggle="modal"><span class="glyphicon glyphicon-question-sign"></span> $T('menu-help')</a></li>
                     <li><a href="https://sabnzbd.org/donate" target="_blank"><span class="glyphicon glyphicon-heart"></span> $T('menu-donate')</a></li>
                     <!--#if $have_logout or $have_quota or $have_rss_defined or $have_watched_dir or $pp_pause_event#--><li class="divider"></li><!--#end if#-->
-                    <!--#if $have_logout#--><li><a href="$url('logout')"><span class="glyphicon glyphicon-log-out"></span> $T('logout')</a></li><!--#end if#-->
+                    <!--#if $have_logout#--><li>
+                        <form method="post" action="$url('logout')">
+                            <input type="hidden" name="csrf_token" value="$csrf_token" />
+                            <button type="submit"><span class="glyphicon glyphicon-log-out"></span> $T('logout')</button>
+                        </form>
+                    </li><!--#end if#-->
                     <!--#if $have_quota#--><li><a href="#" data-bind="click: doQueueAction" data-mode="reset_quota">$T('link-resetQuota')</a></li><!--#end if#-->
                     <!--#if $have_rss_defined#--><li><a href="#" data-bind="click: doQueueAction" data-mode="rss_now">$T('button-rssNow')</a></li><!--#end if#-->
                     <!--#if $have_watched_dir#--><li><a href="#" data-bind="click: doQueueAction" data-mode="watched_now">$T('sch-scan_folder')</a></li><!--#end if#-->
                     <!--#if $pp_pause_event#--><li><a href="#" data-bind="click: doQueueAction" data-mode="resume_pp">$T('sch-resume_post')</a></li><!--#end if#-->
                     <li class="divider"></li>
-                    <li><a href="$url('shutdown', apikey=$apikey, pid=$pid)" data-bind="click: shutdownSAB">$T('shutdownSab')</a></li>
-                    <li><a href="#" data-bind="click: restartSAB">$T('Glitter-restartSab')</a></li>
+                    <li>
+                        <form method="post" action="$url('shutdown')" data-bind="submit: shutdownSAB">
+                            <input type="hidden" name="csrf_token" value="$csrf_token" />
+                            <button type="submit">$T('shutdownSab')</button>
+                        </form>
+                    </li>
+                    <li>
+                        <form data-bind="submit: restartSAB">
+                            <button type="submit">$T('Glitter-restartSab')</button>
+                        </form>
+                    </li>
                     <li class="divider"></li>
                     <li class="dropdown-header"><span class="glyphicon glyphicon-off"></span> $T('Glitter-onFinish'):</li>
                     <li>

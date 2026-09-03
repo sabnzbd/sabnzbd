@@ -2,14 +2,14 @@
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Fred L <88com88@gmail.com>, 2026
 # Safihre <safihre@sabnzbd.org>, 2026
+# Fred L <88com88@gmail.com>, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.2.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2026\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -276,16 +276,6 @@ msgstr "Le serveur requiert un identifiant et un mot de passe."
 msgid "Connection Successful!"
 msgstr "Connexion réussie!"
 
-#: sabnzbd/api.py, sabnzbd/interface.py
-msgid "Authentication failed, check username/password."
-msgstr "Echec d'authentification, vérifiez les identifiant/mot de passe."
-
-#: sabnzbd/api.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Trop de connexions, veuillez mettre en pause le téléchargement ou essayer "
-"plus tard"
-
 #. Warning message
 #: sabnzbd/api.py
 msgid ""
@@ -313,12 +303,12 @@ msgid "Default"
 msgstr "Par défaut"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk full! Forcing Pause"
 msgstr "Disque plein ! Pause forcée"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk error on creating file %s"
 msgstr "Erreur de disque lors de la création du fichier %s"
 
@@ -625,20 +615,8 @@ msgid "Fatal error in Downloader"
 msgstr "Erreur fatale dans le Téléchargeur"
 
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s [%s]"
-msgstr "Trop de connexions au serveur %s [%s]"
-
-#: sabnzbd/downloader.py
-msgid ""
-"Login from too many different IP addresses to server %s [%s] - "
-"https://sabnzbd.org/multiple-adresses"
-msgstr ""
-"Connexion au serveur %s [%s] à partir de trop d'adresses IP différentes - "
-"https://sabnzbd.org/multiple-adresses"
-
-#: sabnzbd/downloader.py
-msgid "Failed login for server %s [%s]"
-msgstr "Échec de la connexion au serveur %s [%s]"
+msgid "Server %s reported: %s"
+msgstr "Le serveur %s a indiqué : %s"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -832,12 +810,21 @@ msgstr ""
 "consultez : https://sabnzbd.org/wiki/advanced/direct-write"
 
 #: sabnzbd/interface.py
-msgid "Refused connection from:"
-msgstr "Connexion refusée de:"
-
-#: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Connexion refusée avec le nom d'hôte \"%s\" à partir de :"
+
+#: sabnzbd/interface.py
+msgid ""
+"API Key incorrect, Use the api key from Config->General in your 3rd party "
+"program:"
+msgstr ""
+"Clé API incorrecte, utilisez la clé API de la configuration générale dans "
+"votre application tierce :"
+
+#. Warning message
+#: sabnzbd/interface.py, sabnzbd/security.py
+msgid "Refused connection from:"
+msgstr "Connexion refusée de:"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -848,12 +835,17 @@ msgstr ""
 " application tierce :"
 
 #: sabnzbd/interface.py
-msgid ""
-"API Key incorrect, Use the api key from Config->General in your 3rd party "
-"program:"
-msgstr ""
-"Clé API incorrecte, utilisez la clé API de la configuration générale dans "
-"votre application tierce :"
+msgid "Too many failed login attempts, try again later."
+msgstr "Trop de tentatives de connexion échouées, réessayer ultérieurement."
+
+#. Warning message
+#: sabnzbd/interface.py
+msgid "Login attempt refused, too many failures from %s"
+msgstr "Tentative de connexion refusée, trop d'échecs de %s"
+
+#: sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Echec d'authentification, vérifiez les identifiant/mot de passe."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -1643,12 +1635,21 @@ msgid ""
 "    Either run SABnzbd with the privileges needed for that port, or restart it\n"
 "    with a port number of 1024 or higher."
 msgstr ""
+"\n"
+"    SABnzbd n'est pas autorisé à utiliser le port %s sur %s.<br>\n"
+"    Sur la plupart des systèmes, les numéros de port faibles sont réservés aux processus privilégiés.\n"
+"    le port est donc disponible, mais ne peut pas être utilisé.<br>\n"
+"    <br>\n"
+"    Lancez SABnzbd avec les privilèges requis pour ce port, ou redémarrez-le\n"
+"    en lui attribuant un numéro de port supérieur ou égal à  1024."
 
 #: sabnzbd/panic.py
 msgid ""
 "To keep using the low port, put a reverse proxy in front of SABnzbd "
 "instead.<br>"
 msgstr ""
+"Pour continuer à utiliser un port privilégié, mettez un proxy inverse devant"
+" SABnzbd.<br>"
 
 #: sabnzbd/panic.py
 msgid ""
@@ -1742,6 +1743,8 @@ msgstr ""
 msgid ""
 "Not allowed to bind to port %s on %s. Low ports need elevated privileges."
 msgstr ""
+"Impossible de se lier au port %s sur %s. Les ports inférieurs à 1024 "
+"demandent des privilèges élevés."
 
 #. Warning message
 #: sabnzbd/panic.py
@@ -2321,7 +2324,7 @@ msgstr "Annuler"
 
 #: sabnzbd/skintext.py
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: sabnzbd/skintext.py
 msgid "Log in"
@@ -3795,8 +3798,10 @@ msgid "Naming"
 msgstr "Appellation"
 
 #: sabnzbd/skintext.py
-msgid "How much can be downloaded this month (K/M/G)"
-msgstr "Combien peut-être télécharger ce mois (K/M/G)"
+msgid "How much can be downloaded this Quota period (K/M/G)"
+msgstr ""
+"Quantité de données pouvant être téléchargées durant ce cycle de quota "
+"(K/M/G)"
 
 #. Reset day of the download quota
 #: sabnzbd/skintext.py
@@ -4814,6 +4819,13 @@ msgstr "Dossier temporaire"
 #: sabnzbd/skintext.py
 msgid "Clear search"
 msgstr "Effacer la recherche"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Search by name, or refine with filters <code>cat:</code>, "
+"<code>status:</code> and <code>priority:</code> (Queue). For example: "
+"<code>my show cat:tv</code>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Multi-Operations"

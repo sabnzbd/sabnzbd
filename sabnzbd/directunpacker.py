@@ -364,12 +364,14 @@ class DirectUnpacker(threading.Thread):
         """Check if next volume of set is available, start
         from the end of the list where latest completed files are
         Make sure that files are 100% written to disk by checking nzf.assembled
+        and that they are still there, post-processing could have moved them away
         """
         for nzf_search in reversed(self.nzo.finished_files):
             if (
                 nzf_search.setname == self.cur_setname
                 and nzf_search.vol == (self.cur_volume + 1)
                 and nzf_search.assembled
+                and os.path.exists(os.path.join(self.nzo.download_path, nzf_search.filename))
             ):
                 return nzf_search
         return False
@@ -536,7 +538,10 @@ class DirectUnpacker(threading.Thread):
 def analyze_rar_filename(filename):
     """Extract volume number and setname from rar-filenames
     Both ".part01.rar" and ".r01"
+    The filename can name a sub-directory of the job, the setname is always just the name so
+    it matches what rar_unpack() derives from the path on disk with setname_from_path()
     """
+    filename = os.path.basename(filename)
     if m := RAR_NR.search(filename):
         if m.group(4):
             # Special since starts with ".rar", ".r00"

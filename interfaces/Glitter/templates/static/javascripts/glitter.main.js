@@ -448,7 +448,7 @@ function ViewModel() {
     self.openCustomPauseTime = function() {
         // Was it loaded already?
         if (!Date.i18n) {
-            jQuery.getScript('./static/javascripts/date.min.js').then(function() {
+            jQuery.getScript(dateScriptUrl).then(function() {
                 // After loading we start again
                 self.openCustomPauseTime()
             })
@@ -832,7 +832,6 @@ function ViewModel() {
         data.append("priority", $('#modal-add-nzb select[name="Priority"]').val())
         data.append("pp", $('#modal-add-nzb select[name="Processing"]').val())
         data.append("script", $('#modal-add-nzb select[name="Post-processing"]').val())
-        data.append("apikey", apiKey);
 
         // Add this one
         $.ajax({

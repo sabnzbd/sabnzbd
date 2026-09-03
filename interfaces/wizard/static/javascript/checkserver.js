@@ -41,22 +41,25 @@ $(document).ready(function() {
             return false;
         }
         
+        $('#serverTest').attr('aria-busy', 'true');
         $('#serverResponse').html(txtChecking);
-        $.getJSON(
-            "../api?mode=config&name=test_server&output=json",
-            $("form").serialize(),
-            function(result) {
+        $.ajax({
+            type: 'POST',
+            url: "../api?mode=config&name=test_server&output=json",
+            data: $("form").serialize(),
+            success: function(result) {
                 if (result.value.result) {
-                    r = '<span class="success"><span class="glyphicon glyphicon-ok"></span> ' + result.value.message + '</span>';
+                    r = '<span class="success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> ' + result.value.message + '</span>';
                     setTestResult(true);
                 } else {
-                    r = '<span class="failed"><span class="glyphicon glyphicon-minus-sign"></span> ' + result.value.message + '</span>';
+                    r = '<span class="failed"><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> ' + result.value.message + '</span>';
                     setTestResult(false);
                 }
                 r = r.replace('https://sabnzbd.org/certificate-errors', '<a href="https://sabnzbd.org/certificate-errors" class="failed" target="_blank">https://sabnzbd.org/certificate-errors</a>')
                 $('#serverResponse').html(r);
+                $('#serverTest').attr('aria-busy', 'false');
             }
-        );
+        });
         return false;
     });
 

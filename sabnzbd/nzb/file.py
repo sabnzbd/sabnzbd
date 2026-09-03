@@ -30,7 +30,6 @@ from sabnzbd.nzb.article import TryList, Article
 from sabnzbd.downloader import Server
 from sabnzbd.filesystem import (
     sanitize_filename,
-    get_filename,
     remove_file,
     get_new_id,
     save_data,
@@ -76,13 +75,14 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = (*NzbFileSaver, "lock", "file_lock", "assembler_next_index")
+    __slots__ = (*NzbFileSaver, "lock", "file_lock", "assembler_next_index", "writer")
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
         super().__init__()
         self.lock: threading.RLock = threading.RLock()
         self.file_lock: threading.RLock = threading.RLock()
+        self.writer: Optional[sabctools.FileWriter] = None
 
         self.date: datetime.datetime = date
         self.type: Optional[str] = None
@@ -243,9 +243,9 @@ class NzbFile(TryList):
             with self.nzo.lock:
                 if not self.filepath:
                     self.nzo.verify_nzf_filename(self)
-                    filename = sanitize_filename(self.filename)
-                    self.filepath = self.nzo.get_unique_filepath(filename)
-                    self.filename = get_filename(self.filepath)
+                    # Par2 can name a file inside a sub-directory of the job, write it there
+                    filename = sanitize_filename(self.filename, allow_subdirs=True)
+                    self.filename, self.filepath = self.nzo.get_unique_filepath(filename)
         return self.filepath
 
     @property
@@ -369,6 +369,7 @@ class NzbFile(TryList):
         self.lock = threading.RLock()
         self.file_lock = threading.RLock()
         self.assembler_next_index = 0
+        self.writer = None
         if isinstance(self.articles, list):
             # Converted from list to dict
             self.articles = {x: x for x in self.articles}

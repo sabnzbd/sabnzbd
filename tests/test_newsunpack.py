@@ -30,6 +30,7 @@ import shutil
 import stat
 import sys
 import tarfile
+import threading
 from typing import Optional
 from unittest import mock
 from unittest.mock import call
@@ -39,9 +40,10 @@ import pytest
 import sabnzbd
 import sabnzbd.newsunpack as newsunpack
 from sabnzbd.constants import JOB_ADMIN
+from sabnzbd.par2file import FilePar2Info
 from tests.testhelper import SAB_CACHE_DIR
 from sabnzbd.misc import format_time_string, SABRarFile
-from sabnzbd.filesystem import long_path, create_all_dirs, listdir_full, clip_path
+from sabnzbd.filesystem import long_path, build_filelists, create_all_dirs, listdir_full, clip_path
 
 
 @pytest.fixture(autouse=True)
@@ -67,6 +69,26 @@ class TestNewsUnpackFunctions:
         assert newsunpack.is_sfv_file("tests/data/one_line.sfv")
         assert not newsunpack.is_sfv_file("tests/data/only_comments.sfv")
         assert not newsunpack.is_sfv_file("tests/data/random.bin")
+
+    def test_sfv_check_blocks_path_traversal(self, tmp_path):
+        """A traversing SFV filename must not move a file out of the job directory"""
+        download_path = str(tmp_path)
+        obfuscated_name = "6f1ed002ab5595859014ebf0951522d9"
+        obfuscated_path = os.path.join(download_path, obfuscated_name)
+        with open(obfuscated_path, "wb") as test_file:
+            test_file.write(b"payload")
+
+        # SFV entry with matching crc32 but a traversing target name
+        sfv_path = os.path.join(download_path, "check.sfv")
+        with open(sfv_path, "w") as sfv_file:
+            sfv_file.write("../escaped.bin deadbeef\n")
+
+        nzf = mock.Mock(filename=obfuscated_name, filepath=obfuscated_path, crc32=0xDEADBEEF)
+        nzo = mock.Mock(download_path=download_path, finished_files=[nzf])
+
+        assert newsunpack.sfv_check([sfv_path], nzo) is False
+        assert not os.path.exists(os.path.join(download_path, os.pardir, "escaped.bin"))
+        assert os.path.exists(obfuscated_path)
 
     def test_is_sevenfile(self, monkeypatch):
         # False, because the command is not set. Force it explicitly: SEVENZIP_COMMAND
@@ -928,6 +950,236 @@ class TestTarUnpack:
             should_delete_original=True,
             original_files=tar_files,
         )
+
+
+@pytest.mark.usefixtures("clean_cache_dir")
+@pytest.mark.config(
+    {
+        "enable_unrar": True,
+        "enable_filejoin": False,
+        "enable_tsjoin": False,
+        "enable_tar": False,
+        "enable_7zip": False,
+        "enable_recursive": False,
+    }
+)
+class TestUnpackNestedRarSets:
+    """A rar set can live in a subfolder of the download path: quick-check moves the volumes
+    into a folder of their own when the par2 set stores them that way.
+
+    Everything hangs off build_filelists() being told about that folder. It is what makes
+    unpacker() call rar_unpack(), which both unpacks the set and is the only place SABnzbd
+    waits for a running DirectUnpacker. Miss the volumes and post-processing unpacks nothing
+    and moves the raw rars to the complete folder, while unrar is still reading them.
+    """
+
+    SUBDIR = "Foo.Bar.S05E03.1080p"
+
+    @staticmethod
+    def _create_job(tmp_path, subdir: str = "") -> tuple[mock.Mock, str]:
+        """Job with one rar set in <download_path>/<subdir>, returns the nzo and complete path"""
+        download_path = os.path.join(str(tmp_path), "incomplete")
+        complete_path = os.path.join(str(tmp_path), "complete")
+        assert create_all_dirs(os.path.join(download_path, subdir))
+        assert create_all_dirs(complete_path)
+        shutil.copy(os.path.join("tests", "data", "basic_rar3", "testfile.rar"), os.path.join(download_path, subdir))
+
+        newsunpack.find_programs(".")
+        sabnzbd.PostProcessor = mock.Mock()
+
+        nzo = mock.Mock(
+            download_path=download_path,
+            admin_path=os.path.join(download_path, JOB_ADMIN),
+            final_name="Foo.Bar.S05.1080p",
+            fail_msg="",
+            delete=True,
+            reuse=False,
+            password=None,
+            correct_password=None,
+            nzo_info={},
+            meta={},
+            direct_unpacker=None,
+            # As NzbObject.sub_directories() would report it for a job assembled into it
+            sub_directories=mock.Mock(return_value={os.path.join(download_path, subdir)} if subdir else set()),
+        )
+        return nzo, complete_path
+
+    @staticmethod
+    def _create_direct_unpacker() -> mock.Mock:
+        """Stub that reports itself as running until it is joined or aborted"""
+        finished = threading.Event()
+        return mock.Mock(
+            success_sets={},
+            next_file_lock=threading.Condition(),
+            get_formatted_stats=mock.Mock(return_value="01/10"),
+            is_alive=mock.Mock(side_effect=lambda: not finished.is_set()),
+            join=mock.Mock(side_effect=lambda timeout=None: finished.set()),
+            abort=mock.Mock(side_effect=finished.set),
+        )
+
+    def test_build_filelists_only_scans_known_subfolders(self, tmp_path):
+        """The download path stays non-recursive, only folders we were told about are added"""
+        rar_dir = os.path.join(str(tmp_path), self.SUBDIR)
+        assert create_all_dirs(rar_dir)
+        rar_path = os.path.join(rar_dir, "testfile.rar")
+        shutil.copy(os.path.join("tests", "data", "basic_rar3", "testfile.rar"), rar_path)
+
+        _joinables, rars, _sevens, _ts, _tars = build_filelists(str(tmp_path))
+        assert rars == []
+
+        _joinables, rars, _sevens, _ts, _tars = build_filelists(str(tmp_path), extra_dirs=[rar_dir])
+        assert rars == [rar_path]
+
+    def test_sub_directories_reports_only_local_subfolders(self, tmp_path):
+        """Where the job assembled its files (nzf.filename) plus anything par2cmdline
+        restored into a folder during repair (nzo.renames)"""
+        download_path = str(tmp_path)
+        nzo = mock.Mock(
+            download_path=download_path,
+            finished_files=[
+                mock.Mock(filename=os.path.join(self.SUBDIR, "testfile.rar")),
+                mock.Mock(filename="testfile.r00"),
+            ],
+            renames={
+                os.path.join("Sample", "sample.mkv"): "obfuscated",
+                os.path.join(os.pardir, "escaped.rar"): "obfuscated.2",
+            },
+        )
+
+        assert sabnzbd.nzb.NzbObject.sub_directories(nzo) == {
+            os.path.join(download_path, self.SUBDIR),
+            os.path.join(download_path, "Sample"),
+        }
+
+    def test_unpacker_unpacks_rars_in_subfolder(self, tmp_path):
+        """Without a DirectUnpacker in play the set still has to be unpacked, not moved as-is"""
+        nzo, complete_path = self._create_job(tmp_path, self.SUBDIR)
+
+        error, newfiles = newsunpack.unpacker(nzo, complete_path, False)
+
+        assert not error
+        assert newfiles, "the rar set in the subfolder was never found, so nothing was unpacked"
+        assert os.path.exists(os.path.join(complete_path, "testfile.bin"))
+
+    def test_quick_check_rename_updates_setname_and_vol(self, tmp_path):
+        """The rename is what puts the volumes in the subfolder, so the set and volume number
+        derived from the obfuscated name go stale. A DirectUnpacker looks up the next volume by
+        those, and would hand unrar a path built from the new name."""
+        download_path = str(tmp_path)
+        obfuscated_name = "6f1ed002ab5595859014ebf0951522d9"
+        par2_name = "%s/foo.bar.s05e03.r00" % self.SUBDIR
+        obfuscated_path = os.path.join(download_path, obfuscated_name)
+        with open(obfuscated_path, "wb") as test_file:
+            test_file.write(b"volume contents")
+
+        nzf = mock.Mock(
+            filename=obfuscated_name,
+            filepath=obfuscated_path,
+            crc32=1234,
+            setname=obfuscated_name,
+            vol=1,
+        )
+        nzo = mock.Mock(
+            download_path=download_path,
+            finished_files=[nzf],
+            direct_unpacker=None,
+            par2packs={
+                "testset": {
+                    par2_name: FilePar2Info(
+                        filename=par2_name,
+                        hash16k=b"",
+                        filesize=os.path.getsize(obfuscated_path),
+                        filehash=nzf.crc32,
+                    )
+                }
+            },
+        )
+
+        assert newsunpack.quick_check_set("testset", nzo)
+
+        assert nzf.filename == os.path.normpath(par2_name)
+        # The setname is the name of the set, never the folder it happens to live in, so it
+        # matches what rar_unpack() derives from the path on disk
+        assert (nzf.setname, nzf.vol) == ("foo.bar.s05e03", 2)
+
+    def test_quick_check_rename_rekeys_completed_direct_unpack_set(self, tmp_path):
+        """DirectUnpack keys the sets it finished by the name they had while downloading.
+        rar_unpack() looks them up by the name on disk, so after the rename moved the volumes
+        into their own folder it no longer recognizes the set and extracts it a second time."""
+        download_path = str(tmp_path)
+        # Flattened par2 name, exactly what the volumes are called before the rename
+        flat_name = "%s_foo.bar.s05e03.r00" % self.SUBDIR
+        par2_name = "%s/foo.bar.s05e03.r00" % self.SUBDIR
+        flat_path = os.path.join(download_path, flat_name)
+        with open(flat_path, "wb") as test_file:
+            test_file.write(b"volume contents")
+
+        nzf = mock.Mock(filename=flat_name, filepath=flat_path, crc32=1234, vol=2)
+        nzf.setname = "%s_foo.bar.s05e03" % self.SUBDIR
+        direct_unpacker = mock.Mock(success_sets={nzf.setname: (["volumes"], ["extracted.mkv"])})
+        nzo = mock.Mock(
+            download_path=download_path,
+            finished_files=[nzf],
+            direct_unpacker=direct_unpacker,
+            par2packs={
+                "testset": {
+                    par2_name: FilePar2Info(
+                        filename=par2_name,
+                        hash16k=b"",
+                        filesize=os.path.getsize(flat_path),
+                        filehash=nzf.crc32,
+                    )
+                }
+            },
+        )
+
+        assert newsunpack.quick_check_set("testset", nzo)
+
+        assert list(direct_unpacker.success_sets) == ["foo.bar.s05e03"], (
+            "the completed set is still keyed by its old name, so post-processing will "
+            "extract it again on top of what DirectUnpack already produced"
+        )
+        assert direct_unpacker.success_sets["foo.bar.s05e03"] == (["volumes"], ["extracted.mkv"])
+
+    def test_sfv_check_rename_updates_setname_and_vol(self, tmp_path):
+        """sfv_check() de-obfuscates the same way quick_check_set() does"""
+        download_path = str(tmp_path)
+        obfuscated_name = "6f1ed002ab5595859014ebf0951522d9"
+        real_name = "foo.bar.s05e03.r00"
+        with open(os.path.join(download_path, obfuscated_name), "wb") as test_file:
+            test_file.write(b"volume contents")
+
+        crc32 = 1234
+        sfv_path = os.path.join(download_path, "foo.bar.s05e03.sfv")
+        with open(sfv_path, "wb") as sfv_file:
+            sfv_file.write(b"; generated by test\n%s %08x\n" % (real_name.encode(), crc32))
+
+        nzf = mock.Mock(filename=obfuscated_name, crc32=crc32, setname=obfuscated_name, vol=1)
+        nzo = mock.Mock(download_path=download_path, finished_files=[nzf], direct_unpacker=None)
+
+        assert newsunpack.sfv_check([sfv_path], nzo)
+
+        assert nzf.filename == real_name
+        assert (nzf.setname, nzf.vol) == ("foo.bar.s05e03", 2)
+
+    @pytest.mark.parametrize(
+        "subdir",
+        [
+            pytest.param("", id="rars_in_download_path"),
+            pytest.param(SUBDIR, id="rars_in_subfolder_of_download_path"),
+        ],
+    )
+    def test_unpacker_waits_for_active_direct_unpacker(self, subdir, tmp_path):
+        nzo, complete_path = self._create_job(tmp_path, subdir)
+        nzo.direct_unpacker = self._create_direct_unpacker()
+
+        newsunpack.unpacker(nzo, complete_path, False)
+
+        assert nzo.direct_unpacker.join.called or nzo.direct_unpacker.abort.called, (
+            "unpacker() returned while the DirectUnpacker was still running; post-processing "
+            "will move and purge the job's files from under unrar"
+        )
+        assert not nzo.direct_unpacker.is_alive(), "DirectUnpacker should no longer be running"
 
 
 @pytest.mark.usefixtures("clean_cache_dir")

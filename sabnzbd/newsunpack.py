@@ -71,7 +71,7 @@ from sabnzbd.filesystem import (
     UNWANTED_FILE_PERMISSIONS,
     get_unique_filename,
 )
-from sabnzbd.nzb import NzbObject
+from sabnzbd.nzb import NzbObject, NzbFile
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
 
@@ -271,6 +271,53 @@ def external_processing(
     return output, ret
 
 
+def rename_deobfuscated_nzf(nzo: NzbObject, nzf: NzbFile, new_filename: str):
+    """Apply a de-obfuscation rename to the bookkeeping that was derived from the old name.
+    The rar set and volume number are re-derived, a running DirectUnpacker matches on those
+    to find the next volume. A set it already completed is keyed by the old name too, so
+    re-key it or rar_unpack() no longer recognizes it as done and extracts it a second time.
+    """
+    old_setname = nzf.setname
+    nzf.filename = new_filename
+    nzf.setname, nzf.vol = sabnzbd.directunpacker.analyze_rar_filename(new_filename)
+
+    if nzo.direct_unpacker and nzf.setname and nzf.setname != old_setname:
+        if success_set := nzo.direct_unpacker.success_sets.pop(old_setname, None):
+            logging.debug("DirectUnpack set %s was renamed to %s", old_setname, nzf.setname)
+            nzo.direct_unpacker.success_sets[nzf.setname] = success_set
+
+
+def wait_for_direct_unpacker(nzo: NzbObject):
+    """Wait for the DirectUnpacker of this job to finish, aborting it if it seems stuck.
+    It reads the volumes straight from the download folder, so it has to be done before
+    post-processing starts renaming, moving or removing any of the job's files.
+    """
+    if not nzo.direct_unpacker or not nzo.direct_unpacker.is_alive():
+        return
+
+    wait_count = 0
+    last_stats = nzo.direct_unpacker.get_formatted_stats()
+    while nzo.direct_unpacker.is_alive():
+        logging.debug("DirectUnpacker still alive for %s: %s", nzo.final_name, last_stats)
+
+        # Bump the file-lock in case it's stuck
+        with nzo.direct_unpacker.next_file_lock:
+            nzo.direct_unpacker.next_file_lock.notify()
+
+        # Returns as soon as it is done
+        nzo.direct_unpacker.join(timeout=2)
+
+        # Did something change? Might be stuck
+        if last_stats == nzo.direct_unpacker.get_formatted_stats():
+            wait_count += 1
+            if wait_count > 60:
+                # We abort after 2 minutes of no changes
+                nzo.direct_unpacker.abort()
+        else:
+            wait_count = 0
+        last_stats = nzo.direct_unpacker.get_formatted_stats()
+
+
 def unpacker(
     nzo: NzbObject,
     workdir_complete: str,
@@ -291,11 +338,15 @@ def unpacker(
     depth += 1
 
     if depth == 1:
+        # Never unpack while the DirectUnpacker is still working on the same files.
+        # Also makes sure we pick up whatever it left behind in the download folder.
+        wait_for_direct_unpacker(nzo)
+
         # First time, ignore anything in workdir_complete
-        xjoinables, xrars, xsevens, xts, xtars = build_filelists(nzo.download_path)
+        xjoinables, xrars, xsevens, xts, xtars = build_filelists(nzo.download_path, extra_dirs=nzo.sub_directories())
     else:
         xjoinables, xrars, xsevens, xts, xtars = build_filelists(
-            nzo.download_path, workdir_complete, check_both=nzo.delete
+            nzo.download_path, workdir_complete, check_both=nzo.delete, extra_dirs=nzo.sub_directories()
         )
 
     force_rerun = False
@@ -366,7 +417,12 @@ def unpacker(
 
     # Double-check that we didn't miss any files in workdir
     # But only if dele=True, otherwise of course there will be files left
-    if rerun and nzo.delete and depth == 1 and any(build_filelists(nzo.download_path)):
+    if (
+        rerun
+        and nzo.delete
+        and depth == 1
+        and any(build_filelists(nzo.download_path, extra_dirs=nzo.sub_directories()))
+    ):
         force_rerun = True
         # Clear lists to force re-scan of files
         xjoinables, xrars, xsevens, xts, xtars = ([], [], [], [], [])
@@ -550,35 +606,16 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: li
             extraction_path = os.path.split(rarpath)[0]
 
         # Is the direct-unpacker still running? We wait for it
-        if nzo.direct_unpacker:
-            wait_count = 0
-            last_stats = nzo.direct_unpacker.get_formatted_stats()
-            while nzo.direct_unpacker.is_alive():
-                logging.debug("DirectUnpacker still alive for %s: %s", nzo.final_name, last_stats)
-
-                # Bump the file-lock in case it's stuck
-                with nzo.direct_unpacker.next_file_lock:
-                    nzo.direct_unpacker.next_file_lock.notify()
-
-                # Returns as soon as it is done
-                nzo.direct_unpacker.join(timeout=2)
-
-                # Did something change? Might be stuck
-                if last_stats == nzo.direct_unpacker.get_formatted_stats():
-                    wait_count += 1
-                    if wait_count > 60:
-                        # We abort after 2 minutes of no changes
-                        nzo.direct_unpacker.abort()
-                else:
-                    wait_count = 0
-                last_stats = nzo.direct_unpacker.get_formatted_stats()
+        wait_for_direct_unpacker(nzo)
 
         # Did we already direct-unpack it? Not when recursive-unpacking
         if nzo.direct_unpacker and rar_set in nzo.direct_unpacker.success_sets:
             logging.info("Set %s completed by DirectUnpack", rar_set)
             fail = 0
             success = True
-            rars, newfiles = nzo.direct_unpacker.success_sets.pop(rar_set)
+            _volumes, newfiles = nzo.direct_unpacker.success_sets.pop(rar_set)
+            # The volumes it listed can have been renamed since, so clean up what is there now
+            rars = rar_sets[rar_set]
         else:
             logging.info("Extracting rarfile %s (belonging to %s) to %s", rarpath, rar_set, extraction_path)
             try:
@@ -1696,7 +1733,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                         create_local_directories=True,
                     )
                     renames[file] = nzf.filename
-                    nzf.filename = file
+                    rename_deobfuscated_nzf(nzo, nzf, file)
                     result &= True
                     found = True
                     found_paths.add(nzf.filepath)
@@ -1867,9 +1904,15 @@ def sfv_check(sfvs: list[str], nzo: NzbObject) -> bool:
             if calculated_crc32.get(nzf.filename, "") == sfv_parse_results[file]:
                 try:
                     logging.debug("SFV-check will rename %s to %s", nzf.filename, file)
-                    renamer(os.path.join(nzo.download_path, nzf.filename), os.path.join(nzo.download_path, file))
+                    # Untrusted sfv name: normalize separators and contain
+                    file = os.path.normpath(file)
+                    renamer(
+                        os.path.join(nzo.download_path, nzf.filename),
+                        os.path.join(nzo.download_path, file),
+                        create_local_directories=True,
+                    )
                     renames[file] = nzf.filename
-                    nzf.filename = file
+                    rename_deobfuscated_nzf(nzo, nzf, file)
                     result &= True
                     found = True
                     break

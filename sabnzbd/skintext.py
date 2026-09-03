@@ -519,7 +519,7 @@ SKIN_TEXT = {
     "swtag-naming": TT("Naming"),
     "swtag-quota": TT("Quota"),
     "opt-quota_size": TT("Size"),  #: Size of the download quota
-    "explain-quota_size": TT("How much can be downloaded this month (K/M/G)"),
+    "explain-quota_size": TT("How much can be downloaded this Quota period (K/M/G)"),
     "opt-quota_day": TT("Reset day"),  #: Reset day of the download quota
     "explain-quota_day": TT(
         "On which day of the month or week (1=Monday) does your ISP reset the quota? (Optionally with hh:mm)"
@@ -831,6 +831,9 @@ SKIN_TEXT = {
     "Glitter-freeTemp": TT("Temp Folder"),
     "Glitter-search": TT("Search"),
     "Glitter-clearSearch": TT("Clear search"),
+    "Glitter-searchExplain": TT(
+        "Search by name, or refine with filters <code>cat:</code>, <code>status:</code> and <code>priority:</code> (Queue). For example: <code>my show cat:tv</code>"
+    ),  #: Explains the queue/history search box, shown as a tooltip
     "Glitter-multiOperations": TT("Multi-Operations"),
     "Glitter-multiSelect": TT("Hold shift key to select a range"),
     "Glitter-selectJob": TT("Select job"),

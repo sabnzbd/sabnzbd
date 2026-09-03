@@ -247,15 +247,6 @@ msgstr "Server krever brukernavn og passord."
 msgid "Connection Successful!"
 msgstr "Tilkobling lyktes!"
 
-#: sabnzbd/api.py, sabnzbd/interface.py
-msgid "Authentication failed, check username/password."
-msgstr "Godkjenning mislyktes, kontroller brukernavn og passord."
-
-#: sabnzbd/api.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"For mange tilkoblinger, sett nedlasting på pause eller prøv igjen senere"
-
 #. Warning message
 #: sabnzbd/api.py
 msgid ""
@@ -279,12 +270,12 @@ msgid "Default"
 msgstr "Standard"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk full! Forcing Pause"
 msgstr "Disken er full! Pauser..."
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk error on creating file %s"
 msgstr "Diskfeil under opprettelse av fil %s"
 
@@ -566,18 +557,8 @@ msgid "Fatal error in Downloader"
 msgstr ""
 
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s [%s]"
-msgstr "For mange tilkoblinger til server %s [%s]"
-
-#: sabnzbd/downloader.py
-msgid ""
-"Login from too many different IP addresses to server %s [%s] - "
-"https://sabnzbd.org/multiple-adresses"
+msgid "Server %s reported: %s"
 msgstr ""
-
-#: sabnzbd/downloader.py
-msgid "Failed login for server %s [%s]"
-msgstr "Kunne ikke logge inn på server %s [%s]"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -757,11 +738,20 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Refused connection from:"
+msgid "Refused connection with hostname \"%s\" from:"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Refused connection with hostname \"%s\" from:"
+msgid ""
+"API Key incorrect, Use the api key from Config->General in your 3rd party "
+"program:"
+msgstr ""
+"API-nøkkel er feil, bruk API-nøkkel fra Konfigurasjon->Generelt i ditt "
+"tredjepartsprogram:"
+
+#. Warning message
+#: sabnzbd/interface.py, sabnzbd/security.py
+msgid "Refused connection from:"
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -773,12 +763,17 @@ msgstr ""
 "ditt tredjepartsprogram:"
 
 #: sabnzbd/interface.py
-msgid ""
-"API Key incorrect, Use the api key from Config->General in your 3rd party "
-"program:"
+msgid "Too many failed login attempts, try again later."
 msgstr ""
-"API-nøkkel er feil, bruk API-nøkkel fra Konfigurasjon->Generelt i ditt "
-"tredjepartsprogram:"
+
+#. Warning message
+#: sabnzbd/interface.py
+msgid "Login attempt refused, too many failures from %s"
+msgstr ""
+
+#: sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Godkjenning mislyktes, kontroller brukernavn og passord."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -3600,8 +3595,8 @@ msgid "Naming"
 msgstr "Filnavn"
 
 #: sabnzbd/skintext.py
-msgid "How much can be downloaded this month (K/M/G)"
-msgstr "Hvor mye can lastes ned denne måneden (K/M/G)"
+msgid "How much can be downloaded this Quota period (K/M/G)"
+msgstr ""
 
 #. Reset day of the download quota
 #: sabnzbd/skintext.py
@@ -4563,6 +4558,13 @@ msgstr "Midlertidig Mappe"
 
 #: sabnzbd/skintext.py
 msgid "Clear search"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Search by name, or refine with filters <code>cat:</code>, "
+"<code>status:</code> and <code>priority:</code> (Queue). For example: "
+"<code>my show cat:tv</code>"
 msgstr ""
 
 #: sabnzbd/skintext.py

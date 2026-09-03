@@ -1,11 +1,11 @@
 # Testing requirements
 pytest
 setuptools
-selenium
+pytest-playwright
+playwright>=1.55
 requests
 pyfakefs
 werkzeug
-pytest-httpbin
 pytest-httpserver
 flaky
 xmltodict

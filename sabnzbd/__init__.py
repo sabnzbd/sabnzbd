@@ -83,11 +83,13 @@ from sabnzbd.version import __version__, __baseline__
 # Now we can import safely
 import sabnzbd.misc as misc
 import sabnzbd.filesystem as filesystem
+import sabnzbd.writemonitor
 import sabnzbd.powersup as powersup
 import sabnzbd.encoding as encoding
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.database
+import sabnzbd.sessionstore
 import sabnzbd.lang as lang
 import sabnzbd.nzb
 import sabnzbd.nzbparser as nzbparser
@@ -128,6 +130,8 @@ DirScanner: sabnzbd.dirscanner.DirScanner
 BPSMeter: sabnzbd.bpsmeter.BPSMeter
 RSSReader: sabnzbd.rss.RSSReader
 Scheduler: sabnzbd.scheduler.Scheduler
+SessionStore: sabnzbd.sessionstore.SessionStore
+WriteMonitor: sabnzbd.writemonitor.WriteMonitor
 
 # For backwards compatibility with pre-5.0 queue files
 sys.modules["sabnzbd.nzbstuff"] = sabnzbd.nzb
@@ -251,6 +255,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     # Set call backs for Config items
     cfg.cache_limit.callback(cfg.new_limit)
     cfg.direct_write.callback(cfg.new_direct_write)
+    cfg.download_dir.callback(cfg.new_storage_dir)
     cfg.web_host.callback(cfg.guard_restart)
     cfg.web_port.callback(cfg.guard_restart)
     cfg.web_dir.callback(cfg.guard_restart)
@@ -303,6 +308,8 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.URLGrabber = sabnzbd.urlgrabber.URLGrabber()
     sabnzbd.RSSReader = sabnzbd.rss.RSSReader()
     sabnzbd.Scheduler = sabnzbd.scheduler.Scheduler()
+    sabnzbd.SessionStore = sabnzbd.sessionstore.SessionStore()
+    sabnzbd.WriteMonitor = sabnzbd.writemonitor.WriteMonitor()
 
     # Run startup tasks
     sabnzbd.NzbQueue.read_queue(repair)
@@ -352,7 +359,7 @@ def halt():
 
         # Remove registry information
         if sabnzbd.WINDOWS:
-            del_connection_info()
+            del_connection_info(config.CONFIG.filename)
 
         sabnzbd.zconfig.remove_server()
         sabnzbd.utils.ssdp.stop_ssdp()
@@ -536,8 +543,8 @@ def delayed_startup_actions():
     # aren't on 24/7 and typically don't benefit from the daily scheduled call at midnight
     sabnzbd.database.scheduled_history_purge()
 
-    # Purge links older than 3 days
-    sabnzbd.rss.expired_purge()
+    # Drop leftover records of feeds that are no longer configured
+    sabnzbd.rss.purge_removed_feeds()
 
     # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only
     if sabnzbd.cfg.enable_broadcast() and not misc.is_localhost(cfg.web_host()):

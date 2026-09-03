@@ -30,6 +30,7 @@ import re
 import time
 
 from random import randint
+from typing import Optional
 
 import sabctools
 
@@ -154,10 +155,19 @@ async def serve_sabnews(hostname, port):
         await server.serve_forever()
 
 
-def create_nzb(nzb_file=None, nzb_dir=None, metadata=None):
+def create_nzb(
+    nzb_file: Optional[str] = None,
+    nzb_dir: Optional[str] = None,
+    metadata: Optional[dict[str, str]] = None,
+    output_file: Optional[str] = None,
+):
+    """Create an NZB from a directory or a single file.
+    Pass output_file to write it somewhere other than next to the input, so callers that
+    share an input directory do not have to share the output file as well.
+    """
     article_size = 500000
     files_for_nzb = []
-    output_file = ""
+    default_output_file = ""
 
     # Either use directory or single file
     if nzb_dir:
@@ -165,16 +175,19 @@ def create_nzb(nzb_file=None, nzb_dir=None, metadata=None):
         if not os.path.exists(nzb_dir) or not os.path.isdir(nzb_dir):
             raise NotADirectoryError("%s is not a valid directory" % nzb_dir)
 
-        # List all files
+        # List all files, but never an NZB: that is what we are creating here, so it is
+        # either one we made earlier or one another test is busy with right now
         files_for_nzb = [os.path.join(nzb_dir, fl) for fl in os.listdir(nzb_dir)]
-        files_for_nzb = [fl for fl in files_for_nzb if os.path.isfile(fl)]
-        output_file = os.path.join(nzb_dir, os.path.basename(os.path.normpath(nzb_dir)) + ".nzb")
+        files_for_nzb = [fl for fl in files_for_nzb if os.path.isfile(fl) and not fl.endswith(".nzb")]
+        default_output_file = os.path.join(nzb_dir, os.path.basename(os.path.normpath(nzb_dir)) + ".nzb")
 
     if nzb_file:
         if not os.path.exists(nzb_file) or not os.path.isfile(nzb_file):
             raise FileNotFoundError("Cannot find %s or it is not a file" % nzb_file)
         files_for_nzb = [nzb_file]
-        output_file = os.path.splitext(nzb_file)[0] + ".nzb"
+        default_output_file = os.path.splitext(nzb_file)[0] + ".nzb"
+
+    output_file = output_file or default_output_file
 
     if not files_for_nzb:
         raise RuntimeError("No files found to include in NZB")

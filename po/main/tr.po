@@ -268,17 +268,6 @@ msgstr "Sunucu kullanıcı ismi ve parola gerektiriyor."
 msgid "Connection Successful!"
 msgstr "Bağlantı Başarılı!"
 
-#: sabnzbd/api.py, sabnzbd/interface.py
-msgid "Authentication failed, check username/password."
-msgstr ""
-"Kimlik doğrulaması başarısız oldu, kullanıcı ismi/parola kontrolü yapın."
-
-#: sabnzbd/api.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Çok fazla bağlantı, lütfen indirmeyi duraklatın veya daha sonra tekrar "
-"deneyin"
-
 #. Warning message
 #: sabnzbd/api.py
 msgid ""
@@ -306,12 +295,12 @@ msgid "Default"
 msgstr "Varsayılan"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk full! Forcing Pause"
 msgstr "Disk dolu! Duraklatma Zorlanıyor"
 
 #. Error message
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/decoder.py
 msgid "Disk error on creating file %s"
 msgstr "%s dosyasının oluşturulmasında disk hatası"
 
@@ -614,20 +603,8 @@ msgid "Fatal error in Downloader"
 msgstr "İndirici'de ölümcül hata"
 
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s [%s]"
-msgstr "%s [%s] sunucusuna çok fazla bağlantı"
-
-#: sabnzbd/downloader.py
-msgid ""
-"Login from too many different IP addresses to server %s [%s] - "
-"https://sabnzbd.org/multiple-adresses"
-msgstr ""
-"%s [%s] sunucusuna çok fazla farklı IP adreslerinden oturum açılışı yapıldı "
-"- https://sabnzbd.org/multiple-adresses"
-
-#: sabnzbd/downloader.py
-msgid "Failed login for server %s [%s]"
-msgstr "%s [%s] sunucusunda oturum açılışı başarısız oldu"
+msgid "Server %s reported: %s"
+msgstr "%s sunucusu şunu bildirdi: %s"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -814,12 +791,21 @@ msgstr ""
 "https://sabnzbd.org/wiki/advanced/direct-write"
 
 #: sabnzbd/interface.py
-msgid "Refused connection from:"
-msgstr "Şuradan bağlantı reddedildi:"
-
-#: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Şuradan \"%s\" makine ismi ile bağlantı reddedildi:"
+
+#: sabnzbd/interface.py
+msgid ""
+"API Key incorrect, Use the api key from Config->General in your 3rd party "
+"program:"
+msgstr ""
+"API anahtarı yanlış, 3. taraf programınızda Yapılandırma->Genel'den api "
+"anahtarını kullanın:"
+
+#. Warning message
+#: sabnzbd/interface.py, sabnzbd/security.py
+msgid "Refused connection from:"
+msgstr "Şuradan bağlantı reddedildi:"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -830,12 +816,19 @@ msgstr ""
 "programınıza girin:"
 
 #: sabnzbd/interface.py
-msgid ""
-"API Key incorrect, Use the api key from Config->General in your 3rd party "
-"program:"
+msgid "Too many failed login attempts, try again later."
+msgstr "Çok fazla oturum açma teşebbüssü, daha sonra tekrar deneyin."
+
+#. Warning message
+#: sabnzbd/interface.py
+msgid "Login attempt refused, too many failures from %s"
 msgstr ""
-"API anahtarı yanlış, 3. taraf programınızda Yapılandırma->Genel'den api "
-"anahtarını kullanın:"
+"Oturum açma teşebbüsü reddedildi, %s unsurundan çok fazla başarısız girişim."
+
+#: sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr ""
+"Kimlik doğrulaması başarısız oldu, kullanıcı ismi/parola kontrolü yapın."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -1615,12 +1608,19 @@ msgid ""
 "    Either run SABnzbd with the privileges needed for that port, or restart it\n"
 "    with a port number of 1024 or higher."
 msgstr ""
+"\n"
+"SABnzbd'nin %s bağlantı noktasını %s üzerinde kullanma izni yoktur. <br>\n"
+"Düşük bağlantı noktaları, sistemlerin çoğunluğunda imtiyazlı süreçler için ayrılmıştır, yani bağlantı noktası mevcuttur ama talep edilemezler.<br>\n"
+"<br>\n"
+"Ya SABnzbd'yi bu bağlantı noktası için ihtiyaç duyulan izinlerle çalıştırın ya da onu 1024 veya daha yüksek bir bağlantı noktası sayısı ile tekrar başlatın."
 
 #: sabnzbd/panic.py
 msgid ""
 "To keep using the low port, put a reverse proxy in front of SABnzbd "
 "instead.<br>"
 msgstr ""
+"Düşük bağlantı noktasını kullanmaya devam etmek için bunun yerine "
+"SABnzbd'nin önüne ters bir vekil sunucu koyun.<br>"
 
 #: sabnzbd/panic.py
 msgid ""
@@ -1714,6 +1714,8 @@ msgstr ""
 msgid ""
 "Not allowed to bind to port %s on %s. Low ports need elevated privileges."
 msgstr ""
+"%s bağlantı noktasına %s üzerinde bağlanma izni yoktur. Düşük bağlantı "
+"noktaları yüksek izinler gerektirir."
 
 #. Warning message
 #: sabnzbd/panic.py
@@ -2290,7 +2292,7 @@ msgstr "İptal"
 
 #: sabnzbd/skintext.py
 msgid "Close"
-msgstr ""
+msgstr "Kapat"
 
 #: sabnzbd/skintext.py
 msgid "Log in"
@@ -3740,8 +3742,8 @@ msgid "Naming"
 msgstr "İsimlendirme"
 
 #: sabnzbd/skintext.py
-msgid "How much can be downloaded this month (K/M/G)"
-msgstr "Bu ay ne kadar indirme yapılabileceği (K/M/G)"
+msgid "How much can be downloaded this Quota period (K/M/G)"
+msgstr "Bu kota süresinde ne kadar indirme yapılabileceği (K/M/G)"
 
 #. Reset day of the download quota
 #: sabnzbd/skintext.py
@@ -4754,6 +4756,13 @@ msgid "Clear search"
 msgstr "Aramayı temizle"
 
 #: sabnzbd/skintext.py
+msgid ""
+"Search by name, or refine with filters <code>cat:</code>, "
+"<code>status:</code> and <code>priority:</code> (Queue). For example: "
+"<code>my show cat:tv</code>"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "Çoklu-İşlemler"
 
@@ -4841,11 +4850,11 @@ msgstr "Ek tarihçe sütunları"
 
 #: sabnzbd/skintext.py
 msgid "Progress"
-msgstr ""
+msgstr "İlerleme"
 
 #: sabnzbd/skintext.py
 msgid "Actions"
-msgstr ""
+msgstr "Eylemler"
 
 #: sabnzbd/skintext.py
 msgid "page"

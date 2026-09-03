@@ -141,8 +141,7 @@ jobs:
 
   par2:
     name: Update par2cmdline-turbo
-    if: false
-    # if: github.repository == 'sabnzbd/sabnzbd'
+    if: github.repository == 'sabnzbd/sabnzbd'
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}

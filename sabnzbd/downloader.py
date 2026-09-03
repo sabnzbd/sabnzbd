@@ -20,9 +20,10 @@ sabnzbd.downloader - download engine
 """
 
 import logging
+import queue
 import selectors
 from collections import deque
-from threading import Thread, RLock, current_thread
+from threading import Thread, Lock, RLock, current_thread
 import socket
 import sys
 import ssl
@@ -33,11 +34,12 @@ from typing import Optional, Callable
 import sabctools
 
 import sabnzbd
+from sabnzbd.constants import DOWNLOADER_TICK
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV, DOWNLOADER_LOCK
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import from_units, helpful_warning, int_conv, MultiAddQueue, to_units
+from sabnzbd.misc import from_units, helpful_warning, int_conv, to_units
 from sabnzbd.get_addrinfo import get_fastest_addrinfo, AddrInfo
 
 # Timeout penalty in minutes for each cause
@@ -52,14 +54,15 @@ _PENALTY_VERYSHORT = 0.1  # Error 400 without cause clues
 
 # Wait this many seconds between checking idle servers for new articles or busy threads for timeout
 _SERVER_CHECK_DELAY = 0.5
-# Wait this many seconds between updates of the BPSMeter
-_BPSMETER_UPDATE_DELAY = 0.05
 # How many articles should be prefetched when checking the next articles?
 _ARTICLE_PREFETCH = 20
+# Only report the disk holding the download up once delay is this many seconds
+_ASSEMBLER_DELAY_REPORT = 0.2
 # Minimum expected size of TCP receive buffer
 _DEFAULT_CHUNK_SIZE = 32768
 
 TIMER_LOCK = RLock()
+BANDWIDTH_LOCK = Lock()
 
 
 class Server:
@@ -282,6 +285,9 @@ class Downloader(Thread):
         cfg.bandwidth_max.callback(self.speed_set)
         self.speed_set()
 
+        # Rate-limits the delay logging, which is otherwise once per pass
+        self.next_delay_log: float = 0.0
+
         # Used to see if we can add a slowdown to the Downloader-loop
         self.sleep_time: float = 0.0
         self.sleep_time_set()
@@ -443,6 +449,7 @@ class Downloader(Thread):
                 cfg.start_paused.set(True)
             if self.no_active_jobs():
                 sabnzbd.BPSMeter.reset()
+                sabnzbd.WriteMonitor.forget_rate()
             if cfg.autodisconnect():
                 self.disconnect()
 
@@ -500,9 +507,6 @@ class Downloader(Thread):
             if cfg.receive_threads() == cfg.receive_threads.default:
                 cfg.receive_threads.set(4)
                 logging.info("Receive threads set to 4")
-            if cfg.assembler_max_queue_size() == cfg.assembler_max_queue_size.default:
-                cfg.assembler_max_queue_size.set(30)
-                logging.info("Assembler max_queue_size set to 30")
 
     def sleep_time_set(self):
         self.sleep_time = cfg.downloader_sleep_time() * 0.0001
@@ -587,7 +591,7 @@ class Downloader(Thread):
         check_server_expiration()
 
         # Initialize queue and threads
-        process_nw_queue = MultiAddQueue()
+        process_nw_queue = queue.Queue()
         for _ in range(cfg.receive_threads()):
             # Started as daemon, so we don't need any shutdown logic in the worker
             # The Downloader code will make sure shutdown is handled gracefully
@@ -708,6 +712,7 @@ class Downloader(Thread):
                 else:
                     events = []
                     BPSMeter.reset()
+                    sabnzbd.WriteMonitor.forget_rate()
                     time.sleep(0.1)
                     self.max_chunk_size = _DEFAULT_CHUNK_SIZE
                     with DOWNLOADER_CV:
@@ -719,11 +724,13 @@ class Downloader(Thread):
                         ):
                             DOWNLOADER_CV.wait()
 
+                now = time.time()
                 if now > next_bpsmeter_update:
                     # Do not update statistics and check levels every loop
                     BPSMeter.update()
-                    next_bpsmeter_update = now + _BPSMETER_UPDATE_DELAY
+                    next_bpsmeter_update = now + DOWNLOADER_TICK
                     self.check_assembler_levels()
+                    sabnzbd.WriteMonitor.sample()
 
                 if not events:
                     continue
@@ -734,7 +741,7 @@ class Downloader(Thread):
         except Exception:
             logging.error(T("Fatal error in Downloader"), exc_info=True)
 
-    def process_nw_worker(self, nw_queue: MultiAddQueue):
+    def process_nw_worker(self, nw_queue: queue.Queue):
         """Worker for the daemon thread to process results.
         Wrapped in try/except because in case of an exception, logging
         might get lost and the queue.join() would block forever."""
@@ -742,6 +749,7 @@ class Downloader(Thread):
         while True:
             try:
                 self.process_nw(*nw_queue.get())
+                # Reported per role, so all the receive threads aggregate into one figure
             except Exception:
                 # We cannot break out of the Downloader from here, so just pause
                 logging.error(T("Fatal error in Downloader"), exc_info=True)
@@ -800,6 +808,12 @@ class Downloader(Thread):
                 # Make sure to discard the article
                 self.reset_nw(nw, "Maximum data buffer size exceeded", wait=False, retry_article=False)
                 return
+            except OSError as err:
+                # A streamed article could not be written: out of space, or the file
+                # went away underneath us. Not the connection's fault, so the article is
+                # retried rather than discarded.
+                self.reset_nw(nw, "Failed to write article: %s" % err, wait=False)
+                return
 
             if not bytes_pending:
                 break
@@ -814,44 +828,32 @@ class Downloader(Thread):
             sabnzbd.BPSMeter.update(server.id, bytes_received)
             if bytes_received > self.last_max_chunk_size:
                 self.last_max_chunk_size = bytes_received
-            # Check speedlimit
-            if (
-                self.bandwidth_limit
-                and sabnzbd.BPSMeter.bps + sabnzbd.BPSMeter.sum_cached_amount > self.bandwidth_limit
-            ):
+
+        # Check speedlimit on a lock of its own, so a connection being held back does not also hold up the Downloader
+        if self.bandwidth_limit and sabnzbd.BPSMeter.bps + sabnzbd.BPSMeter.sum_cached_amount > self.bandwidth_limit:
+            with BANDWIDTH_LOCK:
                 sabnzbd.BPSMeter.update()
                 while self.bandwidth_limit and sabnzbd.BPSMeter.bps > self.bandwidth_limit:
                     time.sleep(0.01)
                     sabnzbd.BPSMeter.update()
 
     def check_assembler_levels(self):
-        """Check the Assembler queue to see if we need to delay, depending on queue size"""
-        if not sabnzbd.Assembler.is_busy() or (delay := sabnzbd.Assembler.delay()) <= 0:
+        """Sleep for part of this pass if the disk is behind what is being downloaded"""
+        if (delay := sabnzbd.Assembler.delay()) <= 0:
             return
-        time.sleep(delay)
-        sabnzbd.BPSMeter.delayed_assembler += 1
-        start_time = time.monotonic()
-        deadline = start_time + 5
-        next_log = start_time + 1.0
-        logged_counter = 0
 
-        while not self.shutdown and sabnzbd.Assembler.is_busy() and time.monotonic() < deadline:
-            if (delay := sabnzbd.Assembler.delay()) <= 0:
-                break
-            # Sleep for the current delay (but cap to remaining time)
-            sleep_time = max(0.001, min(delay, deadline - time.monotonic()))
-            time.sleep(sleep_time)
-            # Make sure the BPS-meter is updated
-            sabnzbd.BPSMeter.update()
-            # Only log/update once every second
-            if time.monotonic() >= next_log:
-                logged_counter += 1
-                logging.debug(
-                    "Delayed - %d seconds - Assembler queue: %s",
-                    logged_counter,
-                    to_units(sabnzbd.Assembler.total_ready_bytes()),
-                )
-                next_log += 1.0
+        time.sleep(delay)
+        sabnzbd.BPSMeter.update()
+
+        if delay >= _ASSEMBLER_DELAY_REPORT and time.monotonic() >= self.next_delay_log:
+            self.next_delay_log = time.monotonic() + 1.0
+            sabnzbd.BPSMeter.delayed_assembler += 1
+            logging.debug(
+                "Delaying %.0f ms per pass - Assembler queue: %s - disk %s/s",
+                delay * 1000,
+                to_units(sabnzbd.Assembler.total_ready_bytes()),
+                to_units(sabnzbd.WriteMonitor.throughput),
+            )
 
     @synchronized(DOWNLOADER_LOCK)
     def finish_connect_nw(self, nw: NewsWrapper, response: sabctools.NNTPResponse) -> bool:
@@ -864,31 +866,27 @@ class Downloader(Thread):
             # Handle login problems
             block = False
             penalty = 0
-            errormsg = None
+            # Pass the server message directly on to the user
+            errormsg = T("Server %s reported: %s") % (server.host, error.msg)
             logging.debug("Server login problem: %s", error.msg)
             if error.code in (502, 400, 481, 482) and clues_too_many(error.msg):
                 # Too many connections: remove this thread and reduce thread-setting for server
                 # Plan to go back to the full number after a penalty timeout
-                errormsg = T("Too many connections to server %s [%s]") % (server.host, error.msg)
                 if server.active:
                     # Don't count this for the tries (max_art_tries) on this server
                     self.reset_nw(nw)
                     self.plan_server(server, _PENALTY_TOOMANY)
             elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
                 # Login from (too many) different IP addresses
-                errormsg = T(
-                    "Login from too many different IP addresses to server %s [%s] - https://sabnzbd.org/multiple-adresses"
-                ) % (server.host, error.msg)
+                errormsg += " - https://sabnzbd.org/multiple-adresses"
                 penalty = _PENALTY_SHARE
                 block = True
             elif error.code in (452, 481, 482, 381) or (error.code in (500, 502) and clues_login(error.msg)):
                 # Cannot login, block this server
-                errormsg = T("Failed login for server %s [%s]") % (server.host, error.msg)
                 penalty = _PENALTY_PERM
                 block = True
             elif error.code in (502, 482):
                 # Cannot connect (other reasons), block this server
-                errormsg = T("Cannot connect to server %s [%s]") % (server.host, error.msg)
                 if clues_pay(error.msg):
                     penalty = _PENALTY_PERM
                 else:
@@ -896,12 +894,12 @@ class Downloader(Thread):
                 block = True
             elif error.code == 400:
                 # Temp connection problem?
+                errormsg = None
                 logging.debug("Unspecified error 400 from server %s", server.host)
                 penalty = _PENALTY_VERYSHORT
                 block = True
             else:
                 # Unknown error, just keep trying
-                errormsg = T("Cannot connect to server %s [%s]") % (server.host, error.msg)
                 penalty = _PENALTY_UNKNOWN
                 block = True
 

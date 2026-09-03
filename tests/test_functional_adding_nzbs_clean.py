@@ -20,24 +20,23 @@ tests.test_functional_adding_nzbs_clean - Tests for settings interaction when ad
 """
 
 import os
-import time
 from zipfile import ZipFile
 
 import pytest
 
-import tests.test_functional_adding_nzbs as test_functional_adding_nzbs
 from sabnzbd.constants import STOP_PRIORITY
-from tests.testhelper import get_api_result
+from tests.testhelper import AddingNZBsTestBase, get_api_result, wait_for
+
+
+def get_slot(mode: str, nzo_id: str):
+    """Return the queue or history slot of the job, if it has one"""
+    if slots := get_api_result(mode=mode, extra_arguments={"nzo_ids": nzo_id})[mode]["slots"]:
+        return slots[0]
+    return None
 
 
 @pytest.mark.usefixtures("run_sabnzbd")
-class TestAddingNZBsClean:
-    # Copy from the base class
-    _api_set_config = test_functional_adding_nzbs.TestAddingNZBs._api_set_config
-    _create_random_nzb = test_functional_adding_nzbs.TestAddingNZBs._create_random_nzb
-    _add_backup_directory = test_functional_adding_nzbs.TestAddingNZBs._add_backup_directory
-    _clear_and_reset_backup_directory = test_functional_adding_nzbs.TestAddingNZBs._clear_and_reset_backup_directory
-
+class TestAddingNZBsClean(AddingNZBsTestBase):
     def test_adding_nzbs_nzoids(self):
         """Test if we return the right output"""
         # Create NZB and zipped version
@@ -75,21 +74,20 @@ class TestAddingNZBsClean:
             )
 
             # Wait for the job to be removed and appear in the history
-            for _ in range(100):
-                try:
-                    history = get_api_result(mode="history", extra_arguments={"nzo_ids": job1["nzo_ids"][0]})["history"]
-                    assert history["slots"][0]["nzo_id"] == job1["nzo_ids"][0]
-                    assert history["slots"][0]["status"] == "Failed"
-                    break
-                except (IndexError, AssertionError):
-                    time.sleep(0.1)
-            else:
-                pytest.fail("Job did not appear in history")
+            wait_for(
+                lambda: (slot := get_slot("history", job1["nzo_ids"][0])) and slot["status"] == "Failed",
+                timeout=10,
+                err_msg="Job did not appear in history",
+            )
+
+            def alternative_released():
+                """Jobs show up in the history as soon as they enter post-processing, but their
+                alternatives are only released at the end of it, so we have to wait for that"""
+                if (slot := get_slot("queue", job2["nzo_ids"][0])) and "ALTERNATIVE" not in slot["labels"]:
+                    return slot
 
             # Now the second job should no longer be paused and labelled
-            queue = get_api_result(mode="queue", extra_arguments={"nzo_ids": job2["nzo_ids"][0]})
-            job_in_queue = queue["queue"]["slots"][0]
-            assert "ALTERNATIVE" not in job_in_queue["labels"]
+            job_in_queue = wait_for(alternative_released, timeout=10, err_msg="Duplicate alternative was not released")
             assert job_in_queue["status"] == "Queued"
 
             # Reset duplicate detection
@@ -103,18 +101,13 @@ class TestAddingNZBsClean:
             assert job["nzo_ids"]
 
             # Wait for the job to be removed and appear in the history
-            for _ in range(100):
-                try:
-                    queue = get_api_result(mode="queue", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["queue"]
-                    assert not queue["slots"]
-                    history = get_api_result(mode="history", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["history"]
-                    assert history["slots"][0]["nzo_id"] == job["nzo_ids"][0]
-                    assert history["slots"][0]["status"] == "Failed"
-                    break
-                except (IndexError, AssertionError):
-                    time.sleep(0.1)
-            else:
-                pytest.fail("Job did not appear in history")
+            wait_for(
+                lambda: not get_slot("queue", job["nzo_ids"][0])
+                and (slot := get_slot("history", job["nzo_ids"][0]))
+                and slot["status"] == "Failed",
+                timeout=10,
+                err_msg="Job did not appear in history",
+            )
 
             # Reset and clean up
             get_api_result(

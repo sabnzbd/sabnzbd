@@ -19,10 +19,15 @@
 tests.test_filesystem - Testing functions in filesystem.py
 """
 
+import datetime
+import errno
+import io
+import pickle
 import stat
 import sys
 import os
 import shutil
+import time
 import unicodedata
 from pathlib import Path
 import tempfile
@@ -38,7 +43,7 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd import cfg
 import sabnzbd.filesystem as filesystem
-from sabnzbd.constants import DEF_FOLDER_MAX, DEF_FILE_MAX
+from sabnzbd.constants import DEF_FOLDER_MAX, DEF_FILE_MAX, JOB_ADMIN
 
 # Set the global uid for fake filesystems to a non-root user;
 # by default this depends on the user running pytest.
@@ -122,6 +127,77 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("///") == "___"
         assert filesystem.sanitize_filename("../") == ".._"
         assert filesystem.sanitize_filename("../test") == ".._test"
+
+    @pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
+    @pytest.mark.platform()
+    def test_file_allow_subdirs(self, platform):
+        """Par2 uses "/" to separate sub-directories, no matter which platform created the set"""
+        assert filesystem.sanitize_filename("sub/test.rar", allow_subdirs=True) == os.path.join("sub", "test.rar")
+        assert filesystem.sanitize_filename("sub/deeper/test.rar", allow_subdirs=True) == os.path.join(
+            "sub", "deeper", "test.rar"
+        )
+        # No sub-directory at all, or nothing but separators
+        assert filesystem.sanitize_filename("test.rar", allow_subdirs=True) == "test.rar"
+        assert filesystem.sanitize_filename("a//b.rar", allow_subdirs=True) == os.path.join("a", "b.rar")
+        assert filesystem.sanitize_filename("sub/./test.rar", allow_subdirs=True) == os.path.join("sub", "test.rar")
+        # Every part is sanitized on its own, chr(0) is illegal on all platforms
+        assert filesystem.sanitize_filename("sub" + chr(0) + "1/test" + chr(0) + "2.rar", allow_subdirs=True) == (
+            os.path.join("sub_1", "test_2.rar")
+        )
+
+    @pytest.mark.parametrize(
+        "hostile_name",
+        [
+            "/test.rar",
+            "//test.rar",
+            "../test.rar",
+            "../../../../../../etc/shadow",
+            "sub/../../test.rar",
+            "sub/../../../sub/test.rar",
+            "./../test.rar",
+            "../..",
+            "../",
+            "/",
+            "//",
+            "/../",
+            "...",
+            "....",
+        ],
+    )
+    @pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
+    @pytest.mark.platform()
+    def test_file_allow_subdirs_cannot_escape(self, platform, hostile_name):
+        """Whatever the par2 claims, the result has to stay inside the folder it is used in.
+        Joining it onto any base directory must never point above that base."""
+        result = filesystem.sanitize_filename(hostile_name, allow_subdirs=True)
+
+        assert result, "an empty result would resolve to the base directory itself"
+        assert not os.path.isabs(result)
+        assert os.pardir not in result.split(os.sep)
+
+        # The real test: it cannot climb out of whatever it gets joined to
+        base = os.path.join(os.sep + "downloads", "incomplete", "job")
+        resolved = os.path.normpath(os.path.join(base, result))
+        assert resolved.startswith(base + os.sep), "%s escaped to %s" % (hostile_name, resolved)
+
+    @pytest.mark.parametrize(
+        "hostile_name",
+        [
+            JOB_ADMIN,
+            JOB_ADMIN + "/__verified__",
+            JOB_ADMIN.lower() + "/__verified__",
+            "sub/" + JOB_ADMIN + "/__verified__",
+            JOB_ADMIN + "/deeper/__verified__",
+        ],
+    )
+    @pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
+    @pytest.mark.platform()
+    def test_file_allow_subdirs_cannot_enter_admin(self, platform, hostile_name):
+        """The admin folder is pickle-loaded, so a par2 name must never point into it"""
+        result = filesystem.sanitize_filename(hostile_name, allow_subdirs=True)
+
+        assert result, "an empty result would resolve to the base directory itself"
+        assert JOB_ADMIN.lower() not in result.lower().split(os.sep)
 
     @pytest.mark.platform("linux")
     def test_folder_illegal_chars_linux(self):
@@ -441,6 +517,59 @@ class TestSameDirectory:
         assert 0 == filesystem.same_directory("/test", "/Test")
         assert 0 == filesystem.same_directory("tesT", "Test")
         assert 0 == filesystem.same_directory("/test/../Home", "/home")
+
+
+class TestPointsIntoAdminDir:
+    def test_by_name(self, tmp_path):
+        base = str(tmp_path)
+        assert filesystem.points_into_admin_dir(os.path.join(base, JOB_ADMIN), base)
+        assert filesystem.points_into_admin_dir(os.path.join(base, JOB_ADMIN, "__verified__"), base)
+        assert filesystem.points_into_admin_dir(os.path.join(base, "sub", JOB_ADMIN, "__verified__"), base)
+
+    def test_regular_names_are_left_alone(self, tmp_path):
+        base = str(tmp_path)
+        assert not filesystem.points_into_admin_dir(os.path.join(base, "testfile.rar"), base)
+        assert not filesystem.points_into_admin_dir(os.path.join(base, "sub", "testfile.rar"), base)
+        # Only a full part counts, not a name that merely starts with it
+        assert not filesystem.points_into_admin_dir(os.path.join(base, JOB_ADMIN + "-data", "testfile.rar"), base)
+
+    def test_link_cannot_hide_it(self, tmp_path):
+        """On Windows an NTFS 8.3 alias ("__ADMI~1") points at the admin folder under a
+        different name, exactly like a link does here, so the name cannot be trusted"""
+        base = str(tmp_path)
+        admin_dir = os.path.join(base, JOB_ADMIN)
+        os.mkdir(admin_dir)
+        linkname = os.path.join(base, "notadmin")
+        os.symlink(admin_dir, linkname)
+
+        assert filesystem.points_into_admin_dir(linkname, base)
+        assert filesystem.points_into_admin_dir(os.path.join(linkname, "__verified__"), base)
+
+    @pytest.mark.skipif(not sys.platform.startswith("win"), reason="NTFS 8.3 aliases only exist on Windows")
+    def test_ntfs_8dot3_alias_cannot_hide_it(self, tmp_path):
+        """The real thing the link above stands in for: NTFS keeps an 8.3 alias for every
+        long name, so "__ADMI~1" reaches the admin folder without ever spelling it out"""
+        import win32api
+
+        base = str(tmp_path)
+        admin_dir = os.path.join(base, JOB_ADMIN)
+        os.mkdir(admin_dir)
+
+        # Ask the filesystem for the alias instead of assuming what it generated
+        alias = os.path.basename(win32api.GetShortPathName(admin_dir))
+        if alias.lower() == JOB_ADMIN.lower():
+            pytest.skip("8.3 name creation is disabled on this volume")
+
+        assert filesystem.points_into_admin_dir(os.path.join(base, alias), base)
+        assert filesystem.points_into_admin_dir(os.path.join(base, alias, "__verified__"), base)
+
+        # And the rename that the alias was meant to sneak through has to fail
+        filename = os.path.join(base, "myfile.txt")
+        Path(filename).touch()
+        with pytest.raises(OSError):
+            filesystem.renamer(filename, os.path.join(base, alias, "__verified__"), create_local_directories=True)
+        assert os.path.isfile(filename)
+        assert not os.listdir(admin_dir)
 
 
 class TestFirstExistingPath:
@@ -1203,8 +1332,81 @@ class TestRenamer:
         assert os.path.isfile(filename)
         assert not os.path.isfile(newfilename)
 
+        # ... renaming into the admin folder is not allowed either
+        admin_dir = os.path.join(dirname, JOB_ADMIN)
+        os.mkdir(admin_dir)
+        Path(filename).touch()
+        newfilename = os.path.join(admin_dir, "__verified__")
+        try:
+            filesystem.renamer(filename, newfilename, create_local_directories=True)
+        except Exception:
+            pass
+        assert os.path.isfile(filename)
+        assert not os.path.isfile(newfilename)
+
+        # ... nor is naming the admin folder itself: a move into an existing directory
+        # keeps the old basename, so this would end up inside the admin folder as well
+        Path(filename).touch()
+        try:
+            filesystem.renamer(filename, admin_dir, create_local_directories=True)
+        except Exception:
+            pass
+        assert os.path.isfile(filename)
+        assert not os.listdir(admin_dir)
+
+        # ... and not under another name that resolves to it, such as a link. On Windows
+        # an NTFS 8.3 alias ("__ADMI~1") reaches the admin folder the very same way.
+        linkname = os.path.join(dirname, "notadmin")
+        os.symlink(admin_dir, linkname)
+        Path(filename).touch()
+        try:
+            filesystem.renamer(filename, os.path.join(linkname, "__verified__"), create_local_directories=True)
+        except Exception:
+            pass
+        assert os.path.isfile(filename)
+        assert not os.listdir(admin_dir)
+        os.remove(linkname)
+
         # Cleanup working directory
         shutil.rmtree(dirname)
+
+
+class TestRestrictedUnpickler:
+    def test_round_trip(self, tmp_path):
+        data = {"a": 1, "s": {1, 2}, "when": datetime.datetime(2024, 1, 1), "t": time.gmtime(0), "st": os.stat(".")}
+        filesystem.save_data(data, "d", str(tmp_path))
+        assert filesystem.load_data("d", str(tmp_path), remove=False) == data
+
+    def test_rejects_code_execution_gadget(self):
+        class Evil:
+            def __reduce__(self):
+                return (os.system, ("echo pwned",))
+
+        with pytest.raises(pickle.UnpicklingError):
+            filesystem.RestrictedUnpickler(io.BytesIO(pickle.dumps(Evil()))).load()
+
+    def test_rejects_non_allowlisted_sabnzbd_class(self):
+        # kronos.ForkedScheduler has a __del__ that runs os.kill; referenced by name, rejected pre-import
+        def named_global(module, name):
+            return (
+                b"\x80\x04\x8c"
+                + bytes([len(module)])
+                + module.encode()
+                + b"\x8c"
+                + bytes([len(name)])
+                + name.encode()
+                + b"\x93."
+            )
+
+        with pytest.raises(pickle.UnpicklingError):
+            filesystem.RestrictedUnpickler(io.BytesIO(named_global("sabnzbd.utils.kronos", "ForkedScheduler"))).load()
+
+    def test_loads_legacy_3_0_rss_pickle(self):
+        path = os.path.join(SAB_DATA_DIR, "test_3_0_0_data_format")
+        data = filesystem.load_data("rss_data.sab", path, remove=False)
+        assert isinstance(data, dict) and data
+        feed_jobs = next(iter(data.values()))
+        assert isinstance(feed_jobs, dict) and feed_jobs
 
 
 class TestUnwantedExtensions:
@@ -1341,3 +1543,46 @@ class TestOtherFileSystemFunctions:
         # Only test stuff specific for create_work_name
         # The sanitizing is already tested in tests for sanitize_foldername
         assert filesystem.create_work_name(file_name) == clean_file_name
+
+
+class TestOutOfSpace:
+    """A full filesystem and an exhausted quota are the same thing to a user, and both
+    are fixed by freeing space rather than by retrying the write."""
+
+    @staticmethod
+    def error(code, winerror=None):
+        err = OSError(code, "test")
+        if winerror is not None:
+            err.winerror = winerror
+        return err
+
+    def test_a_full_filesystem(self):
+        assert sabnzbd.filesystem.out_of_space(self.error(errno.ENOSPC)) is True
+
+    def test_an_exhausted_quota(self):
+        assert sabnzbd.filesystem.out_of_space(self.error(errno.EDQUOT)) is True
+
+    @pytest.mark.parametrize("code", [errno.EACCES, errno.ENOENT, errno.EIO, errno.EROFS])
+    def test_other_errors_are_not_out_of_space(self, code):
+        """These need a person, not more free space, so they must not be reported as a
+        full disk"""
+        assert sabnzbd.filesystem.out_of_space(self.error(code)) is False
+
+    @pytest.mark.parametrize("winerror", [39, 112, 1295])
+    def test_the_windows_codes(self, winerror):
+        """Windows says it several ways and only some map onto an errno"""
+        original = sabnzbd.WINDOWS
+        sabnzbd.WINDOWS = True
+        try:
+            assert sabnzbd.filesystem.out_of_space(self.error(errno.EINVAL, winerror)) is True
+        finally:
+            sabnzbd.WINDOWS = original
+
+    def test_an_unrelated_windows_code(self):
+        original = sabnzbd.WINDOWS
+        sabnzbd.WINDOWS = True
+        try:
+            # 5 is ERROR_ACCESS_DENIED
+            assert sabnzbd.filesystem.out_of_space(self.error(errno.EINVAL, 5)) is False
+        finally:
+            sabnzbd.WINDOWS = original

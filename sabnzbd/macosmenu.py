@@ -20,6 +20,7 @@ sabnzbd.macosmenu - macOS Top Menu
 """
 
 import os
+import subprocess
 import sys
 import time
 import logging
@@ -90,7 +91,8 @@ class SABnzbdDelegate(NSObject):
             time.sleep(0.5)
 
         # Set this thread as default handler for notification actions
-        DefaultUserNotificationCenter.setDelegate_(self)
+        if DefaultUserNotificationCenter:
+            DefaultUserNotificationCenter.setDelegate_(self)
 
         # Do we want the menu
         if sabnzbd.cfg.tray_icon():
@@ -506,7 +508,7 @@ class SABnzbdDelegate(NSObject):
 
     def openFolderAction_(self, sender):
         folder2open = sender.representedObject()
-        os.system('open "%s"' % folder2open)
+        subprocess.run(["/usr/bin/open", folder2open])
 
     def restartAction_(self, sender):
         self.setMenuTitle_("\n\n%s\n" % (T("Stopping...")))
@@ -557,6 +559,9 @@ class SABnzbdDelegate(NSObject):
         button_action: Optional[str] = None,
     ):
         """Send a macOS notification, optionally with 1 action button"""
+        if not DefaultUserNotificationCenter:
+            return
+
         notification = NSUserNotification.alloc().init()
         notification.setTitle_(title)
         notification.setSubtitle_(subtitle)
@@ -585,7 +590,7 @@ class SABnzbdDelegate(NSObject):
         elif notification.activationType() == 2:
             # User clicked on the action button
             if os.path.exists(folder2open := notification.userInfo()["value"]):
-                os.system('open "%s"' % folder2open)
+                subprocess.run(["/usr/bin/open", folder2open])
 
         # Remove this notification after interaction
         DefaultUserNotificationCenter._removeDisplayedNotification_(notification)

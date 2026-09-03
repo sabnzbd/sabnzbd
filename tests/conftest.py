@@ -32,10 +32,11 @@ from warnings import warn
 
 import pytest
 import requests
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options as ChromeOptions
 
+import sabnzbd
+import sabnzbd.sessionstore as sessionstore
 from sabnzbd.constants import DB_HISTORY_NAME, DEF_ADMIN_DIR, DEF_INI_FILE
+from sabnzbd.filesystem import load_data, save_data
 from tests.testhelper import (
     FakeHistoryDB,
     SAB_BASE_DIR,
@@ -45,7 +46,6 @@ from tests.testhelper import (
     SAB_NEWSSERVER_HOST,
     SAB_NEWSSERVER_PORT,
     SAB_PORT,
-    SABnzbdBaseTest,
     get_api_result,
     get_url_result,
     wait_for,
@@ -138,7 +138,7 @@ def run_sabnzbd(clean_cache_dir, compiled_language_files, request):
     def shutdown_sabnzbd():
         # Shutdown SABnzbd
         try:
-            get_url_result("shutdown", SAB_HOST, SAB_PORT)
+            get_api_result("shutdown", SAB_HOST, SAB_PORT)
         except requests.ConnectionError:
             sabnzbd_process.kill()
         except Exception as err:
@@ -209,25 +209,8 @@ def run_sabnzbd(clean_cache_dir, compiled_language_files, request):
 
 
 @pytest.fixture(scope="session")
-def run_sabnews_and_selenium(request):
-    """Start SABNews and Selenium/Chromedriver, shared across the pytest session."""
-    # We only try Chrome for consistent results
-    driver_options = ChromeOptions()
-
-    # Headless during CI testing
-    if "CI" in os.environ:
-        driver_options.browser_version = "127"
-        driver_options.add_argument("--headless")
-        driver_options.add_argument("--no-sandbox")
-
-        # Useful for stability on Linux/macOS, doesn't work on Windows
-        if not sys.platform.startswith("win"):
-            driver_options.add_argument("--single-process")
-
-    # Start the driver and pass it on to all the classes
-    driver = webdriver.Chrome(options=driver_options)
-    SABnzbdBaseTest.driver = driver
-
+def run_sabnews(request):
+    """Start SABNews, shared across the pytest session."""
     # Start SABNews on this worker's own host/port so parallel workers don't
     # collide on a single fixed newsserver port.
     sabnews_process = subprocess.Popen(
@@ -241,7 +224,6 @@ def run_sabnews_and_selenium(request):
         ]
     )
 
-    # Now we run the tests
     yield
 
     # Shutdown SABNews
@@ -250,14 +232,6 @@ def run_sabnews_and_selenium(request):
         sabnews_process.communicate(timeout=10)
     except Exception as err:
         warn("Failed to shutdown the sabnews process: %s" % err)
-
-    # Shutdown Selenium/Chrome
-    try:
-        driver.close()
-        driver.quit()
-    except Exception as err:
-        # If something else fails, this can cause very non-informative long tracebacks
-        warn("Failed to shutdown the selenium/chromedriver process: %s" % err)
 
 
 @pytest.fixture(scope="class")
@@ -292,3 +266,15 @@ def update_history_specs(request):
 
     # Test o'clock
     return
+
+
+@pytest.fixture
+def session_store(tmp_path, monkeypatch):
+    """Wire sabnzbd.SessionStore to a store that saves into tmp_path"""
+    monkeypatch.setattr(sessionstore, "save_admin", lambda data, name: save_data(data, name, str(tmp_path)))
+    monkeypatch.setattr(
+        sessionstore, "load_admin", lambda name, **kwargs: load_data(name, str(tmp_path), remove=False, silent=True)
+    )
+    store = sessionstore.SessionStore()
+    monkeypatch.setattr(sabnzbd, "SessionStore", store, raising=False)
+    return store
