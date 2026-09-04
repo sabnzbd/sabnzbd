@@ -1123,6 +1123,48 @@ class TestRSS:
         assert reader.process_feed(feed_name, readout=True) == ""
         assert repo.find_job_by_url(feed_name, old_url) is None
 
+    def test_process_feed_without_readout_updates_all_stored_jobs(self, httpserver: HTTPServer, tmp_rss):
+        """Re-evaluating stored jobs (readout=False) must persist the new state for every job.
+
+        The stored jobs are read through one database connection while each
+        re-evaluated job is written through another connection to the same
+        file. If the read cursor is still open while writing, SQLite reports
+        "database is locked" and the write is silently dropped.
+        """
+        repo, reader = tmp_rss
+        feed_name = "ReEvaluateFeed"
+        # Start without any filter: every stored job is BAD
+        self.setup_rss(feed_name, httpserver.url_for("/unused.xml"))
+
+        now = datetime.datetime.now(datetime.timezone.utc)
+        urls = [f"http://example.test/re-evaluate/{n}" for n in range(5)]
+        for n, url in enumerate(urls):
+            repo.upsert(
+                ResolvedEntry(
+                    feed=feed_name,
+                    link=url,
+                    title=f"Some.Show.S01E0{n}.720p",
+                    infourl=None,
+                    size=1000,
+                    age=now - datetime.timedelta(hours=n + 1),
+                    seen_at=now,
+                    season=1,
+                    episode=n,
+                    category=None,
+                    state=RSSState.BAD,
+                )
+            )
+        assert all(repo.find_job_by_url(feed_name, url).state is RSSState.BAD for url in urls)
+
+        # Add an accept-all filter and replay the stored jobs, like the filter editor does
+        self.setup_rss(feed_name, httpserver.url_for("/unused.xml"), filters=[("", "", "", "A", "*", "", "1")])
+        assert reader.process_feed(feed_name, readout=False) == ""
+
+        for url in urls:
+            job = repo.find_job_by_url(feed_name, url)
+            assert job is not None
+            assert job.state is RSSState.GOOD, f"{url} was not updated"
+
     def test_downloaded_item_still_in_feed_is_not_redownloaded(self, httpserver: HTTPServer, tmp_rss, mocker):
         """An item that stays in the feed must survive the retention period and not be grabbed twice."""
         repo, reader = tmp_rss

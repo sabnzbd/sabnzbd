@@ -989,7 +989,8 @@ class RSSReader:
             if readout:
                 gen = self.fetch_rss(feed, uris)
             else:
-                gen = repo.get_feed_jobs(feed=feed)
+                # Materialize before evaluating: each write needs the read cursor closed
+                gen = list(repo.get_feed_jobs(feed=feed))
 
             # Evaluate rules and apply side effects
             try:
