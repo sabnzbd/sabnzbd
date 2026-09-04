@@ -16,7 +16,7 @@ jobs:
     if: github.repository == 'sabnzbd/sabnzbd'
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
       BRANCH: automation/update-unrar
     steps:
       - uses: actions/checkout@v7
@@ -83,7 +83,7 @@ jobs:
     if: github.repository == 'sabnzbd/sabnzbd'
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
       BRANCH: automation/update-7zip
     steps:
       - uses: actions/checkout@v7
@@ -144,7 +144,7 @@ jobs:
     if: github.repository == 'sabnzbd/sabnzbd'
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
       BRANCH: automation/update-par2
     steps:
       - uses: actions/checkout@v7
