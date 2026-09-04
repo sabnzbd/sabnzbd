@@ -58,6 +58,8 @@ _SERVER_CHECK_DELAY = 0.5
 _ARTICLE_PREFETCH = 20
 # Only report the disk holding the download up once delay is this many seconds
 _ASSEMBLER_DELAY_REPORT = 0.2
+# Above this speed the loop is the bottleneck, so slowing it down costs throughput
+_SLEEP_MAX_BPS = from_units("300M")
 # Minimum expected size of TCP receive buffer
 _DEFAULT_CHUNK_SIZE = 32768
 
@@ -695,12 +697,11 @@ class Downloader(Thread):
                         break
 
                 # If less data than possible was received then it should be ok to sleep a bit
-                if self.sleep_time:
+                if self.sleep_time and BPSMeter.bps < _SLEEP_MAX_BPS:
                     if self.last_max_chunk_size > self.max_chunk_size:
                         self.max_chunk_size = self.last_max_chunk_size
-                    elif self.last_max_chunk_size < self.max_chunk_size / 3:
+                    elif self.last_max_chunk_size * 3 < self.max_chunk_size:
                         time.sleep(self.sleep_time)
-                        now = time.time()
                     self.last_max_chunk_size = 0
 
                 # Use select to find sockets ready for reading/writing
@@ -822,12 +823,9 @@ class Downloader(Thread):
         if nw.generation != generation:
             return
 
-        server = nw.server
-
-        with DOWNLOADER_LOCK:
-            sabnzbd.BPSMeter.update(server.id, bytes_received)
-            if bytes_received > self.last_max_chunk_size:
-                self.last_max_chunk_size = bytes_received
+        sabnzbd.BPSMeter.update(nw.server.id, bytes_received)
+        if self.sleep_time and bytes_received > self.last_max_chunk_size:
+            self.last_max_chunk_size = bytes_received
 
         # Check speedlimit on a lock of its own, so a connection being held back does not also hold up the Downloader
         if self.bandwidth_limit and sabnzbd.BPSMeter.bps + sabnzbd.BPSMeter.sum_cached_amount > self.bandwidth_limit:
