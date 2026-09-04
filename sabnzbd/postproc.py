@@ -1127,6 +1127,10 @@ def rar_renamer(nzo: NzbObject) -> int:
 def handle_empty_queue():
     """Check if empty queue calls for action"""
     if not sabnzbd.NzbQueue.actives():
+        # Re-pause first if "unpause until queue empty" was armed, before the blocking
+        # end-of-queue script can let a newly added job start downloading
+        sabnzbd.Scheduler.repause_on_empty_queue()
+
         sabnzbd.save_state()
         notifier.send_notification(
             "SABnzbd",
@@ -1145,9 +1149,6 @@ def handle_empty_queue():
             logging.info("Queue has finished, launching action: %s ", sabnzbd.QUEUECOMPLETEACTION)
             Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
             change_queue_complete_action(cfg.queue_complete(), new=False)
-
-        # Re-pause when an "unpause until queue empty" was armed
-        sabnzbd.Scheduler.repause_on_empty_queue()
 
         # Trigger garbage collection and release of memory
         logging.debug("Triggering garbage collection and release of memory")
