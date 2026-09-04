@@ -23,7 +23,9 @@ import os
 import logging
 import time
 import uuid
-from typing import Optional
+from typing import Iterator, Optional
+from itertools import chain
+from operator import attrgetter
 
 from starlette.datastructures import UploadFile
 
@@ -40,8 +42,10 @@ from sabnzbd.constants import (
     FUTURE_Q_FOLDER,
     JOB_ADMIN,
     LOW_PRIORITY,
+    NORMAL_PRIORITY,
     HIGH_PRIORITY,
     FORCE_PRIORITY,
+    REPAIR_PRIORITY,
     STOP_PRIORITY,
     VERIFIED_FILE,
     Status,
@@ -54,14 +58,16 @@ import sabnzbd.cfg as cfg
 from sabnzbd.downloader import Server
 import sabnzbd.notifier as notifier
 
+PRIORITY_ORDER = [REPAIR_PRIORITY, FORCE_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY]
+
 
 class NzbQueue:
     """Singleton NzbQueue"""
 
     def __init__(self):
         self.__top_only: bool = cfg.top_only()
-        self.__nzo_list: list[NzbObject] = []
         self.__nzo_table: dict[str, NzbObject] = {}
+        self.__buckets: dict[int, list[NzbObject]] = {x: [] for x in PRIORITY_ORDER}
 
         # Make sure the future-dir exists so the URLGrabber can download files
         # This will also create admin_dir if it doesn't exist already by calling get_path on it
@@ -147,7 +153,7 @@ class NzbQueue:
         if all_jobs:
             registered = set()
         else:
-            registered = {nzo.work_name for nzo in self.__nzo_list}
+            registered = {nzo.work_name for nzo in self._iter_nzos()}
 
         # Retryable folders from History
         with sabnzbd.db_pool.connection() as history_db:
@@ -181,7 +187,7 @@ class NzbQueue:
         admin_path = os.path.join(repair_folder, JOB_ADMIN)
 
         # If Retry was used and a new NZB was uploaded
-        if getattr(new_nzb, "filename", None):
+        if new_nzb and getattr(new_nzb, "filename", None):
             remove_all(admin_path, "*.gz", keep_folder=True)
             logging.debug("Repair job %s with new NZB (%s)", name, new_nzb.filename)
             _, nzo_ids = sabnzbd.nzbparser.add_nzbfile(new_nzb, nzbname=name, reuse=repair_folder, password=password)
@@ -223,37 +229,53 @@ class NzbQueue:
             return
 
         # Store old position and create new NZO
-        old_position = self.__nzo_list.index(old_nzo)
+        old_pos = self._find_bucket_and_index(old_nzo)
         res, nzo_ids = process_single_nzb(
             old_nzo.filename, nzb_path, keep=True, reuse=old_nzo.download_path, nzo_id=old_nzo.nzo_id
         )
-        if res == 0 and nzo_ids:
-            # Swap to old position
-            new_nzo = self.get_nzo(nzo_ids[0])
-            self.__nzo_list.remove(new_nzo)
-            self.__nzo_list.insert(old_position, new_nzo)
+        if res == 0 and nzo_ids and (new_nzo := self.get_nzo(nzo_ids[0])):
+            # Restore the old position, but only within the bucket the new job belongs to
+            new_pos = self._find_bucket_and_index(new_nzo)
+            if old_pos and new_pos and old_pos[0] == new_pos[0]:
+                priority, index = new_pos
+                self.__buckets[priority].pop(index)
+                self.__buckets[priority].insert(old_pos[1], new_nzo)
             # Reset reuse flag to make pause/abort on encryption possible
             self.__nzo_table[nzo_ids[0]].reuse = None
 
     @NzbQueueLocker
-    def save(self, save_nzo: NzbObject | bool | None = None):
-        """Save queue, all nzo's or just the specified one"""
+    def save(self, save_nzo: NzbObject | list[NzbObject] | bool | None = None):
+        """Save queue admin, plus the NZOs indicated by save_nzo
+
+        - None: all NZOs (used on shutdown)
+        - False: no NZOs, queue admin only (used in remove)
+        - NzbObject or list of them: only those (used in add)
+        """
         logging.info("Saving queue")
 
-        nzo_ids = []
-        # Aggregate nzo_ids and save each nzo
-        for nzo in self.__nzo_list[:]:
-            if not nzo.removed_from_queue:
-                nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
-                if save_nzo is None or nzo is save_nzo:
-                    if not nzo.futuretype:
-                        # Also includes save_data for NZO
-                        nzo.save_to_disk()
-                    elif nzo.nzo_id.startswith("SABnzbd_nzo_"):
-                        sabnzbd.filesystem.save_data(nzo, nzo.nzo_id, nzo.admin_path)
-                    else:
-                        sabnzbd.filesystem.save_data(nzo, f"SABnzbd_nzo_{nzo.nzo_id}", nzo.admin_path)
+        if save_nzo is None:
+            save_nzos = self._iter_nzos()
+        elif save_nzo is False:
+            save_nzos = ()
+        elif isinstance(save_nzo, NzbObject):
+            save_nzos = (save_nzo,)
+        elif isinstance(save_nzo, list):
+            save_nzos = save_nzo
+        else:
+            save_nzos = ()
 
+        for nzo in save_nzos:
+            if nzo.removed_from_queue or not nzo.nzo_id:
+                continue
+            if not nzo.futuretype:
+                # Also includes save_data for NZO
+                nzo.save_to_disk()
+            elif nzo.nzo_id.startswith("SABnzbd_nzo_"):
+                sabnzbd.filesystem.save_data(nzo, nzo.nzo_id, nzo.admin_path)
+            else:
+                sabnzbd.filesystem.save_data(nzo, f"SABnzbd_nzo_{nzo.nzo_id}", nzo.admin_path)
+
+        nzo_ids = [os.path.join(nzo.work_name, nzo.nzo_id) for nzo in self._iter_nzos() if not nzo.removed_from_queue]
         sabnzbd.filesystem.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
     def set_top_only(self, value):
@@ -316,21 +338,20 @@ class NzbQueue:
             return False
 
     def get_nzo(self, nzo_id) -> Optional[NzbObject]:
-        if nzo_id in self.__nzo_table:
-            return self.__nzo_table[nzo_id]
-        else:
-            return None
+        return self.__nzo_table.get(nzo_id, None)
 
     @NzbQueueLocker
     def add(self, nzo: NzbObject, save: bool = True, quiet: bool = False) -> str:
         # Can already be set for future jobs
         if not nzo.nzo_id:
-            nzo.nzo_id = str(uuid.uuid4())
+            nzo_id = nzo.nzo_id = str(uuid.uuid4())
+        else:
+            nzo_id = nzo.nzo_id
 
         # If no files are to be downloaded anymore, send to postproc
         if not nzo.files and not nzo.futuretype:
             self.end_job(nzo)
-            return nzo.nzo_id
+            return nzo_id
 
         # Reset try_lists, markers and evaluate the scheduling settings
         nzo.reset_try_list()
@@ -339,33 +360,9 @@ class NzbQueue:
         if sabnzbd.Scheduler.analyse(False, priority):
             nzo.status = Status.PAUSED
 
-        self.__nzo_table[nzo.nzo_id] = nzo
-        if priority > HIGH_PRIORITY:
-            # Top and repair priority items are added to the top of the queue
-            self.__nzo_list.insert(0, nzo)
-        elif priority == LOW_PRIORITY:
-            self.__nzo_list.append(nzo)
-        else:
-            # for high priority we need to add the item at the bottom
-            # of any other high priority items above the normal priority
-            # for normal priority we need to add the item at the bottom
-            # of the normal priority items above the low priority
-            if self.__nzo_list:
-                pos = 0
-                added = False
-                for position in self.__nzo_list:
-                    if position.priority < priority:
-                        self.__nzo_list.insert(pos, nzo)
-                        added = True
-                        break
-                    pos += 1
-                if not added:
-                    # if there are no other items classed as a lower priority
-                    # then it will be added to the bottom of the queue
-                    self.__nzo_list.append(nzo)
-            else:
-                # if the queue is empty then simple append the item to the bottom
-                self.__nzo_list.append(nzo)
+        self.__nzo_table[nzo_id] = nzo
+        self._add_to_bucket(nzo)
+
         if save:
             self.save(nzo)
 
@@ -378,26 +375,31 @@ class NzbQueue:
                 self.sort_queue(field, direction)
             except ValueError:
                 pass
-        return nzo.nzo_id
+        return nzo_id
 
     @NzbQueueLocker
-    def remove(self, nzo_id: str, cleanup: bool = True, delete_all_data: bool = True) -> Optional[NzbObject]:
+    def remove(
+        self, nzo_id: str, cleanup: bool = True, delete_all_data: bool = True, save: bool = True
+    ) -> Optional[NzbObject]:
         """Remove NZO from queue.
         It can be added to history directly.
         Or, we do some clean-up, sometimes leaving some data.
         """
-        if nzo_id in self.__nzo_table:
-            nzo = self.__nzo_table.pop(nzo_id)
+        nzo = self.__nzo_table.pop(nzo_id, None)
+        if nzo:
             logging.info("[%s] Removing job %s", caller_name(), nzo.final_name)
 
             # Set statuses
             nzo.removed_from_queue = True
-            self.__nzo_list.remove(nzo)
+
+            self.__buckets[self.normalise_priority(nzo.priority)].remove(nzo)
+
             if cleanup:
                 nzo.status = Status.DELETED
                 nzo.purge_data(delete_all_data=delete_all_data)
-            self.save(False)
-            return nzo
+            if save:
+                self.save(False)
+        return nzo
 
     @NzbQueueLocker
     def remove_multiple(self, nzo_ids: list[str], delete_all_data=True) -> list[str]:
@@ -405,10 +407,13 @@ class NzbQueue:
         and downloader-disconnect, so intended for external use only!"""
         removed = []
         for nzo_id in nzo_ids:
-            if nzo := self.remove(nzo_id, delete_all_data=delete_all_data):
+            if nzo := self.remove(nzo_id, delete_all_data=delete_all_data, save=False):
                 removed.append(nzo_id)
                 # Start an alternative, if available
                 self.handle_duplicate_alternatives(nzo, success=False)
+
+        if removed:
+            self.save(False)
 
         # Any files left? Otherwise let's disconnect
         if not self.actives(grabs=False) and cfg.autodisconnect():
@@ -491,58 +496,100 @@ class NzbQueue:
 
     @NzbQueueLocker
     def switch(self, item_id_1: str, item_id_2: str) -> tuple[int, int]:
-        try:
-            # Allow an index as second parameter, easier for some skins
-            i = int(item_id_2)
-            item_id_2 = self.__nzo_list[i].nzo_id
-        except Exception:
-            pass
-        try:
-            nzo1 = self.__nzo_table[item_id_1]
-            nzo2 = self.__nzo_table[item_id_2]
-        except KeyError:
-            # One or both jobs missing
-            return -1, 0
+        global_index2: int = -1
+        nzo2_local: int = -1
+        nzo2: Optional[NzbObject] = self.__nzo_table.get(item_id_2)
 
-        if nzo1 == nzo2:
+        # Allow an index as second parameter, easier for some skins
+        if not nzo2:
+            queue_size = len(self.__nzo_table)
+            # Anything that is not a number lands outside the queue and is rejected below
+            global_index2 = int_conv(item_id_2, default=queue_size)
+            if global_index2 < 0:
+                # Negative indexes count back from the end, as list indexing does
+                global_index2 += queue_size
+            if (pos := self._index_to_bucket_pos(global_index2)) is None:
+                return -1, 0
+            nzo2_priority, nzo2_local = pos
+            nzo2 = self.__buckets[nzo2_priority][nzo2_local]
+
+        nzo1 = self.__nzo_table.get(item_id_1, None)
+
+        # Same job or one or both jobs missing
+        if nzo1 is nzo2 or not nzo1 or not nzo2:
             return -1, 0
 
         # get the priorities of the two items
-        nzo1_priority = nzo1.priority
-        nzo2_priority = nzo2.priority
-        try:
-            # get the item id of the item below to use in priority changing
-            item_id_3 = self.__nzo_list[i + 1].nzo_id
-            # if there is an item below the id1 and id2 then we need that too
-            # to determine whether to change the priority
-            nzo3 = self.__nzo_table[item_id_3]
-            nzo3_priority = nzo3.priority
+        nzo1_priority = self.normalise_priority(nzo1.priority)
+        nzo2_priority = self.normalise_priority(nzo2.priority)
+        nzo1_bucket = self.__buckets[nzo1_priority]
+        nzo1_local = nzo1_bucket.index(nzo1)
+        if nzo2_local == -1:
+            nzo2_local = self.__buckets[nzo2_priority].index(nzo2)
+
+        # Same priority: move item_id_1 next to item_id_2
+        if nzo1_priority == nzo2_priority:
+            item = nzo1_bucket.pop(nzo1_local)
+            nzo1_bucket.insert(nzo2_local, item)
+            pos = self._bucket_pos_to_index(nzo1_priority, nzo2_local)
+            logging.info(
+                "Switching job [%s] %s => [%s] %s",
+                self._bucket_pos_to_index(nzo1_priority, nzo1_local),
+                nzo1.final_name,
+                pos,
+                nzo2.final_name,
+            )
+            return pos, nzo1_priority
+
+        # Moving between priorities, positions must be read before nzo1 leaves its bucket
+        global_index1 = self._bucket_pos_to_index(nzo1_priority, nzo1_local)
+        if global_index2 == -1:
+            global_index2 = self._bucket_pos_to_index(nzo2_priority, nzo2_local)
+
+        # Start with current priority; may change based on neighbors
+        new_prio = nzo1_priority
+        if (pos3 := self._index_to_bucket_pos(global_index2 + 1)) is None:
+            new_prio = nzo2_priority
+        else:
+            nzo3_priority, _ = pos3
             # if id1 is surrounded by items of a different priority then change its priority to match
-            if (nzo2_priority != nzo1_priority and nzo3_priority != nzo1_priority) or nzo2_priority > nzo1_priority:
-                nzo1.priority = nzo2_priority
-        except Exception:
-            nzo1.priority = nzo2_priority
-        item_id_pos1 = -1
-        item_id_pos2 = -1
-        for i in range(len(self.__nzo_list)):
-            if item_id_1 == self.__nzo_list[i].nzo_id:
-                item_id_pos1 = i
-            elif item_id_2 == self.__nzo_list[i].nzo_id:
-                item_id_pos2 = i
-            if (item_id_pos1 > -1) and (item_id_pos2 > -1):
-                item = self.__nzo_list[item_id_pos1]
-                logging.info(
-                    "Switching job [%s] %s => [%s] %s",
-                    item_id_pos1,
-                    item.final_name,
-                    item_id_pos2,
-                    self.__nzo_list[item_id_pos2].final_name,
-                )
-                del self.__nzo_list[item_id_pos1]
-                self.__nzo_list.insert(item_id_pos2, item)
-                return item_id_pos2, nzo1.priority
-        # If moving failed/no movement took place
-        return -1, nzo1.priority
+            if (nzo2_priority != nzo1_priority and nzo3_priority != nzo1_priority) or (nzo2_priority > nzo1_priority):
+                new_prio = nzo2_priority
+
+        # Remove nzo1 from its current bucket
+        nzo1_bucket.pop(nzo1_local)
+
+        # Apply the new priority
+        nzo1.priority = new_prio
+        target_bucket = self.__buckets[new_prio]
+
+        # We're matching nzo2's priority; place nzo1 at nzo2's position
+        if new_prio == nzo2_priority:
+            if global_index1 < global_index2:
+                # moving down; insert after nzo2
+                new_local_idx = nzo2_local + 1
+            else:
+                # moving up; insert before nzo2
+                new_local_idx = nzo2_local
+            target_bucket.insert(new_local_idx, nzo1)
+        else:
+            # Priority did not end up equal to nzo2's priority.
+            # We keep nzo1 in its own priority group and append it there.
+            target_bucket.append(nzo1)
+            new_local_idx = len(target_bucket) - 1
+
+        # Compute new global index of nzo1
+        pos = self._bucket_pos_to_index(new_prio, new_local_idx)
+
+        logging.info(
+            "Switching job [%s] %s => [%s] %s",
+            global_index1,
+            nzo1.final_name,
+            pos,
+            nzo2.final_name,
+        )
+
+        return pos, new_prio
 
     @NzbQueueLocker
     def move_nzf_up_bulk(self, nzo_id: str, nzf_ids: list[str], size: int):
@@ -581,26 +628,26 @@ class NzbQueue:
             sort_function = lambda nzo: nzo.final_name.lower()
         elif field == "size" or field == "bytes":
             logging.info("Sorting by size (reversed: %s)", reverse)
-            sort_function = lambda nzo: nzo.bytes
+            sort_function = attrgetter("bytes")
         elif field == "avg_age":
             reverse = not reverse
             logging.info("Sorting by average date... (reversed: %s)", reverse)
-            sort_function = lambda nzo: nzo.avg_date
+            sort_function = attrgetter("avg_date")
         elif field == "remaining":
-            if self.__nzo_list:
+            if self.__nzo_table:
                 logging.debug("Sorting by percentage downloaded...")
             sort_function = lambda nzo: nzo.remaining / nzo.bytes if nzo.bytes else 1
         elif field == "remaining_bytes":
-            if self.__nzo_list:
+            if self.__nzo_table:
                 logging.debug("Sorting by remaining size...")
-            sort_function = lambda nzo: nzo.remaining
+            sort_function = attrgetter("remaining")
         else:
             logging.debug("Sort: %s not recognized", field)
             return
 
-        # Apply sort by requested order, then restore priority ordering
-        self.__nzo_list.sort(key=sort_function, reverse=reverse)
-        self.__nzo_list.sort(key=lambda nzo: nzo.priority, reverse=True)
+        # Apply sort by requested order
+        for prio in PRIORITY_ORDER:
+            self.__buckets[prio].sort(key=sort_function, reverse=reverse)
 
     def update_sort_order(self):
         """Resorts the queue if it is useful for the selected sort method"""
@@ -611,30 +658,30 @@ class NzbQueue:
             self.sort_queue("remaining")
 
     @NzbQueueLocker
-    def __set_priority(self, nzo_id: str, priority: int | str) -> Optional[int]:
+    def __set_priority(self, nzo_id: str, priority: int | str) -> int:
         """Sets the priority on the nzo and places it in the queue at the appropriate position"""
         try:
             priority = int_conv(priority)
             nzo = self.__nzo_table[nzo_id]
-            nzo_id_pos1 = -1
-            pos = -1
 
             # If priority == STOP_PRIORITY, then send to queue
             if priority == STOP_PRIORITY:
                 self.end_job(nzo)
-                return
-
-            # Get the current position in the queue
-            for i in range(len(self.__nzo_list)):
-                if nzo_id == self.__nzo_list[i].nzo_id:
-                    nzo_id_pos1 = i
-                    break
+                return -1
 
             # Don't change priority and order if priority is the same as asked
-            if priority == self.__nzo_list[nzo_id_pos1].priority:
-                return nzo_id_pos1
+            if priority == nzo.priority:
+                if (current := self._find_bucket_and_index(nzo)) is None:
+                    return -1
+                return self._bucket_pos_to_index(*current)
 
+            # Remove from old bucket
+            self.__buckets[self.normalise_priority(nzo.priority)].remove(nzo)
+
+            # Set new priority and insert in new bucket
             nzo.set_priority(priority)
+            local_index = self._add_to_bucket(nzo)
+
             if sabnzbd.Scheduler.analyse(False, priority) and nzo.status in (
                 Status.CHECKING,
                 Status.DOWNLOADING,
@@ -645,40 +692,8 @@ class NzbQueue:
                 nzo.status = Status.QUEUED
             nzo.save_to_disk()
 
-            if nzo_id_pos1 != -1:
-                del self.__nzo_list[nzo_id_pos1]
-                if priority == FORCE_PRIORITY:
-                    # A top priority item (usually a completed download fetching pars)
-                    # is added to the top of the queue
-                    self.__nzo_list.insert(0, nzo)
-                    pos = 0
-                elif priority == LOW_PRIORITY:
-                    pos = len(self.__nzo_list)
-                    self.__nzo_list.append(nzo)
-                else:
-                    # for high priority we need to add the item at the bottom
-                    # of any other high priority items above the normal priority
-                    # for normal priority we need to add the item at the bottom
-                    # of the normal priority items above the low priority
-                    if self.__nzo_list:
-                        p = 0
-                        added = False
-                        for position in self.__nzo_list:
-                            if position.priority < priority:
-                                self.__nzo_list.insert(p, nzo)
-                                pos = p
-                                added = True
-                                break
-                            p += 1
-                        if not added:
-                            # if there are no other items classed as a lower priority
-                            # then it will be added to the bottom of the queue
-                            pos = len(self.__nzo_list)
-                            self.__nzo_list.append(nzo)
-                    else:
-                        # if the queue is empty then simple append the item to the bottom
-                        self.__nzo_list.append(nzo)
-                        pos = 0
+            # Compute new position
+            pos = self._bucket_pos_to_index(self.normalise_priority(priority), local_index)
 
             logging.info(
                 "Set priority=%s for job %s => position=%s ", priority, self.__nzo_table[nzo_id].final_name, pos
@@ -702,20 +717,73 @@ class NzbQueue:
         """Check if the queue contains any Forced
         Priority jobs to download while paused
         """
-        for nzo in self.__nzo_list:
+        for nzo in self.__buckets[FORCE_PRIORITY]:
             if nzo.priority == FORCE_PRIORITY and nzo.status not in (Status.PAUSED, Status.GRABBING):
                 return True
-            # Each time the priority of a job is changed the queue is sorted, so we can
-            # assume that if we reach a job below Force priority we can continue
-            if nzo.priority < FORCE_PRIORITY:
-                return False
         return False
+
+    def _add_to_bucket(self, nzo: NzbObject) -> int:
+        """Place an NZO in its priority bucket and return the index within that bucket.
+
+        Forced jobs go to the front of their bucket, everything else to the back.
+        """
+        bucket = self.__buckets[self.normalise_priority(nzo.priority)]
+        if nzo.priority == FORCE_PRIORITY:
+            bucket.insert(0, nzo)
+            return 0
+        bucket.append(nzo)
+        return len(bucket) - 1
+
+    def _iter_nzos(self) -> Iterator[NzbObject]:
+        """Yield all NZOs in download order, highest priority first"""
+        for prio in PRIORITY_ORDER:
+            yield from self.__buckets[prio]
+
+    def _find_bucket_and_index(self, nzo: NzbObject) -> Optional[tuple[int, int]]:
+        """Map an NZO to (priority, local_index_in_bucket)
+
+        Returns None if the job is not queued.
+        """
+        priority = self.normalise_priority(nzo.priority)
+        try:
+            return priority, self.__buckets[priority].index(nzo)
+        except ValueError:
+            return None
+
+    def _index_to_bucket_pos(self, global_index: int) -> Optional[tuple[int, int]]:
+        """
+        Map a global index (0-based) to (priority, local_index_in_bucket).
+
+        Returns None if out of range.
+        """
+        if global_index < 0:
+            return None
+        idx = 0
+        for prio in PRIORITY_ORDER:
+            bucket = self.__buckets[prio]
+            if global_index < idx + len(bucket):
+                return prio, global_index - idx
+            idx += len(bucket)
+        return None
+
+    def _bucket_pos_to_index(self, priority: int, index: int) -> int:
+        """
+        Map a (priority, local_index_in_bucket) back to a global index.
+
+        Raises ValueError if the priority is not a bucket, callers pass a normalised priority.
+        """
+        idx = 0
+        for prio in PRIORITY_ORDER:
+            if priority == prio:
+                return idx + index
+            idx += len(self.__buckets[prio])
+        raise ValueError("%s is not a queue priority" % priority)
 
     def get_articles(self, server: Server, servers: list[Server], fetch_limit: int) -> None:
         """Get next article for jobs in the queue
         Not locked for performance, since it only reads the queue
         """
-        for nzo in self.__nzo_list:
+        for nzo in self._iter_nzos():
             # Not when queue paused, individually paused, or when waiting for propagation
             # Force items will always download
             if (
@@ -804,7 +872,7 @@ class NzbQueue:
         Not locked for performance, only reads the queue
         """
         n = 0
-        for nzo in self.__nzo_list:
+        for nzo in self._iter_nzos():
             # Ignore any items that are paused
             if grabs and nzo.status == Status.GRABBING:
                 n += 1
@@ -834,7 +902,7 @@ class NzbQueue:
         nzo_list = []
         nzos_matched = 0
 
-        for nzo in self.__nzo_list:
+        for nzo in self._iter_nzos():
             if nzo.status not in (Status.PAUSED, Status.CHECKING) or nzo.priority == FORCE_PRIORITY:
                 b_left = nzo.remaining
                 bytes_total += nzo.bytes
@@ -863,7 +931,7 @@ class NzbQueue:
             nzos_matched += 1
 
         if not search and not nzo_ids:
-            nzos_matched = len(self.__nzo_list)
+            nzos_matched = sum(len(self.__buckets[p]) for p in PRIORITY_ORDER)
         return bytes_total, bytes_left, bytes_left_previous_page, nzo_list, q_size, nzos_matched
 
     def remaining(self) -> int:
@@ -871,13 +939,13 @@ class NzbQueue:
         Not locked for performance, only reads the queue
         """
         bytes_left = 0
-        for nzo in self.__nzo_list:
+        for nzo in self._iter_nzos():
             if nzo.status != Status.PAUSED:
                 bytes_left += nzo.remaining
         return bytes_left
 
     def is_empty(self) -> bool:
-        for nzo in self.__nzo_list:
+        for nzo in self._iter_nzos():
             if not nzo.futuretype and nzo.status != Status.PAUSED:
                 return False
         return True
@@ -892,7 +960,7 @@ class NzbQueue:
             logging.debug("Skipping stop_idle_jobs because no servers are active")
             return
 
-        for nzo in self.__nzo_list:
+        for nzo in self._iter_nzos():
             if not nzo.futuretype and not nzo.files and nzo.status not in (Status.PAUSED, Status.GRABBING):
                 logging.info("Found idle job %s", nzo.final_name)
                 empty.append(nzo)
@@ -942,25 +1010,25 @@ class NzbQueue:
             self.end_job(nzo)
 
     def pause_on_prio(self, priority: int):
-        for nzo in self.__nzo_list:
+        for nzo in self._iter_nzos():
             if nzo.priority == priority:
                 nzo.pause()
 
     @NzbQueueLocker
     def resume_on_prio(self, priority: int):
-        for nzo in self.__nzo_list:
+        for nzo in self._iter_nzos():
             if nzo.priority == priority:
                 # Don't use nzo.resume() to avoid resetting job warning flags
                 nzo.status = Status.QUEUED
 
     def pause_on_cat(self, cat: str):
-        for nzo in self.__nzo_list:
+        for nzo in self._iter_nzos():
             if nzo.cat == cat:
                 nzo.pause()
 
     @NzbQueueLocker
     def resume_on_cat(self, cat: str):
-        for nzo in self.__nzo_list:
+        for nzo in self._iter_nzos():
             if nzo.cat == cat:
                 # Don't use nzo.resume() to avoid resetting job warning flags
                 nzo.status = Status.QUEUED
@@ -981,7 +1049,7 @@ class NzbQueue:
         """Check whether this name or md5sum is already
         in the queue or the post-processing queue"""
         lname = name.lower()
-        for nzo in self.__nzo_list + sabnzbd.PostProcessor.get_queue():
+        for nzo in chain(self._iter_nzos(), sabnzbd.PostProcessor.get_queue()):
             # Skip any jobs already marked as duplicate, to prevent double-triggers
             # URL's do not have an MD5!
             if not nzo.duplicate and (
@@ -994,7 +1062,7 @@ class NzbQueue:
     def have_duplicate_key(self, duplicate_key: str) -> bool:
         """Check whether this duplicate key is already
         in the queue or the post-processing queue"""
-        for nzo in self.__nzo_list + sabnzbd.PostProcessor.get_queue():
+        for nzo in chain(self._iter_nzos(), sabnzbd.PostProcessor.get_queue()):
             # Skip any jobs already marked as duplicate, to prevent double-triggers
             if not nzo.duplicate and nzo.duplicate_key == duplicate_key:
                 return True
@@ -1008,7 +1076,7 @@ class NzbQueue:
             return
 
         # Unfortunately we need a copy, since we might remove items from the list
-        for nzo in self.__nzo_list[:]:
+        for nzo in list(self._iter_nzos()):
             if not nzo.duplicate or nzo.duplicate == DuplicateStatus.DUPLICATE_IGNORED:
                 continue
 
@@ -1035,8 +1103,9 @@ class NzbQueue:
                 #  4 = Tag
                 smart_duplicate = nzo.duplicate == DuplicateStatus.SMART_DUPLICATE_ALTERNATIVE
                 if (not smart_duplicate and cfg.no_dupes() == 1) or (smart_duplicate and cfg.no_smart_dupes() == 1):
-                    duplicate_warning(T('Ignoring duplicate NZB "%s"'), nzo.final_name)
-                    self.remove(nzo.nzo_id)
+                    if nzo.nzo_id:
+                        duplicate_warning(T('Ignoring duplicate NZB "%s"'), nzo.final_name)
+                        self.remove(nzo.nzo_id)
                 elif (not smart_duplicate and cfg.no_dupes() == 3) or (smart_duplicate and cfg.no_smart_dupes() == 3):
                     duplicate_warning(T('Failing duplicate NZB "%s"'), nzo.final_name)
                     nzo.fail_msg = T("Duplicate NZB")
@@ -1049,6 +1118,13 @@ class NzbQueue:
                     else:
                         nzo.duplicate = DuplicateStatus.SMART_DUPLICATE
                     return
+
+    @staticmethod
+    def normalise_priority(priority: int) -> int:
+        """NzbQueue allows REPAIR, FORCE, HIGH, NORMAL, and LOW priority; others are mapped to NORMAL"""
+        if LOW_PRIORITY <= priority <= REPAIR_PRIORITY:
+            return priority
+        return NORMAL_PRIORITY
 
     def __repr__(self):
         return "<NzbQueue>"

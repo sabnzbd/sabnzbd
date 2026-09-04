@@ -30,7 +30,18 @@ from unittest import mock
 import pytest
 
 import sabnzbd
-from sabnzbd.constants import NORMAL_PRIORITY, JOB_ADMIN, ONDISK_VERSION, ONDISK_FILE, RENAMES_FILE, Status
+from sabnzbd.constants import (
+    JOB_ADMIN,
+    ONDISK_VERSION,
+    ONDISK_FILE,
+    RENAMES_FILE,
+    Status,
+    LOW_PRIORITY,
+    NORMAL_PRIORITY,
+    HIGH_PRIORITY,
+    FORCE_PRIORITY,
+    REPAIR_PRIORITY,
+)
 from sabnzbd.database import HistoryDB
 from sabnzbd.downloader import Server
 from sabnzbd.filesystem import save_compressed, save_data
@@ -71,6 +82,7 @@ def nzbqueue_env(monkeypatch, mocker, tmp_path):
         )
     ]
     sabnzbd.NzbQueue = NzbQueue()
+    sabnzbd.Downloader.disconnect = mocker.Mock()
     monkeypatch.setattr(sabnzbd.cfg.admin_dir, "get_path", lambda: str(tmp_path))
     monkeypatch.setattr(sabnzbd.cfg.download_dir, "get_path", lambda: str(tmp_path))
 
@@ -346,3 +358,342 @@ class TestNzbQueue:
         # With all_jobs=True the download queue itself is not considered registered
         orphans_all = sabnzbd.NzbQueue.scan_jobs(all_jobs=True, action=False)
         assert queued_nzo.work_name in orphans_all
+
+    @pytest.fixture
+    def queue(self, nzbqueue_env):
+        return NzbQueue()
+
+    def test_add_inserts_and_tracks_jobs(self, queue):
+        a = make_dummy_nzo("a", priority=NORMAL_PRIORITY)
+        b = make_dummy_nzo("b", priority=LOW_PRIORITY)
+        c = make_dummy_nzo("c", priority=FORCE_PRIORITY)
+
+        ida = queue.add(a, save=False, quiet=True)
+        idb = queue.add(b, save=False, quiet=True)
+        idc = queue.add(c, save=False, quiet=True)
+
+        # All ids registered
+        assert queue.get_nzo(ida) is a
+        assert queue.get_nzo(idb) is b
+        assert queue.get_nzo(idc) is c
+
+        # queue_info returns all three, first should be the forced job
+        _, _, _, nzo_list, _, count = queue.queue_info()
+        assert count == 3
+        assert [n.final_name for n in nzo_list] == [c.final_name, a.final_name, b.final_name]
+
+    def test_remove_removes_from_queue_and_table(self, queue):
+        a = make_dummy_nzo("a", priority=0)
+        b = make_dummy_nzo("b", priority=0)
+        c = make_dummy_nzo("c", priority=0)
+
+        _ida = queue.add(a, save=False, quiet=True)
+        idb = queue.add(b, save=False, quiet=True)
+        _idc = queue.add(c, save=False, quiet=True)
+
+        removed = queue.remove(idb, cleanup=False, delete_all_data=False)
+        assert removed is b
+        assert queue.get_nzo(idb) is None
+
+        _, _, _, nzo_list, _, count = queue.queue_info()
+        assert count == 2
+        assert [nzo.final_name for nzo in nzo_list] == ["job-a", "job-c"]
+
+    def test_remove_multiple_and_remove_all(self, queue):
+        jobs = [make_dummy_nzo(f"job-{i}", priority=0) for i in range(5)]
+        ids = [queue.add(nzo, save=False, quiet=True) for nzo in jobs]
+
+        # Remove two specific jobs
+        subset = ids[1:3]
+        removed_ids = queue.remove_multiple(subset, delete_all_data=False)
+        assert set(removed_ids) == set(subset)
+
+        # Remaining ids still there
+        remaining_ids = {nid for nid in ids if nid not in subset}
+        assert {nzo.nzo_id for nzo in queue.queue_info()[3]} == remaining_ids
+
+        # remove_all with search pattern should remove the rest
+        removed_all = queue.remove_all(search="job-")
+        assert set(removed_all) == remaining_ids
+        assert queue.queue_info()[5] == 0  # nzos_matched
+
+    def test_change_opts_sets_pp(self, queue):
+        a = make_dummy_nzo("a", priority=LOW_PRIORITY)
+        ida = queue.add(a, save=False, quiet=True)
+
+        changed = queue.change_opts([ida], pp=3)
+        assert changed == 1
+        assert a.pp == 3
+
+    def test_change_script_only_when_valid(self, queue, monkeypatch):
+        from sabnzbd import nzbqueue as nzbqueue_mod
+
+        # Always accept given script
+        monkeypatch.setattr(nzbqueue_mod, "is_valid_script", lambda s: True)
+
+        a = make_dummy_nzo("a", priority=0)
+        b = make_dummy_nzo("b", priority=0)
+        ida = queue.add(a, save=False, quiet=True)
+        idb = queue.add(b, save=False, quiet=True)
+
+        changed = queue.change_script([ida, idb], script="myscript.py")
+        assert changed == 2
+        assert a.script == "myscript.py"
+        assert b.script == "myscript.py"
+
+        # Now mark scripts invalid; no changes should be made
+        monkeypatch.setattr(nzbqueue_mod, "is_valid_script", lambda s: False)
+        changed = queue.change_script([ida, idb], script="other.py")
+        assert changed == 0
+        assert a.script == "myscript.py"
+        assert b.script == "myscript.py"
+
+    def test_change_cat_updates_cat_pp_script_and_priority(self, queue, monkeypatch):
+        from sabnzbd import nzbqueue as nzbqueue_mod
+
+        # Fake cat_to_opts: (cat, pp, script, prio)
+        def fake_cat_to_opts(cat):
+            return f"{cat}-cat", 2, "cat_script.py", FORCE_PRIORITY
+
+        monkeypatch.setattr(nzbqueue_mod, "cat_to_opts", fake_cat_to_opts)
+
+        a = make_dummy_nzo("a", priority=0)
+        ida = queue.add(a, save=False, quiet=True)
+
+        changed = queue.change_cat([ida], cat="movies")
+        assert changed == 1
+        assert a.cat == "movies-cat"
+        assert a.script == "cat_script.py"
+        assert a.priority == FORCE_PRIORITY
+
+    def test_change_name_updates_final_name(self, queue):
+        a = make_dummy_nzo("a", priority=0)
+        ida = queue.add(a, save=False, quiet=True)
+
+        ok = queue.change_name(ida, "renamed")
+        assert ok is True
+        assert a.final_name == "renamed"
+
+    @staticmethod
+    def get_queue_order(queue):
+        return [n.final_name for n in queue.queue_info()[3]]
+
+    def test_set_priority_moves_job_to_forced_top(self, queue):
+        a = make_dummy_nzo("a", priority=0)
+        b = make_dummy_nzo("b", priority=0)
+        c = make_dummy_nzo("c", priority=0)
+
+        _ida = queue.add(a, save=False, quiet=True)
+        idb = queue.add(b, save=False, quiet=True)
+        _idc = queue.add(c, save=False, quiet=True)
+
+        assert self.get_queue_order(queue) == ["job-a", "job-b", "job-c"]
+
+        # Set b to FORCE_PRIORITY, should go to the top
+        _pos = queue.set_priority([idb], FORCE_PRIORITY)
+        # pos is index; we just verify ordering
+        assert self.get_queue_order(queue)[0] == "job-b"
+        assert b.priority == FORCE_PRIORITY
+
+    def test_switch_swaps_positions(self, queue):
+        a = make_dummy_nzo("a", priority=NORMAL_PRIORITY)
+        b = make_dummy_nzo("b", priority=NORMAL_PRIORITY)
+        c = make_dummy_nzo("c", priority=NORMAL_PRIORITY)
+
+        ida = queue.add(a, save=False, quiet=True)
+        _idb = queue.add(b, save=False, quiet=True)
+        idc = queue.add(c, save=False, quiet=True)
+
+        assert self.get_queue_order(queue) == ["job-a", "job-b", "job-c"]
+
+        # Move a to c
+        new_pos, _prio = queue.switch(ida, idc)
+        assert new_pos != -1
+        assert self.get_queue_order(queue) == ["job-b", "job-c", "job-a"]
+
+    def test_switch_swaps_positions_different_priority(self, queue):
+        a = make_dummy_nzo("a", priority=HIGH_PRIORITY)
+        b = make_dummy_nzo("b", priority=NORMAL_PRIORITY)
+        c = make_dummy_nzo("c", priority=NORMAL_PRIORITY)
+
+        ida = queue.add(a, save=False, quiet=True)
+        _idb = queue.add(b, save=False, quiet=True)
+        idc = queue.add(c, save=False, quiet=True)
+
+        assert self.get_queue_order(queue) == ["job-a", "job-b", "job-c"]
+
+        # Move a to c
+        new_pos, _prio = queue.switch(ida, idc)
+        assert new_pos != -1
+        assert a.priority == NORMAL_PRIORITY
+        assert b.priority == NORMAL_PRIORITY
+        assert c.priority == NORMAL_PRIORITY
+        assert self.get_queue_order(queue) == ["job-b", "job-c", "job-a"]
+
+    def test_switch_swaps_positions_different_priority_2(self, queue):
+        a = make_dummy_nzo("a", priority=HIGH_PRIORITY)
+        b = make_dummy_nzo("b", priority=HIGH_PRIORITY)
+        c = make_dummy_nzo("c", priority=NORMAL_PRIORITY)
+
+        ida = queue.add(a, save=False, quiet=True)
+        _idb = queue.add(b, save=False, quiet=True)
+        idc = queue.add(c, save=False, quiet=True)
+
+        assert self.get_queue_order(queue) == ["job-a", "job-b", "job-c"]
+
+        # Move a to c
+        new_pos, _prio = queue.switch(ida, idc)
+        assert new_pos != -1
+        assert b.priority == HIGH_PRIORITY
+        assert c.priority == NORMAL_PRIORITY
+        assert a.priority == NORMAL_PRIORITY
+        assert self.get_queue_order(queue) == ["job-b", "job-c", "job-a"]
+
+    def test_switch_swaps_positions_different_priority_3(self, queue):
+        a = make_dummy_nzo("a", priority=HIGH_PRIORITY)
+        b = make_dummy_nzo("b", priority=NORMAL_PRIORITY)
+        c = make_dummy_nzo("c", priority=NORMAL_PRIORITY)
+
+        ida = queue.add(a, save=False, quiet=True)
+        _idb = queue.add(b, save=False, quiet=True)
+        idc = queue.add(c, save=False, quiet=True)
+
+        assert self.get_queue_order(queue) == ["job-a", "job-b", "job-c"]
+
+        # Move c to a
+        new_pos, _prio = queue.switch(idc, ida)
+        assert new_pos != -1
+        assert c.priority == HIGH_PRIORITY
+        assert a.priority == HIGH_PRIORITY
+        assert b.priority == NORMAL_PRIORITY
+        assert self.get_queue_order(queue) == ["job-c", "job-a", "job-b"]
+
+    def test_switch_moves_job_below_its_lower_priority_neighbour(self, queue):
+        """Moving onto the first job of the next priority group must actually move it"""
+        a = make_dummy_nzo("a", priority=HIGH_PRIORITY)
+        b = make_dummy_nzo("b", priority=NORMAL_PRIORITY)
+        queue.add(a, save=False, quiet=True)
+        queue.add(b, save=False, quiet=True)
+
+        pos, prio = queue.switch(a.nzo_id, b.nzo_id)
+
+        assert self.get_queue_order(queue) == ["job-b", "job-a"]
+        assert pos == 1
+        assert prio == NORMAL_PRIORITY
+
+    def test_send_back_keeps_job_in_the_bucket_matching_its_priority(self, queue, monkeypatch):
+        """The replacement job can resolve a different priority than the job it replaces"""
+        old = make_dummy_nzo("old", priority=HIGH_PRIORITY)
+        queue.add(old, save=False, quiet=True)
+        monkeypatch.setattr(old, "download_path", "/tmp/old", raising=False)
+        monkeypatch.setattr(sabnzbd.filesystem, "globber_full", lambda *a, **k: ["/tmp/old.nzb.gz"])
+        monkeypatch.setattr("sabnzbd.nzbqueue.globber_full", lambda *a, **k: ["/tmp/old.nzb.gz"])
+
+        def fake_process_single_nzb(*args, **kwargs):
+            queue.remove(kwargs["nzo_id"], cleanup=False, delete_all_data=False)
+            replacement = make_dummy_nzo("new", priority=NORMAL_PRIORITY)
+            replacement.nzo_id = kwargs["nzo_id"]
+            queue.add(replacement, save=False, quiet=True)
+            return 0, [replacement.nzo_id]
+
+        monkeypatch.setattr("sabnzbd.nzbqueue.process_single_nzb", fake_process_single_nzb)
+        queue.send_back(old)
+
+        # Removing must find the job in the bucket its own priority points at
+        nzo_id = queue.queue_info()[3][0].nzo_id
+        assert queue.remove(nzo_id, cleanup=False, delete_all_data=False)
+        assert queue.queue_info()[3] == []
+
+    @pytest.mark.parametrize(
+        "value2, expected_order",
+        [
+            ("1", ["job-b", "job-a", "job-c"]),
+            ("-1", ["job-b", "job-c", "job-a"]),
+            ("-2", ["job-b", "job-a", "job-c"]),
+            # Out of range, unparsable and non-decimal numerics all leave the queue alone
+            ("99", ["job-a", "job-b", "job-c"]),
+            ("-99", ["job-a", "job-b", "job-c"]),
+            ("\u00b2", ["job-a", "job-b", "job-c"]),
+            ("abc", ["job-a", "job-b", "job-c"]),
+            ("", ["job-a", "job-b", "job-c"]),
+        ],
+    )
+    def test_switch_accepts_an_index_as_second_parameter(self, queue, value2, expected_order):
+        jobs = [make_dummy_nzo(name) for name in "abc"]
+        for nzo in jobs:
+            queue.add(nzo, save=False, quiet=True)
+
+        queue.switch(jobs[0].nzo_id, value2)
+
+        assert self.get_queue_order(queue) == expected_order
+
+    @pytest.mark.parametrize("via_set_priority", [False, True])
+    def test_forced_jobs_go_first_and_repair_jobs_go_last(self, queue, via_set_priority):
+        """A forced job is the most recent thing the user asked for, repair re-adds must not starve"""
+        for priority, expected in (
+            (FORCE_PRIORITY, ["job-c", "job-b", "job-a"]),
+            (REPAIR_PRIORITY, ["job-a", "job-b", "job-c"]),
+        ):
+            queue = NzbQueue()
+            for name in "abc":
+                nzo = make_dummy_nzo(name, priority=NORMAL_PRIORITY if via_set_priority else priority)
+                queue.add(nzo, save=False, quiet=True)
+                if via_set_priority:
+                    queue.set_priority([nzo.nzo_id], priority)
+
+            assert self.get_queue_order(queue) == expected
+
+    def test_repair_outranks_forced(self, queue):
+        queue.add(make_dummy_nzo("forced", priority=FORCE_PRIORITY), save=False, quiet=True)
+        queue.add(make_dummy_nzo("repair", priority=REPAIR_PRIORITY), save=False, quiet=True)
+
+        assert self.get_queue_order(queue) == ["job-repair", "job-forced"]
+
+    def test_has_forced_jobs_true_when_forced_and_active(self, queue):
+        forced = make_dummy_nzo("forced", priority=FORCE_PRIORITY)
+        normal = make_dummy_nzo("normal", priority=0)
+
+        queue.add(forced, save=False, quiet=True)
+        queue.add(normal, save=False, quiet=True)
+
+        assert queue.has_forced_jobs() is True
+
+        # If forced job is paused, it should no longer count
+        forced.status = Status.PAUSED
+        assert queue.has_forced_jobs() is False
+
+    def test_has_forced_jobs_false_when_no_forced(self, queue):
+        a = make_dummy_nzo("a", priority=0)
+        b = make_dummy_nzo("b", priority=LOW_PRIORITY)
+        queue.add(a, save=False, quiet=True)
+        queue.add(b, save=False, quiet=True)
+
+        assert queue.has_forced_jobs() is False
+
+    def test_add_future_job_saves_with_expected_prefix(self, queue):
+        """Queue repair deletes anything in the future folder not named SABnzbd_nzo_*"""
+        nzo = NzbObject("future-job", futuretype=True)
+        queue.add(nzo)
+
+        written = os.listdir(nzo.admin_path)
+        assert written
+        assert all(name.startswith("SABnzbd_nzo_") for name in written), written
+
+    @pytest.mark.parametrize("field", ["name", "size", "bytes", "avg_age", "remaining", "remaining_bytes"])
+    @pytest.mark.parametrize("direction", ["asc", "desc"])
+    def test_sort_queue_every_field(self, queue, field, direction):
+        for name, priority in (("a", NORMAL_PRIORITY), ("b", LOW_PRIORITY), ("c", HIGH_PRIORITY)):
+            queue.add(make_dummy_nzo(name, priority=priority), save=False, quiet=True)
+
+        queue.sort_queue(field, direction)
+
+        # Whatever the field, priority grouping is preserved
+        priorities = [nzo.priority for nzo in queue.queue_info()[3]]
+        assert priorities == sorted(priorities, reverse=True)
+
+    @pytest.mark.parametrize("auto_sort", ["name asc", "remaining asc", "remaining_bytes asc"])
+    def test_update_sort_order(self, queue, monkeypatch, auto_sort):
+        monkeypatch.setattr(sabnzbd.cfg.auto_sort, "get", lambda: auto_sort)
+        queue.add(make_dummy_nzo("a"), save=False, quiet=True)
+
+        queue.update_sort_order()
