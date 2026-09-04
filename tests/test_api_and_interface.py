@@ -166,6 +166,31 @@ class TestApiInternals:
             == 1
         )
 
+    @pytest.mark.parametrize(
+        "label, expected",
+        [
+            # host:port, which the pattern has to allow for or "8.8.8.8:12345" reads as
+            # the IPv6-looking "8:12345"
+            (b"8.8.8.8:12345", b"<REMOVED>:12345"),
+            (b"192.168.1.5:12345", b"192.168.1.5:12345"),
+            # An IPv6 client is bracketed, and the brackets are part of the label
+            (b"[2001:4860::1]:12345", b"<REMOVED>:12345"),
+            (b"[fe80::1]:12345", b"[fe80::1]:12345"),
+            # The peer a request arrived through is redacted like any other address
+            (b"192.168.1.5:1 (via 10.0.0.1)", b"192.168.1.5:1 (via 10.0.0.1)"),
+            (b"192.168.1.5:1 (via 8.8.8.8)", b"192.168.1.5:1 (via <REMOVED>)"),
+            (
+                b"192.168.1.5:1 (X-Forwarded-For: 8.8.8.8, 10.0.0.2) (via 10.0.0.1)",
+                b"192.168.1.5:1 (X-Forwarded-For: <REMOVED>, 10.0.0.2) (via 10.0.0.1)",
+            ),
+        ],
+    )
+    def test_log_sanitize_remote_label_with_port(self, label, expected):
+        """The label carries a port, and an IPv6 one is bracketed. Both have to be matched,
+        or an external address reaches the log returned by the showlog api-call untouched."""
+        line = b"2026-05-19 18:35:18,271::WARNING::[interface:689] Refused connection from: %s [Mozilla/5.0]\n" % label
+        assert api.sanitize_line(line).count(b"%s [Mozilla/5.0]" % expected) == 1
+
 
 def create_mock_request(
     hostname: str = "localhost",
@@ -176,6 +201,14 @@ def create_mock_request(
     """Create a mock Starlette Request object for testing"""
     mock_request = Mock(spec=Request)
     mock_request.client = Address(remote_ip, 12345)
+
+    # What ProxyTrustMiddleware records. A real dict, so the verdict is a bool not a Mock.
+    mock_request.scope = {
+        "type": "http",
+        "client": (remote_ip, 12345),
+        security.SCOPE_PEER: (remote_ip, 12345),
+        security.SCOPE_PEER_TRUSTED: False,
+    }
 
     # Set up headers
     request_headers = {"Host": hostname}

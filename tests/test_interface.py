@@ -35,6 +35,7 @@ from uvicorn.server import ServerState
 
 import sabnzbd
 import sabnzbd.cfg as cfg
+import sabnzbd.api as api
 import sabnzbd.security as security
 from sabnzbd import interface
 from tests.test_security import (
@@ -43,6 +44,7 @@ from tests.test_security import (
     config_save_middleware,
     mock_request,
     page_post,
+    proxied_request,
     set_csrf_header,
     store_session,
 )
@@ -52,14 +54,14 @@ from tests.testhelper import run_async
 
 
 def resolve_client(remote_ip: str, xff_header: str | None = None, remote_port: int = 12345) -> Address:
-    """Pass a connection through uvicorn's ProxyHeadersMiddleware, configured
-    exactly like SABnzbd.py does, and return the resulting effective client."""
+    """Pass a connection through ProxyTrustMiddleware, wired exactly as create_app()
+    does, and return the resulting effective client."""
     captured = {}
 
     async def asgi_app(scope, receive, send):
         captured["client"] = scope.get("client")
 
-    middleware = ProxyHeadersMiddleware(asgi_app, trusted_hosts=xff_trusted_networks())
+    middleware = security.ProxyTrustMiddleware(asgi_app)
     headers = []
     if xff_header:
         headers.append((b"x-forwarded-for", xff_header.encode("latin1")))
@@ -163,16 +165,18 @@ class TestInterfaceFunctions:
             ("DEAD:BEEF:2023:007::1", None, "192.168.1.1, DEAD:BEEF:2023:0007::1, ::1", False),
             ("DEAD:BEEF:2023:007::1", None, "2001::/16", False),
             ("DEAD:BEEF:2023:007::1", "dead:beef::/32", None, True),  # Local ranges include a public IPv6
-            ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "127.0.0.1", True),  # XFF is loopback
-            ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "127.1.2.3", True),
-            ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "::1", True),
-            ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "[::1]", True),
+            # ...which is local, but not a local network, so every row below carries a
+            # header it is not trusted to send
+            ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "127.0.0.1", False),
+            ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "127.1.2.3", False),
+            ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "::1", False),
+            ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "[::1]", False),
             ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "localhost", False),  # Hostname in XFF
             ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "192.168.1.1", False),
             ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "192.168.1.1, DEAD:BEEF:2023:0007::1", False),
             ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "192.168.1.1, DEAD:BEEF:2023:0007::1, ::1", False),
             ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "DEAD::/16", False),  # Netmask in XFF
-            ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "DEAD:BEEF:2023:7::42", True),  # XFF in local ranges
+            ("DEAD:BEEF:2023:007::1", "dead:beef::/32", "DEAD:BEEF:2023:7::42", False),
         ],
     )
     @pytest.mark.parametrize("access_type", [1, 2, 3, 4, 5, 6])
@@ -197,19 +201,16 @@ class TestInterfaceFunctions:
         monkeypatch,
     ):
         def _func():
-            # With verify_xff_header enabled, SABnzbd.py runs uvicorn with
-            # proxy_headers=True, so the XFF chain is resolved into the
-            # effective client before check_access ever sees the request.
-            # With it disabled the header is ignored entirely.
-            if verify_xff_header:
-                client = resolve_client(remote_ip=remote_ip, xff_header=xff_header)
+            request = proxied_request(remote_ip, xff_header=xff_header)
+
+            if not verify_xff_header and xff_header:
+                # Nothing is trusted, so a header leaves us with no client to grant access to
+                result = False
+            elif verify_xff_header:
                 result = result_with_xff
             else:
-                client = Address(remote_ip, 12345)
                 # Without XFF, only the remote IP and the local ranges setting matter
                 result = is_loopback_addr(remote_ip) or is_local_addr(remote_ip)
-
-            request = mock_request(remote_ip=client.host, remote_port=client.port)
 
             if access_type <= inet_exposure:
                 assert security.check_access(request, access_type) is True
@@ -266,13 +267,25 @@ class TestInterfaceFunctions:
             (["666::/48", "192.168.0.0/16", "4.3.2.0/24"], ["666::1"], "666::1"),
             (["192.168.0.0/16", "4.3.2.0/24"], ["10.10.10.10"], "10.10.10.10"),  # 10.x wins, outside local_ranges
             (["192.168.0.0/16", "4.3.2.0/24"], ["4.3.2.1", "10.10.10.10"], "10.10.10.10"),
-            (["192.168.0.0/16", "4.3.2.0/24"], ["10.10.10.10", "4.3.2.1"], "10.10.10.10"),
+            (
+                ["192.168.0.0/16", "4.3.2.0/24"],
+                ["10.10.10.10", "4.3.2.1"],
+                "4.3.2.1",
+            ),  # Public local range, so no longer a trusted hop
             (["666::/48", "192.168.0.0/16", "4.3.2.0/24"], ["10.10.10.10"], "10.10.10.10"),
             (["666::/48", "192.168.0.0/16", "4.3.2.0/24"], ["4.3.2.1", "10.10.10.10"], "10.10.10.10"),
-            (["666::/48", "192.168.0.0/16", "4.3.2.0/24"], ["10.10.10.10", "4.3.2.1"], "10.10.10.10"),
+            (
+                ["666::/48", "192.168.0.0/16", "4.3.2.0/24"],
+                ["10.10.10.10", "4.3.2.1"],
+                "4.3.2.1",
+            ),  # Public local range, so no longer a trusted hop
             (["8.8.8.8", "4.3.2.1"], ["4.3.2.1", "192.168.0.1", "10.10.10.10"], "10.10.10.10"),
             (["8.8.8.8", "4.3.2.1"], ["192.168.0.1", "4.3.2.1", "10.10.10.10"], "10.10.10.10"),
-            (["8.8.8.8", "4.3.2.1"], ["192.168.0.1", "10.10.10.10", "4.3.2.1"], "10.10.10.10"),
+            (
+                ["8.8.8.8", "4.3.2.1"],
+                ["192.168.0.1", "10.10.10.10", "4.3.2.1"],
+                "4.3.2.1",
+            ),  # Public local range, so no longer a trusted hop
             (["8.8.8.8"], ["192.168.0.1", "10.10.10.10", "4.3.2.1"], "4.3.2.1"),  # All XFF IPs non-local, last wins
             (["8.8.8.8"], ["4.3.2.1", "10.10.10.10", "192.168.0.1"], "192.168.0.1"),
             (["8.8.8.8"], ["4.3.2.1", "192.168.0.1", "10.10.10.10"], "10.10.10.10"),
@@ -322,11 +335,11 @@ class TestInterfaceFunctions:
         "local_ranges, expected_networks, unexpected_networks",
         [
             # Without local_ranges: loopback plus all private address space
-            (None, ["127.0.0.0/8", "::1", "10.0.0.0/8", "192.168.0.0/16", "::ffff:10.0.0.0/104"], []),
+            (None, ["127.0.0.0/8", "::1/128", "10.0.0.0/8", "192.168.0.0/16", "::ffff:10.0.0.0/104"], []),
             # With local_ranges: loopback plus the configured ranges only
             (
                 "192.168.1.0/24",
-                ["127.0.0.0/8", "::1", "192.168.1.0/24", "::ffff:192.168.1.0/120"],
+                ["127.0.0.0/8", "::1/128", "192.168.1.0/24", "::ffff:192.168.1.0/120"],
                 ["10.0.0.0/8", "172.16.0.0/12"],
             ),
         ],
@@ -459,30 +472,42 @@ class TestClientAddressInfo:
     @pytest.mark.parametrize(
         "remote_ip, expected",
         [
-            ("127.0.0.1", "127.0.0.1:55170"),
-            ("10.11.12.13", "10.11.12.13:55170"),
-            ("::1", "[::1]:55170"),
+            ("127.0.0.1", "127.0.0.1:55170 [-]"),
+            ("10.11.12.13", "10.11.12.13:55170 [-]"),
+            ("::1", "[::1]:55170 [-]"),
             # Dual-stack listener reporting an IPv4 client
-            ("::ffff:127.0.0.1", "[::ffff:127.0.0.1]:55170"),
-            ("2001:470:1:332::152", "[2001:470:1:332::152]:55170"),
+            ("::ffff:127.0.0.1", "[::ffff:127.0.0.1]:55170 [-]"),
+            ("2001:470:1:332::152", "[2001:470:1:332::152]:55170 [-]"),
             # Unknown client, request.client was None
-            ("", ":55170"),
+            ("", ":55170 [-]"),
         ],
     )
     def test_brackets_ipv6(self, remote_ip, expected):
         request = mock_request(remote_ip=remote_ip, remote_port=55170)
         assert security.client_address_info(request) == expected
 
+    @pytest.mark.parametrize("user_agent", ["curl/8.0", None, ""])
+    @pytest.mark.config({"verify_xff_header": False})
+    def test_always_ends_with_a_user_agent(self, user_agent):
+        """sanitize_line() only recognises a remote label that ends in a bracketed
+        user-agent, and a label it does not recognise is not redacted at all. The brackets
+        therefore have to hold something even when the request sent no user-agent."""
+        headers = {"User-Agent": user_agent} if user_agent is not None else None
+        request = mock_request(remote_ip="8.8.8.8", remote_port=55170, headers=headers)
+        info = security.client_address_info(request)
+        assert info.endswith(f" [{user_agent or '-'}]")
+        assert api.sanitize_line(f"Refused connection from: {info}".encode()).count(b"<REMOVED>") == 1
+
     @pytest.mark.config({"verify_xff_header": True})
     def test_includes_forwarded_chain(self):
         request = mock_request(remote_ip="::1", remote_port=55170, headers={"X-Forwarded-For": "8.7.6.5, ::1"})
-        assert security.client_address_info(request) == "[::1]:55170 (X-Forwarded-For: 8.7.6.5, ::1)"
+        assert security.client_address_info(request) == "[::1]:55170 (X-Forwarded-For: 8.7.6.5, ::1) [-]"
 
     @pytest.mark.config({"verify_xff_header": False})
     def test_omits_forwarded_chain_when_not_verified(self):
         """Without verify_xff_header the header is not trusted, so it is not reported"""
         request = mock_request(remote_ip="::1", remote_port=55170, headers={"X-Forwarded-For": "8.7.6.5"})
-        assert security.client_address_info(request) == "[::1]:55170"
+        assert security.client_address_info(request) == "[::1]:55170 [-]"
 
 
 class TestUseSecureCookies:

@@ -1300,13 +1300,15 @@ def strip_ipv4_mapped_notation(ip: str) -> str:
     return str(ip)
 
 
-def ip_in_subnet(ip: str, subnet: str) -> bool:
-    """Determine whether ip is part of subnet. For the latter, the standard form with a prefix or
-    netmask (e.g. "192.168.1.0/24" or "10.42.0.0/255.255.0.0") is expected. Input in SABnzbd's old
-    cfg.local_ranges() settings style (e.g. "192.168.1."), intended for use with str.startswith(),
-    is also accepted and internally converted to address/prefix form."""
-    if not ip or not subnet:
-        return False
+def parse_subnet(subnet: str) -> Optional[ipaddress.IPv4Network | ipaddress.IPv6Network]:
+    """Return subnet as a network. The standard form with a prefix or netmask (e.g.
+    "192.168.1.0/24" or "10.42.0.0/255.255.0.0") is expected. A bare address and input in
+    SABnzbd's old cfg.local_ranges() settings style (e.g. "192.168.1."), intended for use
+    with str.startswith(), are also accepted.
+
+    Anything ip_in_subnet() could never match returns None."""
+    if not subnet:
+        return None
 
     try:
         if subnet.find("/") < 0 and subnet.find("::") < 0:
@@ -1316,17 +1318,26 @@ def ip_in_subnet(ip: str, subnet: str) -> bool:
             # Take the IP version of the subnet into account
             IP_LEN, IP_BITS, IP_SEP = (8, 16, ":") if subnet.find(":") >= 0 else (4, 8, ".")
 
-            subnet = subnet.rstrip(IP_SEP).split(IP_SEP)
-            prefix = IP_BITS * len(subnet)
+            parts = subnet.rstrip(IP_SEP).split(IP_SEP)
+            prefix = IP_BITS * len(parts)
             # Append as many zeros as needed
-            subnet.extend(["0"] * (IP_LEN - len(subnet)))
+            parts.extend(["0"] * (IP_LEN - len(parts)))
             # Store in address/prefix form
-            subnet = "%s/%s" % (IP_SEP.join(subnet), prefix)
+            subnet = "%s/%s" % (IP_SEP.join(parts), prefix)
 
-        ip = strip_ipv4_mapped_notation(ip)
-        return ipaddress.ip_address(ip) in ipaddress.ip_network(subnet, strict=True)
+        return ipaddress.ip_network(subnet, strict=True)
     except Exception:
         # Probably an invalid range
+        return None
+
+
+def ip_in_subnet(ip: str, subnet: str) -> bool:
+    """Determine whether ip is part of subnet; see parse_subnet() for the accepted forms."""
+    if not ip or not (network := parse_subnet(subnet)):
+        return False
+    try:
+        return ipaddress.ip_address(strip_ipv4_mapped_notation(ip)) in network
+    except ValueError:
         return False
 
 
@@ -1362,19 +1373,19 @@ def is_localhost(value: str) -> bool:
     return (value == "localhost") or is_loopback_addr(value)
 
 
+# Private address space reserved for local area networks
+LAN_RANGES = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "169.254.0.0/16", "fc00::/7", "fe80::/10"]
+LAN_NETWORKS = [ipaddress.ip_network(lan_range) for lan_range in LAN_RANGES]
+
+
 def is_lan_addr(ip: str) -> bool:
-    """Determine if the ip is a local area network address"""
+    """Determine if the ip is a local area network address. Not ipaddress.is_private, which
+    is wider and covers globally routable ranges such as 6to4 and Teredo."""
     try:
-        ip = strip_ipv4_mapped_notation(ip)
-        return (
-            # The ipaddress module considers these private, see https://bugs.python.org/issue38655
-            ip not in ("0.0.0.0", "255.255.255.255")
-            and not ip_in_subnet(ip, "::/128")  # Also catch (partially) exploded forms of "::"
-            and ipaddress.ip_address(ip).is_private
-            and not is_loopback_addr(ip)
-        )
+        address = ipaddress.ip_address(strip_ipv4_mapped_notation(ip))
     except ValueError:
         return False
+    return any(address in lan_network for lan_network in LAN_NETWORKS)
 
 
 def is_local_addr(ip: str) -> bool:
@@ -1386,33 +1397,52 @@ def is_local_addr(ip: str) -> bool:
         return is_lan_addr(ip)
 
 
-def xff_trusted_networks() -> list[str]:
-    """Networks from which the X-Forwarded-For header may be trusted, for use as
-    uvicorn's forwarded_allow_ips. Mirrors is_loopback_addr plus is_local_addr:
-    loopback and the user-defined local_ranges, or the private LAN address space
-    when no local_ranges are set.
+def lan_ranges_within(ranges: list[str]) -> list[str]:
+    """The part of ranges that falls inside the private address space, or all of it when no
+    ranges are given. Two CIDR blocks are either disjoint or nested, so an overlap is the
+    narrower of the pair."""
+    if not ranges:
+        # A copy: the caller gets a list of its own rather than the shared constant
+        return list(LAN_RANGES)
 
-    Uvicorn compares the raw peer address without normalization, so for every
-    IPv4 entry the IPv4-mapped IPv6 form (::ffff:a.b.c.d) is added as well.
-    """
-    networks = ["127.0.0.0/8", "::1"]
-    if local_ranges := cfg.local_ranges():
-        networks.extend(local_ranges)
-    else:
-        # Private address space, matching is_lan_addr()
-        networks.extend(["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "169.254.0.0/16", "fc00::/7", "fe80::/10"])
-
-    # Add IPv4-mapped IPv6 equivalents of all IPv4 entries
-    mapped = []
-    for network in networks:
-        try:
-            net = ipaddress.ip_network(network, strict=False)
-        except ValueError:
-            # Not a valid IP or network; leave it to uvicorn as a literal
+    overlap = []
+    for entry in ranges:
+        if not (net := parse_subnet(entry)):
+            logging.warning(T("Ignoring invalid entry in local_ranges: %s"), entry)
             continue
+        within = []
+        for lan_network in LAN_NETWORKS:
+            if net.version != lan_network.version:
+                continue
+            if net.subnet_of(lan_network):
+                within.append(str(net))
+            elif lan_network.subnet_of(net):
+                within.append(str(lan_network))
+        if not within:
+            # Only a private network can be trusted by default, so say what to do instead
+            logging.warning(
+                T("%s in local_ranges is not a private network, list it in xff_trusted_hosts to trust it"), entry
+            )
+        overlap.extend(within)
+    return overlap
+
+
+def xff_trusted_networks() -> list[str]:
+    """Networks whose forwarded headers may be trusted"""
+    if trusted_hosts := cfg.xff_trusted_hosts():
+        trusted_hosts = ["127.0.0.0/8", "::1", *trusted_hosts]
+    else:
+        trusted_hosts = ["127.0.0.0/8", "::1", *lan_ranges_within(cfg.local_ranges())]
+
+    trusted_networks = []
+    for entry in trusted_hosts:
+        if not (net := parse_subnet(entry)):
+            logging.warning(T("Ignoring invalid network in the forwarded-header trust list: %s"), entry)
+            continue
+        trusted_networks.append(str(net))
         if net.version == 4:
-            mapped.append("::ffff:%s/%d" % (net.network_address, net.prefixlen + 96))
-    return networks + mapped
+            trusted_networks.append("::ffff:%s/%d" % (net.network_address, net.prefixlen + 96))
+    return trusted_networks
 
 
 def ip_extract() -> list[str]:

@@ -102,6 +102,7 @@ from sabnzbd.api import (
     Ttemplate,
 )
 from sabnzbd.security import (
+    ProxyTrustMiddleware,
     SESSION_COOKIE_FLASH,
     SESSION_COOKIE_USER,
     _MSG_APIKEY_NOT_ON_PAGES,
@@ -313,7 +314,7 @@ def template_filtered_response(file: str, search_list: dict[str, Any], status_co
 
 
 def log_warning_and_ip(request: Request, txt: str):
-    """Include the IP and the Proxy-IP for warnings (Starlette version)"""
+    """Include the IP and the Proxy-IP for warnings"""
     if cfg.api_warnings():
         logging.warning("%s %s", txt, client_address_info(request))
 
@@ -994,6 +995,7 @@ SPECIAL_LIST_LIST = (
     "quick_check_ext_ignore",
     "host_whitelist",
     "local_ranges",
+    "xff_trusted_hosts",
     "ext_rename_ignore",
 )
 
@@ -2371,11 +2373,10 @@ class RequestLoggingMiddleware:
             if cfg.api_logging() and (params := scope.get("state", {}).get("params")) is not None:
                 request = Request(scope)
                 logging.debug(
-                    "Request %s %s from %s [%s] %s",
+                    "Request %s %s from %s %s",
                     request.method,
                     request.url.path,
                     client_address_info(request),
-                    request.headers.get("User-Agent"),
                     dict(params),
                 )
 
@@ -2572,6 +2573,7 @@ def create_app() -> Starlette:
     routes.append(Mount("/", routes=interface_routes))
 
     middleware = [
+        Middleware(ProxyTrustMiddleware),
         Middleware(XFrameOptionsMiddleware),
         Middleware(HostnameCheckMiddleware),
         Middleware(RequestLoggingMiddleware),

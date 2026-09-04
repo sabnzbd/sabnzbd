@@ -751,27 +751,34 @@ LOG_INI_HIDE_RE = re.compile(
 LOG_NNTP_AUTH_RE = re.compile(rb"(authinfo (?:user|pass)) [^\\'\'\r\n]+", re.I)
 LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
 LOG_REMOTE_LABEL_RE = re.compile(
-    rb"(?P<ip>(?:\d{1,3}\.){3}\d{1,3}|(?:[A-Fa-f0-9:]+:+)+[A-Fa-f0-9.]+)"
+    rb"(?P<ip>\[[A-Fa-f0-9:.]+]|(?:\d{1,3}\.){3}\d{1,3}|(?:[A-Fa-f0-9:]+:+)+[A-Fa-f0-9.]+)"
+    rb"(?::(?P<port>\d+))?"
     rb"(?:\s+\(X-Forwarded-For:\s*(?P<xff>[^)]+)\))?"
+    rb"(?:\s+\(via\s+(?P<via>[^)]+)\))?"
     rb"\s+\[(?P<ua>[^]]+)]"
 )
 
 
+def keep_local_address(value: bytes) -> bytes:
+    """Keep an address that is loopback or on the local network, replace any other. Square
+    brackets around an IPv6 address are part of the label and are kept."""
+    address = value.decode().strip("[]")
+    if address and (is_loopback_addr(address) or is_lan_addr(address)):
+        return value
+    return b"<REMOVED>"
+
+
 def remote_label_replacement(m: re.Match[bytes]) -> bytes:
     """Apply regex substitutions to remote labels, allows local IP addresses"""
-    if (ip_str := m.group("ip").decode()) and (is_loopback_addr(ip_str) or is_lan_addr(ip_str)):
-        ip = m.group("ip")
-    else:
-        ip = b"<REMOVED>"
+    label = keep_local_address(m.group("ip"))
+    if port := m.group("port"):
+        label += b":" + port
     if m.group("xff"):
-        xff = []
-        for xff_ip in m.group("xff").decode().split(", "):
-            if is_loopback_addr(xff_ip) or is_lan_addr(xff_ip):
-                xff.append(xff_ip.encode())
-            else:
-                xff.append(b"<REMOVED>")
-        return b"%s (X-Forwarded-For: %s) [%s]" % (ip, b", ".join(xff), m.group("ua"))
-    return b"%s [%s]" % (ip, m.group("ua"))
+        xff = [keep_local_address(xff_ip.encode()) for xff_ip in m.group("xff").decode().split(", ")]
+        label += b" (X-Forwarded-For: %s)" % b", ".join(xff)
+    if via := m.group("via"):
+        label += b" (via %s)" % keep_local_address(via)
+    return label + b" [%s]" % m.group("ua")
 
 
 def sanitize_line(line: bytes, cur_user_bytes: Optional[bytes] = None) -> bytes:
