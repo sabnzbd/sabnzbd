@@ -35,6 +35,7 @@ from unittest import mock
 
 import pytest
 import rarfile
+import socks
 
 from sabnzbd import lang, misc, newsunpack, cfg
 from sabnzbd.config import ConfigCat, get_sorters, save_config
@@ -1546,3 +1547,57 @@ class TestCgroupMemoryLimit:
         with self.patched_open({}):
             with mock.patch("sabnzbd.misc._physical_memory", return_value=None):
                 assert misc.get_memory() == 0
+
+
+class TestSetSocks5Proxy:
+    """The proxy is applied by replacing socket.socket, which also affects the sockets
+    our own web server accepts. It must keep reporting who is connecting to us."""
+
+    @pytest.fixture(autouse=True)
+    def restore_socket(self):
+        yield
+        socks.socksocket.default_proxy = None
+        socket.socket = misc._ORIGINAL_SOCKET
+
+    @pytest.mark.config({"socks5_proxy_url": "socks5://proxy.example:1080"})
+    def test_proxy_is_set(self):
+        misc.set_socks5_proxy()
+        assert socket.socket is misc.ProxiedSocket
+        assert socks.socksocket.default_proxy[:3] == (socks.SOCKS5, "proxy.example", 1080)
+
+    def test_no_proxy_leaves_the_socket_alone(self):
+        misc.set_socks5_proxy()
+        assert socket.socket is misc._ORIGINAL_SOCKET
+        assert not socks.socksocket.default_proxy
+
+    @pytest.mark.config({"socks5_proxy_url": "socks5://proxy.example:1080"})
+    def test_accepted_connection_still_has_a_peer(self):
+        """Without this, every request reaches the web server without a client
+        address and is refused by check_access()"""
+        with misc._ORIGINAL_SOCKET(socket.AF_INET, socket.SOCK_STREAM) as listener:
+            listener.bind(("127.0.0.1", 0))
+            listener.listen(1)
+            misc.set_socks5_proxy()
+
+            # Connect without the proxy, only the accepted side is of interest here
+            with misc._ORIGINAL_SOCKET(socket.AF_INET, socket.SOCK_STREAM) as client:
+                client.settimeout(10)
+                client.connect(listener.getsockname())
+                accepted, address = listener.accept()
+                with accepted:
+                    assert isinstance(accepted, misc.ProxiedSocket)
+                    assert accepted.getpeername() == client.getsockname() == address
+
+    @pytest.mark.config({"socks5_proxy_url": "socks5://proxy.example:1080"})
+    def test_timeout_is_applied_to_a_socket_without_a_peer(self):
+        """PySocks only applies a timeout to the real socket when getpeername() does not
+        raise, so a listening socket must not be left blocking by setblocking(False)"""
+        misc.set_socks5_proxy()
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+            assert isinstance(listener, misc.ProxiedSocket)
+            listener.bind(("127.0.0.1", 0))
+            listener.listen(1)
+            listener.setblocking(False)
+            assert misc._ORIGINAL_SOCKET.gettimeout(listener) == 0.0
+            with pytest.raises(BlockingIOError):
+                listener.accept()
