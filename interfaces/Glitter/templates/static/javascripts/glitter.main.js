@@ -628,13 +628,13 @@ function ViewModel() {
 
     // Unpause until the queue is empty
     self.unpauseUntilEmpty = function() {
-        // Ignored by the server when nothing is queued
-        if (!self.hasQueue()) return;
+        // Only when there's non-paused data to download (matches the server's is_empty no-op);
+        // let the refresh reflect the real state rather than optimistically flipping the icon
+        if (!self.queueDataLeft()) return;
         callAPI({
             mode: 'config',
             name: 'unpause_until_empty'
         }).then(self.refresh);
-        self.downloadsPaused(false);
     };
 
     // Update the warnings
