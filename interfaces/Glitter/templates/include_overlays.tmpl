@@ -841,12 +841,12 @@
     </div>
 </div>
 
-<div id="modal-custom-unpause" class="modal modal-small fade" tabindex="-1">
+<div id="modal-custom-unpause" class="modal modal-small fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-custom-unpause-title">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">$T('Glitter-unpauseFor')</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-custom-unpause-title">$T('Glitter-unpauseFor')</h4>
             </div>
             <div class="modal-body">
                 <form data-bind="submit: saveCustomUnpause">
