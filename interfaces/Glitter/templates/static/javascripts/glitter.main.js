@@ -492,8 +492,8 @@ function ViewModel() {
                 $(opts.output).data('time', duration)
                 $(opts.modal + ' .btn-default').removeClass('disabled')
             } else if (newValue) {
-                // No..
-                $(opts.output).text(glitterTranslate.pausePromptFail)
+                // No.. clear the stored time so a stale duration can't be submitted
+                $(opts.output).text(glitterTranslate.pausePromptFail).data('time', 0)
                 $(opts.modal + ' .btn-default').addClass('disabled')
             }
         })
