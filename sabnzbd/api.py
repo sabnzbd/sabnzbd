@@ -1044,8 +1044,18 @@ def _api_config_speedlimit(value: str, kwargs: QueryParams) -> Response:
 
 
 def _api_config_set_pause(value: str, kwargs: QueryParams) -> Response:
-    """API: accepts value(=pause interval)"""
-    sabnzbd.Scheduler.plan_resume(int_conv(value))
+    """API: accepts value(=pause interval); negative value = unpause for |value| minutes"""
+    minutes = int_conv(value)
+    if minutes < 0:
+        sabnzbd.Scheduler.plan_pause(-minutes)
+    else:
+        sabnzbd.Scheduler.plan_resume(minutes)
+    return report(kwargs)
+
+
+def _api_config_unpause_until_empty(value: str, kwargs: QueryParams) -> Response:
+    """API: resume now and re-pause once the queue is empty"""
+    sabnzbd.Scheduler.plan_resume_until_empty()
     return report(kwargs)
 
 
@@ -1204,6 +1214,7 @@ _api_table: ApiHandlerTable = {
     ("config", ""): ApiEntry(_api_config_undefined, 2, config_locked=True),
     ("config", "speedlimit"): ApiEntry(_api_config_speedlimit, 2, config_locked=True),
     ("config", "set_pause"): ApiEntry(_api_config_set_pause, 2, config_locked=True),
+    ("config", "unpause_until_empty"): ApiEntry(_api_config_unpause_until_empty, 2, config_locked=True),
     ("config", "set_apikey"): ApiEntry(_api_config_set_apikey, 3, config_locked=True),
     ("config", "set_nzbkey"): ApiEntry(_api_config_set_nzbkey, 3, config_locked=True),
     ("config", "regenerate_certs"): ApiEntry(_api_config_regenerate_certs, 3, config_locked=True),
@@ -2020,6 +2031,7 @@ def build_header(
     header["version"] = sabnzbd.__version__
     header["paused"] = bool(sabnzbd.Downloader.paused or sabnzbd.Downloader.paused_for_postproc)
     header["pause_int"] = sabnzbd.Scheduler.pause_int()
+    header["resume_int"] = sabnzbd.Scheduler.resume_int()
     header["paused_all"] = sabnzbd.PAUSED_ALL
 
     download_dir, complete_dir = diskspace()
