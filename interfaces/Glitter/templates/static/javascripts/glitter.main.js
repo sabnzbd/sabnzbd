@@ -513,8 +513,8 @@ function ViewModel() {
                 if (duration > 0) {
                     callAPI({
                         mode: 'config',
-                        name: opts.apiName,
-                        value: duration
+                        name: 'set_pause',
+                        value: opts.sign * duration
                     }).then(function() {
                         self.refresh()
                         self.downloadsPaused(opts.paused);
@@ -532,7 +532,7 @@ function ViewModel() {
         observable: self.pauseCustom,
         glyphicon: 'glyphicon-pause',
         labelKey: 'pauseFor',
-        apiName: 'set_pause',
+        sign: 1,
         paused: true
     });
     self.openCustomPauseTime = customPause.open;
@@ -542,8 +542,8 @@ function ViewModel() {
     self.unpauseTime = function(item, event) {
         callAPI({
             mode: 'config',
-            name: 'set_unpause',
-            value: $(event.currentTarget).data('time')
+            name: 'set_pause',
+            value: -$(event.currentTarget).data('time')
         }).then(self.refresh);
         self.downloadsPaused(false);
     };
@@ -555,7 +555,7 @@ function ViewModel() {
         observable: self.unpauseCustom,
         glyphicon: 'glyphicon-play',
         labelKey: 'unpauseFor',
-        apiName: 'set_unpause',
+        sign: -1,
         paused: false
     });
     self.openCustomUnpauseTime = customUnpause.open;
