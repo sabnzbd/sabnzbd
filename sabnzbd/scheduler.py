@@ -480,31 +480,25 @@ class Scheduler:
         """Return minutes:seconds until pause ends"""
         if self.pause_end is None:
             return "0"
-        else:
-            val = self.pause_end - time.time()
-            if val < 0:
-                sign = "-"
-                val = abs(val)
-            else:
-                sign = ""
-            mins = int(val / 60)
-            sec = int(val - mins * 60)
-            return "%s%d:%02d" % (sign, mins, sec)
+        val = self.pause_end - time.time()
+        if val < 0:
+            # Expired; the one-shot resume fires imminently
+            return "0"
+        mins = int(val / 60)
+        sec = int(val - mins * 60)
+        return "%d:%02d" % (mins, sec)
 
     def resume_int(self) -> str:
         """Return minutes:seconds until resume ends"""
         if self.resume_end is None:
             return "0"
-        else:
-            val = self.resume_end - time.time()
-            if val < 0:
-                sign = "-"
-                val = abs(val)
-            else:
-                sign = ""
-            mins = int(val / 60)
-            sec = int(val - mins * 60)
-            return "%s%d:%02d" % (sign, mins, sec)
+        val = self.resume_end - time.time()
+        if val < 0:
+            # Expired; the one-shot re-pause fires imminently
+            return "0"
+        mins = int(val / 60)
+        sec = int(val - mins * 60)
+        return "%d:%02d" % (mins, sec)
 
     def pause_check(self):
         """Unpause when time left is negative, compensate for missed schedule"""

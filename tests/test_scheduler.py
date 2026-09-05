@@ -59,6 +59,17 @@ class TestScheduler:
         assert sched.pause_int() == "1:30"
         assert sched.resume_int() == "2:05"
 
+    def test_pause_int_and_resume_int_clamp_expired(self, mocker):
+        """An expired timer returns '0' rather than a negative countdown"""
+        mocker.patch("sabnzbd.scheduler.time.time", return_value=1000.0)
+        sched = Scheduler()
+
+        # End moment already passed (scheduler cleanup not yet fired)
+        sched.pause_end = 999.9
+        sched.resume_end = 990.0
+        assert sched.pause_int() == "0"
+        assert sched.resume_int() == "0"
+
     def test_plan_pause_resumes_and_schedules(self, mocker):
         """plan_pause(>0) resumes now and schedules a one-shot re-pause after the interval"""
         mocker.patch("sabnzbd.scheduler.time.time", return_value=1000.0)
