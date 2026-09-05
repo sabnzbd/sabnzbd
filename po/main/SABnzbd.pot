@@ -2270,11 +2270,6 @@ msgstr ""
 msgid "Shutdown SABnzbd"
 msgstr ""
 
-#. Queue page button or entry box
-#: sabnzbd/skintext.py
-msgid "Unpause for"
-msgstr ""
-
 #. Queue page table column header
 #: sabnzbd/skintext.py
 msgid "Processing"
@@ -4227,38 +4222,6 @@ msgid "Filename"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Unpause for 5 minutes"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Unpause for 15 minutes"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Unpause for 30 minutes"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Unpause for 1 hour"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Unpause for 3 hours"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Unpause for 6 hours"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Unpause until queue empty"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Queue is empty"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Toggle SABnzbd navigation menu"
 msgstr ""
 
@@ -4520,14 +4483,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Pause for..."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Unpause for..."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Pausing in"
 msgstr ""
 
 #: sabnzbd/skintext.py
