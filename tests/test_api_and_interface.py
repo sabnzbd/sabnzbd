@@ -769,3 +769,34 @@ class TestBuildHeaderCsrfToken:
         request = Mock(spec=Request)
         request.state = State({})
         assert api.build_header(request=request)["csrf_token"] == ""
+
+
+class TestApiConfigSetPause:
+    """set_pause dispatches on sign: a negative value unpauses for |value| minutes,
+    a non-negative value keeps the classic pause-for-value behaviour"""
+
+    @pytest.mark.parametrize(
+        "value, plan_pause_arg, plan_resume_arg",
+        [
+            ("-5", 5, None),  # unpause for 5 minutes
+            ("-180", 180, None),  # unpause for 3 hours
+            ("5", None, 5),  # pause for 5 minutes
+            ("0", None, 0),  # resume now
+            ("", None, 0),  # malformed -> int_conv("") == 0 -> resume now
+        ],
+    )
+    def test_set_pause_sign_dispatch(self, monkeypatch, value, plan_pause_arg, plan_resume_arg):
+        scheduler = Mock()
+        report = Mock(return_value="ok")
+        monkeypatch.setattr(sabnzbd, "Scheduler", scheduler, raising=False)
+        monkeypatch.setattr(api, "report", report)
+
+        assert api._api_config_set_pause(value, QueryParams({})) == "ok"
+
+        if plan_pause_arg is not None:
+            scheduler.plan_pause.assert_called_once_with(plan_pause_arg)
+            scheduler.plan_resume.assert_not_called()
+        else:
+            scheduler.plan_resume.assert_called_once_with(plan_resume_arg)
+            scheduler.plan_pause.assert_not_called()
+        report.assert_called_once()
