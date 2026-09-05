@@ -4826,6 +4826,9 @@ msgid ""
 "<code>status:</code> and <code>priority:</code> (Queue). For example: "
 "<code>my show cat:tv</code>"
 msgstr ""
+"Rechercher par nom, ou affiner avec des filtres <code>cat :</code>, "
+"<code>statut :</code> et <code>priorité :</code> (file d'attente). Par "
+"exemple : <code>mon show cat:tv</code>"
 
 #: sabnzbd/skintext.py
 msgid "Multi-Operations"

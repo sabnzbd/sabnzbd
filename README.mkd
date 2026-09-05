@@ -49,10 +49,6 @@ This is the second release candidate of version 5.1.
 * You can directly upgrade from version 3.0.0 and newer.
 * Upgrading from older versions will require performing a `Queue repair`.
 
-## Known problems and solutions
-
-* Read `ISSUES.txt` or https://sabnzbd.org/wiki/introduction/known-issues
-
 ## Code Signing Policy
 
 Windows code signing is provided by SignPath.io using a SignPath Foundation certificate.

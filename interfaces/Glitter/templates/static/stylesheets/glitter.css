@@ -200,7 +200,6 @@ li.dropdown {
     line-height: 18px;
 }
 
-
 .max-speed-input-clear {
     position: absolute;
     top: 16px;
@@ -2481,6 +2480,10 @@ a:focus {
 a:focus-visible {
     outline: 2px solid var(--clr-toggle-active) !important;
     outline-offset: 2px !important;
+}
+
+input[type="checkbox"] {
+    color-scheme: light;
 }
 
 /***
