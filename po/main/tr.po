@@ -4761,6 +4761,9 @@ msgid ""
 "<code>status:</code> and <code>priority:</code> (Queue). For example: "
 "<code>my show cat:tv</code>"
 msgstr ""
+"İsimle arama yapın veya <code>kat:</code>, <code>durum:</code> ve "
+"<code>öncelik</code> (Kuyruk) süzgeçleriyle aramayı daraltın. Mesela: "
+"<code>benim programım kat:tv</code>"
 
 #: sabnzbd/skintext.py
 msgid "Multi-Operations"
