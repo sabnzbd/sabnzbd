@@ -13,7 +13,7 @@
                 <button type="button" class="btn btn-default navbar-btn" data-bind="click: pauseToggle, attr: { 'title': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')', 'aria-label': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')' }">
                     <span class="glyphicon" data-bind="css: { 'glyphicon-play' : downloadsPaused(), 'glyphicon-pause' : !downloadsPaused() }"></span>
                 </button>
-                <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" aria-label="$T('pauseFor')" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" data-bind="attr: { 'aria-label': downloadsPaused() ? '$T('unpauseFor')' : '$T('pauseFor')' }" aria-haspopup="true" aria-expanded="false">
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
