@@ -115,6 +115,15 @@ def peer_address(request: Request) -> Address:
     return client_address(request)
 
 
+def peer_is_known(request: Request) -> bool:
+    """Whether the address that opened the connection is one this instance expects to hear
+    from: on the local network, or listed in xff_trusted_hosts."""
+    if request.scope.get(SCOPE_PEER_TRUSTED):
+        return True
+    peer = peer_address(request).host
+    return is_loopback_addr(peer) or is_local_addr(peer)
+
+
 def forwarded_for_header(request: Request) -> str:
     """The X-Forwarded-For value as the resolver reads it. A header sent more than once
     arrives as several lines, which ProxyHeadersMiddleware joins and Headers.get() does not:
@@ -191,7 +200,8 @@ def check_access(request: Request, access_type: int = 4, warn_user: bool = False
     # Without a resolved client there is nobody to grant access to, whatever the peer is
     if reason := unresolved_client_reason(request):
         if warn_user and cfg.api_warnings():
-            logging.warning("%s %s - %s", T("Refused connection from:"), client_address_info(request), reason)
+            log = logging.warning if peer_is_known(request) else logging.info
+            log("%s %s - %s", T("Refused connection from:"), client_address_info(request), reason)
         return False
 
     # ProxyTrustMiddleware has resolved the chain, so this is the effective client

@@ -120,8 +120,10 @@ from sabnzbd.security import (
     csrf_token_matches,
     login_bypassed,
     login_cooldown_remaining,
+    peer_is_known,
     presented_csrf_token,
     record_login_failure,
+    unresolved_client_reason,
     use_secure_cookies,
     validate_any_session,
     validate_csrf,
@@ -254,7 +256,7 @@ def check_apikey(request: Request) -> Optional[Response]:
     # The entry carries the access level required for this specific api-call
     req_access = entry.access_level
     if not check_access(request, access_type=req_access, warn_user=True):
-        return forbidden(_MSG_ACCESS_DENIED)
+        return access_denied(request)
 
     # Skip for auth and version calls
     if mode in ("version", "auth"):
@@ -428,7 +430,7 @@ class SecurityMiddleware:
 
         # Check if external access and if it's allowed
         if not check_access(request, access_type=self.access_type, warn_user=True):
-            return forbidden(_MSG_ACCESS_DENIED)
+            return access_denied(request)
 
         # An apikey on a route that does not take one: the refusals below say so rather than
         # redirecting to the login form. Only consulted once the request is refused anyway.
@@ -465,6 +467,13 @@ class SecurityMiddleware:
 def forbidden(message: str) -> PlainTextResponse:
     """403 response, carrying the reason only when api_warnings is enabled."""
     return PlainTextResponse(message if cfg.api_warnings() else "", status_code=403)
+
+
+def access_denied(request: Request) -> PlainTextResponse:
+    """403 response, with the reason the client could not be resolved."""
+    if peer_is_known(request) and (reason := unresolved_client_reason(request)):
+        return forbidden("%s - %s" % (_MSG_ACCESS_DENIED, reason))
+    return forbidden(_MSG_ACCESS_DENIED)
 
 
 ##############################################################################
