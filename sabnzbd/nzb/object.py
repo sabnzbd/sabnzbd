@@ -91,6 +91,7 @@ from sabnzbd.filesystem import (
     create_work_name,
     points_outside,
     points_into_admin_dir,
+    same_directory,
     RAR_RE,
 )
 from sabnzbd.par2file import FilePar2Info, has_par2_in_filename, analyse_par2, parse_par2_file, is_par2_file
