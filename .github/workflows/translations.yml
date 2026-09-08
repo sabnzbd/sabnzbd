@@ -16,6 +16,7 @@ jobs:
   translations:
     name: Update translatable texts
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     env:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
     steps:
