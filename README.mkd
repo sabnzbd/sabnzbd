@@ -1,63 +1,47 @@
-Release Notes - SABnzbd 5.1.2
+Release Notes - SABnzbd 5.1.3
 =========================================================
 
-SABnzbd 5.1.1 and 5.1.2 resolved 3 serious vulnerabilities.
+## Security fixes
 
-## Critical remote code execution vulnerability resolved in 5.1.2 (GHSA-rgqj-28c2-gxwp)
+SABnzbd 5.1.1, 5.1.2 and 5.1.3 resolve a number of security vulnerabilities.
 
-You are only affected if an untrusted party can reach the web interface.
-By default, SABnzbd is only accessible from your own device and `External internet access`
-is set to `No access`. If either of those is still at its default, or if you use a proxy
-service for authentication, you are not affected.
+Over the past releases, several security researchers have put a lot of time and effort
+examining SABnzbd, responsibly reporting their findings, and helping us verify the fixes.
+We are grateful for their hard work, it has made SABnzbd meaningfully safer for everyone.
 
-In version 5.1.1 and earlier, an attacker who can reach the web interface could bypass
-authentication on configuration endpoints, even when SABnzbd is protected with a username
-and password. By changing SABnzbd's settings this way, an attacker could ultimately execute
-arbitrary commands on the system running SABnzbd, with the same permissions as SABnzbd itself.
-This also means that all information in SABnzbd would be exposed.
+For most users the risk is limited: you are only affected if your setup is exposed to
+untrusted parties. The web interface issues only apply if it can be reached by someone
+you do not trust. By default, SABnzbd is only accessible from your own device and
+`External internet access` is set to `No access`. If either of those is still at its
+default, or if you use a proxy service for authentication, you are not affected.
+The download-processing issues only apply if SABnzbd handles NZBs from a source you
+do not fully trust, such as a public indexer.
+If none of that describes your setup, you were never at risk.
 
-See GHSA-xrfq-jhgh-wqch below for actions and mitigations.
-More information: https://sabnzbd.org/5-1-vulnerabilities
+The safest action is simply to update to 5.1.3.
+Full details, affected versions, actions and mitigations for each vulnerability are described at:
+https://sabnzbd.org/5-1-vulnerabilities
 
-## High-severity path traversal vulnerability resolved in 5.1.2 (GHSA-75g3-96fr-7p2r)
+Vulnerabilities resolved:
 
-You are affected if SABnzbd processes NZBs or downloads from a source you do not fully
-trust, such as a public indexer.
+* GHSA-q326-jpxx-jmjc: `__wrapped__` dispatch bypass allows unauthenticated API access, fixed in 5.1.3.
+* GHSA-mjwj-v5mr-cmcg: PAR2 symlink bypass allows pickle remote code execution, fixed in 5.1.3.
+* GHSA-rgqj-28c2-gxwp: Critical remote code execution via authentication bypass on configuration endpoints, fixed in 5.1.2.
+* GHSA-75g3-96fr-7p2r: High-severity path traversal during post-processing via crafted PAR2/SFV files, fixed in 5.1.2.
+* GHSA-xrfq-jhgh-wqch: Critical authentication bypass allowing a valid session without credentials, fixed in 5.1.1.
 
-In version 5.1.1 and earlier, a maliciously crafted PAR2 or SFV file inside a download
-could cause SABnzbd to move downloaded content outside of the job's own folder during
-post-processing. By using this to plant a file in another job's internal administration,
-an attacker could ultimately execute arbitrary commands on the system running SABnzbd,
-with the same permissions as SABnzbd itself.
+If you rely on the SABnzbd username and password to keep out untrusted parties, and your
+setup was exposed, it is recommended that you rotate your SABnzbd username/password and
+API-key, Usenet server passwords, indexer API-keys used in RSS-feeds, and notification
+service credentials after updating. See the page above for the full guidance.
 
-The only mitigation is to update, there is no configuration change that prevents this.
-More information: https://sabnzbd.org/5-1-vulnerabilities
+## Other changes and bug fixes in 5.1.3
 
-## Critical authentication vulnerability resolved in 5.1.1 (GHSA-xrfq-jhgh-wqch)
-
-You are only affected if an untrusted party can reach the web interface.
-By default, SABnzbd is only accessible from your own device and `External internet access`
-is set to `No access`. If either of those is still at its default, or if you use a proxy
-service for authentication, you are not affected.
-
-If the SABnzbd login page is reachable from outside your network, an attacker could
-obtain a valid session in version 5.1.0 and earlier, even when SABnzbd is protected with
-a username and password. This means that all information in SABnzbd would be exposed.
-
-If you rely on the SABnzbd username and password to keep out other users on your
-network or the internet, it is recommended that you change the following
-sensitive information after applying the update:
-
-* SABnzbd username and password.
-* SABnzbd API-key.
-* Usenet server passwords.
-* API-keys from indexers used within RSS-feeds.
-* Authentication information for notification services.
-
-If you cannot update right away, the only mitigations are to ensure the web interface is not
-reachable by untrusted parties, or to lower `External internet access` to `Full API` or below.
-
-More information: https://sabnzbd.org/5-1-vulnerabilities
+* Tighten Compact display mode.
+* Directly show usenet server errors instead of parsing them.
+* Prevent `database is locked` error when re-evaluating stored RSS jobs.
+* Added tooltip to explain search filters in Queue and History.
+* Windows and macOS: Updated 7zip to 26.03.
 
 ## Other bug fixes in 5.1.2
 

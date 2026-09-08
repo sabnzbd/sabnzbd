@@ -19,10 +19,14 @@
 tests.test_filesystem - Testing functions in filesystem.py
 """
 
+import datetime
+import io
+import pickle
 import stat
 import sys
 import os
 import shutil
+import time
 import unicodedata
 from pathlib import Path
 import tempfile
@@ -157,6 +161,13 @@ class TestFileFolderNameSanitizer:
             "/../",
             "...",
             "....",
+            # Whitespace must not hide a part from the checks, it is stripped while sanitizing
+            " .. /test.rar",
+            " .. / .. /etc/shadow",
+            "sub/ .. / .. /test.rar",
+            "\t..\t/test.rar",
+            "\xa0../test.rar",
+            " .. ",
         ],
     )
     @pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
@@ -183,6 +194,10 @@ class TestFileFolderNameSanitizer:
             JOB_ADMIN.lower() + "/__verified__",
             "sub/" + JOB_ADMIN + "/__verified__",
             JOB_ADMIN + "/deeper/__verified__",
+            # Whitespace must not hide a part from the checks, it is stripped while sanitizing
+            " " + JOB_ADMIN + " /__verified__",
+            "\t" + JOB_ADMIN + "\t/__verified__",
+            "sub/ " + JOB_ADMIN.lower() + " /__verified__",
         ],
     )
     @pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
@@ -565,6 +580,75 @@ class TestPointsIntoAdminDir:
             filesystem.renamer(filename, os.path.join(base, alias, "__verified__"), create_local_directories=True)
         assert os.path.isfile(filename)
         assert not os.listdir(admin_dir)
+
+
+class TestPointsOutside:
+    def test_inside(self, tmp_path):
+        base = str(tmp_path)
+        assert not filesystem.points_outside(base, os.path.join(base, "file.bin"))
+        assert not filesystem.points_outside(base, os.path.join(base, "sub", "file.bin"))
+
+    def test_outside(self, tmp_path):
+        base = str(tmp_path)
+        assert filesystem.points_outside(base, os.path.join(base, os.pardir, "file.bin"))
+        assert filesystem.points_outside(base, os.path.join(base, "sub", os.pardir, os.pardir, "file.bin"))
+
+    def test_root_reached_through_a_link_is_fine(self, tmp_path):
+        """The download and complete folder are allowed to be a link"""
+        base = str(tmp_path)
+        real = os.path.join(base, "real")
+        os.mkdir(real)
+        link = os.path.join(base, "link")
+        os.symlink(real, link)
+
+        assert not filesystem.points_outside(link, os.path.join(link, "file.bin"))
+        assert not filesystem.points_outside(link, os.path.join(real, "file.bin"))
+        assert not filesystem.points_outside(real, os.path.join(link, "file.bin"))
+        assert filesystem.points_outside(link, os.path.join(link, os.pardir, "file.bin"))
+
+    def test_link_inside_the_root_cannot_redirect(self, tmp_path):
+        base = str(tmp_path)
+        root = os.path.join(base, "root")
+        os.mkdir(root)
+        os.symlink(base, os.path.join(root, "up"))
+        os.symlink(".", os.path.join(root, "pivot"))
+
+        assert filesystem.points_outside(root, os.path.join(root, "up", "file.bin"))
+        assert filesystem.points_outside(root, os.path.join(root, "pivot", os.pardir, "file.bin"))
+        assert not filesystem.points_outside(root, os.path.join(root, "pivot", "file.bin"))
+
+
+class TestMoveToPath:
+    def test_link_in_a_parent_cannot_redirect(self, tmp_path):
+        """A linked directory in the path redirects the move just like a linked leaf"""
+        base = str(tmp_path)
+        root = os.path.join(base, "complete")
+        outside = os.path.join(base, "outside")
+        os.makedirs(root)
+        os.makedirs(outside)
+        os.symlink(outside, os.path.join(root, "sub"))
+
+        source = os.path.join(base, "source.bin")
+        Path(source).touch()
+        ok, new_path = filesystem.move_to_path(source, os.path.join(root, "sub", "moved.bin"), root=root)
+
+        assert not ok
+        assert not new_path
+        assert os.path.isfile(source)
+        assert not os.listdir(outside)
+
+    def test_move_inside_the_root_still_works(self, tmp_path):
+        base = str(tmp_path)
+        root = os.path.join(base, "complete")
+        os.makedirs(root)
+        source = os.path.join(base, "source.bin")
+        Path(source).touch()
+
+        ok, new_path = filesystem.move_to_path(source, os.path.join(root, "sub", "moved.bin"), root=root)
+
+        assert ok
+        assert os.path.isfile(new_path)
+        assert not os.path.isfile(source)
 
 
 class TestFirstExistingPath:
@@ -998,6 +1082,16 @@ class TestGetUniqueDirFilename:
         fake_fs.create_file(first_filename)
         assert filesystem.get_unique_filename(test_file) == "/some/filename.2"
 
+    def test_dangling_link_is_taken(self, tmp_path):
+        """A link whose target is missing still occupies the name, and handing it out would
+        write through it to wherever it points"""
+        base = str(tmp_path)
+        test_file = os.path.join(base, "file.name")
+        Path(test_file).touch()
+        os.symlink(os.path.join(base, "does_not_exist"), os.path.join(base, "file.1.name"))
+
+        assert filesystem.get_unique_filename(test_file) == os.path.join(base, "file.2.name")
+
 
 @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows specific tests")
 class TestGetUniqueDirFilenameWin:
@@ -1364,6 +1458,69 @@ class TestRenamer:
 
         # Cleanup working directory
         shutil.rmtree(dirname)
+
+    def test_link_cannot_redirect_rename(self, tmp_path):
+        """The filesystem resolves a link before it handles "..", so "pivot/.." lands one
+        level higher than normalizing the path on its own suggests"""
+        base = str(tmp_path)
+        dirname = os.path.join(base, "job")
+        os.mkdir(dirname)
+        os.symlink(".", os.path.join(dirname, "pivot"))
+
+        filename = os.path.join(dirname, "myfile.txt")
+        Path(filename).touch()
+        escaped = os.path.join(base, "escaped.bin")
+        with pytest.raises(OSError):
+            filesystem.renamer(
+                filename, os.path.join(dirname, "pivot", "..", "escaped.bin"), create_local_directories=True
+            )
+        assert os.path.isfile(filename)
+        assert not os.path.exists(escaped)
+
+        # A link that leaves the directory outright is no stepping stone either
+        os.symlink(base, os.path.join(dirname, "outside"))
+        with pytest.raises(OSError):
+            filesystem.renamer(filename, os.path.join(dirname, "outside", "escaped.bin"), create_local_directories=True)
+        assert os.path.isfile(filename)
+        assert not os.path.exists(escaped)
+
+
+class TestRestrictedUnpickler:
+    def test_round_trip(self, tmp_path):
+        data = {"a": 1, "s": {1, 2}, "when": datetime.datetime(2024, 1, 1), "t": time.gmtime(0), "st": os.stat(".")}
+        filesystem.save_data(data, "d", str(tmp_path))
+        assert filesystem.load_data("d", str(tmp_path), remove=False) == data
+
+    def test_rejects_code_execution_gadget(self):
+        class Evil:
+            def __reduce__(self):
+                return (os.system, ("echo pwned",))
+
+        with pytest.raises(pickle.UnpicklingError):
+            filesystem.RestrictedUnpickler(io.BytesIO(pickle.dumps(Evil()))).load()
+
+    def test_rejects_non_allowlisted_sabnzbd_class(self):
+        # kronos.ForkedScheduler has a __del__ that runs os.kill; referenced by name, rejected pre-import
+        def named_global(module, name):
+            return (
+                b"\x80\x04\x8c"
+                + bytes([len(module)])
+                + module.encode()
+                + b"\x8c"
+                + bytes([len(name)])
+                + name.encode()
+                + b"\x93."
+            )
+
+        with pytest.raises(pickle.UnpicklingError):
+            filesystem.RestrictedUnpickler(io.BytesIO(named_global("sabnzbd.utils.kronos", "ForkedScheduler"))).load()
+
+    def test_loads_legacy_3_0_rss_pickle(self):
+        path = os.path.join(SAB_DATA_DIR, "test_3_0_0_data_format")
+        data = filesystem.load_data("rss_data.sab", path, remove=False)
+        assert isinstance(data, dict) and data
+        feed_jobs = next(iter(data.values()))
+        assert isinstance(feed_jobs, dict) and feed_jobs
 
 
 class TestUnwantedExtensions:

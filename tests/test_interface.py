@@ -257,6 +257,78 @@ class TestInterfaceFunctions:
         cherrypy.request.remote_label = "127.0.0.1 [test]"
         assert interface.check_apikey(kwargs, api_route=api_route) == expected
 
+    def test_secured_expose_hides_wrapped_function(self):
+        """The unprotected function must not be reachable below the wrapper"""
+
+        class DummyPage:
+            @interface.secured_expose(check_api_key=True, api_route=True, access_type=1)
+            def api(self, **kwargs):
+                return "protected handler executed"
+
+        assert not hasattr(DummyPage.api, "__wrapped__")
+        assert not any(getattr(value, "exposed", False) for value in vars(DummyPage.api).values())
+        assert not hasattr(interface.MainPage.api, "__wrapped__")
+
+    @pytest.mark.parametrize(
+        "path, should_resolve",
+        [
+            ("/", True),
+            ("/api", True),
+            ("/config/", True),
+            ("/config/general/", True),
+            # Handlers are bound methods, so __self__ leads back into the page tree
+            ("/api/__self__/", False),
+            ("/api/__self__/config/", False),
+            ("/api/__self__/config/general/", False),
+            ("/config/general/__self__/", False),
+            # Punctuation is translated to underscores before the attribute lookup
+            ("/api/--self--/", False),
+            ("/api/..self../", False),
+            ("/api/__func__/", False),
+            ("/api/__wrapped__", False),
+        ],
+    )
+    def test_dispatcher_refuses_private_attributes(self, path, should_resolve):
+        """A private attribute is no route, it reaches a handler while the access rules
+        of another route are applied to the request"""
+
+        class GeneralPage:
+            @interface.secured_expose
+            def index(self, **kwargs):
+                return "general config page"
+
+        class ConfigPage:
+            def __init__(self):
+                self.general = GeneralPage()
+
+            @interface.secured_expose
+            def index(self, **kwargs):
+                return "config page"
+
+        class RootPage:
+            def __init__(self):
+                self.config = ConfigPage()
+
+            @interface.secured_expose
+            def index(self, **kwargs):
+                return "main page"
+
+            @interface.secured_expose(check_api_key=True, api_route=True, access_type=1)
+            def api(self, **kwargs):
+                return "api handler executed"
+
+        cherrypy.serving.request.app = cherrypy.Application(RootPage(), "/")
+        handler, _vpath = interface.SecureDispatcher().find_handler(path)
+        assert bool(handler) is should_resolve
+
+    @pytest.mark.config({"username": "sabuser", "password": "sabpass", "html_login": 0})
+    @pytest.mark.parametrize("login, expected", [(None, False), ("", False), ("sabuser", True)])
+    def test_check_login_verifies_basic_auth(self, login, expected):
+        """Basic-auth is checked by cherrypy, which does not run on every route, so the
+        login it sets on the request has to be there"""
+        cherrypy.serving.request.login = login
+        assert interface.check_login() is expected
+
     @pytest.mark.config({"verify_xff_header": False})
     def test_logout_does_not_leak_valid_cookie(self):
         """A logout must never emit a cookie/salt pair that passes check_login_cookie.

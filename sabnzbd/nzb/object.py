@@ -89,7 +89,7 @@ from sabnzbd.filesystem import (
     remove_data,
     get_ext,
     create_work_name,
-    same_directory,
+    points_outside,
     points_into_admin_dir,
     RAR_RE,
 )
@@ -1452,14 +1452,14 @@ class NzbObject(TryList):
         candidate = filename
         path = os.path.join(directory, candidate)
         num = 1
-        while candidate in self.filenames or os.path.exists(path):
+        while candidate in self.filenames or os.path.lexists(path):
             candidate = f"{base_name}.{num}{ext}"
             path = os.path.join(directory, candidate)
             num += 1
 
         if subdir := os.path.dirname(candidate):
             # sanitize_filename() keeps the name local, so this should never trigger
-            if same_directory(directory, os.path.dirname(path)) == 0:
+            if points_outside(directory, path):
                 raise ValueError("Refusing to write %s outside of %s" % (candidate, directory))
             if points_into_admin_dir(path, directory):
                 raise ValueError("Refusing to write %s into the admin folder" % candidate)

@@ -515,7 +515,7 @@ def process_job(nzo: NzbObject) -> bool:
                     if JOB_ADMIN not in path:
                         new_path = path.replace(nzo.download_path, tmp_workdir_complete)
                         nzo.set_action_line(T("Moving"), get_filename(path))
-                        ok, new_path = move_to_path(path, new_path)
+                        ok, new_path = move_to_path(path, new_path, root=tmp_workdir_complete)
                         if new_path:
                             newfiles.append(new_path)
                         if not ok:

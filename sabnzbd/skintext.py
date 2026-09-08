@@ -822,6 +822,9 @@ SKIN_TEXT = {
     "Glitter-freeTemp": TT("Temp Folder"),
     "Glitter-search": TT("Search"),
     "Glitter-clearSearch": TT("Clear search"),
+    "Glitter-searchExplain": TT(
+        "Search by name, or refine with filters <code>cat:</code>, <code>status:</code> and <code>priority:</code> (Queue). For example: <code>my show cat:tv</code>"
+    ),  #: Explains the queue/history search box, shown as a tooltip
     "Glitter-multiOperations": TT("Multi-Operations"),
     "Glitter-multiSelect": TT("Hold shift key to select a range"),
     "Glitter-selectJob": TT("Select job"),

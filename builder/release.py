@@ -21,6 +21,7 @@ import re
 
 import github
 import praw
+import requests
 
 from common import (
     RELEASE_VERSION,
@@ -186,6 +187,20 @@ if RELEASE_THIS and gh_token:
         print("Merging pull request in sabnzbd/sabnzbd.github.io for the update")
         update_pr.merge(merge_method="squash")
 
+    # Trigger the Docker image build at linuxserver.io
+    # Branch "develop" builds the pre-releases, "master" the stable releases
+    if linuxserver_token := os.environ.get("LINUXSERVER_WEBHOOK_TOKEN", ""):
+        linuxserver_branch = "develop" if PRERELEASE else "master"
+        print("Triggering linuxserver.io Docker build for branch %s" % linuxserver_branch)
+        requests.post(
+            "https://ci.linuxserver.io/generic-webhook-trigger/invoke?sabnzbd",
+            headers={"Authorization": "Bearer %s" % linuxserver_token},
+            json={"branch": linuxserver_branch},
+            timeout=30,
+        ).raise_for_status()
+    else:
+        print("Missing LINUXSERVER_WEBHOOK_TOKEN")
+
     # Only with GitHub success we proceed to Reddit
     if reddit_token := os.environ.get("REDDIT_TOKEN", ""):
         # Token format (without whitespace):
@@ -232,6 +247,34 @@ if RELEASE_THIS and gh_token:
 
     else:
         print("Missing REDDIT_TOKEN")
+
+    # Push release notes to Discord via an incoming webhook
+    # Separate channels for testing (pre-release) and stable, both are required
+    discord_webhook_testing = os.environ.get("DISCORD_WEBHOOK_TESTING", "")
+    discord_webhook_stable = os.environ.get("DISCORD_WEBHOOK_STABLE", "")
+    if discord_webhook_testing and discord_webhook_stable:
+        discord_webhook = discord_webhook_testing if PRERELEASE else discord_webhook_stable
+        print("Posting release notes to Discord")
+        # Reuse the release notes read earlier: line 0 is the title header
+        discord_lines = readme_data.splitlines(keepends=True)
+        discord_title = discord_lines[0].lstrip("# ").strip()
+        discord_body = "".join(discord_lines[2:])[:4096]
+        requests.post(
+            discord_webhook,
+            json={
+                "embeds": [
+                    {
+                        "title": discord_title,
+                        "url": gh_release.html_url,
+                        "description": discord_body,
+                        "color": 0xFFA500 if PRERELEASE else 0x00A550,
+                    }
+                ]
+            },
+            timeout=30,
+        ).raise_for_status()
+    else:
+        print("Missing DISCORD_WEBHOOK_TESTING and/or DISCORD_WEBHOOK_STABLE")
 
 else:
     print("To push release to GitHub, first tag the commit.")

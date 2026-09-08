@@ -106,6 +106,17 @@ _MSG_APIKEY_REQUIRED = "API Key Required"
 _MSG_APIKEY_INCORRECT = "API Key Incorrect"
 
 
+class SecureDispatcher(cherrypy.dispatch.Dispatcher):
+    """Dispatcher that refuses paths traversing private attributes"""
+
+    def find_handler(self, path):
+        handler, vpath = super().find_handler(path)
+        # Punctuation is translated to underscores before the attribute lookup
+        if any(segment.translate(self.translate).startswith("_") for segment in path.split("/")):
+            return None, []
+        return handler, vpath
+
+
 def secured_expose(
     wrap_func: Optional[Callable] = None,
     check_configlock: bool = False,
@@ -125,11 +136,11 @@ def secured_expose(
             access_type=access_type,
         )
 
-    # Expose to cherrypy
-    wrap_func.exposed = True
-
     @functools.wraps(wrap_func)
     def internal_wrap(*args, **kwargs):
+        if len(args) > 1:
+            raise cherrypy.NotFound()
+
         # Label for logging in this and other functions, handling X-Forwarded-For
         # The cherrypy.request object allows adding custom attributes
         if cherrypy.request.headers.get("X-Forwarded-For"):
@@ -194,6 +205,9 @@ def secured_expose(
         # All good, cool!
         return wrap_func(*args, **kwargs)
 
+    # Expose only the wrapper to cherrypy
+    del internal_wrap.__wrapped__
+    internal_wrap.exposed = True
     return internal_wrap
 
 
@@ -339,9 +353,13 @@ def check_login_cookie():
 
 
 def check_login():
-    # Not when no authentication required or basic-auth is on
-    if not cfg.html_login() or not cfg.username() or not cfg.password():
+    # Not when no authentication required
+    if not cfg.username() or not cfg.password():
         return True
+
+    # Basic-auth is checked by cherrypy, only on the routes where the tool is enabled
+    if not cfg.html_login():
+        return bool(cherrypy.request.login)
 
     # If we show login for external IP, by using access_type=6 we can check if IP match
     if cfg.inet_exposure() == 5 and check_access(access_type=6):

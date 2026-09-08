@@ -226,6 +226,8 @@ def sanitize_filename(filename: str, allow_subdirs: bool = False) -> str:
         # Par2 always uses a forward slash, no matter which platform created the set
         parts = []
         for part in filename.split("/"):
+            # Sanitize first, the checks below run on the stripped name
+            part = sanitize_filename(part)
             if part in ("", os.curdir):
                 continue
             if part == os.pardir:
@@ -235,7 +237,7 @@ def sanitize_filename(filename: str, allow_subdirs: bool = False) -> str:
                 # Never let a name point into the admin folder, its files are pickle-loaded
                 logging.info("Dropping admin folder from name %s", filename)
                 continue
-            parts.append(sanitize_filename(part))
+            parts.append(part)
         # Nothing usable left, or no sub-directories after all
         if not parts:
             return "unknown"
@@ -494,6 +496,13 @@ def points_into_admin_dir(path: str, base: str) -> bool:
         # Windows only: resolving ended up on another drive, so it left base altogether
         return True
     return JOB_ADMIN.lower() in relative.lower().split(os.sep)
+
+
+def points_outside(root: str, path: str) -> bool:
+    """Return True if the file at path does not end up inside root.
+    Both sides are resolved, so a root that is itself a link is fine, a link inside it is not.
+    """
+    return same_directory(os.path.realpath(root), os.path.dirname(os.path.realpath(path))) == 0
 
 
 def is_network_path(path: str) -> bool:
@@ -825,7 +834,7 @@ def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> str | bool
     if n:
         new_path = "%s.%s" % (path, n)
 
-    if not os.path.exists(new_path):
+    if not os.path.lexists(new_path):
         if create_dir:
             return create_all_dirs(new_path, apply_permissions=True)
         else:
@@ -842,7 +851,7 @@ def get_unique_filename(path: str) -> str:
     num = 1
     new_path, filename = os.path.split(path)
     name, ext = os.path.splitext(filename)
-    while os.path.exists(path):
+    while os.path.lexists(path):
         filename = "%s.%d%s" % (name, num, ext)
         num += 1
         path = os.path.join(new_path, filename)
@@ -862,8 +871,9 @@ def listdir_full(input_dir: str, recursive: bool = True) -> list[str]:
     return filelist
 
 
-def move_to_path(path: str, new_path: str) -> tuple[bool, Optional[str]]:
+def move_to_path(path: str, new_path: str, root: Optional[str] = None) -> tuple[bool, Optional[str]]:
     """Move a file to a new path, optionally give unique filename
+    With root the destination has to resolve to a location inside it
     Return (ok, new_path)
     """
     ok = True
@@ -879,6 +889,11 @@ def move_to_path(path: str, new_path: str) -> tuple[bool, Optional[str]]:
         new_path = get_unique_filename(new_path)
 
     if new_path:
+        if root and points_outside(root, new_path):
+            logging.error(T("Failed moving %s to %s"), clip_path(path), clip_path(new_path))
+            logging.info("Refusing to move %s, it points outside %s", new_path, root)
+            return False, None
+
         logging.debug("Moving (overwrite: %s) %s => %s", overwrite, path, new_path)
         if not os.path.exists(new_path_dir):
             create_all_dirs(os.path.dirname(new_path), apply_permissions=True)
@@ -963,9 +978,7 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     if create_local_directories:
         oldpath, _ = os.path.split(old)
         # Check not outside directory
-        # In case of "same_file() == 1": same directory, so nothing to do
-        location = same_directory(oldpath, path)
-        if location == 0:
+        if points_outside(oldpath, new):
             # Outside current directory, this is most likely malicious
             logging.error(T("Blocked attempt to create directory %s"), path)
             raise OSError("Refusing to go outside directory")
@@ -977,7 +990,7 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
             logging.error(T("Blocked attempt to create directory %s"), path)
             raise OSError("Refusing to go into admin directory")
 
-        if location == 2:
+        if not os.path.isdir(path):
             # Sub-directory, create if does not yet exist:
             create_all_dirs(path)
 
@@ -1174,6 +1187,44 @@ def get_new_id(prefix: str, folder: str, check_list: Optional[list] = None) -> s
     raise IOError
 
 
+# Allowlist of every global our pickles may reference: safe data types and our persisted classes.
+# Explicit, not a "sabnzbd.*" wildcard, which would also admit gadget classes (e.g. a __del__
+# that runs os.kill). sabnzbd.nzbstuff is the pre-refactor module path (compat shim).
+_SAFE_GLOBALS = {
+    ("datetime", "datetime"),
+    ("datetime", "date"),
+    ("datetime", "time"),
+    ("datetime", "timedelta"),
+    ("datetime", "timezone"),
+    ("time", "struct_time"),
+    ("os", "stat_result"),
+    ("collections", "OrderedDict"),
+    ("collections", "defaultdict"),
+    ("collections", "deque"),
+    ("builtins", "set"),
+    ("builtins", "frozenset"),
+    ("builtins", "bytearray"),
+    ("builtins", "complex"),
+    ("copyreg", "_reconstructor"),
+    ("sabnzbd.nzb.object", "NzbObject"),
+    ("sabnzbd.nzb.file", "NzbFile"),
+    ("sabnzbd.nzb.article", "Article"),
+    ("sabnzbd.par2file", "FilePar2Info"),
+    ("sabnzbd.nzbstuff", "NzbObject"),
+    ("sabnzbd.nzbstuff", "NzbFile"),
+    ("sabnzbd.nzbstuff", "Article"),
+}
+
+
+class RestrictedUnpickler(pickle.Unpickler):
+    """Unpickler restricted to an allowlist, so a hostile pickle cannot run code"""
+
+    def find_class(self, module, name):
+        if (module, name) in _SAFE_GLOBALS:
+            return super().find_class(module, name)
+        raise pickle.UnpicklingError("Refusing to unpickle %s.%s" % (module, name))
+
+
 def save_data(data: Any, _id: str, path: str, do_pickle: bool = True, silent: bool = False):
     """Save data to a diskfile"""
     if not silent:
@@ -1222,11 +1273,7 @@ def load_data(
     try:
         with open(path, "rb") as data_file:
             if do_pickle:
-                try:
-                    data = pickle.load(data_file, encoding=sabnzbd.encoding.CODEPAGE)
-                except UnicodeDecodeError:
-                    # Could be Python 2 data that we can load using old encoding
-                    data = pickle.load(data_file, encoding="latin1")
+                data = RestrictedUnpickler(data_file, encoding=sabnzbd.encoding.CODEPAGE).load()
             elif mutable:
                 data = bytearray(os.fstat(data_file.fileno()).st_size)
                 data_file.readinto(data)

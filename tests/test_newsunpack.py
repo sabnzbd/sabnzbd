@@ -51,6 +51,69 @@ class TestNewsUnpackFunctions:
         assert not newsunpack.is_sfv_file("tests/data/only_comments.sfv")
         assert not newsunpack.is_sfv_file("tests/data/random.bin")
 
+    def test_file_join_refuses_a_link_as_target(self, tmp_path):
+        """A dangling link left behind by another extractor is not a free name, so joining
+        must not write the result through it"""
+        base = str(tmp_path)
+        download_path = os.path.join(base, "job")
+        workdir_complete = os.path.join(base, "complete")
+        os.mkdir(download_path)
+        os.mkdir(workdir_complete)
+        outside = os.path.join(base, "outside.bin")
+
+        joinables = []
+        for num in (1, 2):
+            joinable = os.path.join(download_path, "victim.%03d" % num)
+            with open(joinable, "wb") as part:
+                part.write(b"part%d" % num)
+            joinables.append(joinable)
+        # The link sits where the joined file is written, not next to the parts
+        os.symlink(os.path.join("..", "outside.bin"), os.path.join(workdir_complete, "victim"))
+
+        nzo = mock.Mock()
+        nzo.download_path = download_path
+        nzo.final_name = "test"
+        nzo.delete = False
+        nzo.set_action_line = mock.Mock()
+        nzo.set_unpack_info = mock.Mock()
+
+        failed, newfiles = newsunpack.file_join(nzo, workdir_complete, joinables)
+
+        assert not os.path.exists(outside), "written through the link to %s" % outside
+        assert failed
+        assert not newfiles
+
+    def test_file_join_refuses_a_link_in_a_parent(self, tmp_path):
+        """A linked directory on the way to the joined name redirects the append"""
+        base = str(tmp_path)
+        download_path = os.path.join(base, "job")
+        workdir_complete = os.path.join(base, "complete")
+        outside = os.path.join(base, "outside")
+        os.makedirs(os.path.join(download_path, "sub"))
+        os.makedirs(workdir_complete)
+        os.makedirs(outside)
+        os.symlink(outside, os.path.join(workdir_complete, "sub"))
+
+        joinables = []
+        for num in (1, 2):
+            joinable = os.path.join(download_path, "sub", "victim.%03d" % num)
+            with open(joinable, "wb") as part:
+                part.write(b"part%d" % num)
+            joinables.append(joinable)
+
+        nzo = mock.Mock()
+        nzo.download_path = download_path
+        nzo.final_name = "test"
+        nzo.delete = False
+        nzo.set_action_line = mock.Mock()
+        nzo.set_unpack_info = mock.Mock()
+
+        failed, newfiles = newsunpack.file_join(nzo, workdir_complete, joinables)
+
+        assert not os.listdir(outside), "joined through the link into %s" % outside
+        assert failed
+        assert not newfiles
+
     def test_sfv_check_blocks_path_traversal(self, tmp_path):
         """A traversing SFV filename must not move a file out of the job directory"""
         download_path = str(tmp_path)
@@ -867,6 +930,97 @@ class TestTarUnpack:
 
         assert error_code == 1, "TAR extraction should fail"
         assert not extracted_files
+
+    def test_link_members_skipped_tar_unpack(self, tmp_path):
+        """A download never needs links, and even one that stays inside the folder is enough
+        to redirect a later rename out of it, so they are dropped instead of extracted"""
+        tar_path = tmp_path / "links.tar"
+
+        with tarfile.open(tar_path, "w") as tar:
+            info = tarfile.TarInfo("file.txt")
+            info.size = 4
+            tar.addfile(info, io.BytesIO(b"test"))
+            # tarfile.data_filter() allows this one: the target stays inside the folder
+            pivot = tarfile.TarInfo("pivot")
+            pivot.type = tarfile.SYMTYPE
+            pivot.linkname = "."
+            tar.addfile(pivot)
+            hardlink = tarfile.TarInfo("hardlink.txt")
+            hardlink.type = tarfile.LNKTYPE
+            hardlink.linkname = "file.txt"
+            tar.addfile(hardlink)
+
+        tar_files = ["links.tar"]
+        expected_files = {"file.txt"}
+
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
+            self._run_tar_unpack(str(tmp_path), tar_files)
+        )
+
+        self._assert_successful_extraction(
+            error_code,
+            extracted_files,
+            complete_contents,
+            download_contents,
+            temp_complete_dir,
+            expected_files,
+            should_delete_original=True,
+            original_files=tar_files,
+        )
+
+        dropped = {"pivot", "hardlink.txt"}
+        assert not [f for f in extracted_files if os.path.basename(f) in dropped]
+        assert not [f for f in complete_contents if os.path.basename(f) in dropped]
+
+    def test_pre_existing_link_in_destination(self, tmp_path):
+        """A link left in the folder by another unpacker cannot be used to write a member
+        through it, because tarfile.data_filter() resolves the destination"""
+        base = str(tmp_path)
+        extraction_path = os.path.join(base, "dest")
+        outside = os.path.join(base, "outside")
+        os.mkdir(extraction_path)
+        os.mkdir(outside)
+        os.symlink(outside, os.path.join(extraction_path, "sub"))
+
+        tar_path = os.path.join(base, "prelink.tar")
+        with tarfile.open(tar_path, "w") as tar:
+            info = tarfile.TarInfo("sub/evil.txt")
+            info.size = 4
+            tar.addfile(info, io.BytesIO(b"evil"))
+
+        nzo = TestRarUnpack._create_test_nzo(extraction_path)
+        error_code, extracted_files = newsunpack.tar_extract(nzo, tar_path, extraction_path, False)
+
+        assert error_code == 1, "TAR extraction should fail"
+        assert not extracted_files
+        assert not os.listdir(outside)
+
+    def test_dangling_link_not_used_as_unique_name(self, tmp_path):
+        """get_unique_filename() picks the name after data_filter() approved the original, so
+        a dangling link is neither a free name nor a way out of the folder"""
+        base = str(tmp_path)
+        extraction_path = os.path.join(base, "dest")
+        os.mkdir(extraction_path)
+        outside = os.path.join(base, "outside.txt")
+
+        # Occupy the plain name, so a unique one has to be picked
+        with open(os.path.join(extraction_path, "victim.txt"), "wb") as victim:
+            victim.write(b"keep")
+        # The name that gets picked next is a link that points out of the folder
+        os.symlink(os.path.join("..", "outside.txt"), os.path.join(extraction_path, "victim.1.txt"))
+
+        tar_path = os.path.join(base, "unique.tar")
+        with tarfile.open(tar_path, "w") as tar:
+            info = tarfile.TarInfo("victim.txt")
+            info.size = 4
+            tar.addfile(info, io.BytesIO(b"evil"))
+
+        nzo = TestRarUnpack._create_test_nzo(extraction_path)
+        newsunpack.tar_extract(nzo, tar_path, extraction_path, False)
+
+        assert not os.path.exists(outside), "written through the link to %s" % outside
+        with open(os.path.join(extraction_path, "victim.txt"), "rb") as victim:
+            assert victim.read() == b"keep", "the existing file was overwritten"
 
     def test_owner_permissions_sanitized_tar_unpack(self, tmp_path):
         tar_path = tmp_path / "owner.tar"
