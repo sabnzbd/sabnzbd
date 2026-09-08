@@ -607,6 +607,9 @@ class TestPointsOutside:
         assert not filesystem.points_outside(real, os.path.join(link, "file.bin"))
         assert filesystem.points_outside(link, os.path.join(link, os.pardir, "file.bin"))
 
+    @pytest.mark.skipif(
+        sys.platform.startswith("win"), reason="Windows collapses '..' before the filesystem resolves links"
+    )
     def test_link_inside_the_root_cannot_redirect(self, tmp_path):
         base = str(tmp_path)
         root = os.path.join(base, "root")
@@ -1460,6 +1463,9 @@ class TestRenamer:
         # Cleanup working directory
         shutil.rmtree(dirname)
 
+    @pytest.mark.skipif(
+        sys.platform.startswith("win"), reason="Windows collapses '..' before the filesystem resolves links"
+    )
     def test_link_cannot_redirect_rename(self, tmp_path):
         """The filesystem resolves a link before it handles "..", so "pivot/.." lands one
         level higher than normalizing the path on its own suggests"""
