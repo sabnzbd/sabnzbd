@@ -45,13 +45,6 @@ from collections.abc import Iterable
 from typing import Any, AnyStr, Optional
 from functools import lru_cache
 
-from hachoir.parser import createParser as hachoir_create_parser
-from hachoir.metadata import extractMetadata as hachoir_extract_metadata
-from hachoir.core.log import log as hachoir_log
-
-# Keep hachoir from printing parser warnings straight to the console
-hachoir_log.use_print = False
-
 import sabnzbd
 import sabnzbd.getipaddress
 from sabnzbd.constants import (
@@ -1256,11 +1249,19 @@ def get_media_duration(filepath: str) -> Optional[float]:
     if not os.path.isfile(filepath):
         return None
     try:
-        parser = hachoir_create_parser(filepath)
+        # hachoir is a large dependency (5-10MB of memory) only needed for this check
+        from hachoir.parser import createParser
+        from hachoir.metadata import extractMetadata
+        from hachoir.core.log import log as hachoir_log
+
+        # Keep hachoir from printing parser warnings straight to the console
+        hachoir_log.use_print = False
+
+        parser = createParser(filepath)
         if not parser:
             return None
         with parser:
-            if duration := hachoir_extract_metadata(parser).get("duration", 0):
+            if duration := extractMetadata(parser).get("duration", 0):
                 return duration.total_seconds()
     except Exception:
         logging.debug("Failed to read media duration of %s", filepath, exc_info=True)
