@@ -51,6 +51,22 @@ global_uid = 1000
 set_uid(global_uid)
 
 
+def _symlinks_available() -> bool:
+    """On Windows, creating a symlink needs an elevated shell or Developer Mode.
+    Probe it once, so tests that need real symlinks skip instead of erroring."""
+    with tempfile.TemporaryDirectory() as tmp:
+        try:
+            os.symlink(tmp, os.path.join(tmp, "link"), target_is_directory=True)
+            return True
+        except (OSError, NotImplementedError, AttributeError):
+            return False
+
+
+needs_symlinks = pytest.mark.skipif(
+    not _symlinks_available(), reason="Creating symlinks requires elevation or Developer Mode"
+)
+
+
 class TestFileFolderNameSanitizer:
     def test_empty(self):
         assert filesystem.sanitize_filename(None) is None
@@ -544,6 +560,7 @@ class TestPointsIntoAdminDir:
         # Only a full part counts, not a name that merely starts with it
         assert not filesystem.points_into_admin_dir(os.path.join(base, JOB_ADMIN + "-data", "testfile.rar"), base)
 
+    @needs_symlinks
     def test_link_cannot_hide_it(self, tmp_path):
         """On Windows an NTFS 8.3 alias ("__ADMI~1") points at the admin folder under a
         different name, exactly like a link does here, so the name cannot be trusted"""
@@ -594,6 +611,7 @@ class TestPointsOutside:
         assert filesystem.points_outside(base, os.path.join(base, os.pardir, "file.bin"))
         assert filesystem.points_outside(base, os.path.join(base, "sub", os.pardir, os.pardir, "file.bin"))
 
+    @needs_symlinks
     def test_root_reached_through_a_link_is_fine(self, tmp_path):
         """The download and complete folder are allowed to be a link"""
         base = str(tmp_path)
@@ -623,6 +641,7 @@ class TestPointsOutside:
 
 
 class TestMoveToPath:
+    @needs_symlinks
     def test_link_in_a_parent_cannot_redirect(self, tmp_path):
         """A linked directory in the path redirects the move just like a linked leaf"""
         base = str(tmp_path)
