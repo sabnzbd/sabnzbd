@@ -19,6 +19,7 @@
 sabnzbd.nzbqueue - nzb queue
 """
 
+import bisect
 import os
 import logging
 import time
@@ -39,8 +40,6 @@ from sabnzbd.constants import (
     QUEUE_VERSION,
     FUTURE_Q_FOLDER,
     JOB_ADMIN,
-    LOW_PRIORITY,
-    HIGH_PRIORITY,
     FORCE_PRIORITY,
     STOP_PRIORITY,
     VERIFIED_FILE,
@@ -340,32 +339,8 @@ class NzbQueue:
             nzo.status = Status.PAUSED
 
         self.__nzo_table[nzo.nzo_id] = nzo
-        if priority > HIGH_PRIORITY:
-            # Top and repair priority items are added to the top of the queue
-            self.__nzo_list.insert(0, nzo)
-        elif priority == LOW_PRIORITY:
-            self.__nzo_list.append(nzo)
-        else:
-            # for high priority we need to add the item at the bottom
-            # of any other high priority items above the normal priority
-            # for normal priority we need to add the item at the bottom
-            # of the normal priority items above the low priority
-            if self.__nzo_list:
-                pos = 0
-                added = False
-                for position in self.__nzo_list:
-                    if position.priority < priority:
-                        self.__nzo_list.insert(pos, nzo)
-                        added = True
-                        break
-                    pos += 1
-                if not added:
-                    # if there are no other items classed as a lower priority
-                    # then it will be added to the bottom of the queue
-                    self.__nzo_list.append(nzo)
-            else:
-                # if the queue is empty then simple append the item to the bottom
-                self.__nzo_list.append(nzo)
+        self.__insert_in_priority_order(nzo)
+
         if save:
             self.save(nzo)
 
@@ -647,38 +622,7 @@ class NzbQueue:
 
             if nzo_id_pos1 != -1:
                 del self.__nzo_list[nzo_id_pos1]
-                if priority == FORCE_PRIORITY:
-                    # A top priority item (usually a completed download fetching pars)
-                    # is added to the top of the queue
-                    self.__nzo_list.insert(0, nzo)
-                    pos = 0
-                elif priority == LOW_PRIORITY:
-                    pos = len(self.__nzo_list)
-                    self.__nzo_list.append(nzo)
-                else:
-                    # for high priority we need to add the item at the bottom
-                    # of any other high priority items above the normal priority
-                    # for normal priority we need to add the item at the bottom
-                    # of the normal priority items above the low priority
-                    if self.__nzo_list:
-                        p = 0
-                        added = False
-                        for position in self.__nzo_list:
-                            if position.priority < priority:
-                                self.__nzo_list.insert(p, nzo)
-                                pos = p
-                                added = True
-                                break
-                            p += 1
-                        if not added:
-                            # if there are no other items classed as a lower priority
-                            # then it will be added to the bottom of the queue
-                            pos = len(self.__nzo_list)
-                            self.__nzo_list.append(nzo)
-                    else:
-                        # if the queue is empty then simple append the item to the bottom
-                        self.__nzo_list.append(nzo)
-                        pos = 0
+                pos = self.__insert_in_priority_order(nzo)
 
             logging.info(
                 "Set priority=%s for job %s => position=%s ", priority, self.__nzo_table[nzo_id].final_name, pos
@@ -697,6 +641,15 @@ class NzbQueue:
             return n
         except Exception:
             return -1
+
+    def __insert_in_priority_order(self, nzo: NzbObject) -> int:
+        """Insert a job into the priority-ordered queue and return its position.
+        Jobs join the back of their own priority group, so repair jobs outrank
+        forced ones and a group stays in the order its jobs arrived.
+        """
+        position = bisect.bisect_right(self.__nzo_list, -nzo.priority, key=lambda queued_nzo: -queued_nzo.priority)
+        self.__nzo_list.insert(position, nzo)
+        return position
 
     def has_forced_jobs(self) -> bool:
         """Check if the queue contains any Forced
