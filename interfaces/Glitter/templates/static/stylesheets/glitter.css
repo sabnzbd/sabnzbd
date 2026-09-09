@@ -1610,7 +1610,7 @@ tr.queue-item>td:first-child>a {
 #modal-options .table-server-connections thead {
     height: auto;
     visibility: visible;
-    background-color: #f5f5f5;
+    background-color: var(--clr-input-bg);
 }
 
 #modal-options .table-server-connections td,
