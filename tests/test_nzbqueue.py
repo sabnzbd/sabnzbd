@@ -417,6 +417,31 @@ class TestNzbQueue:
         assert set(removed_all) == remaining_ids
         assert queue.queue_info()[5] == 0  # nzos_matched
 
+    def test_remove_multiple_writes_the_queue_admin_once(self, queue, monkeypatch, mocker):
+        jobs = [make_dummy_nzo(f"job-{i}", priority=NORMAL_PRIORITY) for i in range(5)]
+        ids = [queue.add(nzo, save=False, quiet=True) for nzo in jobs]
+
+        save_admin = mocker.Mock()
+        monkeypatch.setattr(sabnzbd.filesystem, "save_admin", save_admin)
+        removed = queue.remove_multiple(ids, delete_all_data=False)
+
+        assert set(removed) == set(ids)
+        assert save_admin.call_count == 1
+
+    def test_save_accepts_a_list_of_jobs(self, queue, monkeypatch, mocker):
+        jobs = [make_dummy_nzo(f"job-{i}", priority=NORMAL_PRIORITY) for i in range(3)]
+        for nzo in jobs:
+            queue.add(nzo, save=False, quiet=True)
+            mocker.patch.object(nzo, "save_to_disk")
+
+        save_admin = mocker.Mock()
+        monkeypatch.setattr(sabnzbd.filesystem, "save_admin", save_admin)
+        queue.save(jobs[:2])
+
+        # Only the listed jobs are written, the queue admin just once for the batch
+        assert [nzo.save_to_disk.call_count for nzo in jobs] == [1, 1, 0]
+        assert save_admin.call_count == 1
+
     def test_change_opts_sets_pp(self, queue):
         a = make_dummy_nzo("a", priority=LOW_PRIORITY)
         ida = queue.add(a, save=False, quiet=True)

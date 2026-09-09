@@ -235,16 +235,23 @@ class NzbQueue:
             self.__nzo_table[nzo_ids[0]].reuse = None
 
     @NzbQueueLocker
-    def save(self, save_nzo: NzbObject | bool | None = None):
-        """Save queue, all nzo's or just the specified one"""
+    def save(self, save_nzo: NzbObject | list[NzbObject] | bool | None = None):
+        """Save queue, all nzo's, just the specified one or the ones in a list"""
         logging.info("Saving queue")
+
+        if isinstance(save_nzo, NzbObject):
+            save_nzo_ids = {save_nzo.nzo_id}
+        elif isinstance(save_nzo, list):
+            save_nzo_ids = {nzo.nzo_id for nzo in save_nzo}
+        else:
+            save_nzo_ids = set()
 
         nzo_ids = []
         # Aggregate nzo_ids and save each nzo
         for nzo in self.__nzo_list[:]:
             if not nzo.removed_from_queue:
                 nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
-                if save_nzo is None or nzo is save_nzo:
+                if save_nzo is None or nzo.nzo_id in save_nzo_ids:
                     if not nzo.futuretype:
                         # Also includes save_data for NZO
                         nzo.save_to_disk()
@@ -356,7 +363,9 @@ class NzbQueue:
         return nzo.nzo_id
 
     @NzbQueueLocker
-    def remove(self, nzo_id: str, cleanup: bool = True, delete_all_data: bool = True) -> Optional[NzbObject]:
+    def remove(
+        self, nzo_id: str, cleanup: bool = True, delete_all_data: bool = True, save: bool = True
+    ) -> Optional[NzbObject]:
         """Remove NZO from queue.
         It can be added to history directly.
         Or, we do some clean-up, sometimes leaving some data.
@@ -371,7 +380,8 @@ class NzbQueue:
             if cleanup:
                 nzo.status = Status.DELETED
                 nzo.purge_data(delete_all_data=delete_all_data)
-            self.save(False)
+            if save:
+                self.save(False)
             return nzo
 
     @NzbQueueLocker
@@ -380,10 +390,13 @@ class NzbQueue:
         and downloader-disconnect, so intended for external use only!"""
         removed = []
         for nzo_id in nzo_ids:
-            if nzo := self.remove(nzo_id, delete_all_data=delete_all_data):
+            if nzo := self.remove(nzo_id, delete_all_data=delete_all_data, save=False):
                 removed.append(nzo_id)
                 # Start an alternative, if available
                 self.handle_duplicate_alternatives(nzo, success=False)
+
+        if removed:
+            self.save(False)
 
         # Any files left? Otherwise let's disconnect
         if not self.actives(grabs=False) and cfg.autodisconnect():
