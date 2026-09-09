@@ -24,6 +24,8 @@ import os
 import logging
 import time
 import uuid
+from itertools import chain
+from operator import attrgetter
 from typing import Optional
 
 from starlette.datastructures import UploadFile
@@ -569,11 +571,11 @@ class NzbQueue:
             sort_function = lambda nzo: nzo.final_name.lower()
         elif field == "size" or field == "bytes":
             logging.info("Sorting by size (reversed: %s)", reverse)
-            sort_function = lambda nzo: nzo.bytes
+            sort_function = attrgetter("bytes")
         elif field == "avg_age":
             reverse = not reverse
             logging.info("Sorting by average date... (reversed: %s)", reverse)
-            sort_function = lambda nzo: nzo.avg_date
+            sort_function = attrgetter("avg_date")
         elif field == "remaining":
             if self.__nzo_list:
                 logging.debug("Sorting by percentage downloaded...")
@@ -581,14 +583,14 @@ class NzbQueue:
         elif field == "remaining_bytes":
             if self.__nzo_list:
                 logging.debug("Sorting by remaining size...")
-            sort_function = lambda nzo: nzo.remaining
+            sort_function = attrgetter("remaining")
         else:
             logging.debug("Sort: %s not recognized", field)
             return
 
         # Apply sort by requested order, then restore priority ordering
         self.__nzo_list.sort(key=sort_function, reverse=reverse)
-        self.__nzo_list.sort(key=lambda nzo: nzo.priority, reverse=True)
+        self.__nzo_list.sort(key=attrgetter("priority"), reverse=True)
 
     def update_sort_order(self):
         """Resorts the queue if it is useful for the selected sort method"""
@@ -947,7 +949,7 @@ class NzbQueue:
         """Check whether this name or md5sum is already
         in the queue or the post-processing queue"""
         lname = name.lower()
-        for nzo in self.__nzo_list + sabnzbd.PostProcessor.get_queue():
+        for nzo in chain(self.__nzo_list, sabnzbd.PostProcessor.get_queue()):
             # Skip any jobs already marked as duplicate, to prevent double-triggers
             # URL's do not have an MD5!
             if not nzo.duplicate and (
@@ -960,7 +962,7 @@ class NzbQueue:
     def have_duplicate_key(self, duplicate_key: str) -> bool:
         """Check whether this duplicate key is already
         in the queue or the post-processing queue"""
-        for nzo in self.__nzo_list + sabnzbd.PostProcessor.get_queue():
+        for nzo in chain(self.__nzo_list, sabnzbd.PostProcessor.get_queue()):
             # Skip any jobs already marked as duplicate, to prevent double-triggers
             if not nzo.duplicate and nzo.duplicate_key == duplicate_key:
                 return True
