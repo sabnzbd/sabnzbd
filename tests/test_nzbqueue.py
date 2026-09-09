@@ -40,6 +40,7 @@ from sabnzbd.constants import (
     NORMAL_PRIORITY,
     HIGH_PRIORITY,
     FORCE_PRIORITY,
+    REPAIR_PRIORITY,
 )
 from sabnzbd.database import HistoryDB
 from sabnzbd.downloader import Server
@@ -625,6 +626,36 @@ class TestNzbQueue:
         queue.switch(jobs[0].nzo_id, value2)
 
         assert self.get_queue_order(queue) == expected_order
+
+    @pytest.mark.parametrize("via_set_priority", [False, True])
+    @pytest.mark.parametrize(
+        "priority", [REPAIR_PRIORITY, FORCE_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY]
+    )
+    def test_jobs_queue_in_arrival_order_within_their_priority(self, queue, priority, via_set_priority):
+        """Every group keeps the order its jobs arrived in, so a repair re-add does not starve"""
+        for name in "abc":
+            nzo = make_dummy_nzo(name, priority=NORMAL_PRIORITY if via_set_priority else priority)
+            queue.add(nzo, save=False, quiet=True)
+            if via_set_priority:
+                queue.set_priority([nzo.nzo_id], priority)
+
+        assert self.get_queue_order(queue) == ["job-a", "job-b", "job-c"]
+
+    def test_set_priority_keeps_the_order_of_the_selection(self, queue):
+        """Changing the priority of several jobs at once must not reverse them"""
+        nzo_ids = [queue.add(make_dummy_nzo(name), save=False, quiet=True) for name in "abc"]
+        queue.set_priority(nzo_ids, FORCE_PRIORITY)
+
+        assert self.get_queue_order(queue) == ["job-a", "job-b", "job-c"]
+
+    @pytest.mark.parametrize("add_order", [("forced", "repair"), ("repair", "forced")])
+    def test_repair_outranks_forced(self, queue, add_order):
+        """Whichever job arrives first, the repair job ends up above the forced one"""
+        priorities = {"forced": FORCE_PRIORITY, "repair": REPAIR_PRIORITY}
+        for name in add_order:
+            queue.add(make_dummy_nzo(name, priority=priorities[name]), save=False, quiet=True)
+
+        assert self.get_queue_order(queue) == ["job-repair", "job-forced"]
 
     def test_has_forced_jobs_true_when_forced_and_active(self, queue):
         forced = make_dummy_nzo("forced", priority=FORCE_PRIORITY)
