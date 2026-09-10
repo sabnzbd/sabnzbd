@@ -2877,9 +2877,9 @@ msgstr "No se han guardado los cambios, y se perderán."
 
 #: sabnzbd/skintext.py
 msgid ""
-"When your IP address changes or SABnzbd is restarted the session will "
-"expire."
-msgstr "Cuando tu dirección IP cambie o reinicies SABnzbd, la sesión caduca."
+"Stay logged in on this browser instead of being signed out when you close "
+"it."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable 7zip"

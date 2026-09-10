@@ -2770,10 +2770,9 @@ msgstr "Muutoksia ei ole tallennettu ja ne menetetään."
 
 #: sabnzbd/skintext.py
 msgid ""
-"When your IP address changes or SABnzbd is restarted the session will "
-"expire."
+"Stay logged in on this browser instead of being signed out when you close "
+"it."
 msgstr ""
-"Istunto vanhenee kun IP-osoite vaihtuu tai SABnzbd käynnistetään uudelleen."
 
 #: sabnzbd/skintext.py
 msgid "Enable 7zip"

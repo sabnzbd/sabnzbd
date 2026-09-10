@@ -2803,11 +2803,9 @@ msgstr "Modificările nu au fost salvate, şi vor fi pierdute."
 
 #: sabnzbd/skintext.py
 msgid ""
-"When your IP address changes or SABnzbd is restarted the session will "
-"expire."
+"Stay logged in on this browser instead of being signed out when you close "
+"it."
 msgstr ""
-"Atunci când modificați adresa IP sau dacă SABnzbd este repornit sesiunea "
-"dumneavoastră va expira."
 
 #: sabnzbd/skintext.py
 msgid "Enable 7zip"
