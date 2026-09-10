@@ -1496,7 +1496,8 @@ tr.queue-item>td:first-child>a {
     float: right;
 }
 
-#modal-options .modal-header a {
+#modal-options .modal-header a,
+#modal-sessions .modal-header a {
     float: right;
     color: white !important;
     margin-right: 1em;
@@ -1607,7 +1608,8 @@ tr.queue-item>td:first-child>a {
     margin-top: 5px;
 }
 
-#modal-options .table-server-connections thead {
+#modal-options .table-server-connections thead,
+#modal-sessions .table-sessions thead {
     height: auto;
     visibility: visible;
     background-color: var(--clr-input-bg);
@@ -1649,6 +1651,30 @@ tr.queue-item>td:first-child>a {
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+/* ACTIVE SESSIONS MODAL */
+
+#modal-sessions .modal-body {
+    overflow-x: auto;
+}
+
+/* auto layout, so the wide user-agent column is not squeezed to 1/6 */
+#modal-sessions .table-sessions {
+    table-layout: auto;
+}
+
+#modal-sessions .table-sessions thead {
+    border: 1px solid var(--clr-border-subtle);
+}
+
+#modal-sessions .table-sessions th {
+    padding: 8px !important;
+}
+
+#modal-sessions .table-sessions .session-device {
+    max-width: 360px;
+    word-break: break-word;
 }
 
 /* PURGE MODAL */
@@ -2095,6 +2121,10 @@ input[name="nzbURL"] {
 }
 
 @media screen and (min-width: 768px) {
+    #modal-sessions .modal-dialog {
+        width: 860px;
+    }
+
     .modal-small .modal-dialog {
         width: 370px;
     }
@@ -2119,6 +2149,7 @@ input[name="nzbURL"] {
     #modal-help .modal-dialog,
     #modal-purge-history .modal-dialog,
     #modal-options .modal-dialog,
+    #modal-sessions .modal-dialog,
     #modal-retry-job .modal-dialog {
         margin-top: 80px;
     }
@@ -2207,7 +2238,8 @@ html[dir="rtl"] .search-box a {
 html[dir="rtl"] .navbar-logo,
 html[dir="rtl"] .info-container,
 html[dir="rtl"] .modal-header .close,
-html[dir="rtl"] #modal-options .modal-header a {
+html[dir="rtl"] #modal-options .modal-header a,
+html[dir="rtl"] #modal-sessions .modal-header a {
     float: left;
 }
 

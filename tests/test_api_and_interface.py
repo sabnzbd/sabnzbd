@@ -19,7 +19,9 @@
 tests.test_api - Tests for API functions
 """
 
+import json
 import os
+import time
 from functools import cached_property
 import pytest
 from random import choice, randint
@@ -32,6 +34,7 @@ from starlette.datastructures import Headers, Address, QueryParams, State
 import sabnzbd.api as api
 import sabnzbd.interface as interface
 import sabnzbd.security as security
+import sabnzbd.sessionstore
 import sabnzbd
 import sabnzbd.database as db
 from sabnzbd.constants import DB_HISTORY_NAME, DEF_ADMIN_DIR, PP_LOOKUP, AddNzbFileResult, Status
@@ -243,6 +246,48 @@ def run_get_request_params(method, query_string="", body=b"", content_type=None,
 
 
 FORM = "application/x-www-form-urlencoded"
+
+
+class TestApiSessions:
+    """The mode=sessions api-call: list and revoke web-UI login sessions"""
+
+    def _add(self, session_store, token, ip="1.2.3.4", agent="agent", offset=0):
+        now = int(time.time())
+        token_hash = security.hash_session_token(token)
+        session_store.add(token_hash, now - offset, now + 3600, "fp", ip, agent)
+        return token_hash
+
+    def test_list(self, session_store):
+        self._add(session_store, "one", ip="10.0.0.1", offset=10)
+        self._add(session_store, "two", ip="10.0.0.2", offset=0)
+        data = json.loads(run_api_handler(QueryParams({"mode": "sessions"})).body)
+        assert [s["ip"] for s in data["sessions"]] == ["10.0.0.2", "10.0.0.1"]
+        # Only a 16-char public id is exposed, never the stored token hash
+        assert all(len(s["id"]) == 16 for s in data["sessions"])
+
+    def test_delete_one(self, session_store):
+        token_hash = self._add(session_store, "one")
+        session_id = sabnzbd.sessionstore.public_session_id(token_hash)
+        result = json.loads(
+            run_api_handler(QueryParams({"mode": "sessions", "name": "delete", "value": session_id})).body
+        )
+        assert result["status"] is True
+        assert session_store.get(token_hash) is None
+
+    def test_delete_missing_value(self, session_store):
+        result = json.loads(run_api_handler(QueryParams({"mode": "sessions", "name": "delete"})).body)
+        assert result["status"] is False
+
+    def test_delete_unknown_id(self, session_store):
+        result = json.loads(run_api_handler(QueryParams({"mode": "sessions", "name": "delete", "value": "nope"})).body)
+        assert result["status"] is False
+
+    def test_delete_all(self, session_store):
+        self._add(session_store, "one")
+        self._add(session_store, "two")
+        result = json.loads(run_api_handler(QueryParams({"mode": "sessions", "name": "delete_all"})).body)
+        assert result["status"] is True
+        assert session_store.public_list() == []
 
 
 class TestGetRequestParams:

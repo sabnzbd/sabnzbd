@@ -840,6 +840,27 @@ def _api_showlog(name: str, kwargs: QueryParams) -> StreamingResponse:
     return build_log_response()
 
 
+async def _api_sessions(name: str, kwargs: QueryParams) -> Response:
+    """API: list the active web-UI login sessions"""
+    return report(kwargs, keyword="sessions", data=sabnzbd.SessionStore.public_list())
+
+
+async def _api_sessions_delete(name: str, kwargs: QueryParams) -> Response:
+    """API: revoke a single session, accepts value(=session id)"""
+    session_id = kwargs.get("value")
+    if not session_id:
+        return report(kwargs, _MSG_NO_VALUE)
+    if not sabnzbd.SessionStore.delete_by_id(session_id):
+        return report(kwargs, _MSG_NO_ITEM)
+    return report(kwargs)
+
+
+async def _api_sessions_delete_all(name: str, kwargs: QueryParams) -> Response:
+    """API: revoke every session, the caller's own included"""
+    sabnzbd.SessionStore.delete_all()
+    return report(kwargs)
+
+
 def _api_get_cats(name: str, kwargs: QueryParams) -> Response:
     return report(kwargs, keyword="categories", data=list_cats(False))
 
@@ -1160,6 +1181,9 @@ _api_table: ApiHandlerTable = {
     ("shutdown", ""): ApiEntry(_api_shutdown, 3),
     ("warnings", ""): ApiEntry(_api_warnings, 2),
     ("showlog", ""): ApiEntry(_api_showlog, 3),
+    ("sessions", ""): ApiEntry(_api_sessions, 3),
+    ("sessions", "delete"): ApiEntry(_api_sessions_delete, 3),
+    ("sessions", "delete_all"): ApiEntry(_api_sessions_delete_all, 3),
     ("get_cats", ""): ApiEntry(_api_get_cats, 2),
     ("get_scripts", ""): ApiEntry(_api_get_scripts, 2),
     ("version", ""): ApiEntry(_api_version, 1),
