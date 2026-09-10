@@ -258,7 +258,7 @@ SKIN_TEXT = {
         'The "Repair" button will restart SABnzbd and do a complete<br />reconstruction of the queue content, preserving already downloaded files.<br />This will modify the queue order.'
     ),
     "confirmWithoutSavingPrompt": TT("Changes have not been saved, and will be lost."),
-    "explain-sessionExpire": TT("When your IP address changes or SABnzbd is restarted the session will expire."),
+    "explain-sessionExpire": TT("Stay logged in on this browser instead of being signed out when you close it."),
     "opt-enable_7zip": TT("Enable 7zip"),
     "explain-getpar2turbo": TT("Speed up repairs by installing par2cmdline-turbo, it is available for many platforms."),
     "version": TT("Version"),
