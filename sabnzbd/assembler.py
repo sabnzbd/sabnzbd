@@ -748,5 +748,9 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> tuple[b
                 del zf
         except rarfile.Error as e:
             logging.info("Error during inspection of RAR-file %s: %s", filepath, e)
+        except Exception as e:
+            # Malformed metadata can raise non-rarfile.Error (e.g. ValueError on a bad seek);
+            # must not crash the assembler
+            logging.info("Unexpected error during inspection of RAR-file %s: %s", filepath, e)
 
     return encrypted, unwanted
