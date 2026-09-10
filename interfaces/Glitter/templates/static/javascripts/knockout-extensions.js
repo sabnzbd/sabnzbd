@@ -21,10 +21,8 @@ ko.bindingHandlers.longText = {
         // Input is an array
         var value = ko.utils.unwrapObservable(valueAccessor())
 
-        // Convert HTML entities for all but the Script (because of the (more)-link)
-        if(allBindingsAccessor.get('longTextType') != "Script") {
-            value = value.map(convertHTMLtoText)
-        }
+        // Escape HTML in the source lines (the markup below is added afterwards)
+        value = value.map(convertHTMLtoText)
 
         // Any <br>'s?
         var outputText = '';

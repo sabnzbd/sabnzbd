@@ -1269,7 +1269,9 @@ def one_file_or_folder(folder: str) -> str:
     return folder
 
 
-TAG_RE = re.compile(r"<[^>]+>")
+# Also matches a tag missing its closing ">", so an unclosed "<img ..." can't
+# survive to be completed by markup added when rendering (XSS)
+TAG_RE = re.compile(r"<[^>\n]*>?")
 
 
 def get_last_line(txt: str) -> str:

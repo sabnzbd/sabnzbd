@@ -268,6 +268,34 @@ class TestPostProc:
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
+class TestGetLastLine:
+    @pytest.mark.parametrize(
+        "txt, expected",
+        [
+            ("", ""),
+            ("plain text", "plain text"),
+            ("first\nsecond\nlast", "last"),
+            ("last\n\n\n", "last"),
+            ("<b>bold</b>", "bold"),
+            ("<a href='x'>link</a>", "link"),
+            # Unclosed tags must not survive to be completed by later markup
+            ("<img src=x onerror=alert(apiKey)", ""),
+            ("text <script>evil", "text  evil"),
+            ("<img src=x onerror=alert(1)\nafter", "after"),
+            ("<div\n<span", ""),
+        ],
+    )
+    def test_get_last_line(self, txt, expected):
+        result = postproc.get_last_line(txt)
+        assert result == expected
+        assert "<" not in result
+
+    def test_get_last_line_truncates(self):
+        result = postproc.get_last_line("x" * 200)
+        assert len(result) == 150
+        assert result.endswith("...")
+
+
 class TestCleanupList:
     @staticmethod
     def _create_file(path):
