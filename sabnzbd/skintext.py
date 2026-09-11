@@ -867,6 +867,7 @@ SKIN_TEXT = {
     "Glitter-sessionExpires": TT("Expires"),  #: Column: when the session expires
     "Glitter-sessionIP": TT("IP address"),  #: Column: where the session is used from
     "Glitter-sessionDevice": TT("Device"),  #: Column: the browser/user-agent of the session
+    "Glitter-sessionRevoke": TT("Revoke"),  #: Accessible name for the icon-only revoke button
     "Glitter-sessionRevokeAll": TT("Revoke all sessions"),  #: Button: sign out every session
     "Glitter-sessionRevokeAllConfirm": TT("This signs out every device, including this one."),
     "Glitter-backToQueue": TT("Send back to queue"),

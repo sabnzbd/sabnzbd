@@ -67,13 +67,21 @@ class SessionStore:
         """The entries whose expiry is still in the future"""
         return {token: s for token, s in sessions.items() if s["expires"] > now}
 
+    def _prune_and_persist(self, before: dict[str, Session], now: int):
+        """Adopt the still-valid entries; persist if any were dropped, so an expired
+        session's IP/user-agent does not linger on disk until something else writes"""
+        live = self._unexpired(before, now)
+        self._sessions = live
+        if len(live) != len(before):
+            self._save()
+
     def _load(self):
         self._sessions = {}
         try:
             if data := load_admin(SESSIONS_FILE_NAME, silent=True):
                 version, sessions = data
                 if version == SESSIONS_VERSION:
-                    self._sessions = self._unexpired(sessions, int(time.time()))
+                    self._prune_and_persist(sessions, int(time.time()))
         except Exception:
             logging.info("Failed to load sessions", exc_info=True)
 
@@ -127,7 +135,7 @@ class SessionStore:
 
     def public_list(self) -> list[dict[str, Any]]:
         """Live sessions for the web-UI, newest activity first, without the token hash"""
-        now = int(time.time())
+        self._prune_and_persist(self.sessions, int(time.time()))
         sessions = [
             {
                 "id": public_session_id(token_hash),
@@ -137,6 +145,6 @@ class SessionStore:
                 "ip": s["ip"],
                 "user_agent": s["user_agent"],
             }
-            for token_hash, s in self._unexpired(self.sessions, now).items()
+            for token_hash, s in self._sessions.items()
         ]
         return sorted(sessions, key=lambda s: s["last_seen"], reverse=True)

@@ -98,6 +98,39 @@ class TestSessionStore:
         )
         assert [s["ip"] for s in session_store.public_list()] == ["1.1.1.1"]
 
+    def test_public_list_purges_expired_from_disk(self, session_store):
+        """A session that expires while nothing else writes must not linger on disk"""
+        now = int(time.time())
+        live, dead = "1" * 64, "2" * 64
+        session_store.add(live, now, now + 2000, "fp", "1.1.1.1", "agent")
+        session_store.add(dead, now, now + 50, "fp", "2.2.2.2", "agent")  # persisted while still valid
+        session_store._sessions[dead]["expires"] = now - 10  # time passes, nothing else writes
+
+        session_store.public_list()
+
+        _, persisted = sessionstore.load_admin(sessionstore.SESSIONS_FILE_NAME, silent=True)
+        assert dead not in persisted
+        assert live in persisted
+
+    def test_load_purges_a_stale_file(self, session_store):
+        """A record left over from a previous run, expired by the time it is next
+        loaded, must be dropped from the file too - not just filtered in memory"""
+        now = int(time.time())
+        live, dead = "3" * 64, "4" * 64
+        session_store.add(live, now, now + 2000, "fp", "1.1.1.1", "agent")
+        # Write the stale record straight to disk, bypassing the store's own pruning
+        raw = dict(session_store.sessions)
+        raw[dead] = sessionstore.Session(
+            created=0, expires=now - 10, last_seen=0, cred_fingerprint="fp", ip="9.9.9.9", user_agent="dead"
+        )
+        sessionstore.save_admin((sessionstore.SESSIONS_VERSION, raw), sessionstore.SESSIONS_FILE_NAME)
+
+        sessionstore.SessionStore().get(live)  # a fresh instance, loading that file
+
+        _, persisted = sessionstore.load_admin(sessionstore.SESSIONS_FILE_NAME, silent=True)
+        assert dead not in persisted
+        assert live in persisted
+
     def test_delete_by_id(self, session_store):
         now = int(time.time())
         token_hash = "c" * 64

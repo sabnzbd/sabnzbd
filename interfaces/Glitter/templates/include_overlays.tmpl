@@ -874,7 +874,7 @@
                                 <td data-bind="text: displayDateTime(created, \$root.dateFormat(), 'X')"></td>
                                 <td data-bind="text: displayDateTime(last_seen, \$root.dateFormat(), 'X')"></td>
                                 <td data-bind="text: displayDateTime(expires, \$root.dateFormat(), 'X')"></td>
-                                <td><a href="#" data-bind="click: \$root.revokeSession" class="hover-button"><span class="glyphicon glyphicon-trash"></span></a></td>
+                                <td><a href="#" data-bind="click: \$root.revokeSession" class="hover-button" aria-label="$T('Glitter-sessionRevoke')"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                         </tbody>
                     </table>

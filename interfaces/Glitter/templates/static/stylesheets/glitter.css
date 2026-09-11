@@ -2122,7 +2122,8 @@ input[name="nzbURL"] {
 
 @media screen and (min-width: 768px) {
     #modal-sessions .modal-dialog {
-        width: 860px;
+        width: 95%;
+        max-width: 1100px;
     }
 
     .modal-small .modal-dialog {

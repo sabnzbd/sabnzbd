@@ -389,9 +389,12 @@ def _validate_session(request: Request) -> bool:
         sabnzbd.SessionStore.delete(token_hash)
         return False
 
+    # Kept current on every request without an extra lookup; only the disk write
+    # (expiry, IP, user-agent) below is throttled
+    session["last_seen"] = now
+
     # Slide the idle timeout forward (never past the deadline). Persist that, plus the
-    # client IP/user-agent, on a real expiry gain or when the client moved; last_seen is
-    # only as fresh as the last such write.
+    # client IP/user-agent, on a real expiry gain or when the client moved.
     ip, user_agent = session_client_info(request)
     new_expires = max(session["expires"], min(now + SESSION_DURATION, session["created"] + SESSION_MAX_AGE))
     if (
