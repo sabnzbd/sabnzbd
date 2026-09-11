@@ -840,3 +840,27 @@
         </div>
     </div>
 </div>
+
+<div id="modal-custom-unpause" class="modal modal-small fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-custom-unpause-title">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-custom-unpause-title">$T('Glitter-unpauseFor')</h4>
+            </div>
+            <div class="modal-body">
+                <form data-bind="submit: saveCustomUnpause">
+                    <div class="form-group">
+                        <label for="customUnpauseInput">$T('Glitter-unpausePrompt')</label>
+                        <input type="text" id="customUnpauseInput" class="form-control" data-bind="textInput: unpauseCustom" placeholder="'50min', '3 hours', '20:00' $T('or') 'tomorrow 7pm'" />
+                    </div>
+                    <div id="customUnpauseOutput" class="text-muted"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> $T('cancel')</button>
+                <button type="button" class="btn btn-default disabled" data-bind="click: saveCustomUnpause"><span class="glyphicon glyphicon-ok"></span> $T('rss-accept')</button>
+            </div>
+        </div>
+    </div>
+</div>

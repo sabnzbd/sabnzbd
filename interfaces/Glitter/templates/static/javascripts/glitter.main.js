@@ -31,6 +31,7 @@ function ViewModel() {
     self.speedMetric = ko.observable();
     self.bandwithLimit = ko.observable(false);
     self.pauseCustom = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
+    self.unpauseCustom = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
     self.speedLimit = ko.observable(100).extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
     self.speedLimitInt = ko.observable(false); // We need the 'internal' counter so we don't trigger the API all the time
     self.downloadsPaused = ko.observable(false);
@@ -299,6 +300,28 @@ function ViewModel() {
                 // Set title with pause information
                 self.title(timeString + ' - SABnzbd')
             }
+        } else if (response.queue.resume_int !== '0') {
+            // Temporary resume, re-pause countdown
+            var resumeSplit = response.queue.resume_int.split(/:/);
+            var seconds = parseInt(resumeSplit[0]) * 60 + parseInt(resumeSplit[1]);
+            var hours = Math.floor(seconds / 3600);
+            var minutes = Math.floor((seconds -= hours * 3600) / 60);
+            seconds -= minutes * 60;
+
+            // Add leading zeros
+            if (minutes < 10) minutes = '0' + minutes;
+            if (seconds < 10) seconds = '0' + seconds;
+
+            // Final formatting
+            timeString = glitterTranslate.pausingIn + ' ' + rewriteTime(hours + ":" + minutes + ":" + seconds);
+
+            // Add info about amount of download (if actually downloading)
+            if (response.queue.noofslots > 0 && parseInt(self.queueDataLeft()) > 0) {
+                self.title(timeString + ' - ' + self.queueDataLeft() + ' ' + glitterTranslate.left + ' - SABnzbd')
+            } else {
+                // Set title with pause information
+                self.title(timeString + ' - SABnzbd')
+            }
         } else if (response.queue.noofslots > 0 && parseInt(self.queueDataLeft()) > 0) {
             // Set title only if we are actually downloading something..
             self.title(self.speedText() + ' - ' + self.queueDataLeft() + ' ' + glitterTranslate.left + ' - SABnzbd')
@@ -421,91 +444,133 @@ function ViewModel() {
         self.downloadsPaused(true);
     };
 
-    // Open modal
-    self.openCustomPauseTime = function() {
-        // Was it loaded already?
-        if (!Date.i18n) {
-            jQuery.getScript(dateScriptUrl).then(function() {
-                // After loading we start again
-                self.openCustomPauseTime()
-            })
-            return;
-        }
-        // Show modal
-        $('#modal-custom-pause').modal('show')
-    }
+    // Shared setup for the custom pause/unpause time modals: parse free text into minutes
+    function setupCustomTimeModal(opts) {
+        $(opts.modal).on('shown.bs.modal', function() {
+            // Focus on the input field when opening the modal
+            $(opts.input).focus()
+        }).on('hide.bs.modal', function() {
+            // Reset on modal close
+            opts.observable('');
+        })
 
-    $('#modal-custom-pause').on('shown.bs.modal', function() {
-        // Focus on the input field when opening the modal
-        $('#customPauseInput').focus()
-    }).on('hide.bs.modal', function() {
-        // Reset on modal close
-        self.pauseCustom('');
-    })
-
-    // Update on changes
-    self.pauseCustom.subscribe(function(newValue) {
-        // Is it plain numbers?
-        if (newValue.match(/^\s*\d+\s*$/)) {
-            // Treat it as a number of minutes
-            newValue += "minutes";
-        }
-
-        // At least 3 charaters
-        if (newValue.length < 3) {
-            $('#customPauseOutput').text('').data('time', 0)
-            $('#modal-custom-pause .btn-default').addClass('disabled')
-            return;
-        }
-
-        // Fix DateJS bug it has some strange problem with the current day-of-month + 1
-        // Removing the space makes DateJS work properly
-        newValue = newValue.replace(/\s*h|\s*m|\s*d/g, function(match) {
-            return match.trim()
-        });
-
-        // Parse
-        var pauseParsed = Date.parse(newValue);
-
-        // Did we get it?
-        if (pauseParsed) {
-            // Is it just now?
-            if (pauseParsed <= Date.parse('now')) {
-                // Try again with the '+' in front, the parser doesn't get 100min
-                pauseParsed = Date.parse('+' + newValue);
+        // Update on changes
+        opts.observable.subscribe(function(newValue) {
+            // Is it plain numbers?
+            if (newValue.match(/^\s*\d+\s*$/)) {
+                // Treat it as a number of minutes
+                newValue += "minutes";
             }
 
-            // Calculate difference in minutes and save
-            var pauseDuration = Math.round((pauseParsed - Date.parse('now')) / 1000 / 60);
-            $('#customPauseOutput').html('<span class="glyphicon glyphicon-pause"></span> ' + glitterTranslate.pauseFor + ' ' + pauseDuration + ' ' + glitterTranslate.minutes)
-            $('#customPauseOutput').data('time', pauseDuration)
-            $('#modal-custom-pause .btn-default').removeClass('disabled')
-        } else if (newValue) {
-            // No..
-            $('#customPauseOutput').text(glitterTranslate.pausePromptFail)
-            $('#modal-custom-pause .btn-default').addClass('disabled')
-        }
-    })
+            // At least 3 characters
+            if (newValue.length < 3) {
+                $(opts.output).text('').data('time', 0)
+                $(opts.modal + ' .btn-default').addClass('disabled')
+                return;
+            }
 
-    // Save custom pause
-    self.saveCustomPause = function() {
-        // Get duration
-        var pauseDuration = $('#customPauseOutput').data('time');
-
-        // If in the future
-        if (pauseDuration > 0) {
-            callAPI({
-                mode: 'config',
-                name: 'set_pause',
-                value: pauseDuration
-            }).then(function() {
-                // Refresh and close the modal
-                self.refresh()
-                self.downloadsPaused(true);
-                $('#modal-custom-pause').modal('hide')
+            // Fix DateJS bug it has some strange problem with the current day-of-month + 1
+            // Removing the space makes DateJS work properly
+            newValue = newValue.replace(/\s*h|\s*m|\s*d/g, function(match) {
+                return match.trim()
             });
-        }
+
+            // Parse
+            var parsed = Date.parse(newValue);
+
+            // Did we get it?
+            if (parsed) {
+                // Is it just now?
+                if (parsed <= Date.parse('now')) {
+                    // Try again with the '+' in front, the parser doesn't get 100min
+                    parsed = Date.parse('+' + newValue);
+                }
+
+                // Calculate difference in minutes and save
+                var duration = Math.round((parsed - Date.parse('now')) / 1000 / 60);
+                $(opts.output).html('<span class="glyphicon ' + opts.glyphicon + '"></span> ' + glitterTranslate[opts.labelKey] + ' ' + duration + ' ' + glitterTranslate.minutes)
+                $(opts.output).data('time', duration)
+                $(opts.modal + ' .btn-default').removeClass('disabled')
+            } else if (newValue) {
+                // No.. clear the stored time so a stale duration can't be submitted
+                $(opts.output).text(glitterTranslate.pausePromptFail).data('time', 0)
+                $(opts.modal + ' .btn-default').addClass('disabled')
+            }
+        })
+
+        return {
+            // Lazy-load DateJS if needed, then show the modal
+            open: function open() {
+                if (!Date.i18n) {
+                    jQuery.getScript(dateScriptUrl).then(open)
+                    return;
+                }
+                $(opts.modal).modal('show')
+            },
+            // Save the parsed duration and close
+            save: function() {
+                var duration = $(opts.output).data('time');
+                if (duration > 0) {
+                    callAPI({
+                        mode: 'config',
+                        name: 'set_pause',
+                        value: opts.sign * duration
+                    }).then(function() {
+                        self.refresh()
+                        self.downloadsPaused(opts.paused);
+                        $(opts.modal).modal('hide')
+                    });
+                }
+            }
+        };
     }
+
+    var customPause = setupCustomTimeModal({
+        modal: '#modal-custom-pause',
+        input: '#customPauseInput',
+        output: '#customPauseOutput',
+        observable: self.pauseCustom,
+        glyphicon: 'glyphicon-pause',
+        labelKey: 'pauseFor',
+        sign: 1,
+        paused: true
+    });
+    self.openCustomPauseTime = customPause.open;
+    self.saveCustomPause = customPause.save;
+
+    // Set unpause timer
+    self.unpauseTime = function(item, event) {
+        callAPI({
+            mode: 'config',
+            name: 'set_pause',
+            value: -$(event.currentTarget).data('time')
+        }).then(self.refresh);
+        self.downloadsPaused(false);
+    };
+
+    var customUnpause = setupCustomTimeModal({
+        modal: '#modal-custom-unpause',
+        input: '#customUnpauseInput',
+        output: '#customUnpauseOutput',
+        observable: self.unpauseCustom,
+        glyphicon: 'glyphicon-play',
+        labelKey: 'unpauseFor',
+        sign: -1,
+        paused: false
+    });
+    self.openCustomUnpauseTime = customUnpause.open;
+    self.saveCustomUnpause = customUnpause.save;
+
+    // Unpause until the queue is empty
+    self.unpauseUntilEmpty = function() {
+        // Only when there's non-paused data to download (matches the server's is_empty no-op);
+        // let the refresh reflect the real state rather than optimistically flipping the icon
+        if (!self.queueDataLeft()) return;
+        callAPI({
+            mode: 'config',
+            name: 'unpause_until_empty'
+        }).then(self.refresh);
+    };
 
     // Update the warnings
     self.nrWarnings.subscribe(function(newValue) {

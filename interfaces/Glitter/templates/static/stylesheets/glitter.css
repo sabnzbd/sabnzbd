@@ -2301,6 +2301,12 @@ a:focus {
     background-color: var(--clr-border-subtle);
 }
 
+.dropdown-menu > .disabled > a,
+.dropdown-menu > .disabled > a:hover,
+.dropdown-menu > .disabled > a:focus {
+    color: var(--clr-text-muted);
+}
+
 .tooltip {
     z-index: 5000;
 }

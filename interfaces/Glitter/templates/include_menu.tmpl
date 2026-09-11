@@ -13,10 +13,11 @@
                 <button type="button" class="btn btn-default navbar-btn" data-bind="click: pauseToggle, attr: { 'title': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')', 'aria-label': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')' }">
                     <span class="glyphicon" data-bind="css: { 'glyphicon-play' : downloadsPaused(), 'glyphicon-pause' : !downloadsPaused() }"></span>
                 </button>
-                <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" aria-label="$T('pauseFor')" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" data-bind="attr: { 'aria-label': downloadsPaused() ? '$T('unpauseFor')' : '$T('pauseFor')' }" aria-haspopup="true" aria-expanded="false">
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
+                    <!-- ko if: !downloadsPaused() -->
                     <li><a href="#" data-time="5" data-bind="click: pauseTime">$T('Glitter-pause5m')</a></li>
                     <li><a href="#" data-time="15" data-bind="click: pauseTime">$T('Glitter-pause15m')</a></li>
                     <li><a href="#" data-time="30" data-bind="click: pauseTime">$T('Glitter-pause30m')</a></li>
@@ -25,6 +26,18 @@
                     <li><a href="#" data-time="360" data-bind="click: pauseTime">$T('Glitter-pause6h')</a></li>
                     <li class="divider"></li>
                     <li><a href="#" data-bind="click: openCustomPauseTime">$T('Glitter-custom')</a></li>
+                    <!-- /ko -->
+                    <!-- ko if: downloadsPaused() -->
+                    <li><a href="#" data-time="5" data-bind="click: unpauseTime">$T('Glitter-unpause5m')</a></li>
+                    <li><a href="#" data-time="15" data-bind="click: unpauseTime">$T('Glitter-unpause15m')</a></li>
+                    <li><a href="#" data-time="30" data-bind="click: unpauseTime">$T('Glitter-unpause30m')</a></li>
+                    <li><a href="#" data-time="60" data-bind="click: unpauseTime">$T('Glitter-unpause1h')</a></li>
+                    <li><a href="#" data-time="180" data-bind="click: unpauseTime">$T('Glitter-unpause3h')</a></li>
+                    <li><a href="#" data-time="360" data-bind="click: unpauseTime">$T('Glitter-unpause6h')</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#" data-bind="click: openCustomUnpauseTime">$T('Glitter-custom')</a></li>
+                    <li data-bind="css: { 'disabled': !queueDataLeft() }"><a href="#" data-bind="click: unpauseUntilEmpty, attr: { 'title': queueDataLeft() ? '' : '$T('Glitter-unpauseUntilEmptyDisabled')' }">$T('Glitter-unpauseUntilEmpty')</a></li>
+                    <!-- /ko -->
                 </ul>
                 <span class="btn btn-default navbar-btn navbar-timeleft" data-bind="text: timeLeft" data-toggle="dropdown">0:00</span>
             </div>
