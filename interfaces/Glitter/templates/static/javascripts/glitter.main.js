@@ -7,6 +7,7 @@ function ViewModel() {
     self.queue = new QueueListModel(this);
     self.history = new HistoryListModel(this);
     self.filelist = new Fileslisting(this);
+    self.nzbsearch = new NzbSearchModel(this);
 
     // Set status varibales
     self.isRestarting = ko.observable(false);
@@ -675,6 +676,12 @@ function ViewModel() {
     // default to url input when modal is shown
     $('#modal-add-nzb').on('shown.bs.modal', function() {
       $('input[name="nzbURL"]').focus();
+    })
+
+    // Load indexer capabilities lazily and focus the query box when Search opens
+    $('#modal-nzbsearch').on('shown.bs.modal', function() {
+      self.nzbsearch.loadCapabilities();
+      $('#modal-nzbsearch .nzbsearch-query input').focus();
     })
 
     // From the upload or filedrop

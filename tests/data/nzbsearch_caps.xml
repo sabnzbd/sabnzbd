@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caps>
+  <server version="1.1" title="Example" strapline="Example newznab" email="info@example.com" url="https://example.com/" image="https://example.com/logo.png"/>
+  <limits max="100" default="50"/>
+  <registration available="no" open="yes"/>
+  <searching>
+    <search available="yes" supportedParams="q"/>
+    <tv-search available="yes" supportedParams="q,rid,tvdbid,season,ep"/>
+    <movie-search available="yes" supportedParams="q,imdbid"/>
+    <audio-search available="no" supportedParams="q"/>
+    <book-search available="no" supportedParams="q"/>
+  </searching>
+  <categories>
+    <category id="2000" name="Movies">
+      <subcat id="2030" name="SD"/>
+      <subcat id="2040" name="HD"/>
+      <subcat id="2045" name="UHD"/>
+    </category>
+    <category id="5000" name="TV">
+      <subcat id="5030" name="SD"/>
+      <subcat id="5040" name="HD"/>
+      <subcat id="5070" name="Anime"/>
+    </category>
+  </categories>
+</caps>

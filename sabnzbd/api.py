@@ -108,6 +108,7 @@ from sabnzbd.nzb import NzbObject, TryList
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.emailer
 import sabnzbd.sorting
+import sabnzbd.nzbsearch
 
 # Type handler shorthands
 SyncHandler: TypeAlias = Callable[[str, QueryParams], Response]
@@ -212,6 +213,8 @@ def _api_set_config(name: str, kwargs: QueryParams) -> Response:
         keyword = handle_cat_api(kwargs)
     elif kwargs.get("section") == "sorters":
         keyword = handle_sorter_api(kwargs)
+    elif kwargs.get("section") == "indexers":
+        keyword = handle_indexer_api(kwargs)
     else:
         res = config.set_config(kwargs)
         if not res:
@@ -931,6 +934,47 @@ def _api_rss_now(name: str, kwargs: QueryParams) -> Response:
     return report(kwargs)
 
 
+async def _api_nzbsearch(name: str, kwargs: QueryParams) -> Response:
+    """API: search the configured newznab indexers (fans out concurrently).
+    Params: q (or text), cat, maxage, offset, limit, indexers"""
+    query = kwargs.get("q") or kwargs.get("text") or name or ""
+    data = await sabnzbd.nzbsearch.search_indexers(
+        query,
+        categories=clean_comma_separated_list(kwargs.get("cat")),
+        maxage=int_conv(kwargs.get("maxage")),
+        offset=int_conv(kwargs.get("offset")),
+        limit=int_conv(kwargs.get("limit")),
+        indexer_names=clean_comma_separated_list(kwargs.get("indexers")) or None,
+    )
+    return report(kwargs, keyword="nzbsearch", data=data)
+
+
+async def _api_nzbsearch_caps(name: str, kwargs: QueryParams) -> Response:
+    """API: return the merged newznab category tree and configured indexers"""
+    data = {
+        "categories": await sabnzbd.nzbsearch.category_tree(
+            clean_comma_separated_list(kwargs.get("indexers")) or None
+        ),
+        "indexers": config.get_ordered_indexers(),
+    }
+    return report(kwargs, keyword="nzbsearch", data=data)
+
+
+def _api_nzbsearch_test(value: str, kwargs: QueryParams) -> Response:
+    """API: test an indexer by fetching its capabilities"""
+    name = kwargs.get("keyword") or kwargs.get("name") or value
+    conf = config.get_config("indexers", name)
+    if not conf:
+        return report(kwargs, _MSG_NO_ITEM)
+    try:
+        indexer = sabnzbd.nzbsearch.Indexer.from_config(conf)
+        caps = sabnzbd.nzbsearch.get_caps(indexer, refresh=True)
+        message = T("Connected - %s categories available") % len(caps.categories)
+        return report(kwargs, data={"result": True, "message": message})
+    except sabnzbd.nzbsearch.IndexerError as err:
+        return report(kwargs, data={"result": False, "message": str(err)})
+
+
 def _api_retry_all(name: str, kwargs: QueryParams) -> Response:
     """API: Retry all failed items in History"""
     with sabnzbd.db_pool.connection() as history_db:
@@ -1173,6 +1217,10 @@ _api_table: ApiHandlerTable = {
     ("resume_pp", ""): ApiEntry(_api_resume_pp, 2),
     ("pause_pp", ""): ApiEntry(_api_pause_pp, 2),
     ("rss_now", ""): ApiEntry(_api_rss_now, 2),
+    # mode=nzbsearch
+    ("nzbsearch", ""): ApiEntry(_api_nzbsearch, 2),
+    ("nzbsearch", "caps"): ApiEntry(_api_nzbsearch_caps, 2),
+    ("nzbsearch", "test"): ApiEntry(_api_nzbsearch_test, 3, config_locked=True),
     ("browse", ""): ApiEntry(_api_browse, 3),
     ("retry_all", ""): ApiEntry(_api_retry_all, 2),
     ("reset_quota", ""): ApiEntry(_api_reset_quota, 3),
@@ -1363,6 +1411,24 @@ def handle_sorter_api(kwargs: QueryParams) -> Optional[str]:
         sorter.set_dict(kwargs)
     else:
         config.ConfigSorter(name, kwargs)
+    return name
+
+
+def handle_indexer_api(kwargs: QueryParams) -> Optional[str]:
+    """Special handler for API-call 'set_config' [indexers]"""
+    name = kwargs.get("keyword")
+    if not name:
+        name = kwargs.get("name")
+    if not name:
+        return None
+
+    indexer = config.get_config("indexers", name)
+    if indexer:
+        indexer.set_dict(kwargs)
+    else:
+        config.ConfigIndexer(name, kwargs)
+    # Host/apikey may have changed - drop cached capabilities for this indexer
+    sabnzbd.nzbsearch.invalidate_caps(name)
     return name
 
 
@@ -2200,6 +2266,7 @@ _PLURAL_TO_SINGLE = {
     "categories": "category",
     "servers": "server",
     "rss": "feed",
+    "indexers": "indexer",
     "scripts": "script",
     "warnings": "warning",
     "files": "file",
@@ -2217,7 +2284,7 @@ def plural_to_single(kw, def_kw=""):
 def del_from_section(kwargs: QueryParams) -> bool:
     """Remove keyword in section"""
     section = kwargs.get("section", "")
-    if section in ("sorters", "servers", "rss", "categories"):
+    if section in ("sorters", "servers", "rss", "categories", "indexers"):
         keyword = kwargs.get("keyword")
         if keyword:
             item = config.get_config(section, keyword)
@@ -2227,6 +2294,8 @@ def del_from_section(kwargs: QueryParams) -> bool:
                 config.save_config()
                 if section == "servers":
                     sabnzbd.Downloader.update_server(keyword, None)
+                elif section == "indexers":
+                    sabnzbd.nzbsearch.invalidate_caps(keyword)
         return True
     else:
         return False

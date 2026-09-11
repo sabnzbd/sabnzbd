@@ -580,6 +580,109 @@
     </div>
 </div>
 
+<div id="modal-nzbsearch" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-nzbsearch-title">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-nzbsearch-title">
+                    $T('Glitter-nzbsearchTitle')
+                    <span class="badge" data-bind="text: nzbsearch.totalFound, visible: nzbsearch.hasSearched"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <!-- ko if: nzbsearch.showNoIndexersNotice -->
+                <div class="alert alert-info">
+                    $T('Glitter-nzbsearchNoIndexers') <a href="./config/nzbsearch/">$T('cmenu-nzbsearch')</a>.
+                </div>
+                <!-- /ko -->
+
+                <form class="nzbsearch-form form-inline" data-bind="submit: nzbsearch.submit">
+                    <div class="input-group nzbsearch-query">
+                        <input type="text" class="form-control" placeholder="$T('Glitter-nzbsearchPlaceholder')"
+                               data-bind="textInput: nzbsearch.searchTerm" autocomplete="off" />
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-default" data-bind="disable: !nzbsearch.canSearch()">
+                                <span class="glyphicon glyphicon-search"></span> $T('Glitter-search')
+                            </button>
+                        </span>
+                    </div>
+                    <select class="form-control" data-bind="options: nzbsearch.categoryOptions, optionsValue: 'value',
+                            optionsText: 'label', value: nzbsearch.category"></select>
+                </form>
+
+                <div class="nzbsearch-status" data-bind="visible: nzbsearch.hasSearched">
+                    <span class="rotate-refresh" data-bind="visible: nzbsearch.isSearching">
+                        <span class="glyphicon glyphicon-refresh"></span> $T('Glitter-nzbsearchSearching')
+                    </span>
+                    <!-- ko foreach: nzbsearch.indexerStatus -->
+                    <span class="label" data-bind="text: \$root.nzbsearch.indexerStatusText(\$data),
+                          attr: { title: name }, css: { 'label-success': \$root.nzbsearch.indexerStatusOk(\$data),
+                          'label-warning': !\$root.nzbsearch.indexerStatusOk(\$data) }"></span>
+                    <!-- /ko -->
+                </div>
+
+                <div class="nzbsearch-results">
+                    <table class="table table-hover nzbsearch-table" data-bind="visible: nzbsearch.hasResults">
+                        <thead>
+                            <tr>
+                                <th>$T('name')</th>
+                                <th class="nzbsearch-col-size">$T('size')</th>
+                                <th class="nzbsearch-col-age">$T('nzo-age')</th>
+                                <th class="nzbsearch-col-cat">$T('category')</th>
+                                <th class="nzbsearch-col-indexer">$T('Glitter-nzbsearchIndexer')</th>
+                                <th class="nzbsearch-col-add"></th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: nzbsearch.results">
+                            <tr>
+                                <td class="nzbsearch-title">
+                                    <span data-bind="text: title, attr: { title: title }"></span>
+                                    <span class="glyphicon glyphicon-lock" data-bind="visible: hasPassword" title="$T('Glitter-nzbsearchPassword')"></span>
+                                    <a data-bind="visible: detailsUrl, attr: { href: detailsUrl }" target="_blank" rel="noopener">
+                                        <span class="glyphicon glyphicon-info-sign"></span>
+                                    </a>
+                                </td>
+                                <td class="nzbsearch-col-size" data-bind="text: sizeText"></td>
+                                <td class="nzbsearch-col-age" data-bind="text: ageText"></td>
+                                <td class="nzbsearch-col-cat" data-bind="text: category"></td>
+                                <td class="nzbsearch-col-indexer" data-bind="text: indexer"></td>
+                                <td class="nzbsearch-col-add">
+                                    <button class="btn btn-default btn-xs" data-bind="click: addToQueue,
+                                            disable: isAdding() || isAdded(), css: { 'btn-success': isAdded() }">
+                                        <!-- ko if: isAdded --><span class="glyphicon glyphicon-ok"></span> $T('rss-added')<!-- /ko -->
+                                        <!-- ko ifnot: isAdded --><span class="glyphicon glyphicon-plus"></span> $T('button-add')<!-- /ko -->
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="nzbsearch-empty" data-bind="visible: nzbsearch.hasSearched() && !nzbsearch.isSearching() && !nzbsearch.hasResults()">
+                        $T('empty')
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer nzbsearch-footer" data-bind="visible: nzbsearch.hasResults">
+                <div class="nzbsearch-add-cat form-inline">
+                    <label>$T('category')</label>
+                    <select class="form-control input-sm" data-bind="options: queue.categoriesList,
+                            optionsValue: 'catValue', optionsText: 'catText', optionsCaption: '',
+                            value: nzbsearch.addCategory"></select>
+                </div>
+                <div class="nzbsearch-pager">
+                    <button type="button" class="btn btn-default btn-sm" data-bind="click: nzbsearch.prevPage, disable: !nzbsearch.canPrevPage()">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </button>
+                    <span data-bind="text: nzbsearch.rangeText"></span>
+                    <button type="button" class="btn btn-default btn-sm" data-bind="click: nzbsearch.nextPage, disable: !nzbsearch.canNextPage()">
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="modal-item-files" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-item-files-title">
     <div class="modal-dialog">
         <div class="modal-content">

@@ -2011,6 +2011,86 @@ def config_sorting_toggle_sorter(request: Request):
     return base_redirect_response(_SORTING_ROOT)
 
 
+##############################################################################
+_NZBSEARCH_ROOT = "/config/nzbsearch"
+
+
+@secured_expose(route="/config/nzbsearch", check_configlock=True, methods=["GET"])
+def config_nzbsearch_index(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
+    conf["indexers"] = config.get_ordered_indexers()
+    conf["flash"] = request.session.pop("nzbsearch_flash", "")
+
+    # Suggest an unused name for the add form
+    num = 1
+    while ("indexer%s" % num) in config.get_indexers():
+        num += 1
+    conf["new_name"] = "Indexer%s" % num
+
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_nzbsearch.tmpl"),
+        search_list=conf,
+    )
+
+
+@secured_expose(route="/config/nzbsearch/add_indexer", check_configlock=True, methods=["POST"])
+def config_nzbsearch_add_indexer(request: Request):
+    params = request_params(request)
+    name = config.clean_section_name(Strip(params.get("name", "")) or "")
+    host = Strip(params.get("host"))
+    if name and host and not config.get_config("indexers", name):
+        kwargs = dict(params)
+        kwargs["host"] = host
+        config.ConfigIndexer(name, kwargs)
+        config.save_config()
+        sabnzbd.nzbsearch.invalidate_caps(name)
+    return base_redirect_response(_NZBSEARCH_ROOT)
+
+
+@secured_expose(route="/config/nzbsearch/save_indexer", check_configlock=True, methods=["POST"])
+def config_nzbsearch_save_indexer(request: Request):
+    params = request_params(request)
+    name = params.get("name")
+    indexer = config.get_config("indexers", name)
+    if indexer:
+        kwargs = dict(params)
+        # An unchecked checkbox is simply absent from the POST body
+        kwargs.setdefault("enable", 0)
+        indexer.set_dict(kwargs)
+        config.save_config()
+        sabnzbd.nzbsearch.invalidate_caps(name)
+    return base_redirect_response(_NZBSEARCH_ROOT)
+
+
+@secured_expose(route="/config/nzbsearch/toggle_indexer", check_configlock=True, methods=["POST"])
+def config_nzbsearch_toggle_indexer(request: Request):
+    indexer = config.get_config("indexers", request_params(request).get("name"))
+    if indexer:
+        indexer.enable.set(not indexer.enable())
+        config.save_config()
+    return base_redirect_response(_NZBSEARCH_ROOT)
+
+
+@secured_expose(route="/config/nzbsearch/del_indexer", check_configlock=True, methods=["POST"])
+def config_nzbsearch_del_indexer(request: Request):
+    del_from_section({"section": "indexers", "keyword": request_params(request).get("name")})
+    return base_redirect_response(_NZBSEARCH_ROOT)
+
+
+@secured_expose(route="/config/nzbsearch/test_indexer", check_configlock=True, methods=["POST"])
+def config_nzbsearch_test_indexer(request: Request):
+    """Fetch an indexer's capabilities and report the outcome as plain text (AJAX)."""
+    conf = config.get_config("indexers", request_params(request).get("name"))
+    if not conf:
+        return PlainTextResponse(T("Indexer not found"))
+    try:
+        indexer = sabnzbd.nzbsearch.Indexer.from_config(conf)
+        caps = sabnzbd.nzbsearch.get_caps(indexer, refresh=True)
+        return PlainTextResponse(T("Connected - %s categories available") % len(caps.categories))
+    except sabnzbd.nzbsearch.IndexerError as error:
+        return PlainTextResponse(str(error))
+
+
 def GetRssLog(feed):
     def make_item(entry: ResolvedEntry):
         # Make a copy
@@ -2548,11 +2628,19 @@ async def not_found_redirect(request: Request, exc):
 
 
 class CachedStaticFiles(StaticFiles):
-    """Static files the browser may hold indefinitely, as $url() versions every reference"""
+    """Static files the browser may hold indefinitely, as $url() versions every reference.
+
+    Development and pre-release builds revalidate instead: their `$url()` version is
+    the git commit, which does not change when the working tree is edited."""
+
+    _immutable = not bool(re.search(r"(alpha|beta|rc|dev)", sabnzbd.__version__, re.IGNORECASE))
 
     def file_response(self, *args, **kwargs) -> Response:
         response = super().file_response(*args, **kwargs)
-        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        if self._immutable:
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        else:
+            response.headers["Cache-Control"] = "no-cache"
         return response
 
 

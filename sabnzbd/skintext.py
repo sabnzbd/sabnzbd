@@ -143,6 +143,7 @@ SKIN_TEXT = {
     "cmenu-sorting": TT("Sorting"),  #: Main menu item
     "cmenu-special": TT("Special"),  #: Main menu item
     "cmenu-search": TT("Search"),  #: Main menu item
+    "cmenu-nzbsearch": TT("Search"),  #: Config menu item for the newznab indexer search
     # Main page
     "shutdownOK?": TT("Are you sure you want to shutdown SABnzbd?"),
     "link-pause": TT("Pause"),  #: Pause downloading
@@ -299,6 +300,11 @@ SKIN_TEXT = {
     "tuning": TT("Tuning"),
     "opt-rss_rate": TT("RSS Checking Interval"),
     "explain-rss_rate": TT("Checking interval (in minutes, at least 15). Not active when you use the Scheduler!"),
+    "explain-nzbsearch": TT("Configure the newznab indexers to search. Every enabled indexer is queried at once and their results are combined."),
+    "srch-host": TT("Indexer URL"),
+    "srch-apikey": TT("API Key"),
+    "srch-testFailed": TT("Test failed"),
+    "button-test": TT("Test"),  #: Button to test an indexer connection
     "opt-bandwidth_max": TT("Maximum line speed"),
     "opt-bandwidth_perc": TT("Percentage of line speed"),
     "explain-bandwidth_perc": TT("Which percentage of the linespeed should SABnzbd use, e.g. 50"),
@@ -825,6 +831,17 @@ SKIN_TEXT = {
     "Glitter-searchExplain": TT(
         "Search by name, or refine with filters <code>cat:</code>, <code>status:</code> and <code>priority:</code> (Queue). For example: <code>my show cat:tv</code>"
     ),  #: Explains the queue/history search box, shown as a tooltip
+    "Glitter-nzbsearchTitle": TT("Search indexers"),
+    "Glitter-nzbsearchPlaceholder": TT("Search your indexers…"),
+    "Glitter-nzbsearchSearching": TT("Searching…"),
+    "Glitter-nzbsearchIndexer": TT("Indexer"),
+    "Glitter-nzbsearchNoIndexers": TT("No indexers configured yet. Add one under"),
+    "Glitter-nzbsearchPassword": TT("Password protected"),
+    "Glitter-nzbsearchAllCategories": TT("All categories"),
+    "Glitter-nzbsearchAuth": TT("Auth failed"),
+    "Glitter-nzbsearchRateLimited": TT("Rate limited"),
+    "Glitter-nzbsearchOffline": TT("Unreachable"),
+    "Glitter-nzbsearchError": TT("Error"),
     "Glitter-multiOperations": TT("Multi-Operations"),
     "Glitter-multiSelect": TT("Hold shift key to select a range"),
     "Glitter-selectJob": TT("Select job"),

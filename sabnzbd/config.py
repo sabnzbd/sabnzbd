@@ -544,6 +544,59 @@ class ConfigServer:
         self.displayname.set(name)
 
 
+class ConfigIndexer:
+    """Class defining a single newznab search indexer"""
+
+    def __init__(self, name, values):
+        self.__name = clean_section_name(name)
+        name = "indexers," + self.__name
+
+        self.displayname = OptionStr(name, "displayname", add=False)
+        self.host = OptionStr(name, "host", add=False)
+        # "api_key", not "apikey": the latter collides with SABnzbd's own API auth parameter
+        self.api_key = OptionPassword(name, "api_key", add=False)
+        self.api_path = OptionStr(name, "api_path", "/api", add=False)
+        self.enable = OptionBool(name, "enable", True, add=False)
+        self.notes = OptionStr(name, "notes", add=False)
+
+        self.set_dict(values)
+        add_to_database("indexers", self.__name, self)
+
+    def set_dict(self, values: dict[str, Any]):
+        """Set one or more fields, passed as dictionary"""
+        for kw in ("displayname", "host", "api_key", "api_path", "enable", "notes"):
+            try:
+                value = values[kw]
+                getattr(self, kw).set(value)
+            except KeyError:
+                continue
+        if not self.displayname():
+            self.displayname.set(self.__name)
+
+    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
+        """Return a dictionary with all attributes"""
+        output_dict = {}
+        output_dict["name"] = self.__name
+        output_dict["displayname"] = self.displayname()
+        output_dict["host"] = self.host()
+        if for_public_api:
+            output_dict["api_key"] = self.api_key.get_stars()
+        else:
+            output_dict["api_key"] = self.api_key()
+        output_dict["api_path"] = self.api_path()
+        output_dict["enable"] = self.enable()
+        output_dict["notes"] = self.notes()
+        return output_dict
+
+    def delete(self):
+        """Remove from database"""
+        delete_from_database("indexers", self.__name)
+
+    def rename(self, name: str):
+        """Give indexer new display name"""
+        self.displayname.set(name)
+
+
 class ConfigCat:
     """Class defining a single category"""
 
@@ -759,7 +812,7 @@ class ConfigRSS:
 
 
 # Add typing to the options database-dict
-AllConfigTypes: TypeAlias = Option | ConfigCat | ConfigSorter | ConfigRSS | ConfigServer
+AllConfigTypes: TypeAlias = Option | ConfigCat | ConfigSorter | ConfigRSS | ConfigServer | ConfigIndexer
 
 
 class SABnzbdConfig(configobj.ConfigObj):
@@ -778,6 +831,7 @@ class SABnzbdConfig(configobj.ConfigObj):
         "rss": ConfigRSS,
         "servers": ConfigServer,
         "sorters": ConfigSorter,
+        "indexers": ConfigIndexer,
     }
 
     def __init__(self, *args, **kwargs):
@@ -1085,7 +1139,7 @@ class SABnzbdConfig(configobj.ConfigObj):
             elif section == "sorters":
                 data[section] = get_ordered_sorters()
             elif section in self.SPECIAL_SECTIONS.keys() - {"categories", "sorters"}:
-                # The remaining special sections (servers, rss) serialize as a list
+                # The remaining special sections (servers, rss, indexers) serialize as a list
                 data[section] = []
                 for keyword in sect.keys():
                     conf = self.get_dconfig(section, keyword, True)
@@ -1148,6 +1202,13 @@ class SABnzbdConfig(configobj.ConfigObj):
     def get_sorters(self) -> dict[str, ConfigSorter]:
         try:
             return self.database["sorters"]
+        except KeyError:
+            return {}
+
+    @synchronized()
+    def get_indexers(self) -> dict[str, ConfigIndexer]:
+        try:
+            return self.database["indexers"]
         except KeyError:
             return {}
 
@@ -1269,6 +1330,18 @@ def get_servers() -> dict[str, ConfigServer]:
 
 def get_sorters() -> dict[str, ConfigSorter]:
     return CONFIG.get_sorters()
+
+
+def get_indexers() -> dict[str, ConfigIndexer]:
+    return CONFIG.get_indexers()
+
+
+def get_ordered_indexers() -> list[dict]:
+    """Return indexers as a name-ordered list of dicts (apikey starred)"""
+    indexers = get_indexers()
+    result = [indexers[name].get_dict(for_public_api=True) for name in indexers]
+    result.sort(key=lambda indexer: indexer["name"])
+    return result
 
 
 def get_ordered_sorters() -> list[dict]:

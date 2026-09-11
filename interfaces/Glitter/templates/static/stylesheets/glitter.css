@@ -2706,6 +2706,112 @@ html[data-color-scheme="night" i] {
     }
 }
 
+/**
+    Newznab indexer search modal (#modal-nzbsearch)
+**/
+.nzbsearch-icon-svg {
+    display: inline-block;
+    width: 1.4em;
+    height: 1.4em;
+    margin-bottom: -4px;
+}
+
+.nzbsearch-form {
+    margin-bottom: 12px;
+}
+
+.nzbsearch-form .nzbsearch-query {
+    width: 65%;
+    max-width: 520px;
+    margin-right: 8px;
+}
+
+.nzbsearch-form select {
+    max-width: 220px;
+}
+
+.nzbsearch-status {
+    margin-bottom: 10px;
+    min-height: 20px;
+}
+
+.nzbsearch-status .label {
+    margin-right: 4px;
+    font-size: 90%;
+}
+
+.nzbsearch-results {
+    max-height: 45vh;
+    overflow-y: auto;
+}
+
+.nzbsearch-table {
+    table-layout: fixed;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.nzbsearch-table th {
+    font-weight: bold;
+}
+
+.nzbsearch-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--clr-modal-bg);
+    z-index: 1;
+}
+
+.nzbsearch-table .nzbsearch-title span {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
+.nzbsearch-col-size {
+    width: 90px;
+}
+
+.nzbsearch-col-age {
+    width: 60px;
+}
+
+.nzbsearch-col-cat {
+    width: 130px;
+}
+
+.nzbsearch-col-indexer {
+    width: 120px;
+}
+
+.nzbsearch-col-add {
+    width: 90px;
+    text-align: right;
+}
+
+.nzbsearch-empty {
+    padding: 20px 0;
+    opacity: 0.7;
+}
+
+.modal-footer.nzbsearch-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+}
+
+.nzbsearch-footer .nzbsearch-add-cat label {
+    margin-right: 6px;
+}
+
+.nzbsearch-pager span {
+    margin: 0 8px;
+}
+
 @media (prefers-color-scheme: dark) {
     html:not([data-color-scheme="light" i]) {
         /* Links and glyphicons inside links */

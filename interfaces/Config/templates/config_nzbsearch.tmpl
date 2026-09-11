@@ -1,0 +1,103 @@
+<!--#set global $pane="NzbSearch"#-->
+<!--#set global $help_uri = $confighelpuri + "nzbsearch"#-->
+<!--#include $webdir + "/_inc_header_uc.tmpl"#-->
+<div class="colmask">
+    <div class="section">
+        <div class="padTable">
+            <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+            <p>$T('explain-nzbsearch')</p>
+
+            <!--#if $flash#-->
+            <div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> $flash</div>
+            <!--#end if#-->
+
+            <!-- Add a new indexer -->
+            <form data-form="add-indexer" action="$url('config/nzbsearch/add_indexer')" method="post" autocomplete="off">
+                <table class="catTable">
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>$T('name')</th>
+                        <th>$T('srch-host')</th>
+                        <th>$T('srch-apikey')</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    <tr class="even">
+                        <td><input type="checkbox" name="enable" value="1" checked /></td>
+                        <td><input type="text" name="name" value="$new_name" size="10" /></td>
+                        <td><input type="text" name="host" placeholder="https://api.indexer.example" size="24" /></td>
+                        <td><input type="text" name="api_key" size="16" /></td>
+                        <td class="nowrap">
+                            <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-plus"></span> $T('button-add')</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+
+    <!-- Configured indexers -->
+    <div class="section">
+        <div class="padTable">
+            <!--#for $i, $indexer in enumerate($indexers)#-->
+            <form action="$url('config/nzbsearch/save_indexer')" method="post" autocomplete="off">
+                <input type="hidden" name="name" value="$indexer['name']" />
+                <table class="catTable">
+                    <!--#if $i == 0#-->
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>$T('name')</th>
+                        <th>$T('srch-host')</th>
+                        <th>$T('srch-apikey')</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    <!--#end if#-->
+                    <tr class="data-row">
+                        <td><input type="checkbox" name="enable" value="1" <!--#if $indexer['enable'] then 'checked="checked"' else ""#--> /></td>
+                        <td><input type="text" name="displayname" value="$indexer['displayname']" size="10" /></td>
+                        <td><input type="text" name="host" value="$indexer['host']" size="24" /></td>
+                        <td><input type="password" name="api_key" value="$indexer["api_key"]" size="14" autocomplete="new-password" /></td>
+                        <td class="nowrap">
+                            <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-ok"></span> $T('button-save')</button>
+                            <button type="button" class="btn btn-default testIndexer" data-name="$indexer['name']"><span class="glyphicon glyphicon-sort"></span> $T('button-test')</button>
+                            <button type="button" class="btn btn-default delIndexer"><span class="glyphicon glyphicon-trash"></span></button>
+                        </td>
+                    </tr>
+                    <tr class="data-row testResultRow" hidden>
+                        <td colspan="5"><span class="testResult" style="color:#999"></span></td>
+                    </tr>
+                </table>
+            </form>
+            <!--#end for#-->
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    jQuery('.delIndexer').click(function() {
+        if (confirm("$T('confirm')")) {
+            jQuery(this).closest("form").attr("action", "$url('config/nzbsearch/del_indexer')").submit();
+        }
+    });
+
+    jQuery('.testIndexer').click(function() {
+        var button = jQuery(this);
+        var table = button.closest('table');
+        table.find('.testResultRow').prop('hidden', false);
+        var result = table.find('.testResult').css('color', '#999').text('…');
+        button.prop('disabled', true);
+        jQuery.ajax({
+            type: "POST",
+            url: "$url('config/nzbsearch/test_indexer')",
+            data: { name: button.data('name') }
+        }).done(function(message) {
+            result.text(message);
+        }).fail(function() {
+            result.css('color', '#a94442').text("$T('srch-testFailed')");
+        }).always(function() {
+            button.prop('disabled', false);
+        });
+    });
+});
+</script>
+<!--#include $webdir + "/_inc_footer_uc.tmpl"#-->
