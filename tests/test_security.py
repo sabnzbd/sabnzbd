@@ -126,6 +126,8 @@ def store_session(
     token: str,
     expires_offset: int = security.SESSION_DURATION,
     created_offset: int = 0,
+    ip: str = "127.0.0.1",
+    user_agent: str = "",
 ):
     """Add a login session for token, valid for the credentials configured now"""
     now = int(time.time())
@@ -134,6 +136,8 @@ def store_session(
         now + created_offset,
         now + expires_offset,
         security.credential_fingerprint(),
+        ip,
+        user_agent,
     )
 
 
@@ -273,6 +277,48 @@ class TestSessionAuth:
         before = session_store.get(token_hash)["expires"]
         assert security.validate_session(mock_request("tok")) is True
         assert session_store.get(token_hash)["expires"] == before
+
+    @pytest.mark.config({"username": "user", "password": "pass"})
+    def test_last_seen_advances_even_without_a_persisted_touch(self, session_store, monkeypatch):
+        """An unchanged client (same IP/agent, expiry not yet due a refresh) still gets a
+        fresh last_seen, even though nothing is written to disk for it"""
+        store_session(session_store, "tok")
+        token_hash = security.hash_session_token("tok")
+        before = session_store.get(token_hash)["last_seen"]
+
+        real_time = time.time
+        monkeypatch.setattr(time, "time", lambda: real_time() + 5)
+        with patch.object(sabnzbd.SessionStore, "touch") as touch:
+            assert security.validate_session(mock_request("tok")) is True
+        touch.assert_not_called()
+        assert session_store.get(token_hash)["last_seen"] > before
+
+    @pytest.mark.config({"username": "user", "password": "pass"})
+    def test_session_touched_when_client_moves(self, session_store):
+        # Fresh expiry, so nothing would be rewritten on the sliding-window rule alone
+        store_session(session_store, "tok", ip="1.2.3.4", user_agent="old-agent")
+        token_hash = security.hash_session_token("tok")
+        request = mock_request("tok", headers={"User-Agent": "new-agent"})
+        assert security.validate_session(request) is True
+        session = session_store.get(token_hash)
+        assert session["ip"] == "127.0.0.1"
+        assert session["user_agent"] == "new-agent"
+        assert session["last_seen"] >= session["created"]
+
+    @pytest.mark.config({"username": "user", "password": "pass"})
+    def test_create_session_records_client(self, session_store):
+        request = mock_request(remote_ip="10.20.30.40", headers={"User-Agent": "Mozilla/5.0 tester"})
+        security.create_session(request, HTMLResponse(""))
+        (session,) = session_store.sessions.values()
+        assert session["ip"] == "10.20.30.40"
+        assert session["user_agent"] == "Mozilla/5.0 tester"
+
+    @pytest.mark.config({"username": "user", "password": "pass"})
+    def test_create_session_truncates_user_agent(self, session_store):
+        request = mock_request(headers={"User-Agent": "x" * 500})
+        security.create_session(request, HTMLResponse(""))
+        (session,) = session_store.sessions.values()
+        assert len(session["user_agent"]) == security.MAX_USER_AGENT_LENGTH
 
 
 class TestLoginRateLimiting:

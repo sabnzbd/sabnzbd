@@ -35,6 +35,7 @@ import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import utob
 from sabnzbd.misc import is_local_addr, is_loopback_addr, xff_trusted_networks
+from sabnzbd.sessionstore import MAX_USER_AGENT_LENGTH
 
 _MSG_MISSING_SESSION = "Access denied - Missing or invalid session token, reload the page and try again"
 _MSG_APIKEY_NOT_ON_PAGES = (
@@ -266,15 +267,23 @@ def hash_session_token(token: str) -> str:
     return hashlib.sha256(utob(token)).hexdigest()
 
 
+def session_client_info(request: Request) -> tuple[str, str]:
+    """The client IP and user-agent to store with a session"""
+    return client_address(request).host, request.headers.get("User-Agent", "")
+
+
 def create_session(request: Request, response: Response, remember_me: bool = False):
     """Create a login session and set the session cookie"""
     token = secrets.token_urlsafe(32)
     now = int(time.time())
+    ip, user_agent = session_client_info(request)
     sabnzbd.SessionStore.add(
         token_hash=hash_session_token(token),
         created=now,
         expires=now + SESSION_DURATION,
         cred_fingerprint=credential_fingerprint(),
+        ip=ip,
+        user_agent=user_agent,
     )
 
     max_age = SESSION_MAX_AGE if remember_me else None
@@ -380,11 +389,20 @@ def _validate_session(request: Request) -> bool:
         sabnzbd.SessionStore.delete(token_hash)
         return False
 
-    # Slide the idle timeout forward, never past the deadline and never backwards, and only
-    # when it gains real time
+    # Kept current on every request without an extra lookup; only the disk write
+    # (expiry, IP, user-agent) below is throttled
+    session["last_seen"] = now
+
+    # Slide the idle timeout forward (never past the deadline). Persist that, plus the
+    # client IP/user-agent, on a real expiry gain or when the client moved.
+    ip, user_agent = session_client_info(request)
     new_expires = max(session["expires"], min(now + SESSION_DURATION, session["created"] + SESSION_MAX_AGE))
-    if new_expires > session["expires"] + SESSION_REFRESH_THRESHOLD:
-        sabnzbd.SessionStore.touch(token_hash, new_expires)
+    if (
+        new_expires > session["expires"] + SESSION_REFRESH_THRESHOLD
+        or ip != session["ip"]
+        or user_agent[:MAX_USER_AGENT_LENGTH] != session["user_agent"]
+    ):
+        sabnzbd.SessionStore.touch(token_hash, new_expires, now, ip, user_agent)
 
     return True
 

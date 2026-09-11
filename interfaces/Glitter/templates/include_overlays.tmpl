@@ -840,3 +840,50 @@
         </div>
     </div>
 </div>
+
+<div id="modal-sessions" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-sessions-title">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <a href="#" data-bind="click: loadSessions, css: { 'rotate-refresh': !hasSessionInfo() }" title="$T('Glitter-interfaceRefresh')"><span class="glyphicon glyphicon-repeat"></span></a>
+                <h4 class="modal-title" id="modal-sessions-title">$T('Glitter-activeSessions')</h4>
+            </div>
+            <div class="modal-body">
+                <div class="col-loading" data-bind="visible: !hasSessionInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
+                <div data-bind="visible: hasSessionInfo">
+                    <!-- ko if: sessions().length == 0 -->
+                    <h4>$T('none')</h4>
+                    <!-- /ko -->
+                    <!-- ko if: sessions().length > 0 -->
+                    <table class="table table-hover table-striped table-sessions" aria-label="$T('Glitter-activeSessions')">
+                        <thead>
+                            <tr>
+                                <th>$T('Glitter-sessionDevice')</th>
+                                <th>$T('Glitter-sessionIP')</th>
+                                <th>$T('Glitter-sessionSignedIn')</th>
+                                <th>$T('Glitter-sessionLastSeen')</th>
+                                <th>$T('Glitter-sessionExpires')</th>
+                                <th style="width: 30px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: sessions">
+                            <tr>
+                                <td class="session-device" data-bind="text: user_agent || '$T('notAvailable')', attr: { title: user_agent }"></td>
+                                <td data-bind="text: ip || '$T('notAvailable')'"></td>
+                                <td data-bind="text: displayDateTime(created, \$root.dateFormat(), 'X')"></td>
+                                <td data-bind="text: displayDateTime(last_seen, \$root.dateFormat(), 'X')"></td>
+                                <td data-bind="text: displayDateTime(expires, \$root.dateFormat(), 'X')"></td>
+                                <td><a href="#" data-bind="click: \$root.revokeSession" class="hover-button" aria-label="$T('Glitter-sessionRevoke')"><span class="glyphicon glyphicon-trash"></span></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- /ko -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bind="click: revokeAllSessions, visible: hasSessionInfo"><span class="glyphicon glyphicon-log-out"></span> $T('Glitter-sessionRevokeAll')</button>
+            </div>
+        </div>
+    </div>
+</div>

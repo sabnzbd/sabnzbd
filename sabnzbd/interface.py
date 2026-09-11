@@ -500,6 +500,10 @@ def main_index(request: Request):
             and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(request, access_type=6)))
         )
 
+        # Shown whenever a login is configured, even where this request's own login is
+        # bypassed, so a LAN admin can still revoke external sessions
+        info["have_sessions"] = bool(cfg.username() and cfg.password())
+
         bytespersec_list = sabnzbd.BPSMeter.get_bps_list()
         info["bytespersec_list"] = ",".join([str(bps) for bps in bytespersec_list])
 
