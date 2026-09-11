@@ -1366,12 +1366,12 @@ def _rss_redirect(feed: str = "") -> RedirectResponse:
     return base_redirect_response(_RSS_ROOT)
 
 
-def _rss_flash_redirect(request: Request, feed: str, msg: str = "") -> RedirectResponse:
+def _rss_flash_redirect(request: Request, feed: str, errors: Optional[list[str]] = None) -> RedirectResponse:
     """Store a feed read-out result as a one-shot flash in the client session and
     redirect back to the RSS page. The flash lives in the per-client signed
     session cookie rather than shared module state, so concurrent requests (other
     tabs, the API path) can't clobber each other's result."""
-    request.session["rss_flash"] = {"feed": feed, "msg": msg}
+    request.session["rss_flash"] = {"feed": feed, "errors": errors or []}
     return _rss_redirect(feed)
 
 
@@ -1412,7 +1412,7 @@ def config_rss_index(request: Request):
         # re-evaluation is performed by the POST action handler that redirected
         # us, which leaves its result message as a one-shot flash in the session.
         flash = request.session.pop("rss_flash", None)
-        conf["error"] = flash["msg"] if flash and flash.get("feed") == active_feed else ""
+        conf["errors"] = flash["errors"] if flash and flash.get("feed") == active_feed else []
         conf["downloaded"], conf["matched"], conf["unmatched"] = GetRssLog(active_feed)
 
     # Find a unique new Feed name
@@ -1527,8 +1527,8 @@ def config_rss_add_rss_feed(request: Request):
             config.save_config()
             # Read out the new feed now (this handler runs in the threadpool) and
             # carry the result message to the redirected page via the session flash.
-            msg = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
-            return _rss_flash_redirect(request, feed, msg)
+            errors = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
+            return _rss_flash_redirect(request, feed, errors)
         else:
             return base_redirect_response(_RSS_ROOT)
     else:
@@ -1567,8 +1567,8 @@ def config_rss_download_rss_feed(request: Request):
     if not feed:
         return _rss_redirect()
     # Network read-out with forced download; this handler runs in the threadpool.
-    msg = sabnzbd.RSSReader.process_feed(feed, readout=True, download=True, force=True)
-    return _rss_flash_redirect(request, feed, msg)
+    errors = sabnzbd.RSSReader.process_feed(feed, readout=True, download=True, force=True)
+    return _rss_flash_redirect(request, feed, errors)
 
 
 @secured_expose(route="/config/rss/clean_rss_jobs", check_configlock=True, methods=["POST"])
@@ -1590,14 +1590,14 @@ def config_rss_test_rss_feed(request: Request):
     if not feed:
         return _rss_redirect()
     # Network read-out; this handler runs in the threadpool.
-    msg = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
+    errors = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
     # This endpoint is only called via AJAX; the client navigates to the feed
     # page itself once we return. Returning a redirect here would make the XHR
     # follow it transparently and consume the one-shot session flash before the
     # browser navigation can read it, so store the flash and return a plain
     # response instead.
-    request.session["rss_flash"] = {"feed": feed, "msg": msg}
-    return PlainTextResponse(msg)
+    request.session["rss_flash"] = {"feed": feed, "errors": errors}
+    return PlainTextResponse("\n".join(errors))
 
 
 @secured_expose(route="/config/rss/eval_rss_feed", check_configlock=True, methods=["POST"])

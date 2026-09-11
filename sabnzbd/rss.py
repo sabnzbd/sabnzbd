@@ -960,15 +960,19 @@ class RSSReader:
         ignore_first: bool = False,
         force: bool = False,
         readout: bool = True,
-    ) -> str:
-        """Run the query for one URI and apply filters"""
+    ) -> list[str]:
+        """Run the query for one URI and apply filters
+
+        Returns the problems that were encountered, if any.
+        """
         self.shutdown = False
 
         if not feed:
-            return "No such feed"
+            return ["No such feed"]
 
         new_links: set[str] = set()
         new_downloads: list[str] = []
+        errors: list[str] = []
 
         # Configuration
         try:
@@ -976,7 +980,7 @@ class RSSReader:
         except KeyError:
             logging.error(T('Incorrect RSS feed description "%s"'), feed)
             logging.info("Traceback: ", exc_info=True)
-            return T('Incorrect RSS feed description "%s"') % feed
+            return [T('Incorrect RSS feed description "%s"') % feed]
 
         uris = feeds.uri()
         filters = FeedConfig.from_config(feeds)
@@ -987,45 +991,43 @@ class RSSReader:
 
             # Fetch & parse RSS
             if readout:
-                gen = self.fetch_rss(feed, uris)
+                gen = self.fetch_rss(feed, uris, errors)
             else:
                 gen = repo.get_feed_jobs(feed=feed)
 
             # Evaluate rules and apply side effects
-            try:
-                for entry in gen:
-                    if self.shutdown:
-                        return ""
+            for entry in gen:
+                if self.shutdown:
+                    return []
 
-                    # Skip duplicates across multiple feeds
-                    if entry.link in new_links or (len(uris) > 1 and repo.is_duplicate(entry)):
-                        logging.info("Ignoring job %s from other feed", entry.title)
-                        continue
+                # Skip duplicates across multiple feeds
+                if entry.link in new_links or (len(uris) > 1 and repo.is_duplicate(entry)):
+                    logging.info("Ignoring job %s from other feed", entry.title)
+                    continue
 
-                    # Track all valid links so obsolete ones can be cleaned up later
-                    new_links.add(entry.link)
+                # Track all valid links so obsolete ones can be cleaned up later
+                new_links.add(entry.link)
 
-                    downloaded = self._process_entry(
-                        feed_entry=entry,
-                        filters=filters,
-                        first=first,
-                        download=download,
-                        force=force,
-                        readout=readout,
-                    )
-                    if downloaded:
-                        new_downloads.append(entry.title)
-            except RuntimeError as e:
-                return str(e)
+                downloaded = self._process_entry(
+                    feed_entry=entry,
+                    filters=filters,
+                    first=first,
+                    download=download,
+                    force=force,
+                    readout=readout,
+                )
+                if downloaded:
+                    new_downloads.append(entry.title)
 
             # Send email if wanted and not "forced"
             if new_downloads and cfg.email_rss() and not force:
                 emailer.rss_mail(feed, new_downloads)
 
-            if readout:
+            if readout and not errors:
                 repo.remove_obsolete(feed, new_links, purge_downloaded=True)
 
-        return ""
+        # Report every problem, not just the last one, but never the same one twice
+        return list(dict.fromkeys(errors))
 
     @staticmethod
     def patch_feedparser():
@@ -1075,8 +1077,11 @@ class RSSReader:
         feedparser_mixin._start_nzedb_attr = _start_newznab_attr
         feedparser_mixin._start_nntmux_attr = _start_newznab_attr
 
-    def fetch_rss(self, feed: str, uris: list[str]) -> Generator[ResolvedEntry, Any, None]:
-        """Fetch and parse RSS feeds for the given URIs."""
+    def fetch_rss(self, feed: str, uris: list[str], errors: list[str]) -> Generator[ResolvedEntry, Any, None]:
+        """Fetch and parse RSS feeds for the given URIs
+
+        Failures are collected in errors so the remaining URIs are still read out.
+        """
 
         with sabnzbd.rss.rss_repository() as repo:
             for uri in uris:
@@ -1094,21 +1099,14 @@ class RSSReader:
                     logging.debug("Finished parsing %s", uri)
 
                     status = feed_parsed.get("status", 999)
-                    if status in (401, 402, 403):
-                        raise RuntimeError(T("Do not have valid authentication for feed %s") % uri)
-                    elif 500 <= status <= 599:
-                        raise RuntimeError(
-                            T("Server side error (server code %s); could not get %s on %s") % (status, feed, uri)
-                        )
-
                     entries = feed_parsed.get("entries", [])
-                    if not entries and "feed" in feed_parsed and "error" in feed_parsed["feed"]:
-                        raise RuntimeError(
-                            T("Failed to retrieve RSS from %s: %s") % (uri, feed_parsed["feed"]["error"])
-                        )
-
-                    # Exception was thrown
-                    if "bozo_exception" in feed_parsed and not entries:
+                    if status in (401, 402, 403):
+                        msg = T("Do not have valid authentication for feed %s") % uri
+                    elif 500 <= status <= 599:
+                        msg = T("Server side error (server code %s); could not get %s on %s") % (status, feed, uri)
+                    elif not entries and "feed" in feed_parsed and "error" in feed_parsed["feed"]:
+                        msg = T("Failed to retrieve RSS from %s: %s") % (uri, feed_parsed["feed"]["error"])
+                    elif "bozo_exception" in feed_parsed and not entries:
                         msg = str(feed_parsed["bozo_exception"])
                         if "CERTIFICATE_VERIFY_FAILED" in msg:
                             msg = T("Server %s uses an untrusted HTTPS certificate") % get_base_url(uri)
@@ -1122,11 +1120,13 @@ class RSSReader:
                     if msg:
                         # We need to escape any "%20" that could be in the warning due to the URL's
                         helpful_warning(urllib.parse.unquote(msg))
-                        raise RuntimeError(msg)
+                        errors.append(msg)
+                        continue
                     elif not entries:
                         msg = T("RSS Feed %s was empty") % uri
                         logging.info(msg)
-                        raise RuntimeError(msg)
+                        errors.append(msg)
+                        continue
 
                     for entry in entries:
                         normalised = ResolvedEntry.from_feed_entry(feed, entry)
@@ -1140,7 +1140,7 @@ class RSSReader:
                 except (AttributeError, IndexError):
                     logging.info(T("Incompatible feed") + " " + uri)
                     logging.info("Traceback: ", exc_info=True)
-                    raise RuntimeError(T("Incompatible feed"))
+                    errors.append(T("Incompatible feed"))
 
     def _process_entry(
         self,
@@ -1231,23 +1231,25 @@ class RSSReader:
             if self.next_run < time.time():
                 self.next_run = time.time() + cfg.rss_rate() * 60
             feeds = config.get_rss()
-            try:
-                for feed in feeds:
-                    if feeds[feed].enable():
-                        logging.info('Starting scheduled RSS read-out for "%s"', feed)
-                        active = True
-                        self.process_feed(feed, download=True, ignore_first=True)
-                        # Wait 15 seconds, else sites may get irritated
-                        for _ in range(15):
-                            if self.shutdown:
-                                return
-                            else:
-                                time.sleep(1.0)
-            except (KeyError, RuntimeError):
-                # Feed must have been deleted
-                logging.info("RSS read-out crashed, feed must have been deleted or edited")
-                logging.debug("Traceback: ", exc_info=True)
-                pass
+            for feed in list(feeds):
+                try:
+                    if not feeds[feed].enable():
+                        continue
+                    logging.info('Starting scheduled RSS read-out for "%s"', feed)
+                    active = True
+                    self.process_feed(feed, download=True, ignore_first=True)
+                except Exception:
+                    # Feed must have been deleted, continue with the other feeds
+                    logging.info("RSS read-out crashed, feed must have been deleted or edited")
+                    logging.debug("Traceback: ", exc_info=True)
+                    continue
+
+                # Wait 15 seconds, else sites may get irritated
+                for _ in range(15):
+                    if self.shutdown:
+                        return
+                    else:
+                        time.sleep(1.0)
             if active:
                 logging.info("Finished scheduled RSS read-outs")
 
