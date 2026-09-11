@@ -94,6 +94,7 @@ import sabnzbd.lang as lang
 import sabnzbd.nzb
 import sabnzbd.nzbparser as nzbparser
 import sabnzbd.rss as rss
+import sabnzbd.nzbsearch
 import sabnzbd.emailer as emailer
 import sabnzbd.getipaddress
 import sabnzbd.newsunpack

@@ -791,6 +791,12 @@ h2.activeRSS {
     text-align: center;
     color: black !important;
 }
+
+/* Fixed width so the add-indexer form's spacer cell lines up with the
+   favicon column in the configured-indexers table below it */
+.nzbsearch-favicon-col {
+    width: 40px;
+}
 .source-icon span {
     top: -3px;
 }
@@ -1133,6 +1139,14 @@ input[type="checkbox"] {
 .rss-symbol {
     stroke: none;
     fill: white;
+}
+
+.nzbsearch-icon-svg {
+    display: inline-block;
+    margin-top: 1px;
+    margin-bottom: -1px;
+    width: 1em;
+    height: 1em;
 }
 
 .col2 table {
