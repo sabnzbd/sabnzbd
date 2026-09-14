@@ -1,6 +1,6 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-apprise==1.13.0
+apprise==1.13.1
 sabctools==9.7.1
 CT3==3.4.0.post5
 cffi==2.1.1
