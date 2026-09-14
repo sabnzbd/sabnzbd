@@ -1075,7 +1075,7 @@ msgstr "Échec de lecture du fichier de mot de passe %s"
 #. Warning message
 #: sabnzbd/misc.py
 msgid "Ignoring invalid entry in local_ranges: %s"
-msgstr ""
+msgstr "Entrée non valide dans local_ranges ignorée : %s"
 
 #. Warning message
 #: sabnzbd/misc.py
@@ -1083,11 +1083,15 @@ msgid ""
 "%s in local_ranges is not a private network, list it in xff_trusted_hosts to"
 " trust it"
 msgstr ""
+"%s dans local_ranges n'est pas un réseau privé, ajoutez-le dans "
+"xff_trusted_hosts pour le considérer comme fiable"
 
 #. Warning message
 #: sabnzbd/misc.py
 msgid "Ignoring invalid network in the forwarded-header trust list: %s"
 msgstr ""
+"Réseau non valide ignoré dans la liste de confiance de l'en-tête forwarded :"
+" %s"
 
 #. Error message
 #: sabnzbd/misc.py
@@ -2029,20 +2033,25 @@ msgid ""
 "X-Forwarded-For received while verify_xff_header is off, turn it on and list"
 " %s in xff_trusted_hosts"
 msgstr ""
+"X-Forwarded-For reçu alors que verify_xff_header est désactivé, activez-le "
+"et ajoutez %s dans xff_trusted_hosts"
 
 #: sabnzbd/security.py
 msgid "X-Forwarded-For received from %s, which is not in xff_trusted_hosts"
 msgstr ""
+"X-Forwarded-For reçu depuis %s, qui ne figure pas dans xff_trusted_hosts"
 
 #: sabnzbd/security.py
 msgid "X-Forwarded-For from %s does not name a client address"
-msgstr ""
+msgstr "X-Forwarded-For provenant de %s ne mentionne pas d'adresse client"
 
 #: sabnzbd/security.py
 msgid ""
 "Forwarded is not supported, configure the proxy to send X-Forwarded-For "
 "instead"
 msgstr ""
+"Forwarded n'est pas pris en charge, configurez le proxy pour qu'il envoie "
+"X-Forwarded-For à la place"
 
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py
@@ -2890,6 +2899,8 @@ msgid ""
 "Stay logged in on this browser instead of being signed out when you close "
 "it."
 msgstr ""
+"Rester connecté sur ce navigateur au lieu d'être déconnecté quand vous le "
+"fermez."
 
 #: sabnzbd/skintext.py
 msgid "Enable 7zip"

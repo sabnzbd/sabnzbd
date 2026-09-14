@@ -4,12 +4,13 @@
 # Translators:
 # Henrique Moreno, 2023
 # Safihre <safihre@sabnzbd.org>, 2026
+# Ian Harbs, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.2.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
+"Last-Translator: Ian Harbs, 2026\n"
 "Language-Team: Portuguese (Brazil) (https://app.transifex.com/sabnzbd/teams/111101/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -150,6 +151,8 @@ msgstr ""
 #: sabnzbd/__init__.py
 msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
 msgstr ""
+"A versão do SABnzbd para Windows ARM está disponível na nossa página de "
+"Downloads!"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -214,12 +217,16 @@ msgid ""
 "Could not connect to %s on port %s. Use the default usenet settings: port "
 "563 and SSL turned on"
 msgstr ""
+"Não foi possível conectar em %s na porta %s. Use a configuração padrão para "
+"a usenet: porta 563 e SSL ativado."
 
 #: sabnzbd/api.py
 msgid ""
 "Could not connect to %s on port %s. Use the default usenet settings: port "
 "119 and SSL turned off"
 msgstr ""
+"Não foi possível conectar em %s na porta %s. Use a configuração padrão para "
+"a usenet: porta 119 e SSL desativado."
 
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
