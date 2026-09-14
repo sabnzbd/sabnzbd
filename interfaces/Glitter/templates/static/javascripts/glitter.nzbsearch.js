@@ -63,7 +63,7 @@ function NzbSearchModel(parent) {
     };
 
     self.runSearch = function() {
-        if (!self.canSearch() && !self.isSearching()) return;
+        if (!self.canSearch()) return;
 
         self.isSearching(true);
         callAPI({

@@ -792,11 +792,11 @@ h2.activeRSS {
     color: black !important;
 }
 
-/* Fixed width so the add-indexer form's spacer cell lines up with the
-   favicon column in the configured-indexers table below it */
 .nzbsearch-favicon-col {
     width: 40px;
+    padding-top: 8px !important;
 }
+
 .source-icon span {
     top: -3px;
 }

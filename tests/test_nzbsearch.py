@@ -19,17 +19,23 @@
 tests.test_nzbsearch - Testing sabnzbd.nzbsearch
 """
 
+import json
 import os
 import xml.etree.ElementTree as ET
 from dataclasses import fields
 from datetime import datetime, timezone
+from unittest.mock import Mock
 
 import pytest
 from pytest_httpserver import HTTPServer
+from starlette.datastructures import QueryParams
 from werkzeug import Response
 
+import sabnzbd.api as api
 import sabnzbd.config as config
+import sabnzbd.interface as interface
 import sabnzbd.nzbsearch as nzbsearch
+from sabnzbd.misc import get_base_url
 from tests.testhelper import SAB_DATA_DIR, run_async
 
 
@@ -71,6 +77,9 @@ def _route(httpserver: HTTPServer, mount: str, results_file: str):
 
 
 class TestUrlBuilder:
+    def test_base_domain_accepts_scheme_less_host(self):
+        assert get_base_url("api.nzbgeek.info") == "nzbgeek.info"
+
     def test_adds_scheme_and_path(self):
         indexer = nzbsearch.Indexer("x", "api.example.com", "api", "K")
         url = indexer._build_url(t="search", apikey="K", q="x y")
@@ -128,8 +137,99 @@ class TestParsing:
         results, _ = indexer.search("item")
         assert results[0].age == datetime(1970, 1, 1, tzinfo=timezone.utc)
 
+    @pytest.mark.parametrize(
+        ("details_url", "expected"),
+        [
+            ("https://example.com/details", "https://example.com/details"),
+            ("http://example.com/details", "http://example.com/details"),
+            ("javascript:alert(1)", ""),
+            ("data:text/html,unsafe", ""),
+            ("mailto:unsafe@example.com", ""),
+            ("//example.com/details", ""),
+        ],
+    )
+    def test_search_rejects_unsafe_details_url(self, details_url, expected):
+        indexer = nzbsearch.Indexer("x", "example.com", "api", "KEY")
+        indexer.fetch = lambda **_: ET.fromstring(
+            f"<rss><channel><item><link>https://example.com/item.nzb</link>"
+            f"<comments>{details_url}</comments></item></channel></rss>"
+        )
+
+        results, _ = indexer.search("item")
+
+        assert results[0].details_url == expected
+
 
 class TestNzbIndexerSearch:
+    def test_adding_disabled_indexer_stays_disabled(self, monkeypatch):
+        request = Mock()
+        request.state.params = QueryParams({"host": "api.example.test", "api_key": "KEY"})
+        monkeypatch.setattr(config, "save_config", lambda: None)
+        monkeypatch.setattr(nzbsearch, "invalidate_categories", lambda: None)
+
+        interface.config_nzbsearch_add_indexer(request)
+
+        assert not config.get_config("indexers", "example.test").enable()
+
+    def test_toggling_indexer_updates_its_enabled_state(self, monkeypatch):
+        config.ConfigIndexer("example", {"host": "example.test", "api_key": "KEY", "enable": True})
+        request = Mock()
+        request.state.params = QueryParams({"name": "example"})
+        invalidate_categories = Mock()
+        monkeypatch.setattr(config, "save_config", lambda: None)
+        monkeypatch.setattr(nzbsearch, "invalidate_categories", invalidate_categories)
+
+        interface.config_nzbsearch_toggle_indexer(request)
+
+        assert not config.get_config("indexers", "example").enable()
+        invalidate_categories.assert_called_once_with()
+
+    def test_api_indexer_update_clears_category_cache(self, monkeypatch):
+        config.ConfigIndexer("example", {"host": "example.test", "api_key": "KEY"})
+        invalidate_categories = Mock()
+        monkeypatch.setattr(nzbsearch, "invalidate_categories", invalidate_categories)
+
+        api.handle_indexer_api(QueryParams({"name": "example", "host": "updated.example.test"}))
+
+        invalidate_categories.assert_called_once_with()
+
+    def test_config_indexer_save_clears_category_cache(self, monkeypatch):
+        config.ConfigIndexer("example", {"host": "example.test", "api_key": "KEY"})
+        request = Mock()
+        request.state.params = QueryParams({"name": "example", "host": "updated.example.test", "api_key": "KEY"})
+        invalidate_categories = Mock()
+        monkeypatch.setattr(config, "save_config", lambda: None)
+        monkeypatch.setattr(nzbsearch, "invalidate_categories", invalidate_categories)
+
+        interface.config_nzbsearch_save_indexer(request)
+
+        invalidate_categories.assert_called_once_with()
+
+    def test_config_api_tests_indexer_with_json_result(self, monkeypatch):
+        config.ConfigIndexer("example", {"host": "example.test", "api_key": "SECRET"})
+        tested = {}
+
+        def test(indexer):
+            tested["api_key"] = indexer.api_key
+
+        monkeypatch.setattr(nzbsearch.Indexer, "test", test)
+        response = run_async(
+            api.api_handler(
+                QueryParams(
+                    {
+                        "mode": "config",
+                        "name": "test_indexer",
+                        "indexer": "example",
+                        "host": "example.test",
+                        "api_key": "******",
+                        "output": "json",
+                    }
+                )
+            )
+        )
+        assert json.loads(response.body)["value"] == {"result": True, "message": "Connected"}
+        assert tested["api_key"] == "SECRET"
+
     def test_fan_out_combines_all_indexers_without_deduping(self, httpserver: HTTPServer):
         _route(httpserver, "/one", "nzbsearch_results_a.xml")
         _route(httpserver, "/two", "nzbsearch_results_b.xml")

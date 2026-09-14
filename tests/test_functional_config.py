@@ -41,7 +41,14 @@ from tests.testhelper import (
 class TestBasicPages(SABnzbdBaseTest):
     def test_base_pages(self):
         # Quick-check of all Config pages
-        test_urls = ["config", "config/server", "config/categories", "config/scheduling", "config/rss"]
+        test_urls = [
+            "config",
+            "config/server",
+            "config/categories",
+            "config/scheduling",
+            "config/rss",
+            "config/nzbsearch",
+        ]
 
         for test_url in test_urls:
             self.open_page("http://%s:%s/%s" % (SAB_HOST, SAB_PORT, test_url))

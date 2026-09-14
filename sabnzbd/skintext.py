@@ -308,6 +308,7 @@ SKIN_TEXT = {
     ),
     "srch-host": TT("Indexer URL"),
     "srch-apikey": TT("API Key"),
+    "srch-testing": TT("Testing indexer..."),
     "srch-testFailed": TT("Test failed"),
     "button-test": TT("Test"),  #: Button to test an indexer connection
     "opt-bandwidth_max": TT("Maximum line speed"),

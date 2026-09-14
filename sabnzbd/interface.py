@@ -2038,6 +2038,8 @@ def config_nzbsearch_add_indexer(request: Request):
     if name and host and not config.get_config("indexers", name):
         kwargs = dict(params)
         kwargs["host"] = host
+        # An unchecked checkbox is simply absent from the POST body
+        kwargs.setdefault("enable", 0)
         config.ConfigIndexer(name, kwargs)
         sabnzbd.nzbsearch.invalidate_categories()
         config.save_config()
@@ -2055,6 +2057,7 @@ def config_nzbsearch_save_indexer(request: Request):
         kwargs.setdefault("enable", 0)
         indexer.set_dict(kwargs)
         config.save_config()
+        sabnzbd.nzbsearch.invalidate_categories()
     return base_redirect_response(_NZBSEARCH_ROOT)
 
 
@@ -2064,6 +2067,7 @@ def config_nzbsearch_toggle_indexer(request: Request):
     if indexer:
         indexer.enable.set(not indexer.enable())
         config.save_config()
+        sabnzbd.nzbsearch.invalidate_categories()
     return base_redirect_response(_NZBSEARCH_ROOT)
 
 
@@ -2071,20 +2075,6 @@ def config_nzbsearch_toggle_indexer(request: Request):
 def config_nzbsearch_del_indexer(request: Request):
     del_from_section({"section": "indexers", "keyword": request_params(request).get("name")})
     return base_redirect_response(_NZBSEARCH_ROOT)
-
-
-@secured_expose(route="/config/nzbsearch/test_indexer", check_configlock=True, methods=["POST"])
-def config_nzbsearch_test_indexer(request: Request):
-    """Test an indexer and report the outcome as plain text (AJAX)."""
-    conf = config.get_config("indexers", request_params(request).get("name"))
-    if not conf:
-        return PlainTextResponse(T("Indexer not found"))
-    try:
-        indexer = sabnzbd.nzbsearch.indexer_from_config(conf)
-        indexer.test()
-        return PlainTextResponse(T("Connected"))
-    except sabnzbd.nzbsearch.IndexerError as error:
-        return PlainTextResponse(str(error))
 
 
 def GetRssLog(feed):

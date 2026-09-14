@@ -963,20 +963,6 @@ async def _api_nzbsearch_caps(name: str, kwargs: QueryParams) -> Response:
     return report(kwargs, keyword="nzbsearch", data=data)
 
 
-def _api_nzbsearch_test(value: str, kwargs: QueryParams) -> Response:
-    """API: test an indexer connection"""
-    name = kwargs.get("keyword") or kwargs.get("name") or value
-    conf = config.get_config("indexers", name)
-    if not conf:
-        return report(kwargs, _MSG_NO_ITEM)
-    try:
-        indexer = sabnzbd.nzbsearch.indexer_from_config(conf)
-        indexer.test()
-        return report(kwargs, data={"result": True, "message": T("Connected")})
-    except sabnzbd.nzbsearch.IndexerError as err:
-        return report(kwargs, data={"result": False, "message": str(err)})
-
-
 def _api_retry_all(name: str, kwargs: QueryParams) -> Response:
     """API: Retry all failed items in History"""
     with sabnzbd.db_pool.connection() as history_db:
@@ -1134,6 +1120,24 @@ def _api_config_test_server(value: str, kwargs: QueryParams) -> Response:
     return report(kwargs, data={"result": result, "message": msg})
 
 
+def _api_config_test_indexer(value: str, kwargs: QueryParams) -> Response:
+    """API: test an indexer with the current form values."""
+    indexer_name = kwargs.get("indexer", "")
+    host = kwargs.get("host", "").strip()
+    api_key = kwargs.get("api_key", "")
+    conf = config.get_config("indexers", indexer_name)
+    if "*" in api_key and not api_key.strip("*"):
+        api_key = conf.api_key() if conf else ""
+    api_path = conf.api_path() if conf else "/api"
+    if not host:
+        return report(kwargs, data={"result": False, "message": T("Indexer URL is not set.")})
+    try:
+        sabnzbd.nzbsearch.Indexer(indexer_name, host, api_path, api_key).test()
+        return report(kwargs, data={"result": True, "message": T("Connected")})
+    except sabnzbd.nzbsearch.IndexerError as error:
+        return report(kwargs, data={"result": False, "message": str(error)})
+
+
 def _api_config_create_backup(value: str, kwargs: QueryParams) -> Response:
     backup_file = config.create_config_backup()
     return report(kwargs, data={"result": bool(backup_file), "message": backup_file})
@@ -1222,7 +1226,6 @@ _api_table: ApiHandlerTable = {
     # mode=nzbsearch
     ("nzbsearch", ""): ApiEntry(_api_nzbsearch, 2),
     ("nzbsearch", "caps"): ApiEntry(_api_nzbsearch_caps, 2),
-    ("nzbsearch", "test"): ApiEntry(_api_nzbsearch_test, 3, config_locked=True),
     ("browse", ""): ApiEntry(_api_browse, 3),
     ("retry_all", ""): ApiEntry(_api_retry_all, 2),
     ("reset_quota", ""): ApiEntry(_api_reset_quota, 3),
@@ -1265,6 +1268,7 @@ _api_table: ApiHandlerTable = {
     ("config", "set_nzbkey"): ApiEntry(_api_config_set_nzbkey, 3, config_locked=True),
     ("config", "regenerate_certs"): ApiEntry(_api_config_regenerate_certs, 3, config_locked=True),
     ("config", "test_server"): ApiEntry(_api_config_test_server, 3, config_locked=True),
+    ("config", "test_indexer"): ApiEntry(_api_config_test_indexer, 3, config_locked=True),
     ("config", "create_backup"): ApiEntry(_api_config_create_backup, 3, config_locked=True),
     ("config", "purge_log_files"): ApiEntry(_api_config_purge_log_files, 3, config_locked=True),
 }
@@ -1429,7 +1433,7 @@ def handle_indexer_api(kwargs: QueryParams) -> Optional[str]:
         indexer.set_dict(kwargs)
     else:
         config.ConfigIndexer(name, kwargs)
-        sabnzbd.nzbsearch.invalidate_categories()
+    sabnzbd.nzbsearch.invalidate_categories()
     return name
 
 

@@ -57,6 +57,10 @@ def text_from_element(element: ET.Element, tag: str) -> str:
     return (element.findtext(tag) or "").strip()
 
 
+def valid_details_url(url: str) -> str:
+    return url if urllib.parse.urlparse(url).scheme.lower() in ("http", "https") else ""
+
+
 def strip_namespace(tag: str) -> str:
     return tag.rsplit("}", 1)[-1]
 
@@ -170,6 +174,7 @@ class Indexer:
                 size = int_conv(enclosure.get("length")) or size
             if not link:
                 continue
+            details_url = valid_details_url(text_from_element(item, "comments"))
             raw_date = attrs.get("usenetdate") or text_from_element(item, "pubDate")
             try:
                 age = parsedate_to_datetime(raw_date) if raw_date else UNKNOWN_AGE
@@ -185,7 +190,7 @@ class Indexer:
                     size_str=to_units(size, "B"),
                     age=age.astimezone(timezone.utc),
                     category=text_from_element(item, "category"),
-                    details_url=text_from_element(item, "comments"),
+                    details_url=details_url,
                     password=attrs.get("password") not in ("", "0", None),
                 )
             )

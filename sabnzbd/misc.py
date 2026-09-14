@@ -1477,10 +1477,12 @@ def ip_extract() -> list[str]:
 
 
 def get_base_url(url: str) -> str:
-    """Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
-    But also api.althub.co.za -> althub.co.za
+    """Return the true root domain for a URL or bare hostname, e.g.
+    api.oznzb.com -> oznzb.com and api.althub.co.za -> althub.co.za.
     """
     url_host = urllib.parse.urlparse(url).hostname
+    if not url_host:
+        url_host = urllib.parse.urlparse("//" + url).hostname
     if url_host:
         url_split = url_host.split(".")
         # Exception for localhost and IPv6 addresses

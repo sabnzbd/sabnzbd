@@ -540,17 +540,7 @@ function urlencode(str) {
 }
 
 jQuery(document).ready(function(){
-    jQuery('.favicon').each(function(i, theContainer) {
-        // Easy favicon grabber
-        var favUrl = '//' + jQuery(theContainer).data('domain') + '/favicon.ico'
-
-        // Does the image exist? Otherwise place a glyphicon
-        var testFavImg = new Image();
-        testFavImg.src = favUrl;
-        testFavImg.onerror = function (evt){
-            jQuery(theContainer).append('<span class="glyphicon glyphicon-list"></span>')
-        }
-    })
+    loadFavicons()
 
     jQuery('.nav-tabs a').click(function (e) {
         e.preventDefault()

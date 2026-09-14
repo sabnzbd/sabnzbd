@@ -2816,7 +2816,8 @@ html[data-color-scheme="night" i] {
 
 .nzbsearch-table thead th {
     position: sticky;
-    top: 0;
+    top: -10px;
+    padding: 8px !important;
     background: var(--clr-modal-bg);
     z-index: 1;
 }
