@@ -35,7 +35,7 @@ import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import utob
 from sabnzbd.misc import is_local_addr, is_loopback_addr, xff_trusted_networks
-from sabnzbd.sessionstore import MAX_USER_AGENT_LENGTH
+from sabnzbd.sessionstore import credential_fingerprint
 
 _MSG_MISSING_SESSION = "Access denied - Missing or invalid session token, reload the page and try again"
 _MSG_APIKEY_NOT_ON_PAGES = (
@@ -257,9 +257,10 @@ def constant_time_equals(presented: Any, expected: str) -> bool:
     )
 
 
-def credential_fingerprint() -> str:
-    """Fingerprint of the current username/password, stored with each session, so changing either invalidates all sessions"""
-    return hashlib.sha256(utob("%s:%s" % (cfg.username(), cfg.password()))).hexdigest()
+def login_configured() -> bool:
+    """Whether a username and password are both set, regardless of whether this
+    request's own login happens to be waived (see login_bypassed)"""
+    return bool(cfg.username() and cfg.password())
 
 
 def hash_session_token(token: str) -> str:
@@ -301,7 +302,7 @@ def create_session(request: Request, response: Response, remember_me: bool = Fal
 def login_bypassed(request: Request) -> bool:
     """Return True when check_login lets this request through without a login session"""
     # No authentication required when no username/password is set
-    if not cfg.username() or not cfg.password():
+    if not login_configured():
         return True
 
     # If we show login for external IP, by using access_type=6 we can check if IP match
@@ -389,19 +390,15 @@ def _validate_session(request: Request) -> bool:
         sabnzbd.SessionStore.delete(token_hash)
         return False
 
-    # Kept current on every request without an extra lookup; only the disk write
-    # (expiry, IP, user-agent) below is throttled
-    session["last_seen"] = now
-
-    # Slide the idle timeout forward (never past the deadline). Persist that, plus the
-    # client IP/user-agent, on a real expiry gain or when the client moved.
+    # Kept current in memory on every request; touch() below persists it when the
+    # slide does, and flush() catches anything still unwritten at shutdown
     ip, user_agent = session_client_info(request)
+    sabnzbd.SessionStore.mark_seen(token_hash, now, ip, user_agent)
+
+    # Slide the idle timeout forward (never past the deadline), throttled to about
+    # once a day; this also persists the fields mark_seen just updated in memory
     new_expires = max(session["expires"], min(now + SESSION_DURATION, session["created"] + SESSION_MAX_AGE))
-    if (
-        new_expires > session["expires"] + SESSION_REFRESH_THRESHOLD
-        or ip != session["ip"]
-        or user_agent[:MAX_USER_AGENT_LENGTH] != session["user_agent"]
-    ):
+    if new_expires > session["expires"] + SESSION_REFRESH_THRESHOLD:
         sabnzbd.SessionStore.touch(token_hash, new_expires, now, ip, user_agent)
 
     return True

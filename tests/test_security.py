@@ -31,6 +31,7 @@ from starlette.datastructures import Headers, Address, QueryParams, State, Uploa
 import sabnzbd
 import sabnzbd.cfg as cfg
 import sabnzbd.security as security
+import sabnzbd.sessionstore as sessionstore
 from sabnzbd.misc import is_local_addr, xff_trusted_networks
 from sabnzbd import interface
 
@@ -294,12 +295,16 @@ class TestSessionAuth:
         assert session_store.get(token_hash)["last_seen"] > before
 
     @pytest.mark.config({"username": "user", "password": "pass"})
-    def test_session_touched_when_client_moves(self, session_store):
+    def test_client_change_updates_in_memory_without_a_touch(self, session_store):
+        """A moved client is reflected immediately (for public_list), but - like
+        last_seen - does not by itself force a disk write; touch()/flush() do that"""
         # Fresh expiry, so nothing would be rewritten on the sliding-window rule alone
         store_session(session_store, "tok", ip="1.2.3.4", user_agent="old-agent")
         token_hash = security.hash_session_token("tok")
         request = mock_request("tok", headers={"User-Agent": "new-agent"})
-        assert security.validate_session(request) is True
+        with patch.object(sabnzbd.SessionStore, "touch") as touch:
+            assert security.validate_session(request) is True
+        touch.assert_not_called()
         session = session_store.get(token_hash)
         assert session["ip"] == "127.0.0.1"
         assert session["user_agent"] == "new-agent"
@@ -318,7 +323,17 @@ class TestSessionAuth:
         request = mock_request(headers={"User-Agent": "x" * 500})
         security.create_session(request, HTMLResponse(""))
         (session,) = session_store.sessions.values()
-        assert len(session["user_agent"]) == security.MAX_USER_AGENT_LENGTH
+        assert len(session["user_agent"]) == sessionstore.MAX_USER_AGENT_LENGTH
+
+
+class TestLoginConfigured:
+    @pytest.mark.config({"username": "", "password": ""})
+    def test_login_configured_false_without_credentials(self):
+        assert security.login_configured() is False
+
+    @pytest.mark.config({"username": "user", "password": "pass"})
+    def test_login_configured_true_with_credentials(self):
+        assert security.login_configured() is True
 
 
 class TestLoginRateLimiting:

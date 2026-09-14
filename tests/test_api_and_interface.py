@@ -254,7 +254,9 @@ class TestApiSessions:
     def _add(self, session_store, token, ip="1.2.3.4", agent="agent", offset=0):
         now = int(time.time())
         token_hash = security.hash_session_token(token)
-        session_store.add(token_hash, now - offset, now + 3600, "fp", ip, agent)
+        session_store.add(
+            token_hash, now - offset, now + 3600, sabnzbd.sessionstore.credential_fingerprint(), ip, agent
+        )
         return token_hash
 
     def test_list(self, session_store):

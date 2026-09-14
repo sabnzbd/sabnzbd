@@ -19,11 +19,14 @@
 sabnzbd.sessionstore - Storage for web-UI login sessions
 """
 
+import hashlib
 import logging
 import time
 from typing import Any, Optional, TypedDict
 
+import sabnzbd.cfg as cfg
 from sabnzbd.constants import SESSIONS_FILE_NAME, SESSIONS_VERSION
+from sabnzbd.encoding import utob
 from sabnzbd.filesystem import load_admin, save_admin
 
 # Cap the stored user-agent so a client cannot grow sessions.sab unbounded
@@ -44,6 +47,11 @@ class Session(TypedDict):
 def public_session_id(token_hash: str) -> str:
     """Public id for a session: a prefix of its token hash, so the hash is never exposed"""
     return token_hash[:SESSION_ID_LENGTH]
+
+
+def credential_fingerprint() -> str:
+    """Fingerprint of the current username/password, stored with each session, so changing either invalidates all sessions"""
+    return hashlib.sha256(utob("%s:%s" % (cfg.username(), cfg.password()))).hexdigest()
 
 
 class SessionStore:
@@ -105,13 +113,20 @@ class SessionStore:
         )
         self._save()
 
-    def touch(self, token_hash: str, expires: int, last_seen: int, ip: str, user_agent: str):
-        """Record a session being used: new expiry, last_seen and client details"""
-        if session := self.get(token_hash):
-            session["expires"] = expires
-            session["last_seen"] = last_seen
+    def mark_seen(self, token_hash: str, now: int, ip: str, user_agent: str) -> Optional[Session]:
+        """Update last_seen/ip/user_agent in memory only, so a request can keep them
+        current without a disk write on every call. touch() persists on top of this,
+        and flush() catches anything still unwritten at shutdown."""
+        if session := self.sessions.get(token_hash):
+            session["last_seen"] = now
             session["ip"] = ip
             session["user_agent"] = user_agent[:MAX_USER_AGENT_LENGTH]
+        return session
+
+    def touch(self, token_hash: str, expires: int, last_seen: int, ip: str, user_agent: str):
+        """Record a session being used: new expiry, plus the same fields as mark_seen, persisted"""
+        if session := self.mark_seen(token_hash, last_seen, ip, user_agent):
+            session["expires"] = expires
             self._save()
 
     def delete(self, token_hash: str):
@@ -133,9 +148,21 @@ class SessionStore:
         self._sessions = {}
         self._save()
 
+    def flush(self):
+        """Force a persist of state the throttled per-request save may not have
+        written yet (mainly last_seen/ip/user_agent), and prune anything expired
+        since. Called at shutdown so neither is lost until the next start; a no-op
+        if the store was never loaded this run. Unlike _prune_and_persist, this
+        always saves - that is the point of a forced flush."""
+        if self._sessions is not None:
+            self._sessions = self._unexpired(self._sessions, int(time.time()))
+            self._save()
+
     def public_list(self) -> list[dict[str, Any]]:
-        """Live sessions for the web-UI, newest activity first, without the token hash"""
+        """Sessions valid for the web-UI: live and matching the current credentials,
+        newest activity first, without the token hash"""
         self._prune_and_persist(self.sessions, int(time.time()))
+        fingerprint = credential_fingerprint()
         sessions = [
             {
                 "id": public_session_id(token_hash),
@@ -146,5 +173,6 @@ class SessionStore:
                 "user_agent": s["user_agent"],
             }
             for token_hash, s in self._sessions.items()
+            if s["cred_fingerprint"] == fingerprint
         ]
         return sorted(sessions, key=lambda s: s["last_seen"], reverse=True)

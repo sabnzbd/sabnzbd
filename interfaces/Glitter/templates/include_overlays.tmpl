@@ -869,8 +869,8 @@
                         </thead>
                         <tbody data-bind="foreach: sessions">
                             <tr>
-                                <td class="session-device" data-bind="text: user_agent || '$T('notAvailable')', attr: { title: user_agent }"></td>
-                                <td data-bind="text: ip || '$T('notAvailable')'"></td>
+                                <td class="session-device" data-bind="text: user_agent || glitterTranslate.notAvailable, attr: { title: user_agent }"></td>
+                                <td data-bind="text: ip || glitterTranslate.notAvailable"></td>
                                 <td data-bind="text: displayDateTime(created, \$root.dateFormat(), 'X')"></td>
                                 <td data-bind="text: displayDateTime(last_seen, \$root.dateFormat(), 'X')"></td>
                                 <td data-bind="text: displayDateTime(expires, \$root.dateFormat(), 'X')"></td>
@@ -882,7 +882,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bind="click: revokeAllSessions, visible: hasSessionInfo"><span class="glyphicon glyphicon-log-out"></span> $T('Glitter-sessionRevokeAll')</button>
+                <button type="button" class="btn btn-danger" data-bind="click: revokeAllSessions, visible: hasSessionInfo() && sessions().length > 0"><span class="glyphicon glyphicon-log-out"></span> $T('Glitter-sessionRevokeAll')</button>
             </div>
         </div>
     </div>

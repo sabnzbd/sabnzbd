@@ -119,6 +119,7 @@ from sabnzbd.security import (
     csrf_token_for,
     csrf_token_matches,
     login_bypassed,
+    login_configured,
     login_cooldown_remaining,
     peer_is_known,
     presented_csrf_token,
@@ -199,7 +200,7 @@ def check_hostname(request: Request) -> bool:
     if only allowed to be accessed via localhost.
     """
     # If login is enabled, no API-key can be deducted
-    if cfg.username() and cfg.password():
+    if login_configured():
         return True
 
     # Don't allow requests without Host
@@ -493,16 +494,16 @@ def main_index(request: Request):
         info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
         info["platform"] = sabnzbd.PLATFORM
 
+        login_set_up = login_configured()
+
         # Have logout only if inet=5, only when we are external
-        info["have_logout"] = (
-            cfg.username()
-            and cfg.password()
-            and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(request, access_type=6)))
+        info["have_logout"] = login_set_up and (
+            cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(request, access_type=6))
         )
 
         # Shown whenever a login is configured, even where this request's own login is
         # bypassed, so a LAN admin can still revoke external sessions
-        info["have_sessions"] = bool(cfg.username() and cfg.password())
+        info["have_sessions"] = login_set_up
 
         bytespersec_list = sabnzbd.BPSMeter.get_bps_list()
         info["bytespersec_list"] = ",".join([str(bps) for bps in bytespersec_list])

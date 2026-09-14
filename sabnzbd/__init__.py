@@ -480,6 +480,7 @@ def save_state():
     sabnzbd.BPSMeter.save()
     sabnzbd.DirScanner.save()
     sabnzbd.PostProcessor.save()
+    sabnzbd.SessionStore.flush()
 
 
 def delayed_startup_actions():
