@@ -77,20 +77,21 @@ class SessionStore:
         return self._sessions
 
     @staticmethod
-    def _live(sessions: dict[str, Session], now: int) -> dict[str, Session]:
+    def _live(sessions: dict[str, Session]) -> dict[str, Session]:
         """The entries that are neither expired nor left over from before a credential
         change - the latter would otherwise keep a revoked session's IP/user-agent on
         disk for the rest of its natural expiry"""
+        now = int(time.time())
         fingerprint = credential_fingerprint()
         return {
             token: s for token, s in sessions.items() if s["expires"] > now and s["cred_fingerprint"] == fingerprint
         }
 
-    def _prune_and_persist(self, before: dict[str, Session], now: int):
+    def _prune_and_persist(self, before: dict[str, Session]):
         """Adopt the still-valid entries; persist if any were dropped, so a dead
         session's IP/user-agent does not linger on disk until something else writes.
         Caller holds self.lock."""
-        live = self._live(before, now)
+        live = self._live(before)
         self._sessions = live
         if len(live) != len(before):
             self._save()
@@ -102,7 +103,7 @@ class SessionStore:
             if data := load_admin(SESSIONS_FILE_NAME, silent=True):
                 version, sessions = data
                 if version == SESSIONS_VERSION:
-                    self._prune_and_persist(sessions, int(time.time()))
+                    self._prune_and_persist(sessions)
         except Exception:
             logging.info("Failed to load sessions", exc_info=True)
 
@@ -118,7 +119,7 @@ class SessionStore:
     @synchronized()
     def add(self, token_hash: str, created: int, expires: int, cred_fingerprint: str, ip: str, user_agent: str):
         """Store a new login session, dropping any that are dead in the meantime"""
-        self._sessions = self._live(self.sessions, int(time.time()))
+        self._sessions = self._live(self.sessions)
         self._sessions[token_hash] = Session(
             created=created,
             expires=expires,
@@ -177,14 +178,14 @@ class SessionStore:
         not just at shutdown; a no-op if the store was never loaded this run. Unlike
         _prune_and_persist, this always saves - that is the point of a forced flush."""
         if self._sessions is not None:
-            self._sessions = self._live(self._sessions, int(time.time()))
+            self._sessions = self._live(self._sessions)
             self._save()
 
     @synchronized()
     def public_list(self) -> list[dict[str, Any]]:
         """Sessions valid for the web-UI: live and matching the current credentials,
         newest activity first, without the token hash"""
-        self._prune_and_persist(self.sessions, int(time.time()))
+        self._prune_and_persist(self.sessions)
         sessions = [
             {
                 "id": public_session_id(token_hash),
