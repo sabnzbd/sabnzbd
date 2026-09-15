@@ -19,7 +19,9 @@
 tests.test_sessionstore - Testing the web-UI session store
 """
 
+import threading
 import time
+from unittest import mock
 
 import pytest
 
@@ -85,8 +87,12 @@ class TestSessionStore:
         assert session["last_seen"] == now + 100
 
     def test_flush_is_a_noop_when_never_loaded(self, session_store):
-        # Never touched this instance, so there is nothing to flush
-        sessionstore.SessionStore().flush()
+        # Never touched this instance, so it must not load the file purely to write it
+        # straight back
+        store = sessionstore.SessionStore()
+        with mock.patch.object(store, "_save") as mock_save:
+            store.flush()
+        mock_save.assert_not_called()
 
     def test_user_agent_is_capped(self, session_store, fp):
         now = int(time.time())
@@ -141,13 +147,17 @@ class TestSessionStore:
 
     def test_public_list_excludes_a_stale_credential_fingerprint(self, session_store, fp):
         """A session from before a password change (however it changed - a save, or
-        the ini edited directly) must not be listed as though it were still valid"""
+        the ini edited directly) must not be listed as though it were still valid,
+        and must not linger in memory or on disk with its IP/user-agent either"""
         now = int(time.time())
         session_store.add("f" * 64, now, now + 2000, fp, "1.1.1.1", "live")
         session_store.add("e" * 64, now, now + 2000, "stale-fingerprint", "9.9.9.9", "dead")
         assert [s["ip"] for s in session_store.public_list()] == ["1.1.1.1"]
-        # It is not deleted outright, just hidden - see _validate_session for the actual cleanup
-        assert session_store.get("e" * 64) is not None
+        assert session_store.get("e" * 64) is None
+
+        _, persisted = sessionstore.load_admin(sessionstore.SESSIONS_FILE_NAME, silent=True)
+        assert "e" * 64 not in persisted
+        assert "f" * 64 in persisted
 
     def test_public_list_purges_expired_from_disk(self, session_store, fp):
         """A session that expires while nothing else writes must not linger on disk"""
@@ -199,3 +209,50 @@ class TestSessionStore:
         session_store.delete_all()
         assert session_store.public_list() == []
         assert sessionstore.SessionStore().public_list() == []
+
+    def test_concurrent_flush_and_add_does_not_raise(self, session_store, fp):
+        """flush() runs on the PostProcessor thread (via save_state()) while add()/
+        touch()/delete() run on the web server's event loop - without a lock this
+        raced on the same dict and crashed with RuntimeError: dictionary changed
+        size during iteration"""
+        now = int(time.time())
+        errors = []
+
+        def adder():
+            for i in range(300):
+                try:
+                    session_store.add(f"concurrent-{i}", now, now + 2000, fp, "1.1.1.1", "agent")
+                except Exception as exc:
+                    errors.append(exc)
+
+        def flusher():
+            for _ in range(300):
+                try:
+                    session_store.flush()
+                except Exception as exc:
+                    errors.append(exc)
+
+        threads = [threading.Thread(target=adder), threading.Thread(target=flusher)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        assert errors == []
+
+    def test_concurrent_adds_do_not_lose_sessions(self, session_store, fp):
+        """A read-rebuild-reassign that is not atomic drops any session add() installs
+        between another thread's read and reassignment"""
+        now = int(time.time())
+        session_count = 200
+
+        def adder(i):
+            session_store.add(f"session-{i}", now, now + 2000, fp, "1.1.1.1", "agent")
+
+        threads = [threading.Thread(target=adder, args=(i,)) for i in range(session_count)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        assert len(session_store.sessions) == session_count

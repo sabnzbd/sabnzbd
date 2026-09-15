@@ -840,9 +840,8 @@ def _api_showlog(name: str, kwargs: QueryParams) -> StreamingResponse:
     return build_log_response()
 
 
-# All three kept async def rather than sync (api_handler would then dispatch them via
-# run_in_threadpool): SessionStore assumes it is only ever touched from the single
-# event loop and has no lock, and async is what keeps that true.
+# All three kept async def rather than sync, for consistency with the other
+# session-related route handlers in security.py; SessionStore itself is thread-safe.
 async def _api_sessions(name: str, kwargs: QueryParams) -> Response:
     """API: list the active web-UI login sessions"""
     return report(kwargs, keyword="sessions", data=sabnzbd.SessionStore.public_list())
