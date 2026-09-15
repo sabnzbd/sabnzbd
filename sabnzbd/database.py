@@ -20,6 +20,7 @@ sabnzbd.database - Database Support
 """
 
 import os
+import re
 import tempfile
 import time
 import uuid
@@ -176,6 +177,27 @@ class HistoryDB:
                 _ = self.execute("PRAGMA user_version = 8;") and self.create_rss_table()
                 with sabnzbd.rss.rss_repository(self) as repo:
                     repo.import_rss_records()
+            if version < 9:
+                # Strip the "(More)" link the frontend now builds itself; use a regex instead
+                # of assuming its position, since old installs may not have Script as the last stage
+                scriptlog_link = re.compile(r'\s*<a href="\./scriptlog\?name=[^"]*">[^<]*</a>')
+                try:
+                    self.connection.execute("BEGIN")
+                    self.execute("PRAGMA user_version = 9;", raise_on_error=True)
+                    if self.execute(
+                        """SELECT id, stage_log FROM history WHERE stage_log LIKE '%<a href="./scriptlog?name=%'""",
+                        raise_on_error=True,
+                    ):
+                        for row_id, stage_log in self.cursor.fetchall():
+                            self.execute(
+                                "UPDATE history SET stage_log = ? WHERE id = ?",
+                                (scriptlog_link.sub("", stage_log), row_id),
+                                raise_on_error=True,
+                            )
+                    self.connection.commit()
+                except:
+                    self.connection.rollback()
+                    raise
 
             HistoryDB.startup_done = True
 
@@ -269,7 +291,7 @@ class HistoryDB:
             "time_added" INTEGER
         )
         """)
-        self.execute("PRAGMA user_version = 8;")
+        self.execute("PRAGMA user_version = 9;")
         self.execute("CREATE UNIQUE INDEX idx_history_nzo_id ON history(nzo_id);")
         self.execute("CREATE INDEX idx_history_archive_completed ON history(archive, completed DESC);")
         self.create_rss_table()
@@ -865,7 +887,6 @@ def unpack_history_info(item: sqlite3.Row) -> dict[str, Any]:
 
     # Human-readable size
     item["size"] = to_units(item["bytes"], "B")
-
     # The action line and loaded is only available for items in the postproc queue
     item["action_line"] = ""
     item["loaded"] = False
