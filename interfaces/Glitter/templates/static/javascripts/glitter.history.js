@@ -635,15 +635,21 @@ function HistoryModel(parent, data) {
                 // Expand the rest of the text and hide the button
                 $(this).siblings('.history-status-hidden').slideDown()
                 $(this).hide()
-            } else {
-               // Info in modal
-                $('#history-script-log .modal-body pre').load($(this).attr('href'), function(result) {
-                    var modal = $('#history-script-log');
-                    modal.find('.modal-title').text(self.historyStatus.name());
-                    modal.modal('show');
-                });
             }
             return false;
         })
+    }
+
+    // Load the full script output into the modal
+    // Set as text, not via .load(), since the script output is untrusted
+    // and .load() would insert it as HTML and execute any markup in it
+    self.showScriptLog = function() {
+        $.get('./scriptlog?name=' + self.id, function(result) {
+            var modal = $('#history-script-log');
+            modal.find('.modal-body pre').text(result);
+            modal.find('.modal-title').text(self.historyStatus.name());
+            modal.modal('show');
+        });
+        return false;
     }
 }
