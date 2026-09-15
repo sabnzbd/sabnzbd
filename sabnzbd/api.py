@@ -840,14 +840,12 @@ def _api_showlog(name: str, kwargs: QueryParams) -> StreamingResponse:
     return build_log_response()
 
 
-# All three kept async def rather than sync, for consistency with the other
-# session-related route handlers in security.py; SessionStore itself is thread-safe.
-async def _api_sessions(name: str, kwargs: QueryParams) -> Response:
+def _api_sessions(name: str, kwargs: QueryParams) -> Response:
     """API: list the active web-UI login sessions"""
     return report(kwargs, keyword="sessions", data=sabnzbd.SessionStore.public_list())
 
 
-async def _api_sessions_delete(name: str, kwargs: QueryParams) -> Response:
+def _api_sessions_delete(name: str, kwargs: QueryParams) -> Response:
     """API: revoke a single session, accepts value(=session id)"""
     session_id = kwargs.get("value")
     if not session_id:
@@ -857,7 +855,7 @@ async def _api_sessions_delete(name: str, kwargs: QueryParams) -> Response:
     return report(kwargs)
 
 
-async def _api_sessions_delete_all(name: str, kwargs: QueryParams) -> Response:
+def _api_sessions_delete_all(name: str, kwargs: QueryParams) -> Response:
     """API: revoke every session, the caller's own included"""
     sabnzbd.SessionStore.delete_all()
     return report(kwargs)
