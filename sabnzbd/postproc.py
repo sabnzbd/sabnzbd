@@ -647,14 +647,6 @@ def process_job(nzo: NzbObject) -> bool:
                         script_ret,
                     )
 
-            if script_log and len(script_log.rstrip().split("\n")) > 1:
-                # Can do this only now, otherwise it would show up in the email
-                nzo.set_unpack_info(
-                    "Script",
-                    '%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_line, nzo.nzo_id, T("More")),
-                    unique=True,
-                )
-
         # Cleanup again, including NZB files
         if all_ok and os.path.isdir(workdir_complete):
             cleanup_list(newfiles, workdir_complete, skip_nzb=False)
