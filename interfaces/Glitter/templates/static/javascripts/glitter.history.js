@@ -641,9 +641,12 @@ function HistoryModel(parent, data) {
     }
 
     // Load the full script output into the modal
+    // Set as text, not via .load(), since the script output is untrusted
+    // and .load() would insert it as HTML and execute any markup in it
     self.showScriptLog = function() {
-        $('#history-script-log .modal-body pre').load('./scriptlog?name=' + self.id, function(result) {
+        $.get('./scriptlog?name=' + self.id, function(result) {
             var modal = $('#history-script-log');
+            modal.find('.modal-body pre').text(result);
             modal.find('.modal-title').text(self.historyStatus.name());
             modal.modal('show');
         });
