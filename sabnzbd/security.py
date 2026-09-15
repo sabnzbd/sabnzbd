@@ -35,6 +35,7 @@ import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import utob
 from sabnzbd.misc import is_local_addr, is_loopback_addr, xff_trusted_networks
+from sabnzbd.sessionstore import credential_fingerprint
 
 _MSG_MISSING_SESSION = "Access denied - Missing or invalid session token, reload the page and try again"
 _MSG_APIKEY_NOT_ON_PAGES = (
@@ -256,9 +257,10 @@ def constant_time_equals(presented: Any, expected: str) -> bool:
     )
 
 
-def credential_fingerprint() -> str:
-    """Fingerprint of the current username/password, stored with each session, so changing either invalidates all sessions"""
-    return hashlib.sha256(utob("%s:%s" % (cfg.username(), cfg.password()))).hexdigest()
+def login_configured() -> bool:
+    """Whether a username and password are both set, regardless of whether this
+    request's own login happens to be waived (see login_bypassed)"""
+    return bool(cfg.username() and cfg.password())
 
 
 def hash_session_token(token: str) -> str:
@@ -266,15 +268,23 @@ def hash_session_token(token: str) -> str:
     return hashlib.sha256(utob(token)).hexdigest()
 
 
+def session_client_info(request: Request) -> tuple[str, str]:
+    """The client IP and user-agent to store with a session"""
+    return client_address(request).host, request.headers.get("User-Agent", "")
+
+
 def create_session(request: Request, response: Response, remember_me: bool = False):
     """Create a login session and set the session cookie"""
     token = secrets.token_urlsafe(32)
     now = int(time.time())
+    ip, user_agent = session_client_info(request)
     sabnzbd.SessionStore.add(
         token_hash=hash_session_token(token),
         created=now,
         expires=now + SESSION_DURATION,
         cred_fingerprint=credential_fingerprint(),
+        ip=ip,
+        user_agent=user_agent,
     )
 
     max_age = SESSION_MAX_AGE if remember_me else None
@@ -292,7 +302,7 @@ def create_session(request: Request, response: Response, remember_me: bool = Fal
 def login_bypassed(request: Request) -> bool:
     """Return True when check_login lets this request through without a login session"""
     # No authentication required when no username/password is set
-    if not cfg.username() or not cfg.password():
+    if not login_configured():
         return True
 
     # If we show login for external IP, by using access_type=6 we can check if IP match
@@ -380,11 +390,16 @@ def _validate_session(request: Request) -> bool:
         sabnzbd.SessionStore.delete(token_hash)
         return False
 
-    # Slide the idle timeout forward, never past the deadline and never backwards, and only
-    # when it gains real time
+    # Kept current in memory on every request; touch() below persists it when the
+    # slide does, and flush() catches anything still unwritten at shutdown
+    ip, user_agent = session_client_info(request)
+    sabnzbd.SessionStore.mark_seen(token_hash, now, ip, user_agent)
+
+    # Slide the idle timeout forward (never past the deadline), throttled to about
+    # once a day; this also persists the fields mark_seen just updated in memory
     new_expires = max(session["expires"], min(now + SESSION_DURATION, session["created"] + SESSION_MAX_AGE))
     if new_expires > session["expires"] + SESSION_REFRESH_THRESHOLD:
-        sabnzbd.SessionStore.touch(token_hash, new_expires)
+        sabnzbd.SessionStore.touch(token_hash, new_expires, now, ip, user_agent)
 
     return True
 

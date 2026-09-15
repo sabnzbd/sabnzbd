@@ -861,6 +861,15 @@ SKIN_TEXT = {
     "Glitter-showActiveConnections": TT("Show active connections"),
     "Glitter-unblockServer": TT("Unblock"),
     "Glitter-orphanedJobs": TT("Orphaned jobs"),
+    "Glitter-activeSessions": TT("Active sessions"),  #: Hamburger-menu item and modal title
+    "Glitter-sessionSignedIn": TT("Signed in"),  #: Column: when the session was created
+    "Glitter-sessionLastSeen": TT("Last seen"),  #: Column: when the session was last used
+    "Glitter-sessionExpires": TT("Expires"),  #: Column: when the session expires
+    "Glitter-sessionIP": TT("IP address"),  #: Column: where the session is used from
+    "Glitter-sessionDevice": TT("Device"),  #: Column: the browser/user-agent of the session
+    "Glitter-sessionRevoke": TT("Revoke"),  #: Accessible name for the icon-only revoke button
+    "Glitter-sessionRevokeAll": TT("Revoke all sessions"),  #: Button: sign out every session
+    "Glitter-sessionRevokeAllConfirm": TT("This signs out every device, including this one."),
     "Glitter-backToQueue": TT("Send back to queue"),
     "Glitter-purgeOrphaned": TT("Delete All"),
     "Glitter-retryAllOrphaned": TT("Retry all"),

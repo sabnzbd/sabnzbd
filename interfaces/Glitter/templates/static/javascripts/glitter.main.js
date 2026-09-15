@@ -52,6 +52,10 @@ function ViewModel() {
     self.finishaction = ko.observable();
     self.speedHistory = [];
 
+    // Active login sessions (hamburger menu -> Active sessions)
+    self.hasSessionInfo = ko.observable(false);
+    self.sessions = ko.observableArray([]);
+
     // Statusinfo container
     self.hasStatusInfo = ko.observable(false);
     self.hasPerformanceInfo = ko.observable(false);
@@ -787,6 +791,28 @@ function ViewModel() {
             self.hasStatusInfo(true)
             self.hasPerformanceInfo(true)
         });
+    }
+
+    // Load the list of active login sessions
+    self.loadSessions = function() {
+        self.hasSessionInfo(false)
+        callAPI({ mode: 'sessions' }).then(function(data) {
+            self.sessions(data.sessions || [])
+            self.hasSessionInfo(true)
+        })
+    }
+
+    // Revoke a single session
+    self.revokeSession = function(session) {
+        callAPI({ mode: 'sessions', name: 'delete', value: session.id }).then(self.loadSessions)
+    }
+
+    // Revoke every session, this device included
+    self.revokeAllSessions = function() {
+        if (!confirm(glitterTranslate.sessionRevokeAllConfirm)) return;
+        callAPI({ mode: 'sessions', name: 'delete_all' }).then(function() {
+            location.reload()
+        })
     }
 
     // Download a test-NZB
