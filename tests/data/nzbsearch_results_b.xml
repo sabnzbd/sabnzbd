@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/">
+  <channel>
+    <atom:link href="https://b.example.com/api" rel="self" type="application/rss+xml" />
+    <title>b.example.com</title>
+    <newznab:response offset="0" total="2" />
+    <item>
+      <title>Some.Show.S01E01.1080p.WEB.H264-GRP</title>
+      <guid isPermaLink="true">https://b.example.com/details/bbb1</guid>
+      <link>https://b.example.com/getnzb/bbb1.nzb&amp;apikey=BKEY</link>
+      <pubDate>Tue, 03 Sep 2024 10:00:00 +0000</pubDate>
+      <category>TV &gt; HD</category>
+      <enclosure url="https://b.example.com/getnzb/bbb1.nzb&amp;apikey=BKEY" length="810000000" type="application/x-nzb" />
+      <newznab:attr name="category" value="5040" />
+      <newznab:attr name="size" value="810000000" />
+      <newznab:attr name="grabs" value="12" />
+    </item>
+    <item>
+      <title>Another.Movie.2021.1080p.BluRay.x264-GRP</title>
+      <guid isPermaLink="true">https://b.example.com/details/bbb2</guid>
+      <link>https://b.example.com/getnzb/bbb2.nzb&amp;apikey=BKEY</link>
+      <pubDate>Wed, 04 Sep 2024 22:00:00 +0000</pubDate>
+      <category>Movies &gt; HD</category>
+      <enclosure url="https://b.example.com/getnzb/bbb2.nzb&amp;apikey=BKEY" length="9000000000" type="application/x-nzb" />
+      <newznab:attr name="category" value="2040" />
+      <newznab:attr name="size" value="9000000000" />
+      <newznab:attr name="grabs" value="500" />
+    </item>
+  </channel>
+</rss>

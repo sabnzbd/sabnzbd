@@ -1,0 +1,125 @@
+<!--#set global $pane="NzbSearch"#-->
+<!--#set global $help_uri = $confighelpuri + "nzbsearch"#-->
+<!--#include $webdir + "/_inc_header_uc.tmpl"#-->
+<div class="colmask">
+    <div class="section">
+        <div class="padTable">
+            <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+            <p>$T('explain-nzbsearch').replace('. ', '.<br/>')</p>
+
+
+            <!-- Add a new indexer -->
+            <form data-form="add-indexer" action="$url('config/nzbsearch/add_indexer')" method="post" autocomplete="off">
+                <table class="catTable">
+                    <tr>
+                        <th class="nzbsearch-favicon-col">&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th>$T('srch-host')</th>
+                        <th>$T('srch-apikey')</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    <tr class="even">
+                        <td class="nzbsearch-favicon-col">&nbsp;</td>
+                        <td><input type="checkbox" name="enable" value="1" checked /></td>
+                        <td><input type="text" name="host" placeholder="https://api.indexer.example" size="40" required /></td>
+                        <td><input type="text" name="api_key" size="32" required /></td>
+                        <td class="nowrap">
+                            <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-plus"></span> $T('button-add')</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+
+    <!--#if $indexers#-->
+    <div class="section">
+        <div class="padTable">
+            <!--#for $i, $indexer in enumerate($indexers)#-->
+            <form action="$url('config/nzbsearch/save_indexer')" method="post" autocomplete="off">
+                <input type="hidden" name="name" value="$indexer['name']" />
+                <input type="hidden" name="indexer" value="$indexer['name']" />
+                <table class="catTable">
+                    <!--#if $i == 0#-->
+                    <tr>
+                        <th class="nzbsearch-favicon-col">&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th>$T('srch-host')</th>
+                        <th>$T('srch-apikey')</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    <!--#end if#-->
+                    <tr class="data-row">
+                        <td class="nzbsearch-favicon-col"><div class="favicon" style="background-image: url(//$indexer['baselink']/favicon.ico);" data-domain="$indexer['baselink']"></div></td>
+                        <td><input type="checkbox" name="enable" value="1" class="toggleIndexerCheckbox" data-name="$indexer['name']" <!--#if $indexer['enable'] then 'checked="checked"' else ""#--> /></td>
+                        <td><input type="text" name="host" value="$indexer['host']" size="40" /></td>
+                        <td><input type="password" name="api_key" value="$indexer["api_key"]" size="32" autocomplete="new-password" /></td>
+                        <td class="nowrap">
+                            <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-ok"></span> $T('button-save')</button>
+                            <button type="button" class="btn btn-default testIndexer" data-name="$indexer['name']"><span class="glyphicon glyphicon-sort"></span> $T('button-test')</button>
+                            <button type="button" class="btn btn-default delIndexer"><span class="glyphicon glyphicon-trash"></span></button>
+                        </td>
+                    </tr>
+                </table>
+                <div class="result-box" role="status" aria-live="polite" aria-atomic="true">
+                    <div class="alert"></div>
+                </div>
+            </form>
+            <!--#end for#-->
+        </div>
+    </div>
+    <!--#end if#-->
+</div>
+
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    loadFavicons()
+
+    jQuery('.delIndexer').click(function() {
+        if (confirm("$T('confirm')")) {
+            jQuery(this).closest("form").attr("action", "$url('config/nzbsearch/del_indexer')").submit();
+        }
+    });
+    jQuery('.toggleIndexerCheckbox').click(function() {
+        jQuery.ajax({
+            type: "POST",
+            url: "$url('config/nzbsearch/toggle_indexer')",
+            data: { name: jQuery(this).data('name') }
+        }).done(function() {
+            formWasSubmitted = true;
+            formHasChanged = false;
+            setTimeout(function() { location.reload(); }, 100);
+        });
+    });
+
+    jQuery('.testIndexer').click(function() {
+        var button = jQuery(this);
+        var resultBox = button.closest('form').find('.result-box .alert');
+        button.attr('disabled', 'disabled').attr('aria-busy', 'true');
+        button.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon');
+        resultBox.removeClass('alert-success alert-danger').addClass('alert-info').text("$T('srch-testing')").show();
+        jQuery.ajax({
+            type: "POST",
+            url: "$url('api')",
+            data: "mode=config&name=test_indexer&output=json&" + button.closest('form').serialize()
+        }).done(function(data) {
+            var result = data.value;
+            resultBox.removeClass('alert-info alert-success alert-danger').text(result.message).show();
+            if (result.result) {
+                resultBox.addClass('alert-success');
+                resultBox.prepend('<span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> ');
+            } else {
+                resultBox.addClass('alert-danger');
+                resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> ');
+            }
+        }).fail(function(xhr) {
+            resultBox.removeClass('alert-info alert-success').addClass('alert-danger').text(xhr.responseText || "$T('srch-testFailed')");
+            resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> ');
+        }).always(function() {
+            button.removeAttr('disabled').attr('aria-busy', 'false');
+            button.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon');
+        });
+    });
+});
+</script>
+<!--#include $webdir + "/_inc_footer_uc.tmpl"#-->

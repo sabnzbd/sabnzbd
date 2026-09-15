@@ -122,6 +122,10 @@
             glitterTranslate.priority['Normal'] = "$T('pr-normal')";
             glitterTranslate.priority['Low'] = "$T('pr-low')";
             glitterTranslate.priority['Stop'] = "$T('pr-stop')";
+
+            glitterTranslate.nzbsearch = {};
+            glitterTranslate.nzbsearch.allCategories = "$T('Glitter-nzbsearchAllCategories')";
+            glitterTranslate.nzbsearch.resultsLimited = "$T('Glitter-nzbsearchResultsLimited')";
         </script>
 
         <script type="text/javascript" src="$url('staticcfg/js/jquery-3.7.1.min.js', v=$cache_buster)"></script>
@@ -138,6 +142,7 @@
         <script type="text/javascript" src="$url('static/javascripts/glitter.queue.js', v=$cache_buster)"></script>
         <script type="text/javascript" src="$url('static/javascripts/glitter.history.js', v=$cache_buster)"></script>
         <script type="text/javascript" src="$url('static/javascripts/glitter.filelist.pagination.js', v=$cache_buster)"></script>
+        <script type="text/javascript" src="$url('static/javascripts/glitter.nzbsearch.js', v=$cache_buster)"></script>
         <script type="text/javascript">
             jQuery(function () {
                 ko.applyBindings(new ViewModel(), document.getElementById("sabnzbd"));

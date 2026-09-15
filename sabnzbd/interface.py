@@ -2016,6 +2016,72 @@ def config_sorting_toggle_sorter(request: Request):
     return base_redirect_response(_SORTING_ROOT)
 
 
+##############################################################################
+_NZBSEARCH_ROOT = "/config/nzbsearch"
+
+
+@secured_expose(route="/config/nzbsearch", check_configlock=True, methods=["GET"])
+def config_nzbsearch_index(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
+    indexers = config.get_ordered_indexers()
+    for indexer in indexers:
+        indexer["baselink"] = get_base_url(indexer["host"])
+    conf["indexers"] = indexers
+
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_nzbsearch.tmpl"),
+        search_list=conf,
+    )
+
+
+@secured_expose(route="/config/nzbsearch/add_indexer", check_configlock=True, methods=["POST"])
+def config_nzbsearch_add_indexer(request: Request):
+    params = request_params(request)
+    host = Strip(params.get("host"))
+    # The indexer's root domain doubles as its identifier and its favicon domain
+    name = config.clean_section_name(get_base_url(host)) if host else ""
+    if name and host and not config.get_config("indexers", name):
+        kwargs = dict(params)
+        kwargs["host"] = host
+        # An unchecked checkbox is simply absent from the POST body
+        kwargs.setdefault("enable", 0)
+        config.ConfigIndexer(name, kwargs)
+        sabnzbd.nzbsearch.invalidate_categories()
+        config.save_config()
+    return base_redirect_response(_NZBSEARCH_ROOT)
+
+
+@secured_expose(route="/config/nzbsearch/save_indexer", check_configlock=True, methods=["POST"])
+def config_nzbsearch_save_indexer(request: Request):
+    params = request_params(request)
+    name = params.get("name")
+    indexer = config.get_config("indexers", name)
+    if indexer:
+        kwargs = dict(params)
+        # An unchecked checkbox is simply absent from the POST body
+        kwargs.setdefault("enable", 0)
+        indexer.set_dict(kwargs)
+        config.save_config()
+        sabnzbd.nzbsearch.invalidate_categories()
+    return base_redirect_response(_NZBSEARCH_ROOT)
+
+
+@secured_expose(route="/config/nzbsearch/toggle_indexer", check_configlock=True, methods=["POST"])
+def config_nzbsearch_toggle_indexer(request: Request):
+    indexer = config.get_config("indexers", request_params(request).get("name"))
+    if indexer:
+        indexer.enable.set(not indexer.enable())
+        config.save_config()
+        sabnzbd.nzbsearch.invalidate_categories()
+    return base_redirect_response(_NZBSEARCH_ROOT)
+
+
+@secured_expose(route="/config/nzbsearch/del_indexer", check_configlock=True, methods=["POST"])
+def config_nzbsearch_del_indexer(request: Request):
+    del_from_section({"section": "indexers", "keyword": request_params(request).get("name")})
+    return base_redirect_response(_NZBSEARCH_ROOT)
+
+
 def GetRssLog(feed):
     def make_item(entry: ResolvedEntry):
         # Make a copy
@@ -2553,11 +2619,19 @@ async def not_found_redirect(request: Request, exc):
 
 
 class CachedStaticFiles(StaticFiles):
-    """Static files the browser may hold indefinitely, as $url() versions every reference"""
+    """Static files the browser may hold indefinitely, as $url() versions every reference.
+
+    Development and pre-release builds revalidate instead: their `$url()` version is
+    the git commit, which does not change when the working tree is edited."""
+
+    _immutable = not bool(re.search(r"(alpha|beta|rc|dev)", sabnzbd.__version__, re.IGNORECASE))
 
     def file_response(self, *args, **kwargs) -> Response:
         response = super().file_response(*args, **kwargs)
-        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        if self._immutable:
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        else:
+            response.headers["Cache-Control"] = "no-cache"
         return response
 
 

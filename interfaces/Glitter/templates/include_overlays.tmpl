@@ -580,6 +580,99 @@
     </div>
 </div>
 
+<div id="modal-nzbsearch" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-nzbsearch-title">
+    <div class="modal-dialog nzbsearch-dialog">
+        <div class="modal-content">
+            <div class="modal-header nzbsearch-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
+                <a href="./config/nzbsearch/" class="nzbsearch-settings-link" data-tooltip="true" data-placement="bottom"
+                   title="$T('Glitter-nzbsearchManageIndexers')" aria-label="$T('Glitter-nzbsearchManageIndexers')">
+                    <span class="glyphicon glyphicon-cog"></span>
+                </a>
+                <h4 class="modal-title" id="modal-nzbsearch-title">$T('Glitter-nzbsearchTitle')</h4>
+            </div>
+            <div class="modal-body">
+                <!-- ko if: nzbsearch.showNoIndexersNotice -->
+                <div class="alert alert-info">
+                    $T('Glitter-nzbsearchNoIndexers').replace('. ', '.<br/>')
+                </div>
+                <!-- /ko -->
+
+                <form class="nzbsearch-form" data-bind="submit: nzbsearch.submit">
+                    <input type="text" class="form-control nzbsearch-query" placeholder="$T('Glitter-nzbsearchTitle')"
+                           data-bind="textInput: nzbsearch.searchTerm" autocomplete="off" />
+                    <select class="form-control nzbsearch-category" data-bind="options: nzbsearch.categoryOptions, optionsValue: 'value',
+                            optionsText: 'label', value: nzbsearch.category"></select>
+                    <button type="submit" class="btn btn-default" data-bind="disable: !nzbsearch.canSearch()">
+                        <!-- ko if: nzbsearch.isSearching -->
+                        <span class="rotate-refresh"><span class="glyphicon glyphicon-refresh"></span></span> $T('Glitter-nzbsearchSearching')
+                        <!-- /ko -->
+                        <!-- ko ifnot: nzbsearch.isSearching -->
+                        <span class="glyphicon glyphicon-search"></span> $T('Glitter-search')
+                        <!-- /ko -->
+                    </button>
+                </form>
+
+                <div class="nzbsearch-results">
+                    <table class="table table-hover nzbsearch-table" data-bind="visible: nzbsearch.hasResults">
+                        <thead>
+                            <tr>
+                                <th class="nzbsearch-col-favicon"></th>
+                                <th>$T('name')</th>
+                                <th class="nzbsearch-col-size">$T('size')</th>
+                                <th class="nzbsearch-col-age">$T('nzo-age')</th>
+                                <th class="nzbsearch-col-cat">$T('category')</th>
+                                <th class="nzbsearch-col-add"></th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: nzbsearch.results">
+                            <tr>
+                                <td class="nzbsearch-col-favicon">
+                                    <!-- ko if: detailsUrl -->
+                                    <a data-bind="attr: { href: detailsUrl, title: baselink }" target="_blank" rel="noopener">
+                                        <img class="nzbsearch-favicon" data-bind="attr: { src: faviconUrl }"
+                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block'" />
+                                        <span class="glyphicon glyphicon-list nzbsearch-favicon-fallback" style="display:none"></span>
+                                    </a>
+                                    <!-- /ko -->
+                                    <!-- ko ifnot: detailsUrl -->
+                                    <img class="nzbsearch-favicon" data-bind="attr: { src: faviconUrl, title: baselink }"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block'" />
+                                    <span class="glyphicon glyphicon-list nzbsearch-favicon-fallback" style="display:none"></span>
+                                    <!-- /ko -->
+                                </td>
+                                <td class="nzbsearch-title">
+                                    <!-- ko if: detailsUrl -->
+                                    <a data-bind="text: title, attr: { href: detailsUrl, title: title }" target="_blank" rel="noopener"></a>
+                                    <!-- /ko -->
+                                    <!-- ko ifnot: detailsUrl -->
+                                    <span data-bind="text: title, attr: { title: title }"></span>
+                                    <!-- /ko -->
+                                    <span class="glyphicon glyphicon-lock" data-bind="visible: hasPassword" title="$T('Glitter-nzbsearchPassword')"></span>
+                                </td>
+                                <td class="nzbsearch-col-size" data-bind="text: sizeText"></td>
+                                <td class="nzbsearch-col-age" data-bind="text: ageText"></td>
+                                <td class="nzbsearch-col-cat" data-bind="text: categoryText"></td>
+                                <td class="nzbsearch-col-add">
+                                    <button class="btn btn-default" data-bind="click: openAddModal">
+                                        <span class="glyphicon glyphicon-plus"></span> $T('button-add')
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="nzbsearch-empty" data-bind="visible: nzbsearch.hasSearched() && !nzbsearch.isSearching() && !nzbsearch.hasResults()">
+                        $T('empty')
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer nzbsearch-footer" data-bind="visible: nzbsearch.hasResults">
+                <span class="nzbsearch-result-count" data-bind="text: nzbsearch.resultCountText"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="modal-item-files" class="modal fade" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-item-files-title">
     <div class="modal-dialog">
         <div class="modal-content">
