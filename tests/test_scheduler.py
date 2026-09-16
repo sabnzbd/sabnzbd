@@ -250,3 +250,21 @@ class TestScheduler:
         sched.pause_end = None
         sched.scheduled_resume()
         sabnzbd.downloader.unpause_all.assert_called_once()
+
+    def test_plan_required_server_resume_guard(self, mocker):
+        """A required-server backoff schedules a resume only when downloading is active"""
+        mocker.patch("sabnzbd.scheduler.time.time", return_value=1000.0)
+        sched = Scheduler()
+
+        # Already paused: the backoff schedules nothing
+        sabnzbd.Downloader.paused = True
+        sched.scheduler.reset_mock()
+        sched.plan_required_server_resume()
+        sched.scheduler.add_single_task.assert_not_called()
+
+        # Running: pause now and schedule the 5-minute resume
+        sabnzbd.Downloader.paused = False
+        sched.plan_required_server_resume()
+        assert sched.pause_end == 1300.0
+        sabnzbd.Downloader.pause.assert_called()
+        sched.scheduler.add_single_task.assert_called_once()
