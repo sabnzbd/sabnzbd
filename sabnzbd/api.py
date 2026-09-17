@@ -946,7 +946,14 @@ async def _api_nzbsearch(name: str, kwargs: QueryParams) -> Response:
     )
     data = {
         "query": query,
-        "results": [{**asdict(result), "age": calc_age(result.age, trans=True)} for result in results],
+        "results": [
+            {
+                **asdict(result),
+                # UNKNOWN_AGE would otherwise render as a nonsense multi-thousand-day age
+                "age": "" if result.age == sabnzbd.nzbsearch.UNKNOWN_AGE else calc_age(result.age, trans=True),
+            }
+            for result in results
+        ],
         "total": len(results),
         "total_available": total_available,
     }
@@ -1224,7 +1231,7 @@ _api_table: ApiHandlerTable = {
     ("pause_pp", ""): ApiEntry(_api_pause_pp, 2),
     ("rss_now", ""): ApiEntry(_api_rss_now, 2),
     # mode=nzbsearch
-    ("nzbsearch", ""): ApiEntry(_api_nzbsearch, 2),
+    ("nzbsearch", ""): ApiEntry(_api_nzbsearch, 3),  # Level 3: results carry the indexer's apikey
     ("nzbsearch", "caps"): ApiEntry(_api_nzbsearch_caps, 2),
     ("browse", ""): ApiEntry(_api_browse, 3),
     ("retry_all", ""): ApiEntry(_api_retry_all, 2),

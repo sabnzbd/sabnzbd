@@ -78,7 +78,7 @@ def _route(httpserver: HTTPServer, mount: str, results_file: str):
 
 class TestUrlBuilder:
     def test_base_domain_accepts_scheme_less_host(self):
-        assert get_base_url("api.nzbgeek.info") == "nzbgeek.info"
+        assert get_base_url("api.example.com") == "example.com"
 
     def test_adds_scheme_and_path(self):
         indexer = nzbsearch.Indexer("x", "api.example.com", "api", "K")
@@ -163,13 +163,59 @@ class TestParsing:
 class TestNzbIndexerSearch:
     def test_adding_disabled_indexer_stays_disabled(self, monkeypatch):
         request = Mock()
-        request.state.params = QueryParams({"host": "api.example.test", "api_key": "KEY"})
+        request.state.params = QueryParams({"name": "example", "host": "api.example.test", "api_key": "KEY"})
         monkeypatch.setattr(config, "save_config", lambda: None)
         monkeypatch.setattr(nzbsearch, "invalidate_categories", lambda: None)
 
         interface.config_nzbsearch_add_indexer(request)
 
-        assert not config.get_config("indexers", "example.test").enable()
+        assert not config.get_config("indexers", "example").enable()
+
+    def test_adding_indexer_with_colliding_domain_uses_distinct_names(self, monkeypatch):
+        # Two indexers can share a root domain (two local instances, or accounts on
+        # both api.x.com and x.com) - the explicit name, not the host, is the identifier
+        monkeypatch.setattr(config, "save_config", lambda: None)
+        monkeypatch.setattr(nzbsearch, "invalidate_categories", lambda: None)
+
+        request_one = Mock()
+        request_one.state.params = QueryParams({"name": "local-a", "host": "http://192.168.1.5:8080", "api_key": "KEY"})
+        interface.config_nzbsearch_add_indexer(request_one)
+
+        request_two = Mock()
+        request_two.state.params = QueryParams({"name": "local-b", "host": "http://192.168.1.5:9090", "api_key": "KEY"})
+        interface.config_nzbsearch_add_indexer(request_two)
+
+        assert config.get_config("indexers", "local-a").host() == "http://192.168.1.5:8080"
+        assert config.get_config("indexers", "local-b").host() == "http://192.168.1.5:9090"
+
+    def test_saving_indexer_with_new_name_renames_it(self, monkeypatch):
+        config.ConfigIndexer("example", {"host": "example.test", "api_key": "KEY", "enable": True})
+        request = Mock()
+        request.state.params = QueryParams(
+            {"indexer": "example", "name": "renamed", "host": "example.test", "api_key": "KEY", "enable": "1"}
+        )
+        monkeypatch.setattr(config, "save_config", lambda: None)
+        monkeypatch.setattr(nzbsearch, "invalidate_categories", lambda: None)
+
+        interface.config_nzbsearch_save_indexer(request)
+
+        assert config.get_config("indexers", "example") is None
+        assert config.get_config("indexers", "renamed").host() == "example.test"
+
+    def test_saving_indexer_with_colliding_new_name_keeps_old_name(self, monkeypatch):
+        config.ConfigIndexer("alpha", {"host": "alpha.test", "api_key": "KEY", "enable": True})
+        config.ConfigIndexer("beta", {"host": "beta.test", "api_key": "KEY", "enable": True})
+        request = Mock()
+        request.state.params = QueryParams(
+            {"indexer": "alpha", "name": "beta", "host": "alpha.test", "api_key": "KEY", "enable": "1"}
+        )
+        monkeypatch.setattr(config, "save_config", lambda: None)
+        monkeypatch.setattr(nzbsearch, "invalidate_categories", lambda: None)
+
+        interface.config_nzbsearch_save_indexer(request)
+
+        assert config.get_config("indexers", "alpha").host() == "alpha.test"
+        assert config.get_config("indexers", "beta").host() == "beta.test"
 
     def test_toggling_indexer_updates_its_enabled_state(self, monkeypatch):
         config.ConfigIndexer("example", {"host": "example.test", "api_key": "KEY", "enable": True})
@@ -196,7 +242,9 @@ class TestNzbIndexerSearch:
     def test_config_indexer_save_clears_category_cache(self, monkeypatch):
         config.ConfigIndexer("example", {"host": "example.test", "api_key": "KEY"})
         request = Mock()
-        request.state.params = QueryParams({"name": "example", "host": "updated.example.test", "api_key": "KEY"})
+        request.state.params = QueryParams(
+            {"indexer": "example", "name": "example", "host": "updated.example.test", "api_key": "KEY"}
+        )
         invalidate_categories = Mock()
         monkeypatch.setattr(config, "save_config", lambda: None)
         monkeypatch.setattr(nzbsearch, "invalidate_categories", invalidate_categories)

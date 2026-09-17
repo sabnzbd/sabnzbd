@@ -14,6 +14,7 @@
                     <tr>
                         <th class="nzbsearch-favicon-col">&nbsp;</th>
                         <th>&nbsp;</th>
+                        <th>$T('name')</th>
                         <th>$T('srch-host')</th>
                         <th>$T('srch-apikey')</th>
                         <th>&nbsp;</th>
@@ -21,6 +22,7 @@
                     <tr class="even">
                         <td class="nzbsearch-favicon-col">&nbsp;</td>
                         <td><input type="checkbox" name="enable" value="1" checked /></td>
+                        <td><input type="text" name="name" placeholder="Indexer" size="20" required /></td>
                         <td><input type="text" name="host" placeholder="https://api.indexer.example" size="40" required /></td>
                         <td><input type="text" name="api_key" size="32" required /></td>
                         <td class="nowrap">
@@ -37,13 +39,13 @@
         <div class="padTable">
             <!--#for $i, $indexer in enumerate($indexers)#-->
             <form action="$url('config/nzbsearch/save_indexer')" method="post" autocomplete="off">
-                <input type="hidden" name="name" value="$indexer['name']" />
                 <input type="hidden" name="indexer" value="$indexer['name']" />
                 <table class="catTable">
                     <!--#if $i == 0#-->
                     <tr>
                         <th class="nzbsearch-favicon-col">&nbsp;</th>
                         <th>&nbsp;</th>
+                        <th>$T('name')</th>
                         <th>$T('srch-host')</th>
                         <th>$T('srch-apikey')</th>
                         <th>&nbsp;</th>
@@ -52,6 +54,7 @@
                     <tr class="data-row">
                         <td class="nzbsearch-favicon-col"><div class="favicon" style="background-image: url(//$indexer['baselink']/favicon.ico);" data-domain="$indexer['baselink']"></div></td>
                         <td><input type="checkbox" name="enable" value="1" class="toggleIndexerCheckbox" data-name="$indexer['name']" <!--#if $indexer['enable'] then 'checked="checked"' else ""#--> /></td>
+                        <td><input type="text" name="name" value="$indexer['name']" size="20" required /></td>
                         <td><input type="text" name="host" value="$indexer['host']" size="40" /></td>
                         <td><input type="password" name="api_key" value="$indexer["api_key"]" size="32" autocomplete="new-password" /></td>
                         <td class="nowrap">

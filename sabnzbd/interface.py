@@ -73,6 +73,7 @@ from sabnzbd.encoding import utob
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.newsunpack
+import sabnzbd.nzbsearch
 import sabnzbd.utils.ssdp
 from sabnzbd.get_addrinfo import get_fastest_addrinfo
 from sabnzbd.constants import (
@@ -2033,8 +2034,8 @@ def config_nzbsearch_index(request: Request):
 def config_nzbsearch_add_indexer(request: Request):
     params = request_params(request)
     host = Strip(params.get("host"))
-    # The indexer's root domain doubles as its identifier and its favicon domain
-    name = config.clean_section_name(get_base_url(host)) if host else ""
+    raw_name = Strip(params.get("name"))
+    name = config.clean_section_name(raw_name) if raw_name else ""
     if name and host and not config.get_config("indexers", name):
         kwargs = dict(params)
         kwargs["host"] = host
@@ -2049,13 +2050,17 @@ def config_nzbsearch_add_indexer(request: Request):
 @secured_expose(route="/config/nzbsearch/save_indexer", check_configlock=True, methods=["POST"])
 def config_nzbsearch_save_indexer(request: Request):
     params = request_params(request)
-    name = params.get("name")
-    indexer = config.get_config("indexers", name)
+    indexer = config.get_config("indexers", params.get("indexer"))
     if indexer:
         kwargs = dict(params)
         # An unchecked checkbox is simply absent from the POST body
         kwargs.setdefault("enable", 0)
         indexer.set_dict(kwargs)
+
+        new_name = config.clean_section_name(Strip(params.get("name"))) if Strip(params.get("name")) else ""
+        if new_name and new_name != params.get("indexer") and not config.get_config("indexers", new_name):
+            indexer.rename(new_name)
+
         config.save_config()
         sabnzbd.nzbsearch.invalidate_categories()
     return base_redirect_response(_NZBSEARCH_ROOT)
@@ -2073,7 +2078,7 @@ def config_nzbsearch_toggle_indexer(request: Request):
 
 @secured_expose(route="/config/nzbsearch/del_indexer", check_configlock=True, methods=["POST"])
 def config_nzbsearch_del_indexer(request: Request):
-    del_from_section({"section": "indexers", "keyword": request_params(request).get("name")})
+    del_from_section({"section": "indexers", "keyword": request_params(request).get("indexer")})
     return base_redirect_response(_NZBSEARCH_ROOT)
 
 
@@ -2614,19 +2619,11 @@ async def not_found_redirect(request: Request, exc):
 
 
 class CachedStaticFiles(StaticFiles):
-    """Static files the browser may hold indefinitely, as $url() versions every reference.
-
-    Development and pre-release builds revalidate instead: their `$url()` version is
-    the git commit, which does not change when the working tree is edited."""
-
-    _immutable = not bool(re.search(r"(alpha|beta|rc|dev)", sabnzbd.__version__, re.IGNORECASE))
+    """Static files the browser may hold indefinitely, as $url() versions every reference"""
 
     def file_response(self, *args, **kwargs) -> Response:
         response = super().file_response(*args, **kwargs)
-        if self._immutable:
-            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
-        else:
-            response.headers["Cache-Control"] = "no-cache"
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
         return response
 
 

@@ -28,16 +28,16 @@ API response belongs to api.py.
 from __future__ import annotations
 
 import asyncio
-import gzip
 import logging
-import urllib.error
 import urllib.parse
-import urllib.request
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from threading import Lock
+
+import requests
+from starlette.concurrency import run_in_threadpool
 
 import sabnzbd
 import sabnzbd.config as config
@@ -58,11 +58,10 @@ def text_from_element(element: ET.Element, tag: str) -> str:
 
 
 def valid_details_url(url: str) -> str:
-    return url if urllib.parse.urlparse(url).scheme.lower() in ("http", "https") else ""
-
-
-def strip_namespace(tag: str) -> str:
-    return tag.rsplit("}", 1)[-1]
+    try:
+        return url if urllib.parse.urlparse(url).scheme.lower() in ("http", "https") else ""
+    except ValueError:
+        return ""
 
 
 def parse_xml_response(data: bytes) -> ET.Element:
@@ -71,7 +70,7 @@ def parse_xml_response(data: bytes) -> ET.Element:
         root = ET.fromstring(data)
     except ET.ParseError as error:
         raise IndexerError(f"Invalid indexer response: {error}")
-    if strip_namespace(root.tag).lower() == "error":
+    if root.tag.lower().endswith("error"):
         raise IndexerError(root.get("description") or "Unknown indexer error")
     return root
 
@@ -82,7 +81,7 @@ class SearchResult:
 
     title: str
     url: str  # NZB download link (already carries the indexer apikey)
-    baselink: str  # indexer's root domain, e.g. "nzbgeek.info" - for its favicon
+    baselink: str  # indexer's root domain, e.g. "example.com" - for its favicon
     size_str: str = ""  # human-readable, e.g. "1.4 GB"
     age: datetime = UNKNOWN_AGE
     category: str = ""
@@ -98,35 +97,31 @@ class Indexer:
 
     def __init__(self, name: str, base_url: str, api_path: str, api_key: str):
         self.name = name
-        self.base_url = base_url
-        self.api_path = api_path
         self.api_key = api_key
+        self.baselink = get_base_url(base_url)
 
-    def _build_url(self, **params) -> str:
-        """Compose this indexer's API URL, defaulting the scheme to https and
-        dropping params whose value is None or empty."""
-        base = self.base_url.strip().rstrip("/")
+        base = base_url.strip().rstrip("/")
         if not base.lower().startswith(("http://", "https://")):
             base = "https://" + base
-        path = self.api_path.strip().strip("/")
+        path = api_path.strip().strip("/")
+        self.api_url = f"{base}/{path or 'api'}"
+
+    def _build_url(self, **params) -> str:
+        """Compose a request URL against this indexer's API, dropping params whose value is None or empty."""
         query = urllib.parse.urlencode({key: value for key, value in params.items() if value not in (None, "")})
-        return f"{base}/{path or 'api'}?{query}"
+        return f"{self.api_url}?{query}"
 
     def fetch(self, **params) -> ET.Element:
         """GET this indexer's API."""
         url = self._build_url(apikey=self.api_key, **params)
-        request = urllib.request.Request(
-            url, headers={"User-Agent": f"SABnzbd/{sabnzbd.__version__}", "Accept-Encoding": "gzip"}
-        )
+        headers = {"User-Agent": f"SABnzbd/{sabnzbd.__version__}"}
         try:
-            with urllib.request.urlopen(request, timeout=DEFAULT_TIMEOUT) as response:
-                body = response.read()
-                if "gzip" in (response.headers.get("Content-Encoding") or ""):
-                    body = gzip.decompress(body)
-                return parse_xml_response(body)
-        except urllib.error.HTTPError as error:
-            raise IndexerError(f"Request failed (HTTP {error.code})")
-        except (urllib.error.URLError, TimeoutError, OSError) as error:
+            response = requests.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
+            response.raise_for_status()
+            return parse_xml_response(response.content)
+        except requests.HTTPError:
+            raise IndexerError(f"Request failed (HTTP {response.status_code})")
+        except requests.RequestException as error:
             raise IndexerError(f"Cannot reach indexer: {error}")
 
     def test(self):
@@ -168,9 +163,7 @@ class Indexer:
         results = []
         for item in channel.findall("item"):
             attrs = {
-                child.get("name"): child.get("value") or ""
-                for child in item
-                if strip_namespace(child.tag) == "attr" and child.get("name")
+                child.get("name"): child.get("value") or "" for child in item.findall("{*}attr") if child.get("name")
             }
             link = text_from_element(item, "link")
             size = int_conv(attrs.get("size"))
@@ -192,7 +185,7 @@ class Indexer:
                 SearchResult(
                     title=text_from_element(item, "title"),
                     url=link,
-                    baselink=get_base_url(self.base_url),
+                    baselink=self.baselink,
                     size_str=to_units(size, "B"),
                     age=age.astimezone(timezone.utc),
                     category=text_from_element(item, "category"),
@@ -200,10 +193,8 @@ class Indexer:
                     password=attrs.get("password") not in ("", "0", None),
                 )
             )
-        for child in channel:
-            if strip_namespace(child.tag) == "response":
-                return results, int_conv(child.get("total"))
-        return results, None
+        response = channel.find("{*}response")
+        return results, int_conv(response.get("total")) if response is not None else None
 
 
 def indexer_from_config(conf: config.ConfigIndexer) -> Indexer:
@@ -212,48 +203,19 @@ def indexer_from_config(conf: config.ConfigIndexer) -> Indexer:
 
 
 class CategoryCache:
-    """Build the category tree once, until indexers are added or removed."""
+    """Cache the merged category tree until indexers are added, removed, or reconfigured."""
 
     def __init__(self):
         self.lock = Lock()
         self.categories: list[dict] | None = None
 
     @synchronized()
-    def get(self, indexers: list[Indexer]) -> list[dict]:
-        if self.categories is None:
-            logging.info("Getting categories from %s enabled indexers", len(indexers))
-            categories = [
-                {"id": 1000, "name": "Console", "subcats": []},
-                {"id": 2000, "name": "Movies", "subcats": []},
-                {"id": 3000, "name": "Audio", "subcats": []},
-                {"id": 4000, "name": "PC", "subcats": []},
-                {"id": 5000, "name": "TV", "subcats": []},
-                {"id": 6000, "name": "XXX", "subcats": []},
-                {"id": 7000, "name": "Books", "subcats": []},
-                {"id": 8000, "name": "Other", "subcats": []},
-            ]
-            categories_by_id = {category["id"]: category for category in categories}
-            for indexer in indexers:
-                try:
-                    indexer_categories = indexer.get_categories()
-                except Exception:
-                    continue
-                for caps_category in indexer_categories:
-                    category = categories_by_id.get(int_conv(caps_category.get("id")))
-                    if category is None:
-                        continue
-                    existing_ids = {subcategory["id"] for subcategory in category["subcats"]}
-                    for subcategory in caps_category.findall("subcat"):
-                        subcategory_id = int_conv(subcategory.get("id"))
-                        name = subcategory.get("name")
-                        if subcategory_id and name and subcategory_id not in existing_ids:
-                            category["subcats"].append({"id": subcategory_id, "name": name})
-                            existing_ids.add(subcategory_id)
-            for category in categories:
-                category["subcats"].sort(key=lambda subcategory: subcategory["id"])
-            logging.info("Loaded %s subcategories", sum(len(category["subcats"]) for category in categories))
-            self.categories = categories
+    def get(self) -> list[dict] | None:
         return self.categories
+
+    @synchronized()
+    def set(self, categories: list[dict]):
+        self.categories = categories
 
     @synchronized()
     def clear(self):
@@ -310,7 +272,7 @@ class NzbIndexerSearch:
         """Search one indexer off the event loop; never raises - failures return no results."""
         try:
             logging.debug("Searching indexer %s", indexer.name)
-            results, reported_total = await asyncio.to_thread(indexer.search, text, category_ids)
+            results, reported_total = await run_in_threadpool(indexer.search, text, category_ids)
             logging.debug("Indexer %s returned %s results", indexer.name, len(results))
             return results, reported_total
         except IndexerError as error:
@@ -321,5 +283,52 @@ class NzbIndexerSearch:
         return [], None
 
     async def category_tree(self) -> list[dict]:
-        """Return the cached category tree."""
-        return await asyncio.to_thread(CATEGORY_CACHE.get, self.indexers)
+        """Return the cached category tree, fanning out to indexers concurrently to build it once."""
+        if (cached := CATEGORY_CACHE.get()) is not None:
+            return cached
+
+        logging.info("Getting categories from %s enabled indexers", len(self.indexers))
+        outcomes = await asyncio.gather(
+            *(run_in_threadpool(indexer.get_categories) for indexer in self.indexers),
+            return_exceptions=True,
+        )
+
+        categories = [
+            {"id": 1000, "name": "Console", "subcats": []},
+            {"id": 2000, "name": "Movies", "subcats": []},
+            {"id": 3000, "name": "Audio", "subcats": []},
+            {"id": 4000, "name": "PC", "subcats": []},
+            {"id": 5000, "name": "TV", "subcats": []},
+            {"id": 6000, "name": "XXX", "subcats": []},
+            {"id": 7000, "name": "Books", "subcats": []},
+            {"id": 8000, "name": "Other", "subcats": []},
+        ]
+        categories_by_id = {category["id"]: category for category in categories}
+        for indexer_categories in outcomes:
+            if isinstance(indexer_categories, BaseException):
+                continue
+            for caps_category in indexer_categories:
+                category = categories_by_id.get(int_conv(caps_category.get("id")))
+                if category is None:
+                    continue
+                existing_ids = {subcategory["id"] for subcategory in category["subcats"]}
+                for subcategory in caps_category.findall("subcat"):
+                    subcategory_id = int_conv(subcategory.get("id"))
+                    name = subcategory.get("name")
+                    if subcategory_id and name and subcategory_id not in existing_ids:
+                        category["subcats"].append({"id": subcategory_id, "name": name})
+                        existing_ids.add(subcategory_id)
+        for category in categories:
+            category["subcats"].sort(key=lambda subcategory: subcategory["id"])
+
+        answered = sum(1 for outcome in outcomes if not isinstance(outcome, BaseException))
+        logging.info(
+            "Loaded %s subcategories from %s/%s indexers",
+            sum(len(category["subcats"]) for category in categories),
+            answered,
+            len(self.indexers),
+        )
+        if answered:
+            # Don't cache an all-failed round - retry next time instead
+            CATEGORY_CACHE.set(categories)
+        return categories

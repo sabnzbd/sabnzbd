@@ -630,14 +630,12 @@
                                 <td class="nzbsearch-col-favicon">
                                     <!-- ko if: detailsUrl -->
                                     <a data-bind="attr: { href: detailsUrl, title: baselink }" target="_blank" rel="noopener">
-                                        <img class="nzbsearch-favicon" data-bind="attr: { src: faviconUrl }"
-                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block'" />
+                                        <img class="nzbsearch-favicon" data-bind="attr: { src: faviconUrl }, faviconFallback: true" />
                                         <span class="glyphicon glyphicon-list nzbsearch-favicon-fallback" style="display:none"></span>
                                     </a>
                                     <!-- /ko -->
                                     <!-- ko ifnot: detailsUrl -->
-                                    <img class="nzbsearch-favicon" data-bind="attr: { src: faviconUrl, title: baselink }"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block'" />
+                                    <img class="nzbsearch-favicon" data-bind="attr: { src: faviconUrl, title: baselink }, faviconFallback: true" />
                                     <span class="glyphicon glyphicon-list nzbsearch-favicon-fallback" style="display:none"></span>
                                     <!-- /ko -->
                                 </td>

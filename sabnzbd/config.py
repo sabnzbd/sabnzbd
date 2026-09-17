@@ -588,6 +588,14 @@ class ConfigIndexer:
         """Remove from database"""
         delete_from_database("indexers", self.__name)
 
+    def rename(self, new_name: str) -> str:
+        """Give this indexer a new identifier"""
+        new_name = clean_section_name(new_name)
+        delete_from_database("indexers", self.__name)
+        self.__name = new_name
+        add_to_database("indexers", self.__name, self)
+        return self.__name
+
 
 class ConfigCat:
     """Class defining a single category"""
