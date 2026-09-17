@@ -504,9 +504,6 @@ def process_job(nzo: NzbObject) -> bool:
 
                 # Sanitize the resulting files
                 newfiles = sanitize_files(filelist=newfiles)
-
-                # Check unpacked files for unwanted extensions, the download-time check can miss files hidden inside archives
-                newfiles = remove_unwanted_files(nzo, newfiles, tmp_workdir_complete)
                 logging.info("Finished unpack_magic on %s", filename)
 
             if cfg.safe_postproc():
@@ -605,6 +602,15 @@ def process_job(nzo: NzbObject) -> bool:
                     # Deobfuscate the subtitles
                     deobfuscate.deobfuscate_subtitles(nzo, newfiles)
 
+            # Check the final files for unwanted extensions. The download-time check can be bypassed
+            # by files hidden inside archives or par2 data, or by obfuscated files that only get their
+            # real extension during deobfuscation, so this has to run after all renaming is done.
+            # Also for failed jobs, as the user script still receives the files.
+            newfiles, unwanted_failed = remove_unwanted_files(nzo, newfiles, workdir_complete)
+            if unwanted_failed:
+                all_ok = False
+                job_result = -1
+
             # Always run the user script, even for failed jobs (see #3336)
             # The script receives job_result indicating success/failure
             if script_path := make_script_path(nzo.script):
@@ -633,7 +639,9 @@ def process_job(nzo: NzbObject) -> bool:
 
             # Email the results
             if cfg.email_endjob():
-                if cfg.email_endjob() == 1 or (cfg.email_endjob() == 2 and (unpack_error or par_error or script_error)):
+                if cfg.email_endjob() == 1 or (
+                    cfg.email_endjob() == 2 and (unpack_error or par_error or script_error or unwanted_failed)
+                ):
                     emailer.endjob(
                         nzo.final_name,
                         nzo.cat,
@@ -1181,24 +1189,29 @@ def cleanup_list(filelist: list[str], base_dir: str, skip_nzb: bool) -> list[str
     return remaining_files
 
 
-def remove_unwanted_files(nzo: NzbObject, filelist: list[str], base_dir: str) -> list[str]:
+def remove_unwanted_files(nzo: NzbObject, filelist: list[str], base_dir: str) -> tuple[list[str], bool]:
     """Remove all files of the job that match the unwanted extensions.
-    The download-time check can be bypassed, for example by files
-    hidden inside nested archives, or within PAR2 repair data,
-    so the files produced by unpacking are verified again.
-    Only the tracked files are considered, so files of other jobs
-    in a shared folder are left alone. Returns the remaining files.
+    The download-time check can be bypassed, for example by files hidden
+    inside nested archives or PAR2 repair data, or by obfuscated files that
+    only get their real extension during deobfuscation, so the final files
+    are verified again. Only the tracked files are considered, so files of
+    other jobs in a shared folder are left alone.
+    The job can no longer be paused at this point, so unwanted files are
+    always removed. If the configured action is to fail the job, the job is
+    marked as failed. Returns the remaining files and whether the job failed.
     """
     # Skip if not configured or after an explicit user override of the unwanted extension pause
     if not cfg.unwanted_extensions() or not cfg.action_on_unwanted_extensions() or nzo.unwanted_ext == 2:
-        return filelist
+        return filelist, False
 
     remaining_files = []
+    unwanted_files = []
     removed_files = []
     for path in filelist:
         if os.path.isfile(path) and has_unwanted_extension(get_filename(path)):
+            logging.warning(T("Unwanted Extension in file %s (%s)"), get_filename(path), nzo.final_name)
+            unwanted_files.append(path)
             try:
-                logging.info("Removing unwanted file %s", path)
                 remove_file(path)
                 removed_files.append(path)
                 continue
@@ -1207,12 +1220,17 @@ def remove_unwanted_files(nzo: NzbObject, filelist: list[str], base_dir: str) ->
                 logging.info("Traceback: ", exc_info=True)
         remaining_files.append(path)
 
+    job_failed = False
     if removed_files:
         nzo.set_unpack_info("Unpack", T("Removed %s files with unwanted extensions") % len(removed_files))
+    if unwanted_files and cfg.action_on_unwanted_extensions() == 2:
+        logging.debug("Unwanted extension ... failing job")
+        nzo.fail_msg = T("Aborted, unwanted extension detected")
+        job_failed = True
 
     # Remove the directories the removed files left behind, if they are now empty
     remove_empty_parent_directories(base_dir, removed_files)
-    return remaining_files
+    return remaining_files, job_failed
 
 
 def prefix(path: str, pre: str) -> str:
