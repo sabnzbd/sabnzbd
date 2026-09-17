@@ -1170,7 +1170,7 @@ def index_config_server(request: Request):
     )
     for svr in server_names:
         new.append(servers[svr].get_dict(for_public_api=True))
-        t, m, w, d, daily, articles_tried, articles_success = sabnzbd.BPSMeter.amounts(svr)
+        t, m, w, d, daily, articles_tried, articles_failed = sabnzbd.BPSMeter.amounts(svr)
         if t:
             new[-1]["amounts"] = (
                 to_units(t),
@@ -1179,7 +1179,7 @@ def index_config_server(request: Request):
                 to_units(d),
                 daily,
                 articles_tried,
-                articles_success,
+                articles_failed,
             )
         new[-1]["quota_left"] = to_units(
             servers[svr].quota.get_int() - sabnzbd.BPSMeter.grand_total.get(svr, 0) + servers[svr].usage_at_start()
