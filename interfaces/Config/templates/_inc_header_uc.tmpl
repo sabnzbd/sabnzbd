@@ -14,6 +14,7 @@
         #if $pane == "Sorting" then $T('cmenu-sorting') else ""#
         #if $pane == "Special" then $T('cmenu-special') else ""#
         #if $pane == "RSS" then $T('cmenu-rss') else ""#
+        #if $pane == "NzbSearch" then $T('cmenu-nzbsearch') else ""#
     </title>
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -147,6 +148,18 @@
                             <path class="rss-symbol" d="m 1,2 a 5,5 0 0 1 5,5 h 1 a 6,6 0 0 0 -6,-6 z" />
                         </svg>
                         <strong>$T('cmenu-rss')</strong>
+                    </a>
+                </li>
+                <li>
+                    <a href="$url('config/nzbsearch')" #if $pane == "NzbSearch" then 'class="active"' else ""#>
+                        <svg class="nzbsearch-icon-svg" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="6.75" cy="6.75" r="4.75" />
+                                <line x1="10.4" y1="10.4" x2="14.5" y2="14.5" />
+                                <path d="M6.75 4.25 V8.25 M4.55 6.25 L6.75 8.55 L8.95 6.25" />
+                            </g>
+                        </svg>
+                        <strong>$T('cmenu-nzbsearch')</strong>
                     </a>
                 </li>
                 <li>

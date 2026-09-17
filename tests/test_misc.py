@@ -277,6 +277,17 @@ class TestMisc:
         assert ("[::1]", 1234) == misc.split_host("[::1]:1234")
         assert ("[2001:db8::8080]", None) == misc.split_host("[2001:db8::8080]")
 
+    def test_get_base_url(self):
+        assert "example.com" == misc.get_base_url("api.example.com")
+        assert "example.co.uk" == misc.get_base_url("https://api.example.co.uk")
+        assert "localhost" == misc.get_base_url("localhost")
+        # Malformed input never raises, just yields ""
+        assert "" == misc.get_base_url("[]")
+        assert "" == misc.get_base_url("[bad]")
+        assert "" == misc.get_base_url("a[b]c")
+        # A scheme with no netloc doesn't invent a hostname out of the scheme itself
+        assert "" == misc.get_base_url("http://")
+
     @pytest.mark.config({"cleanup_list": [".exe", ".nzb"]})
     def test_on_cleanup_list(self):
         assert misc.on_cleanup_list("test.exe")

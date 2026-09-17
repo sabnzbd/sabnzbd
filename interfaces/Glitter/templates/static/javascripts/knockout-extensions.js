@@ -1,3 +1,13 @@
+// Falls back to the next element (e.g. a glyphicon) when the image fails to load,
+// without an inline onerror="" attribute in the template
+ko.bindingHandlers.faviconFallback = {
+    init: function(element) {
+        element.onerror = function() {
+            this.style.display = 'none';
+            this.nextElementSibling.style.display = 'inline-block';
+        };
+    }
+};
 ko.bindingHandlers.truncatedTextCenter = {
     update: function(element, valueAccessor, allBindingsAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor())

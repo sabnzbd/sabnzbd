@@ -2436,6 +2436,16 @@ legend {
     opacity: 0.8;
 }
 
+/* Lets #modal-add-nzb stack on top of an already-open modal (e.g. search)
+   instead of tying with it at the default Bootstrap z-index */
+.modal.nzbsearch-stacked {
+    z-index: 1060;
+}
+
+.modal-backdrop.nzbsearch-stacked-backdrop {
+    z-index: 1055;
+}
+
 .modal-header {
     background-color: #3C3C3C;
     color: white;
@@ -2738,6 +2748,167 @@ html[data-color-scheme="night" i] {
         margin-bottom: 1px;
     }
 }
+
+/**
+    Newznab indexer search modal (#modal-nzbsearch)
+**/
+.nzbsearch-icon-svg {
+    display: inline-block;
+    width: 1.4em;
+    height: 1.4em;
+    margin-bottom: -4px;
+}
+
+.nzbsearch-dialog {
+    width: 95%;
+    max-width: 1100px;
+}
+
+#modal-nzbsearch .modal-content {
+    max-height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+}
+
+#modal-nzbsearch .modal-body {
+    flex: 1 1 auto;
+    min-height: 200px;
+    overflow-y: auto;
+}
+
+#modal-nzbsearch .modal-header,
+#modal-nzbsearch .modal-footer {
+    flex: 0 0 auto;
+}
+
+.nzbsearch-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nzbsearch-header .modal-title {
+    order: 1;
+    flex: 1 1 auto;
+    margin: 0;
+}
+
+.nzbsearch-header .nzbsearch-settings-link {
+    order: 2;
+    color: inherit;
+    margin: 0 3px -3px;
+}
+
+.nzbsearch-header .close {
+    order: 3;
+    float: none;
+    margin: 0;
+}
+
+.nzbsearch-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.nzbsearch-form .nzbsearch-query {
+    flex: 0 1 400px;
+    width: auto;
+    min-width: 0;
+}
+
+.nzbsearch-form .nzbsearch-category {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 220px;
+}
+
+.nzbsearch-form button {
+    flex: 0 0 auto;
+    width: auto;
+    white-space: nowrap;
+}
+
+.nzbsearch-result-count {
+    white-space: nowrap;
+}
+
+
+.nzbsearch-table {
+    table-layout: fixed;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.nzbsearch-table th {
+    font-weight: bold;
+}
+
+.nzbsearch-table thead th {
+    position: sticky;
+    top: -10px;
+    padding: 8px !important;
+    background: var(--clr-modal-bg);
+    z-index: 1;
+}
+
+.nzbsearch-table .nzbsearch-title span,
+.nzbsearch-table .nzbsearch-title a {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
+.nzbsearch-col-size {
+    width: 90px;
+}
+
+.nzbsearch-col-age {
+    width: 60px;
+}
+
+.nzbsearch-col-cat {
+    width: 170px;
+}
+
+.nzbsearch-col-favicon {
+    width: 28px;
+    text-align: center;
+}
+
+.nzbsearch-favicon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+}
+
+.nzbsearch-favicon-fallback {
+    vertical-align: middle;
+    opacity: 0.6;
+}
+
+.nzbsearch-col-add {
+    width: 110px;
+    text-align: right;
+}
+
+.nzbsearch-empty {
+    padding: 20px 0;
+    opacity: 0.7;
+}
+
+.modal-footer.nzbsearch-footer {
+    display: flex;
+    align-items: center;
+    text-align: left;
+}
+
 
 @media (prefers-color-scheme: dark) {
     html:not([data-color-scheme="light" i]) {

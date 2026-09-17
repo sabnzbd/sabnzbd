@@ -143,6 +143,7 @@ SKIN_TEXT = {
     "cmenu-sorting": TT("Sorting"),  #: Main menu item
     "cmenu-special": TT("Special"),  #: Main menu item
     "cmenu-search": TT("Search"),  #: Main menu item
+    "cmenu-nzbsearch": TT("Search"),  #: Config menu item for the newznab indexer search
     # Main page
     "shutdownOK?": TT("Are you sure you want to shutdown SABnzbd?"),
     "link-pause": TT("Pause"),  #: Pause downloading
@@ -299,6 +300,17 @@ SKIN_TEXT = {
     "tuning": TT("Tuning"),
     "opt-rss_rate": TT("RSS Checking Interval"),
     "explain-rss_rate": TT("Checking interval (in minutes, at least 15). Not active when you use the Scheduler!"),
+    "explain-nzbsearch": TT(
+        "SABnzbd can search one or more Indexers to find relevant NZBs. An indexer is a website that indexes Usenet content in order to help you find NZBs. "
+        "To use the Indexer Search within SABnzbd to find relevant NZBs, you will need to sign up for an account at one or more indexers. "
+        "An indexer account is separate from a Usenet provider account, which is required to download. "
+        "Every enabled indexer is searched simultaneously and the results are combined. "
+    ),
+    "srch-host": TT("Indexer URL"),
+    "srch-apikey": TT("API Key"),
+    "srch-testing": TT("Testing indexer..."),
+    "srch-testFailed": TT("Test failed"),
+    "button-test": TT("Test"),  #: Button to test an indexer connection
     "opt-bandwidth_max": TT("Maximum line speed"),
     "opt-bandwidth_perc": TT("Percentage of line speed"),
     "explain-bandwidth_perc": TT("Which percentage of the linespeed should SABnzbd use, e.g. 50"),
@@ -825,6 +837,19 @@ SKIN_TEXT = {
     "Glitter-searchExplain": TT(
         "Search by name, or refine with filters <code>cat:</code>, <code>status:</code> and <code>priority:</code> (Queue). For example: <code>my show cat:tv</code>"
     ),  #: Explains the queue/history search box, shown as a tooltip
+    "Glitter-nzbsearchTitle": TT("Search indexers"),
+    "Glitter-nzbsearchSearching": TT("Searching"),
+    "Glitter-nzbsearchManageIndexers": TT("Manage indexers"),
+    "Glitter-nzbsearchNoIndexers": TT(
+        "To search for NZBs, configure an indexer in the Config Search page. "
+        "To use the Indexer Search within SABnzbd to find relevant NZBs, you will need to sign up for an account at one or more indexers. "
+        "An indexer account is separate from a Usenet provider account, which is required to download."
+    ),
+    "Glitter-nzbsearchPassword": TT("Password protected"),
+    "Glitter-nzbsearchAllCategories": TT("All categories"),
+    "Glitter-nzbsearchResultsLimited": TT(
+        "%s results available, only the 100 latest results for each indexer are shown."
+    ),
     "Glitter-multiOperations": TT("Multi-Operations"),
     "Glitter-multiSelect": TT("Hold shift key to select a range"),
     "Glitter-selectJob": TT("Select job"),

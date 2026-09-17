@@ -263,6 +263,17 @@ function config_failure() {
     // Can't go yet..
     formWasSubmitted = false;
 }
+
+function loadFavicons() {
+    $('.favicon').each(function(i, container) {
+        var faviconUrl = '//' + $(container).data('domain') + '/favicon.ico'
+        var faviconImage = new Image()
+        faviconImage.src = faviconUrl
+        faviconImage.onerror = function() {
+            $(container).append('<span class="glyphicon glyphicon-list"></span>')
+        }
+    })
+}
 function do_restart() {
     // Show overlay
     $('.main-restarting').show()
