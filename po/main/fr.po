@@ -5004,41 +5004,41 @@ msgstr "Tâches orphelines"
 #. Hamburger-menu item and modal title
 #: sabnzbd/skintext.py
 msgid "Active sessions"
-msgstr ""
+msgstr "Sessions actives"
 
 #. Column: when the session was created
 #: sabnzbd/skintext.py
 msgid "Signed in"
-msgstr ""
+msgstr "Connecté"
 
 #. Column: when the session was last used
 #: sabnzbd/skintext.py
 msgid "Last seen"
-msgstr ""
+msgstr "Dernière connexion"
 
 #. Column: when the session expires
 #: sabnzbd/skintext.py
 msgid "Expires"
-msgstr ""
+msgstr "Expire"
 
 #. Column: where the session is used from
 #: sabnzbd/skintext.py
 msgid "IP address"
-msgstr ""
+msgstr "Adresse IP"
 
 #. Accessible name for the icon-only revoke button
 #: sabnzbd/skintext.py
 msgid "Revoke"
-msgstr ""
+msgstr "Révoquer"
 
 #. Button: sign out every session
 #: sabnzbd/skintext.py
 msgid "Revoke all sessions"
-msgstr ""
+msgstr "Révoquer toutes les sessions"
 
 #: sabnzbd/skintext.py
 msgid "This signs out every device, including this one."
-msgstr ""
+msgstr "Cette action déconnecte tous les appareils, y compris celui-ci."
 
 #: sabnzbd/skintext.py
 msgid "Send back to queue"
