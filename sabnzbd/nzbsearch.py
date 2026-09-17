@@ -141,7 +141,13 @@ class Indexer:
         except Exception as error:
             logging.debug("Could not get categories from indexer %s: %s", self.name, error)
             raise
-        logging.debug("Indexer %s reported %s categories", self.name, len(categories))
+
+        logging.debug(
+            "Indexer %s reported %s categories and %s subcategories",
+            self.name,
+            len(categories),
+            sum(len(category.findall("subcat")) for category in categories),
+        )
         return categories
 
     def search(self, text: str, category_ids: tuple = ()) -> tuple[list[SearchResult], int | None]:
