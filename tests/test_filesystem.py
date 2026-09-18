@@ -51,6 +51,22 @@ global_uid = 1000
 set_uid(global_uid)
 
 
+def _symlinks_available() -> bool:
+    """On Windows, creating a symlink needs an elevated shell or Developer Mode.
+    Probe it once, so tests that need real symlinks skip instead of erroring."""
+    with tempfile.TemporaryDirectory() as tmp:
+        try:
+            os.symlink(tmp, os.path.join(tmp, "link"), target_is_directory=True)
+            return True
+        except (OSError, NotImplementedError, AttributeError):
+            return False
+
+
+needs_symlinks = pytest.mark.skipif(
+    not _symlinks_available(), reason="Creating symlinks requires elevation or Developer Mode"
+)
+
+
 class TestFileFolderNameSanitizer:
     def test_empty(self):
         assert filesystem.sanitize_filename(None) is None
@@ -162,6 +178,13 @@ class TestFileFolderNameSanitizer:
             "/../",
             "...",
             "....",
+            # Whitespace must not hide a part from the checks, it is stripped while sanitizing
+            " .. /test.rar",
+            " .. / .. /etc/shadow",
+            "sub/ .. / .. /test.rar",
+            "\t..\t/test.rar",
+            "\xa0../test.rar",
+            " .. ",
         ],
     )
     @pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
@@ -188,6 +211,10 @@ class TestFileFolderNameSanitizer:
             JOB_ADMIN.lower() + "/__verified__",
             "sub/" + JOB_ADMIN + "/__verified__",
             JOB_ADMIN + "/deeper/__verified__",
+            # Whitespace must not hide a part from the checks, it is stripped while sanitizing
+            " " + JOB_ADMIN + " /__verified__",
+            "\t" + JOB_ADMIN + "\t/__verified__",
+            "sub/ " + JOB_ADMIN.lower() + " /__verified__",
         ],
     )
     @pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
@@ -533,6 +560,7 @@ class TestPointsIntoAdminDir:
         # Only a full part counts, not a name that merely starts with it
         assert not filesystem.points_into_admin_dir(os.path.join(base, JOB_ADMIN + "-data", "testfile.rar"), base)
 
+    @needs_symlinks
     def test_link_cannot_hide_it(self, tmp_path):
         """On Windows an NTFS 8.3 alias ("__ADMI~1") points at the admin folder under a
         different name, exactly like a link does here, so the name cannot be trusted"""
@@ -570,6 +598,80 @@ class TestPointsIntoAdminDir:
             filesystem.renamer(filename, os.path.join(base, alias, "__verified__"), create_local_directories=True)
         assert os.path.isfile(filename)
         assert not os.listdir(admin_dir)
+
+
+class TestPointsOutside:
+    def test_inside(self, tmp_path):
+        base = str(tmp_path)
+        assert not filesystem.points_outside(base, os.path.join(base, "file.bin"))
+        assert not filesystem.points_outside(base, os.path.join(base, "sub", "file.bin"))
+
+    def test_outside(self, tmp_path):
+        base = str(tmp_path)
+        assert filesystem.points_outside(base, os.path.join(base, os.pardir, "file.bin"))
+        assert filesystem.points_outside(base, os.path.join(base, "sub", os.pardir, os.pardir, "file.bin"))
+
+    @needs_symlinks
+    def test_root_reached_through_a_link_is_fine(self, tmp_path):
+        """The download and complete folder are allowed to be a link"""
+        base = str(tmp_path)
+        real = os.path.join(base, "real")
+        os.mkdir(real)
+        link = os.path.join(base, "link")
+        os.symlink(real, link)
+
+        assert not filesystem.points_outside(link, os.path.join(link, "file.bin"))
+        assert not filesystem.points_outside(link, os.path.join(real, "file.bin"))
+        assert not filesystem.points_outside(real, os.path.join(link, "file.bin"))
+        assert filesystem.points_outside(link, os.path.join(link, os.pardir, "file.bin"))
+
+    @pytest.mark.skipif(
+        sys.platform.startswith("win"), reason="Windows collapses '..' before the filesystem resolves links"
+    )
+    def test_link_inside_the_root_cannot_redirect(self, tmp_path):
+        base = str(tmp_path)
+        root = os.path.join(base, "root")
+        os.mkdir(root)
+        os.symlink(base, os.path.join(root, "up"))
+        os.symlink(".", os.path.join(root, "pivot"))
+
+        assert filesystem.points_outside(root, os.path.join(root, "up", "file.bin"))
+        assert filesystem.points_outside(root, os.path.join(root, "pivot", os.pardir, "file.bin"))
+        assert not filesystem.points_outside(root, os.path.join(root, "pivot", "file.bin"))
+
+
+class TestMoveToPath:
+    @needs_symlinks
+    def test_link_in_a_parent_cannot_redirect(self, tmp_path):
+        """A linked directory in the path redirects the move just like a linked leaf"""
+        base = str(tmp_path)
+        root = os.path.join(base, "complete")
+        outside = os.path.join(base, "outside")
+        os.makedirs(root)
+        os.makedirs(outside)
+        os.symlink(outside, os.path.join(root, "sub"))
+
+        source = os.path.join(base, "source.bin")
+        Path(source).touch()
+        ok, new_path = filesystem.move_to_path(source, os.path.join(root, "sub", "moved.bin"), root=root)
+
+        assert not ok
+        assert not new_path
+        assert os.path.isfile(source)
+        assert not os.listdir(outside)
+
+    def test_move_inside_the_root_still_works(self, tmp_path):
+        base = str(tmp_path)
+        root = os.path.join(base, "complete")
+        os.makedirs(root)
+        source = os.path.join(base, "source.bin")
+        Path(source).touch()
+
+        ok, new_path = filesystem.move_to_path(source, os.path.join(root, "sub", "moved.bin"), root=root)
+
+        assert ok
+        assert os.path.isfile(new_path)
+        assert not os.path.isfile(source)
 
 
 class TestFirstExistingPath:
@@ -1003,6 +1105,16 @@ class TestGetUniqueDirFilename:
         fake_fs.create_file(first_filename)
         assert filesystem.get_unique_filename(test_file) == "/some/filename.2"
 
+    def test_dangling_link_is_taken(self, tmp_path):
+        """A link whose target is missing still occupies the name, and handing it out would
+        write through it to wherever it points"""
+        base = str(tmp_path)
+        test_file = os.path.join(base, "file.name")
+        Path(test_file).touch()
+        os.symlink(os.path.join(base, "does_not_exist"), os.path.join(base, "file.1.name"))
+
+        assert filesystem.get_unique_filename(test_file) == os.path.join(base, "file.2.name")
+
 
 @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows specific tests")
 class TestGetUniqueDirFilenameWin:
@@ -1369,6 +1481,34 @@ class TestRenamer:
 
         # Cleanup working directory
         shutil.rmtree(dirname)
+
+    @pytest.mark.skipif(
+        sys.platform.startswith("win"), reason="Windows collapses '..' before the filesystem resolves links"
+    )
+    def test_link_cannot_redirect_rename(self, tmp_path):
+        """The filesystem resolves a link before it handles "..", so "pivot/.." lands one
+        level higher than normalizing the path on its own suggests"""
+        base = str(tmp_path)
+        dirname = os.path.join(base, "job")
+        os.mkdir(dirname)
+        os.symlink(".", os.path.join(dirname, "pivot"))
+
+        filename = os.path.join(dirname, "myfile.txt")
+        Path(filename).touch()
+        escaped = os.path.join(base, "escaped.bin")
+        with pytest.raises(OSError):
+            filesystem.renamer(
+                filename, os.path.join(dirname, "pivot", "..", "escaped.bin"), create_local_directories=True
+            )
+        assert os.path.isfile(filename)
+        assert not os.path.exists(escaped)
+
+        # A link that leaves the directory outright is no stepping stone either
+        os.symlink(base, os.path.join(dirname, "outside"))
+        with pytest.raises(OSError):
+            filesystem.renamer(filename, os.path.join(dirname, "outside", "escaped.bin"), create_local_directories=True)
+        assert os.path.isfile(filename)
+        assert not os.path.exists(escaped)
 
 
 class TestRestrictedUnpickler:

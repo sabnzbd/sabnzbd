@@ -102,6 +102,7 @@ from sabnzbd.api import (
     Ttemplate,
 )
 from sabnzbd.security import (
+    ProxyTrustMiddleware,
     SESSION_COOKIE_FLASH,
     SESSION_COOKIE_USER,
     _MSG_APIKEY_NOT_ON_PAGES,
@@ -118,9 +119,12 @@ from sabnzbd.security import (
     csrf_token_for,
     csrf_token_matches,
     login_bypassed,
+    login_configured,
     login_cooldown_remaining,
+    peer_is_known,
     presented_csrf_token,
     record_login_failure,
+    unresolved_client_reason,
     use_secure_cookies,
     validate_any_session,
     validate_csrf,
@@ -196,7 +200,7 @@ def check_hostname(request: Request) -> bool:
     if only allowed to be accessed via localhost.
     """
     # If login is enabled, no API-key can be deducted
-    if cfg.username() and cfg.password():
+    if login_configured():
         return True
 
     # Don't allow requests without Host
@@ -253,7 +257,7 @@ def check_apikey(request: Request) -> Optional[Response]:
     # The entry carries the access level required for this specific api-call
     req_access = entry.access_level
     if not check_access(request, access_type=req_access, warn_user=True):
-        return forbidden(_MSG_ACCESS_DENIED)
+        return access_denied(request)
 
     # Skip for auth and version calls
     if mode in ("version", "auth"):
@@ -313,7 +317,7 @@ def template_filtered_response(file: str, search_list: dict[str, Any], status_co
 
 
 def log_warning_and_ip(request: Request, txt: str):
-    """Include the IP and the Proxy-IP for warnings (Starlette version)"""
+    """Include the IP and the Proxy-IP for warnings"""
     if cfg.api_warnings():
         logging.warning("%s %s", txt, client_address_info(request))
 
@@ -427,7 +431,7 @@ class SecurityMiddleware:
 
         # Check if external access and if it's allowed
         if not check_access(request, access_type=self.access_type, warn_user=True):
-            return forbidden(_MSG_ACCESS_DENIED)
+            return access_denied(request)
 
         # An apikey on a route that does not take one: the refusals below say so rather than
         # redirecting to the login form. Only consulted once the request is refused anyway.
@@ -466,6 +470,13 @@ def forbidden(message: str) -> PlainTextResponse:
     return PlainTextResponse(message if cfg.api_warnings() else "", status_code=403)
 
 
+def access_denied(request: Request) -> PlainTextResponse:
+    """403 response, with the reason the client could not be resolved."""
+    if peer_is_known(request) and (reason := unresolved_client_reason(request)):
+        return forbidden("%s - %s" % (_MSG_ACCESS_DENIED, reason))
+    return forbidden(_MSG_ACCESS_DENIED)
+
+
 ##############################################################################
 # Page definitions - Main
 ##############################################################################
@@ -483,12 +494,16 @@ def main_index(request: Request):
         info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
         info["platform"] = sabnzbd.PLATFORM
 
+        login_set_up = login_configured()
+
         # Have logout only if inet=5, only when we are external
-        info["have_logout"] = (
-            cfg.username()
-            and cfg.password()
-            and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(request, access_type=6)))
+        info["have_logout"] = login_set_up and (
+            cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(request, access_type=6))
         )
+
+        # Shown whenever a login is configured, even where this request's own login is
+        # bypassed, so a LAN admin can still revoke external sessions
+        info["have_sessions"] = login_set_up
 
         bytespersec_list = sabnzbd.BPSMeter.get_bps_list()
         info["bytespersec_list"] = ",".join([str(bps) for bps in bytespersec_list])
@@ -994,6 +1009,7 @@ SPECIAL_LIST_LIST = (
     "quick_check_ext_ignore",
     "host_whitelist",
     "local_ranges",
+    "xff_trusted_hosts",
     "ext_rename_ignore",
 )
 
@@ -1154,7 +1170,7 @@ def index_config_server(request: Request):
     )
     for svr in server_names:
         new.append(servers[svr].get_dict(for_public_api=True))
-        t, m, w, d, daily, articles_tried, articles_success = sabnzbd.BPSMeter.amounts(svr)
+        t, m, w, d, daily, articles_tried, articles_failed = sabnzbd.BPSMeter.amounts(svr)
         if t:
             new[-1]["amounts"] = (
                 to_units(t),
@@ -1163,7 +1179,7 @@ def index_config_server(request: Request):
                 to_units(d),
                 daily,
                 articles_tried,
-                articles_success,
+                articles_failed,
             )
         new[-1]["quota_left"] = to_units(
             servers[svr].quota.get_int() - sabnzbd.BPSMeter.grand_total.get(svr, 0) + servers[svr].usage_at_start()
@@ -1355,12 +1371,12 @@ def _rss_redirect(feed: str = "") -> RedirectResponse:
     return base_redirect_response(_RSS_ROOT)
 
 
-def _rss_flash_redirect(request: Request, feed: str, msg: str = "") -> RedirectResponse:
+def _rss_flash_redirect(request: Request, feed: str, errors: Optional[list[str]] = None) -> RedirectResponse:
     """Store a feed read-out result as a one-shot flash in the client session and
     redirect back to the RSS page. The flash lives in the per-client signed
     session cookie rather than shared module state, so concurrent requests (other
     tabs, the API path) can't clobber each other's result."""
-    request.session["rss_flash"] = {"feed": feed, "msg": msg}
+    request.session["rss_flash"] = {"feed": feed, "errors": errors or []}
     return _rss_redirect(feed)
 
 
@@ -1401,7 +1417,7 @@ def config_rss_index(request: Request):
         # re-evaluation is performed by the POST action handler that redirected
         # us, which leaves its result message as a one-shot flash in the session.
         flash = request.session.pop("rss_flash", None)
-        conf["error"] = flash["msg"] if flash and flash.get("feed") == active_feed else ""
+        conf["errors"] = flash["errors"] if flash and flash.get("feed") == active_feed else []
         conf["downloaded"], conf["matched"], conf["unmatched"] = GetRssLog(active_feed)
 
     # Find a unique new Feed name
@@ -1516,8 +1532,8 @@ def config_rss_add_rss_feed(request: Request):
             config.save_config()
             # Read out the new feed now (this handler runs in the threadpool) and
             # carry the result message to the redirected page via the session flash.
-            msg = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
-            return _rss_flash_redirect(request, feed, msg)
+            errors = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
+            return _rss_flash_redirect(request, feed, errors)
         else:
             return base_redirect_response(_RSS_ROOT)
     else:
@@ -1556,8 +1572,8 @@ def config_rss_download_rss_feed(request: Request):
     if not feed:
         return _rss_redirect()
     # Network read-out with forced download; this handler runs in the threadpool.
-    msg = sabnzbd.RSSReader.process_feed(feed, readout=True, download=True, force=True)
-    return _rss_flash_redirect(request, feed, msg)
+    errors = sabnzbd.RSSReader.process_feed(feed, readout=True, download=True, force=True)
+    return _rss_flash_redirect(request, feed, errors)
 
 
 @secured_expose(route="/config/rss/clean_rss_jobs", check_configlock=True, methods=["POST"])
@@ -1579,14 +1595,14 @@ def config_rss_test_rss_feed(request: Request):
     if not feed:
         return _rss_redirect()
     # Network read-out; this handler runs in the threadpool.
-    msg = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
+    errors = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
     # This endpoint is only called via AJAX; the client navigates to the feed
     # page itself once we return. Returning a redirect here would make the XHR
     # follow it transparently and consume the one-shot session flash before the
     # browser navigation can read it, so store the flash and return a plain
     # response instead.
-    request.session["rss_flash"] = {"feed": feed, "msg": msg}
-    return PlainTextResponse(msg)
+    request.session["rss_flash"] = {"feed": feed, "errors": errors}
+    return PlainTextResponse("\n".join(errors))
 
 
 @secured_expose(route="/config/rss/eval_rss_feed", check_configlock=True, methods=["POST"])
@@ -2371,11 +2387,10 @@ class RequestLoggingMiddleware:
             if cfg.api_logging() and (params := scope.get("state", {}).get("params")) is not None:
                 request = Request(scope)
                 logging.debug(
-                    "Request %s %s from %s [%s] %s",
+                    "Request %s %s from %s %s",
                     request.method,
                     request.url.path,
                     client_address_info(request),
-                    request.headers.get("User-Agent"),
                     dict(params),
                 )
 
@@ -2572,6 +2587,7 @@ def create_app() -> Starlette:
     routes.append(Mount("/", routes=interface_routes))
 
     middleware = [
+        Middleware(ProxyTrustMiddleware),
         Middleware(XFrameOptionsMiddleware),
         Middleware(HostnameCheckMiddleware),
         Middleware(RequestLoggingMiddleware),

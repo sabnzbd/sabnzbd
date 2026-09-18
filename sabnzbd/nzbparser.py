@@ -170,6 +170,7 @@ def process_nzb_archive_file(
     Accepts archive files with ONLY nzb/nfo/folder files in it.
     """
     nzo_ids = []
+    added_nzos: list[NzbObject] = []
     if catdir is None:
         catdir = cat
     filename, cat = name_to_cat(filename, catdir)
@@ -247,7 +248,12 @@ def process_nzb_archive_file(
                     if nzo:
                         # We can only use existing nzo_id once
                         nzo_id = None
-                        nzo_ids.append(sabnzbd.NzbQueue.add(nzo))
+                        added_nzos.append(nzo)
+                        nzo_ids.append(sabnzbd.NzbQueue.add(nzo, save=False))
+
+        # One queue-admin save for the whole archive
+        if added_nzos:
+            sabnzbd.NzbQueue.save(added_nzos)
 
         # Close the pointer to the compressed file
         zf.close()

@@ -958,7 +958,7 @@ class TestRSS:
         # First run: ignore_first=True, download=True (scheduled-like behaviour)
         # This should mark the entry as GOOD+initial_scan, but not download it
         msg_first = reader.process_feed(feed_name, download=True, ignore_first=True)
-        assert msg_first == ""
+        assert msg_first == []
 
         job_first = repo.find_job_by_url(feed_name, "http://example.test/starred-episode")
         assert job_first is not None
@@ -968,7 +968,7 @@ class TestRSS:
 
         # Simulate a later run: readout only, no download
         msg_second = reader.process_feed(feed_name, download=True, ignore_first=False)
-        assert msg_second == ""
+        assert msg_second == []
 
         job_second = repo.find_job_by_url(feed_name, "http://example.test/starred-episode")
         assert job_second is not None
@@ -981,7 +981,7 @@ class TestRSS:
         # Third phase: force download; this should clear the starred status
         add_url_mock = mocker.patch("sabnzbd.urlgrabber.add_url")
         msg_third = reader.process_feed(feed_name, download=True, ignore_first=False, force=True)
-        assert msg_third == ""
+        assert msg_third == []
         assert add_url_mock.call_count == 1
 
         job_third = repo.find_job_by_url(feed_name, "http://example.test/starred-episode")
@@ -1047,6 +1047,52 @@ class TestRSS:
 
         # Shared link must only appear once
         assert links == {shared_link, a_only_link, b_only_link}
+
+    def test_rssreader_failing_uri_does_not_block_other_uris(self, httpserver: HTTPServer, tmp_rss):
+        """An empty or failing URI must not stop the remaining URIs of the same feed."""
+        repo, reader = tmp_rss
+        good_link = "http://example.test/still-read"
+
+        empty_xml = """<?xml version="1.0" encoding="utf-8"?>
+        <rss version="2.0">
+        <channel>
+            <title>Empty</title>
+        </channel>
+        </rss>
+        """
+        good_xml = f"""<?xml version="1.0" encoding="utf-8"?>
+        <rss version="2.0">
+        <channel>
+            <title>Good</title>
+            <item>
+                <title>Some.Show.S01E01.720p</title>
+                <link>{good_link}</link>
+                <guid>http://example.test/info/still-read</guid>
+                <category>tv</category>
+                <pubDate>Wed, 01 Jan 2025 00:00:00 GMT</pubDate>
+            </item>
+        </channel>
+        </rss>
+        """
+
+        httpserver.expect_request("/rss_empty.xml").respond_with_data(empty_xml, content_type="application/rss+xml")
+        httpserver.expect_request("/rss_error.xml").respond_with_data("", status=500)
+        httpserver.expect_request("/rss_good.xml").respond_with_data(good_xml, content_type="application/rss+xml")
+
+        feed_name = "PartlyFailingFeed"
+        uri_empty = httpserver.url_for("/rss_empty.xml")
+        uri_error = httpserver.url_for("/rss_error.xml")
+        uri_good = httpserver.url_for("/rss_good.xml")
+        self.setup_rss(feed_name, f"{uri_empty} {uri_error} {uri_good}")
+
+        msg = reader.process_feed(feed_name)
+
+        # Both problems are reported, but the working URI was read out
+        assert msg == [
+            "RSS Feed %s was empty" % uri_empty,
+            "Server side error (server code 500); could not get %s on %s" % (feed_name, uri_error),
+        ]
+        assert repo.find_job_by_url(feed_name, good_link) is not None
 
     def test_purge_removed_feeds_only_drops_unconfigured_feeds(self, tmp_rss):
         """Records should only be dropped for feeds that are no longer configured."""
@@ -1118,11 +1164,11 @@ class TestRSS:
             )
         )
 
-        assert reader.process_feed(feed_name, readout=False) == ""
+        assert reader.process_feed(feed_name, readout=False) == []
         assert repo.find_job_by_url(feed_name, old_url) is not None
 
         # A real readout does not find the link anymore, so it gets purged
-        assert reader.process_feed(feed_name, readout=True) == ""
+        assert reader.process_feed(feed_name, readout=True) == []
         assert repo.find_job_by_url(feed_name, old_url) is None
 
     def test_downloaded_item_still_in_feed_is_not_redownloaded(self, httpserver: HTTPServer, tmp_rss, mocker):
@@ -1148,7 +1194,7 @@ class TestRSS:
         self.setup_rss(feed_name, httpserver.url_for("/rss_long_lived.xml"))
 
         add_url = mocker.patch("sabnzbd.urlgrabber.add_url")
-        assert reader.process_feed(feed_name, download=True, force=True) == ""
+        assert reader.process_feed(feed_name, download=True, force=True) == []
         assert add_url.call_count == 1
         assert repo.find_job_by_url(feed_name, link).state is RSSState.DOWNLOADED
 
@@ -1158,12 +1204,12 @@ class TestRSS:
         repo.db.execute("UPDATE rss SET seen_at = ? WHERE feed = ?", (stale, feed_name))
 
         # Still being listed should refresh seen_at instead of purging the job
-        assert reader.process_feed(feed_name, download=True) == ""
+        assert reader.process_feed(feed_name, download=True) == []
         job = repo.find_job_by_url(feed_name, link)
         assert job is not None
         assert job.state is RSSState.DOWNLOADED
         assert job.seen_at.timestamp() > stale
 
         # And it must not be picked up as a new job on the next scans
-        assert reader.process_feed(feed_name, download=True) == ""
+        assert reader.process_feed(feed_name, download=True) == []
         assert add_url.call_count == 1

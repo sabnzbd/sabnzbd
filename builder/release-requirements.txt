@@ -1,5 +1,5 @@
 # All sub-dependencies are listed below and installed with --no-dependencies for security
-PyGithub==2.9.1
+PyGithub==2.10.0
 praw==8.0.3
 pefile==2024.8.26
 
@@ -14,11 +14,11 @@ urllib3==2.7.0
 prawcore==4.0.0
 defusedxml==0.7.1
 update-checker==1.0.0
-websocket-client==1.9.0
+websocket-client==1.9.1
 
 # requests dependencies
 charset_normalizer==3.5.1
-idna==3.18
+idna==3.19
 certifi==2026.7.22
 
 # cryptography (via pyjwt[crypto]) dependencies

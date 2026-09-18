@@ -19,68 +19,182 @@
 sabnzbd.sessionstore - Storage for web-UI login sessions
 """
 
+import hashlib
 import logging
+import threading
 import time
-from typing import Optional, TypedDict
+from typing import Any, Optional, TypedDict
 
+import sabnzbd.cfg as cfg
 from sabnzbd.constants import SESSIONS_FILE_NAME, SESSIONS_VERSION
+from sabnzbd.decorators import synchronized
+from sabnzbd.encoding import utob
 from sabnzbd.filesystem import load_admin, save_admin
+
+# Cap the stored user-agent so a client cannot grow sessions.sab unbounded
+MAX_USER_AGENT_LENGTH = 200
+# Public session id length; it is a prefix of the token hash
+SESSION_ID_LENGTH = 16
 
 
 class Session(TypedDict):
     created: int
     expires: int
+    last_seen: int
     cred_fingerprint: str
+    ip: str
+    user_agent: str
+
+
+def public_session_id(token_hash: str) -> str:
+    """Public id for a session: a prefix of its token hash, so the hash is never exposed"""
+    return token_hash[:SESSION_ID_LENGTH]
+
+
+def credential_fingerprint() -> str:
+    """Fingerprint of the current username/password, stored with each session, so changing either invalidates all sessions"""
+    return hashlib.sha256(utob("%s:%s" % (cfg.username(), cfg.password()))).hexdigest()
 
 
 class SessionStore:
     """Login sessions, held as a dict and written to the admin folder on every change.
 
-    Only ever touched from the web server's event loop, so it needs no locking.
+    Touched from both the web server's event loop and the PostProcessor thread (via
+    save_state() -> flush()), so every access to self._sessions goes through self.lock,
+    via the @synchronized() decorator.
     """
 
     def __init__(self):
         self._sessions: Optional[dict[str, Session]] = None
+        self.lock = threading.RLock()
 
     @property
+    @synchronized()
     def sessions(self) -> dict[str, Session]:
         """The sessions, loaded from disk on first use"""
         if self._sessions is None:
             self._load()
         return self._sessions
 
+    @staticmethod
+    def _live(sessions: dict[str, Session]) -> dict[str, Session]:
+        """The entries that are neither expired nor left over from before a credential
+        change - the latter would otherwise keep a revoked session's IP/user-agent on
+        disk for the rest of its natural expiry"""
+        now = int(time.time())
+        fingerprint = credential_fingerprint()
+        return {
+            token: s for token, s in sessions.items() if s["expires"] > now and s["cred_fingerprint"] == fingerprint
+        }
+
+    def _prune_and_persist(self, before: dict[str, Session]):
+        """Adopt the still-valid entries; persist if any were dropped, so a dead
+        session's IP/user-agent does not linger on disk until something else writes.
+        Caller holds self.lock."""
+        live = self._live(before)
+        self._sessions = live
+        if len(live) != len(before):
+            self._save()
+
     def _load(self):
+        """Caller holds self.lock."""
         self._sessions = {}
         try:
             if data := load_admin(SESSIONS_FILE_NAME, silent=True):
                 version, sessions = data
                 if version == SESSIONS_VERSION:
-                    now = int(time.time())
-                    self._sessions = {token: s for token, s in sessions.items() if s["expires"] > now}
+                    self._prune_and_persist(sessions)
         except Exception:
             logging.info("Failed to load sessions", exc_info=True)
 
     def _save(self):
-        save_admin((SESSIONS_VERSION, self.sessions), SESSIONS_FILE_NAME)
+        """Caller holds self.lock."""
+        save_admin((SESSIONS_VERSION, self._sessions), SESSIONS_FILE_NAME)
 
+    @synchronized()
     def get(self, token_hash: str) -> Optional[Session]:
         """Return the session stored for token_hash, or None"""
         return self.sessions.get(token_hash)
 
-    def add(self, token_hash: str, created: int, expires: int, cred_fingerprint: str):
-        """Store a new login session, dropping any that expired in the meantime"""
-        now = int(time.time())
-        self._sessions = {token: s for token, s in self.sessions.items() if s["expires"] > now}
-        self._sessions[token_hash] = Session(created=created, expires=expires, cred_fingerprint=cred_fingerprint)
+    @synchronized()
+    def add(self, token_hash: str, created: int, expires: int, cred_fingerprint: str, ip: str, user_agent: str):
+        """Store a new login session, dropping any that are dead in the meantime"""
+        self._sessions = self._live(self.sessions)
+        self._sessions[token_hash] = Session(
+            created=created,
+            expires=expires,
+            last_seen=created,
+            cred_fingerprint=cred_fingerprint,
+            ip=ip,
+            user_agent=user_agent[:MAX_USER_AGENT_LENGTH],
+        )
         self._save()
 
-    def touch(self, token_hash: str, expires: int):
-        """Extend the expiry of a session (sliding window)"""
-        if session := self.get(token_hash):
+    @synchronized()
+    def mark_seen(self, token_hash: str, now: int, ip: str, user_agent: str) -> Optional[Session]:
+        """Update last_seen/ip/user_agent in memory only, so a request can keep them
+        current without a disk write on every call. touch() persists on top of this,
+        and flush() catches anything still unwritten at shutdown."""
+        if session := self.sessions.get(token_hash):
+            session["last_seen"] = now
+            session["ip"] = ip
+            session["user_agent"] = user_agent[:MAX_USER_AGENT_LENGTH]
+        return session
+
+    @synchronized()
+    def touch(self, token_hash: str, expires: int, last_seen: int, ip: str, user_agent: str):
+        """Record a session being used: new expiry, plus the same fields as mark_seen, persisted"""
+        if session := self.mark_seen(token_hash, last_seen, ip, user_agent):
             session["expires"] = expires
             self._save()
 
+    @synchronized()
     def delete(self, token_hash: str):
         """Delete a single session"""
         if self.sessions.pop(token_hash, None):
             self._save()
+
+    @synchronized()
+    def delete_by_id(self, session_id: str) -> bool:
+        """Delete the session with this public id; return whether one matched"""
+        for token_hash in list(self.sessions):
+            if public_session_id(token_hash) == session_id:
+                del self._sessions[token_hash]
+                self._save()
+                return True
+        return False
+
+    @synchronized()
+    def delete_all(self):
+        """Drop every session"""
+        self._sessions = {}
+        self._save()
+
+    @synchronized()
+    def flush(self):
+        """Force a persist of state the throttled per-request save may not have
+        written yet (mainly last_seen/ip/user_agent), and prune anything dead
+        since. Called on every save_state(), so also from the PostProcessor thread,
+        not just at shutdown; a no-op if the store was never loaded this run. Unlike
+        _prune_and_persist, this always saves - that is the point of a forced flush."""
+        if self._sessions is not None:
+            self._sessions = self._live(self._sessions)
+            self._save()
+
+    @synchronized()
+    def public_list(self) -> list[dict[str, Any]]:
+        """Sessions valid for the web-UI: live and matching the current credentials,
+        newest activity first, without the token hash"""
+        self._prune_and_persist(self.sessions)
+        sessions = [
+            {
+                "id": public_session_id(token_hash),
+                "created": s["created"],
+                "last_seen": s["last_seen"],
+                "expires": s["expires"],
+                "ip": s["ip"],
+                "user_agent": s["user_agent"],
+            }
+            for token_hash, s in self._sessions.items()
+        ]
+        return sorted(sessions, key=lambda s: s["last_seen"], reverse=True)

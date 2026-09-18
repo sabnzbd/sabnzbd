@@ -751,27 +751,34 @@ LOG_INI_HIDE_RE = re.compile(
 LOG_NNTP_AUTH_RE = re.compile(rb"(authinfo (?:user|pass)) [^\\'\'\r\n]+", re.I)
 LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
 LOG_REMOTE_LABEL_RE = re.compile(
-    rb"(?P<ip>(?:\d{1,3}\.){3}\d{1,3}|(?:[A-Fa-f0-9:]+:+)+[A-Fa-f0-9.]+)"
+    rb"(?P<ip>\[[A-Fa-f0-9:.]+]|(?:\d{1,3}\.){3}\d{1,3}|(?:[A-Fa-f0-9:]+:+)+[A-Fa-f0-9.]+)"
+    rb"(?::(?P<port>\d+))?"
     rb"(?:\s+\(X-Forwarded-For:\s*(?P<xff>[^)]+)\))?"
+    rb"(?:\s+\(via\s+(?P<via>[^)]+)\))?"
     rb"\s+\[(?P<ua>[^]]+)]"
 )
 
 
+def keep_local_address(value: bytes) -> bytes:
+    """Keep an address that is loopback or on the local network, replace any other. Square
+    brackets around an IPv6 address are part of the label and are kept."""
+    address = value.decode().strip("[]")
+    if address and (is_loopback_addr(address) or is_lan_addr(address)):
+        return value
+    return b"<REMOVED>"
+
+
 def remote_label_replacement(m: re.Match[bytes]) -> bytes:
     """Apply regex substitutions to remote labels, allows local IP addresses"""
-    if (ip_str := m.group("ip").decode()) and (is_loopback_addr(ip_str) or is_lan_addr(ip_str)):
-        ip = m.group("ip")
-    else:
-        ip = b"<REMOVED>"
+    label = keep_local_address(m.group("ip"))
+    if port := m.group("port"):
+        label += b":" + port
     if m.group("xff"):
-        xff = []
-        for xff_ip in m.group("xff").decode().split(", "):
-            if is_loopback_addr(xff_ip) or is_lan_addr(xff_ip):
-                xff.append(xff_ip.encode())
-            else:
-                xff.append(b"<REMOVED>")
-        return b"%s (X-Forwarded-For: %s) [%s]" % (ip, b", ".join(xff), m.group("ua"))
-    return b"%s [%s]" % (ip, m.group("ua"))
+        xff = [keep_local_address(xff_ip.encode()) for xff_ip in m.group("xff").decode().split(", ")]
+        label += b" (X-Forwarded-For: %s)" % b", ".join(xff)
+    if via := m.group("via"):
+        label += b" (via %s)" % keep_local_address(via)
+    return label + b" [%s]" % m.group("ua")
 
 
 def sanitize_line(line: bytes, cur_user_bytes: Optional[bytes] = None) -> bytes:
@@ -831,6 +838,27 @@ def build_log_response() -> StreamingResponse:
 
 def _api_showlog(name: str, kwargs: QueryParams) -> StreamingResponse:
     return build_log_response()
+
+
+def _api_sessions(name: str, kwargs: QueryParams) -> Response:
+    """API: list the active web-UI login sessions"""
+    return report(kwargs, keyword="sessions", data=sabnzbd.SessionStore.public_list())
+
+
+def _api_sessions_delete(name: str, kwargs: QueryParams) -> Response:
+    """API: revoke a single session, accepts value(=session id)"""
+    session_id = kwargs.get("value")
+    if not session_id:
+        return report(kwargs, _MSG_NO_VALUE)
+    if not sabnzbd.SessionStore.delete_by_id(session_id):
+        return report(kwargs, _MSG_NO_ITEM)
+    return report(kwargs)
+
+
+def _api_sessions_delete_all(name: str, kwargs: QueryParams) -> Response:
+    """API: revoke every session, the caller's own included"""
+    sabnzbd.SessionStore.delete_all()
+    return report(kwargs)
 
 
 def _api_get_cats(name: str, kwargs: QueryParams) -> Response:
@@ -1112,7 +1140,7 @@ def _api_server_stats(name: str, kwargs: QueryParams) -> Response:
     stats = {"total": sum_t, "month": sum_m, "week": sum_w, "day": sum_d, "servers": {}}
 
     for svr in config.get_servers():
-        t, m, w, d, daily, articles_tried, articles_success = sabnzbd.BPSMeter.amounts(svr)
+        t, m, w, d, daily, articles_tried, articles_failed = sabnzbd.BPSMeter.amounts(svr)
         stats["servers"][svr] = {
             "total": t,
             "month": m,
@@ -1120,7 +1148,7 @@ def _api_server_stats(name: str, kwargs: QueryParams) -> Response:
             "day": d,
             "daily": daily,
             "articles_tried": articles_tried,
-            "articles_success": articles_success,
+            "articles_failed": articles_failed,
         }
 
     return report(kwargs, keyword="", data=stats)
@@ -1165,6 +1193,9 @@ _api_table: ApiHandlerTable = {
     ("shutdown", ""): ApiEntry(_api_shutdown, 3),
     ("warnings", ""): ApiEntry(_api_warnings, 2),
     ("showlog", ""): ApiEntry(_api_showlog, 3),
+    ("sessions", ""): ApiEntry(_api_sessions, 3),
+    ("sessions", "delete"): ApiEntry(_api_sessions_delete, 3),
+    ("sessions", "delete_all"): ApiEntry(_api_sessions_delete_all, 3),
     ("get_cats", ""): ApiEntry(_api_get_cats, 2),
     ("get_scripts", ""): ApiEntry(_api_get_scripts, 2),
     ("version", ""): ApiEntry(_api_version, 1),

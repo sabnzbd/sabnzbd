@@ -22,6 +22,7 @@ tests.test_misc - Testing functions in misc.py
 import builtins
 import datetime
 import functools
+import logging
 import os
 import socket
 import subprocess
@@ -737,6 +738,17 @@ class TestMisc:
             ("::ffff:192.168.1.100", True),
             ("::ffff:1.1.1.1", False),
             ("::ffff:127.0.0.1", False),
+            ("100.64.0.1", False),  # Shared address space (CGNAT), not a local network
+            # ipaddress.is_private covers all of these, but none is a local network:
+            ("2002::1", False),  # 6to4, globally routable
+            ("2001::1", False),  # Teredo
+            ("203.0.113.5", False),  # TEST-NET-3
+            ("192.0.2.5", False),  # TEST-NET-1
+            ("198.51.100.5", False),  # TEST-NET-2
+            ("198.18.0.5", False),  # Benchmarking
+            ("240.0.0.1", False),  # Reserved
+            ("0.1.2.3", False),  # "This network"
+            ("2001:db8::1", False),  # Documentation
         ],
     )
     def test_is_lan_addr(self, value, result):
@@ -840,7 +852,8 @@ class TestMisc:
             ("108.1.2.3", "10", False),  # This used to be allowed with the bad setting!
             ("108.1.2.3", "10.", False),
             ("192.168.43.21", "192.168.0.0/16", True),
-            ("192.168.43.21", "192.168.0.0/255.255.255.0", True),
+            ("192.168.43.21", "192.168.43.0/255.255.255.0", True),  # Netmask form of /24
+            ("192.168.43.21", "192.168.0.0/255.255.255.0", False),  # Netmask form of a /24 that excludes it
             ("::ffff:192.168.43.21", "192.168.43.0/24", True),  # IPv4-mapped IPv6 ("dual-stack") notation
             ("::FFff:192.168.43.21", "192.168.43.0/24", True),
             ("::ffff:192.168.12.34", "192.168.43.0/24", False),
@@ -871,7 +884,74 @@ class TestMisc:
         ],
     )
     def test_ip_in_subnet(self, ip, subnet, result):
-        misc.ip_in_subnet(ip, subnet) is result
+        assert misc.ip_in_subnet(ip, subnet) is result
+
+    @pytest.mark.parametrize(
+        "ranges, result",
+        [
+            # Nothing configured means the whole private address space
+            ([], misc.LAN_RANGES),
+            (None, misc.LAN_RANGES),
+            # Narrower than a private range, so the narrower one is the overlap
+            (["192.168.1.0/24"], ["192.168.1.0/24"]),
+            (["192.168.1."], ["192.168.1.0/24"]),  # Old-style entry
+            (["fd00::/8"], ["fd00::/8"]),
+            # Wider than a private range, so the private range is the overlap
+            (["10.0.0.0/7"], ["10.0.0.0/8"]),
+            # Public ranges have no overlap at all
+            (["8.8.8.0/24"], []),
+            (["dead:beef::/32"], []),
+            (["not-a-network"], []),
+            # A mixture keeps only the part that is private
+            (["192.168.1.0/24", "8.8.8.0/24"], ["192.168.1.0/24"]),
+        ],
+    )
+    def test_lan_ranges_within(self, ranges, result):
+        assert misc.lan_ranges_within(ranges) == result
+
+    @pytest.mark.parametrize(
+        "ranges, expected_warning",
+        [
+            (["100.64.0.0/10"], "not a private network"),
+            (["8.8.8.0/24"], "not a private network"),
+            (["nonsense"], "Ignoring invalid entry"),
+            # Nothing to say about a range that is kept
+            (["192.168.1.0/24"], None),
+        ],
+    )
+    def test_lan_ranges_within_says_what_it_dropped(self, ranges, expected_warning, caplog):
+        """A dropped range silently stops conferring forwarded-header trust, so the proxy
+        living in it starts being refused with nothing at start-up to explain why."""
+        with caplog.at_level(logging.WARNING):
+            misc.lan_ranges_within(ranges)
+        messages = [record.getMessage() for record in caplog.records]
+        if expected_warning:
+            assert any(expected_warning in message and ranges[0] in message for message in messages)
+        else:
+            assert not messages
+
+    @pytest.mark.parametrize(
+        "subnet, result",
+        [
+            ("192.168.1.0/24", "192.168.1.0/24"),  # Already canonical
+            ("192.168.1.", "192.168.1.0/24"),  # Old local_ranges style
+            ("192.168.1", "192.168.1.0/24"),
+            ("10", "10.0.0.0/8"),
+            ("10.42.0.0/255.255.0.0", "10.42.0.0/16"),  # Netmask form
+            ("192.168.1.5", "192.168.1.5/32"),  # Bare address
+            ("::1", "::1/128"),
+            ("FC00::/7", "fc00::/7"),  # Canonicalised
+            ("2001:db8:", "2001:db8::/32"),
+            ("192.168.1.5/24", None),  # Host bits set, ip_in_subnet() never matched this
+            ("not-a-network", None),
+            ("654.3.2.1/24", None),
+            ("", None),
+            (None, None),
+        ],
+    )
+    def test_parse_subnet(self, subnet, result):
+        network = misc.parse_subnet(subnet)
+        assert (str(network) if network else None) == result
 
     @pytest.mark.parametrize(
         "ip, result",
@@ -881,7 +961,7 @@ class TestMisc:
             ("::ffff:192.168.1.255", "192.168.1.255"),
             ("::ffff:8.8.8.8", "8.8.8.8"),
             ("2007::2021", "2007::2021"),
-            ("::ffff:2007:2021", "::ffff:2007:2021"),
+            ("::ffff:2007:2021", "32.7.32.33"),  # Hex form of ::ffff:0:0/96 is still IPv4-mapped
             ("2007::ffff:2021", "2007::ffff:2021"),
             ("12.34.56.78", "12.34.56.78"),
             ("foobar", "foobar"),
@@ -891,7 +971,7 @@ class TestMisc:
         ],
     )
     def test_strip_ipv4_mapped_notation(self, ip, result):
-        misc.strip_ipv4_mapped_notation(ip) == result
+        assert misc.strip_ipv4_mapped_notation(ip) == result
 
     def test_sort_to_opts(self):
         for result, sort_type in GUESSIT_SORT_TYPES.items():

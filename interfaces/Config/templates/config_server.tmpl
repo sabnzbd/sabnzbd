@@ -552,8 +552,10 @@
                 url: "$url('api')",
                 data: "mode=config&name=test_server&" + jQuery(this).parents('form:first').serialize()
             }).then(function(data) {
+                // Escape the server-supplied message before inserting it as HTML
+                msg = jQuery('<div>').text(data.value.message).html()
                 // Let's replace the link
-                msg = data.value.message.replace('https://sabnzbd.org/certificate-errors', '<a href="https://sabnzbd.org/certificate-errors" class="alert-link" target="_blank">https://sabnzbd.org/certificate-errors</a>')
+                msg = msg.replace('https://sabnzbd.org/certificate-errors', '<a href="https://sabnzbd.org/certificate-errors" class="alert-link" target="_blank">https://sabnzbd.org/certificate-errors</a>')
                 msg = msg.replace('-', '<br>')
                 // Fill the box and enable the button
                 resultBox.removeClass('alert-info alert-success alert-danger').show()

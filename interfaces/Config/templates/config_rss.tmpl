@@ -106,10 +106,11 @@
                 <a href="$url('config/rss')">$T('cmenu-rss')</a> &raquo;
                 $active_feed
             </h2>
-            <!--#if $error#-->
+            <!--#if $errors#-->
             <div class="alert alert-danger">
-                <span class="glyphicon glyphicon-exclamation-sign"></span>
-                $error
+                <!--#for $error in $errors#-->
+                <div><span class="glyphicon glyphicon-exclamation-sign"></span> $error</div>
+                <!--#end for#-->
             </div>
             <!--#end if#-->
             <form action="$url('config/rss/upd_rss_feed')" method="post">

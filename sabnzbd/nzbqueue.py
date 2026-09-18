@@ -19,10 +19,13 @@
 sabnzbd.nzbqueue - nzb queue
 """
 
+import bisect
 import os
 import logging
 import time
 import uuid
+from itertools import chain
+from operator import attrgetter
 from typing import Optional
 
 from starlette.datastructures import UploadFile
@@ -39,8 +42,6 @@ from sabnzbd.constants import (
     QUEUE_VERSION,
     FUTURE_Q_FOLDER,
     JOB_ADMIN,
-    LOW_PRIORITY,
-    HIGH_PRIORITY,
     FORCE_PRIORITY,
     STOP_PRIORITY,
     VERIFIED_FILE,
@@ -236,16 +237,23 @@ class NzbQueue:
             self.__nzo_table[nzo_ids[0]].reuse = None
 
     @NzbQueueLocker
-    def save(self, save_nzo: NzbObject | bool | None = None):
-        """Save queue, all nzo's or just the specified one"""
+    def save(self, save_nzo: NzbObject | list[NzbObject] | bool | None = None):
+        """Save queue, all nzo's, just the specified one or the ones in a list"""
         logging.info("Saving queue")
+
+        if isinstance(save_nzo, NzbObject):
+            save_nzo_ids = {save_nzo.nzo_id}
+        elif isinstance(save_nzo, list):
+            save_nzo_ids = {nzo.nzo_id for nzo in save_nzo}
+        else:
+            save_nzo_ids = set()
 
         nzo_ids = []
         # Aggregate nzo_ids and save each nzo
         for nzo in self.__nzo_list[:]:
             if not nzo.removed_from_queue:
                 nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
-                if save_nzo is None or nzo is save_nzo:
+                if save_nzo is None or nzo.nzo_id in save_nzo_ids:
                     if not nzo.futuretype:
                         # Also includes save_data for NZO
                         nzo.save_to_disk()
@@ -340,32 +348,8 @@ class NzbQueue:
             nzo.status = Status.PAUSED
 
         self.__nzo_table[nzo.nzo_id] = nzo
-        if priority > HIGH_PRIORITY:
-            # Top and repair priority items are added to the top of the queue
-            self.__nzo_list.insert(0, nzo)
-        elif priority == LOW_PRIORITY:
-            self.__nzo_list.append(nzo)
-        else:
-            # for high priority we need to add the item at the bottom
-            # of any other high priority items above the normal priority
-            # for normal priority we need to add the item at the bottom
-            # of the normal priority items above the low priority
-            if self.__nzo_list:
-                pos = 0
-                added = False
-                for position in self.__nzo_list:
-                    if position.priority < priority:
-                        self.__nzo_list.insert(pos, nzo)
-                        added = True
-                        break
-                    pos += 1
-                if not added:
-                    # if there are no other items classed as a lower priority
-                    # then it will be added to the bottom of the queue
-                    self.__nzo_list.append(nzo)
-            else:
-                # if the queue is empty then simple append the item to the bottom
-                self.__nzo_list.append(nzo)
+        self.__insert_in_priority_order(nzo)
+
         if save:
             self.save(nzo)
 
@@ -381,7 +365,9 @@ class NzbQueue:
         return nzo.nzo_id
 
     @NzbQueueLocker
-    def remove(self, nzo_id: str, cleanup: bool = True, delete_all_data: bool = True) -> Optional[NzbObject]:
+    def remove(
+        self, nzo_id: str, cleanup: bool = True, delete_all_data: bool = True, save: bool = True
+    ) -> Optional[NzbObject]:
         """Remove NZO from queue.
         It can be added to history directly.
         Or, we do some clean-up, sometimes leaving some data.
@@ -396,7 +382,8 @@ class NzbQueue:
             if cleanup:
                 nzo.status = Status.DELETED
                 nzo.purge_data(delete_all_data=delete_all_data)
-            self.save(False)
+            if save:
+                self.save(False)
             return nzo
 
     @NzbQueueLocker
@@ -405,10 +392,13 @@ class NzbQueue:
         and downloader-disconnect, so intended for external use only!"""
         removed = []
         for nzo_id in nzo_ids:
-            if nzo := self.remove(nzo_id, delete_all_data=delete_all_data):
+            if nzo := self.remove(nzo_id, delete_all_data=delete_all_data, save=False):
                 removed.append(nzo_id)
                 # Start an alternative, if available
                 self.handle_duplicate_alternatives(nzo, success=False)
+
+        if removed:
+            self.save(False)
 
         # Any files left? Otherwise let's disconnect
         if not self.actives(grabs=False) and cfg.autodisconnect():
@@ -581,11 +571,11 @@ class NzbQueue:
             sort_function = lambda nzo: nzo.final_name.lower()
         elif field == "size" or field == "bytes":
             logging.info("Sorting by size (reversed: %s)", reverse)
-            sort_function = lambda nzo: nzo.bytes
+            sort_function = attrgetter("bytes")
         elif field == "avg_age":
             reverse = not reverse
             logging.info("Sorting by average date... (reversed: %s)", reverse)
-            sort_function = lambda nzo: nzo.avg_date
+            sort_function = attrgetter("avg_date")
         elif field == "remaining":
             if self.__nzo_list:
                 logging.debug("Sorting by percentage downloaded...")
@@ -593,14 +583,14 @@ class NzbQueue:
         elif field == "remaining_bytes":
             if self.__nzo_list:
                 logging.debug("Sorting by remaining size...")
-            sort_function = lambda nzo: nzo.remaining
+            sort_function = attrgetter("remaining")
         else:
             logging.debug("Sort: %s not recognized", field)
             return
 
         # Apply sort by requested order, then restore priority ordering
         self.__nzo_list.sort(key=sort_function, reverse=reverse)
-        self.__nzo_list.sort(key=lambda nzo: nzo.priority, reverse=True)
+        self.__nzo_list.sort(key=attrgetter("priority"), reverse=True)
 
     def update_sort_order(self):
         """Resorts the queue if it is useful for the selected sort method"""
@@ -647,38 +637,7 @@ class NzbQueue:
 
             if nzo_id_pos1 != -1:
                 del self.__nzo_list[nzo_id_pos1]
-                if priority == FORCE_PRIORITY:
-                    # A top priority item (usually a completed download fetching pars)
-                    # is added to the top of the queue
-                    self.__nzo_list.insert(0, nzo)
-                    pos = 0
-                elif priority == LOW_PRIORITY:
-                    pos = len(self.__nzo_list)
-                    self.__nzo_list.append(nzo)
-                else:
-                    # for high priority we need to add the item at the bottom
-                    # of any other high priority items above the normal priority
-                    # for normal priority we need to add the item at the bottom
-                    # of the normal priority items above the low priority
-                    if self.__nzo_list:
-                        p = 0
-                        added = False
-                        for position in self.__nzo_list:
-                            if position.priority < priority:
-                                self.__nzo_list.insert(p, nzo)
-                                pos = p
-                                added = True
-                                break
-                            p += 1
-                        if not added:
-                            # if there are no other items classed as a lower priority
-                            # then it will be added to the bottom of the queue
-                            pos = len(self.__nzo_list)
-                            self.__nzo_list.append(nzo)
-                    else:
-                        # if the queue is empty then simple append the item to the bottom
-                        self.__nzo_list.append(nzo)
-                        pos = 0
+                pos = self.__insert_in_priority_order(nzo)
 
             logging.info(
                 "Set priority=%s for job %s => position=%s ", priority, self.__nzo_table[nzo_id].final_name, pos
@@ -697,6 +656,15 @@ class NzbQueue:
             return n
         except Exception:
             return -1
+
+    def __insert_in_priority_order(self, nzo: NzbObject) -> int:
+        """Insert a job into the priority-ordered queue and return its position.
+        Jobs join the back of their own priority group, so repair jobs outrank
+        forced ones and a group stays in the order its jobs arrived.
+        """
+        position = bisect.bisect_right(self.__nzo_list, -nzo.priority, key=lambda queued_nzo: -queued_nzo.priority)
+        self.__nzo_list.insert(position, nzo)
+        return position
 
     def has_forced_jobs(self) -> bool:
         """Check if the queue contains any Forced
@@ -981,7 +949,7 @@ class NzbQueue:
         """Check whether this name or md5sum is already
         in the queue or the post-processing queue"""
         lname = name.lower()
-        for nzo in self.__nzo_list + sabnzbd.PostProcessor.get_queue():
+        for nzo in chain(self.__nzo_list, sabnzbd.PostProcessor.get_queue()):
             # Skip any jobs already marked as duplicate, to prevent double-triggers
             # URL's do not have an MD5!
             if not nzo.duplicate and (
@@ -994,7 +962,7 @@ class NzbQueue:
     def have_duplicate_key(self, duplicate_key: str) -> bool:
         """Check whether this duplicate key is already
         in the queue or the post-processing queue"""
-        for nzo in self.__nzo_list + sabnzbd.PostProcessor.get_queue():
+        for nzo in chain(self.__nzo_list, sabnzbd.PostProcessor.get_queue()):
             # Skip any jobs already marked as duplicate, to prevent double-triggers
             if not nzo.duplicate and nzo.duplicate_key == duplicate_key:
                 return True

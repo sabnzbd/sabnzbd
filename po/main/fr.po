@@ -1072,6 +1072,27 @@ msgstr ""
 msgid "Failed to read the password file %s"
 msgstr "Échec de lecture du fichier de mot de passe %s"
 
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Ignoring invalid entry in local_ranges: %s"
+msgstr "Entrée non valide dans local_ranges ignorée : %s"
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid ""
+"%s in local_ranges is not a private network, list it in xff_trusted_hosts to"
+" trust it"
+msgstr ""
+"%s dans local_ranges n'est pas un réseau privé, ajoutez-le dans "
+"xff_trusted_hosts pour le considérer comme fiable"
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Ignoring invalid network in the forwarded-header trust list: %s"
+msgstr ""
+"Réseau non valide ignoré dans la liste de confiance de l'en-tête forwarded :"
+" %s"
+
 #. Error message
 #: sabnzbd/misc.py
 msgid "[%s] The command in build_command is undefined."
@@ -2007,6 +2028,31 @@ msgstr "Planification pour un serveur non existant %s"
 msgid "Trying to set status of non-existing server %s"
 msgstr "Test de l'état du serveur inexistant %s"
 
+#: sabnzbd/security.py
+msgid ""
+"X-Forwarded-For received while verify_xff_header is off, turn it on and list"
+" %s in xff_trusted_hosts"
+msgstr ""
+"X-Forwarded-For reçu alors que verify_xff_header est désactivé, activez-le "
+"et ajoutez %s dans xff_trusted_hosts"
+
+#: sabnzbd/security.py
+msgid "X-Forwarded-For received from %s, which is not in xff_trusted_hosts"
+msgstr ""
+"X-Forwarded-For reçu depuis %s, qui ne figure pas dans xff_trusted_hosts"
+
+#: sabnzbd/security.py
+msgid "X-Forwarded-For from %s does not name a client address"
+msgstr "X-Forwarded-For provenant de %s ne mentionne pas d'adresse client"
+
+#: sabnzbd/security.py
+msgid ""
+"Forwarded is not supported, configure the proxy to send X-Forwarded-For "
+"instead"
+msgstr ""
+"Forwarded n'est pas pris en charge, configurez le proxy pour qu'il envoie "
+"X-Forwarded-For à la place"
+
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py
 msgid "Join files"
@@ -2850,11 +2896,11 @@ msgstr "Les modifications n'ont pas été enregistrées et seront perdues."
 
 #: sabnzbd/skintext.py
 msgid ""
-"When your IP address changes or SABnzbd is restarted the session will "
-"expire."
+"Stay logged in on this browser instead of being signed out when you close "
+"it."
 msgstr ""
-"La session expirera quand votre adresse IP changera ou quand SABnzbd sera "
-"redémarré."
+"Rester connecté sur ce navigateur au lieu d'être déconnecté quand vous le "
+"fermez."
 
 #: sabnzbd/skintext.py
 msgid "Enable 7zip"
@@ -4418,7 +4464,7 @@ msgstr "Clé API personnelle"
 msgid "Your personal Pushbullet API key (required)"
 msgstr "Votre clé API Pushbullet personnelle (obligatoire)"
 
-#. Pushbullet settings
+#. Pushbullet settings - Column: the browser/user-agent of the session
 #: sabnzbd/skintext.py
 msgid "Device"
 msgstr "Appareil"
@@ -4954,6 +5000,45 @@ msgstr "Débloquer"
 #: sabnzbd/skintext.py
 msgid "Orphaned jobs"
 msgstr "Tâches orphelines"
+
+#. Hamburger-menu item and modal title
+#: sabnzbd/skintext.py
+msgid "Active sessions"
+msgstr "Sessions actives"
+
+#. Column: when the session was created
+#: sabnzbd/skintext.py
+msgid "Signed in"
+msgstr "Connecté"
+
+#. Column: when the session was last used
+#: sabnzbd/skintext.py
+msgid "Last seen"
+msgstr "Dernière connexion"
+
+#. Column: when the session expires
+#: sabnzbd/skintext.py
+msgid "Expires"
+msgstr "Expire"
+
+#. Column: where the session is used from
+#: sabnzbd/skintext.py
+msgid "IP address"
+msgstr "Adresse IP"
+
+#. Accessible name for the icon-only revoke button
+#: sabnzbd/skintext.py
+msgid "Revoke"
+msgstr "Révoquer"
+
+#. Button: sign out every session
+#: sabnzbd/skintext.py
+msgid "Revoke all sessions"
+msgstr "Révoquer toutes les sessions"
+
+#: sabnzbd/skintext.py
+msgid "This signs out every device, including this one."
+msgstr "Cette action déconnecte tous les appareils, y compris celui-ci."
 
 #: sabnzbd/skintext.py
 msgid "Send back to queue"

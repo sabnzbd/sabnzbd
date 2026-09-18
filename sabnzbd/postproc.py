@@ -519,7 +519,7 @@ def process_job(nzo: NzbObject) -> bool:
                     if JOB_ADMIN not in path:
                         new_path = path.replace(nzo.download_path, tmp_workdir_complete)
                         nzo.set_action_line(T("Moving"), get_filename(path))
-                        ok, new_path = move_to_path(path, new_path)
+                        ok, new_path = move_to_path(path, new_path, root=tmp_workdir_complete)
                         if new_path:
                             newfiles.append(new_path)
                         if not ok:
@@ -1273,7 +1273,9 @@ def one_file_or_folder(folder: str) -> str:
     return folder
 
 
-TAG_RE = re.compile(r"<[^>]+>")
+# Also matches a tag missing its closing ">", so an unclosed "<img ..." can't
+# survive to be completed by markup added when rendering (XSS)
+TAG_RE = re.compile(r"<[^>\n]*>?")
 
 
 def get_last_line(txt: str) -> str:
