@@ -495,6 +495,29 @@ class TestRemoveUnwantedFiles:
         assert fake_nzo.fail_msg == "Aborted, unwanted extension detected"
         fake_nzo.set_unpack_info.assert_called_once()
 
+    @pytest.mark.config({"unwanted_extensions": ["exe"], "action_on_unwanted_extensions": 1})
+    def test_remove_unwanted_files_removal_failure(self):
+        """If an unwanted file can't be removed, the job is failed regardless of the configured action"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_unwanted")
+        job_files = [self._create_file(os.path.join(base_dir, f)) for f in ("job.mkv", "job.exe", "other.exe")]
+        fake_nzo = self._fake_nzo()
+
+        def fail_first_exe(path):
+            if path == job_files[1]:
+                raise OSError("Permission denied")
+            os.remove(path)
+
+        with mock.patch("sabnzbd.postproc.remove_file", side_effect=fail_first_exe):
+            remaining_files, job_failed = postproc.remove_unwanted_files(fake_nzo, job_files, base_dir)
+
+        # The file that couldn't be removed stays in the list, the other one is gone
+        assert remaining_files == [job_files[0], job_files[1]]
+        assert job_failed
+        assert os.path.exists(job_files[1])
+        assert not os.path.exists(job_files[2])
+        assert fake_nzo.fail_msg == "Failed to remove files with unwanted extensions"
+        fake_nzo.set_unpack_info.assert_called_once()
+
     @pytest.mark.config({"unwanted_extensions": ["exe"], "action_on_unwanted_extensions": 2})
     def test_remove_unwanted_files_nothing_unwanted(self):
         """A clean job is left alone and not failed"""

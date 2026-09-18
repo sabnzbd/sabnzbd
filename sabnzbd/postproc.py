@@ -1197,8 +1197,9 @@ def remove_unwanted_files(nzo: NzbObject, filelist: list[str], base_dir: str) ->
     are verified again. Only the tracked files are considered, so files of
     other jobs in a shared folder are left alone.
     The job can no longer be paused at this point, so unwanted files are
-    always removed. If the configured action is to fail the job, the job is
-    marked as failed. Returns the remaining files and whether the job failed.
+    always removed. If the configured action is to fail the job, or if an
+    unwanted file could not be removed, the job is marked as failed.
+    Returns the remaining files and whether the job failed.
     """
     # Skip if not configured or after an explicit user override of the unwanted extension pause
     if not cfg.unwanted_extensions() or not cfg.action_on_unwanted_extensions() or nzo.unwanted_ext == 2:
@@ -1223,7 +1224,12 @@ def remove_unwanted_files(nzo: NzbObject, filelist: list[str], base_dir: str) ->
     job_failed = False
     if removed_files:
         nzo.set_unpack_info("Unpack", T("Removed %s files with unwanted extensions") % len(removed_files))
-    if unwanted_files and cfg.action_on_unwanted_extensions() == 2:
+    if len(unwanted_files) != len(removed_files):
+        # The job can't complete with the unwanted files still in place, regardless of the configured action
+        logging.debug("Unwanted extension ... failing job, unable to remove unwanted files")
+        nzo.fail_msg = T("Failed to remove files with unwanted extensions")
+        job_failed = True
+    elif unwanted_files and cfg.action_on_unwanted_extensions() == 2:
         logging.debug("Unwanted extension ... failing job")
         nzo.fail_msg = T("Aborted, unwanted extension detected")
         job_failed = True
