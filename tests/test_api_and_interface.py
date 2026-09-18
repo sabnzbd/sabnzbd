@@ -800,3 +800,17 @@ class TestApiConfigSetPause:
             scheduler.plan_resume.assert_called_once_with(plan_resume_arg)
             scheduler.plan_pause.assert_not_called()
         report.assert_called_once()
+
+    @pytest.mark.parametrize("value", ["9" * 400, "-" + "9" * 400])
+    def test_set_pause_rejects_overflow_interval(self, monkeypatch, value):
+        """An absurd magnitude is rejected before the scheduler's time arithmetic can overflow"""
+        scheduler = Mock()
+        report = Mock(return_value="err")
+        monkeypatch.setattr(sabnzbd, "Scheduler", scheduler, raising=False)
+        monkeypatch.setattr(api, "report", report)
+
+        assert api._api_config_set_pause(value, QueryParams({})) == "err"
+
+        scheduler.plan_pause.assert_not_called()
+        scheduler.plan_resume.assert_not_called()
+        report.assert_called_once_with(QueryParams({}), api._MSG_INT_VALUE)

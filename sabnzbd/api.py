@@ -1046,6 +1046,8 @@ def _api_config_speedlimit(value: str, kwargs: QueryParams) -> Response:
 def _api_config_set_pause(value: str, kwargs: QueryParams) -> Response:
     """API: accepts value(=pause interval); negative value = unpause for |value| minutes"""
     minutes = int_conv(value)
+    if abs(minutes) > sys.maxsize:
+        return report(kwargs, _MSG_INT_VALUE)
     if minutes < 0:
         sabnzbd.Scheduler.plan_pause(-minutes)
     else:
