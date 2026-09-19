@@ -475,6 +475,15 @@ def process_job(nzo: NzbObject) -> bool:
         if flag_repair and cfg.safe_postproc():
             all_ok = all_ok and not par_error
 
+        # Without par2 there is nothing to repair missing articles with
+        if all_ok and nzo.bytes_missing and not nzo.extrapars and cfg.safe_postproc():
+            emsg = T("Download failed - Not on your server(s)") + " - https://sabnzbd.org/not-complete"
+            nzo.fail_msg = emsg
+            nzo.set_unpack_info("Download", emsg)
+            nzo.status = Status.FAILED
+            all_ok = False
+            par_error = True
+
         if all_ok:
             # Fix encodings
             fix_unix_encoding(nzo.download_path)
