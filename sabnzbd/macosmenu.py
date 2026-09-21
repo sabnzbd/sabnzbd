@@ -387,7 +387,7 @@ class SABnzbdDelegate(NSObject):
             if paused:
                 self.state = T("Paused")
                 if sabnzbd.Scheduler.pause_int() != "0":
-                    self.setMenuTitle_("\n%s\n%s\n" % (T("Paused"), sabnzbd.Scheduler.pause_int()))
+                    self.setMenuTitle_("%s\n%s" % (T("Paused"), sabnzbd.Scheduler.pause_int()))
                 else:
                     self.setMenuTitle_("")
             elif bytes_left > 0:
@@ -397,7 +397,7 @@ class SABnzbdDelegate(NSObject):
                 if "M" in speed and len(speed) > 5:
                     speed = speed.replace(" ", "")
                 time_left = (bpsnow > 10 and time_left) or "------"
-                self.setMenuTitle_("\n\n%s\n%sB/s\n" % (time_left, speed))
+                self.setMenuTitle_("%s\n%sB/s" % (time_left, speed))
             else:
                 self.state = T("Idle")
                 self.setMenuTitle_("")
@@ -456,10 +456,9 @@ class SABnzbdDelegate(NSObject):
             style.setAlignment_(NSCenterTextAlignment)
             style.setLineSpacing_(0.0)
             style.setMaximumLineHeight_(9.0)
-            style.setParagraphSpacing_(-3.0)
 
             titleAttributes = {
-                NSBaselineOffsetAttributeName: -5.0,
+                NSBaselineOffsetAttributeName: 0.75 - 4.25 * text.count("\n"),
                 NSFontAttributeName: NSFont.menuFontOfSize_(9.0),
                 NSParagraphStyleAttributeName: style,
             }
@@ -511,27 +510,27 @@ class SABnzbdDelegate(NSObject):
         subprocess.run(["/usr/bin/open", folder2open])
 
     def restartAction_(self, sender):
-        self.setMenuTitle_("\n\n%s\n" % (T("Stopping...")))
+        self.setMenuTitle_(T("Stopping..."))
         logging.info("Restart requested by tray")
         sabnzbd.trigger_restart()
-        self.setMenuTitle_("\n\n%s\n" % (T("Stopping...")))
+        self.setMenuTitle_(T("Stopping..."))
 
     def restartSafeHost_(self, sender):
         sabnzbd.cfg.web_host.set("127.0.0.1")
         sabnzbd.cfg.web_port.set("8080")
         sabnzbd.cfg.enable_https.set(False)
         sabnzbd.config.save_config()
-        self.setMenuTitle_("\n\n%s\n" % (T("Stopping...")))
+        self.setMenuTitle_(T("Stopping..."))
         sabnzbd.trigger_restart()
-        self.setMenuTitle_("\n\n%s\n" % (T("Stopping...")))
+        self.setMenuTitle_(T("Stopping..."))
 
     def restartNoLogin_(self, sender):
         sabnzbd.cfg.username.set("")
         sabnzbd.cfg.password.set("")
         sabnzbd.config.save_config()
-        self.setMenuTitle_("\n\n%s\n" % (T("Stopping...")))
+        self.setMenuTitle_(T("Stopping..."))
         sabnzbd.trigger_restart()
-        self.setMenuTitle_("\n\n%s\n" % (T("Stopping...")))
+        self.setMenuTitle_(T("Stopping..."))
 
     def application_openFiles_(self, nsapp, filenames):
         # logging.info('[macos] file open')
@@ -545,7 +544,7 @@ class SABnzbdDelegate(NSObject):
 
     def applicationShouldTerminate_(self, sender):
         logging.info("[macos] application terminating")
-        self.setMenuTitle_("\n\n%s\n" % (T("Stopping...")))
+        self.setMenuTitle_(T("Stopping..."))
         self.status_item.setHighlightMode_(NO)
         sabnzbd.shutdown_program()
         return NSTerminateNow
