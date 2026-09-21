@@ -44,19 +44,19 @@ from AppKit import (
     NSStatusBar,
     NSMenu,
     NSMenuItem,
-    NSAlternateKeyMask,
+    NSEventModifierFlagOption,
     NSTerminateNow,
     NSEventTrackingRunLoopMode,
     NSVariableStatusItemLength,
     NSForegroundColorAttributeName,
     NSFontAttributeName,
-    NSOnState,
-    NSOffState,
+    NSControlStateValueOn,
+    NSControlStateValueOff,
     NSBaselineOffsetAttributeName,
     NSParagraphStyleAttributeName,
     NSMutableParagraphStyle,
     NSParagraphStyle,
-    NSCenterTextAlignment,
+    NSTextAlignmentCenter,
 )
 
 import sabnzbd
@@ -158,7 +158,7 @@ class SABnzbdDelegate(NSObject):
         )
         self.purgequeue_menu_item.setRepresentedObject_("queue")
         self.purgequeue_menu_item.setAlternate_(YES)
-        self.purgequeue_menu_item.setKeyEquivalentModifierMask_(NSAlternateKeyMask)
+        self.purgequeue_menu_item.setKeyEquivalentModifierMask_(NSEventModifierFlagOption)
         self.menu.addItem_(self.purgequeue_menu_item)
 
         # History Item
@@ -174,7 +174,7 @@ class SABnzbdDelegate(NSObject):
         )
         self.purgehistory_menu_item.setRepresentedObject_("history")
         self.purgehistory_menu_item.setAlternate_(YES)
-        self.purgehistory_menu_item.setKeyEquivalentModifierMask_(NSAlternateKeyMask)
+        self.purgehistory_menu_item.setKeyEquivalentModifierMask_(NSEventModifierFlagOption)
         self.menu.addItem_(self.purgehistory_menu_item)
 
         self.menu.addItem_(NSMenuItem.separatorItem())
@@ -435,9 +435,9 @@ class SABnzbdDelegate(NSObject):
                 for i in range(speedsValues):
                     menuitem = self.menu_speed.itemAtIndex_(i)
                     if sabnzbd.Downloader.bandwidth_perc == int(menuitem.representedObject()):
-                        menuitem.setState_(NSOnState)
+                        menuitem.setState_(NSControlStateValueOn)
                     else:
-                        menuitem.setState_(NSOffState)
+                        menuitem.setState_(NSControlStateValueOff)
         except Exception:
             logging.info("[macos] speedlimitUpdate Exception", exc_info=True)
 
@@ -453,7 +453,7 @@ class SABnzbdDelegate(NSObject):
         try:
             style = NSMutableParagraphStyle.new()
             style.setParagraphStyle_(NSParagraphStyle.defaultParagraphStyle())
-            style.setAlignment_(NSCenterTextAlignment)
+            style.setAlignment_(NSTextAlignmentCenter)
             style.setLineSpacing_(0.0)
             style.setMaximumLineHeight_(9.0)
 
