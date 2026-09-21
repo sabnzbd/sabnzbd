@@ -33,14 +33,14 @@ from Foundation import (
     NSTimer,
     NSRunLoop,
     NSDefaultRunLoopMode,
-    NSColor,
-    NSFont,
-    NSImage,
     NSAttributedString,
     NSUserNotification,
     NSUserNotificationCenter,
 )
 from AppKit import (
+    NSColor,
+    NSFont,
+    NSImage,
     NSStatusBar,
     NSMenu,
     NSMenuItem,
