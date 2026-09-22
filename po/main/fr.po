@@ -2491,10 +2491,15 @@ msgstr "Triage"
 msgid "Special"
 msgstr "Spécial"
 
-#. Main menu item - Config menu item for the newznab indexer search
+#. Main menu item
 #: sabnzbd/skintext.py
 msgid "Search"
 msgstr "Rechercher"
+
+#. Config menu item for the newznab indexer search
+#: sabnzbd/skintext.py
+msgid "Indexers"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"

@@ -2370,9 +2370,14 @@ msgstr "Сортировка"
 msgid "Special"
 msgstr "Особая"
 
-#. Main menu item - Config menu item for the newznab indexer search
+#. Main menu item
 #: sabnzbd/skintext.py
 msgid "Search"
+msgstr ""
+
+#. Config menu item for the newznab indexer search
+#: sabnzbd/skintext.py
+msgid "Indexers"
 msgstr ""
 
 #: sabnzbd/skintext.py

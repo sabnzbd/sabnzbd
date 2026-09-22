@@ -2362,10 +2362,15 @@ msgstr "排序"
 msgid "Special"
 msgstr "特殊"
 
-#. Main menu item - Config menu item for the newznab indexer search
+#. Main menu item
 #: sabnzbd/skintext.py
 msgid "Search"
 msgstr "搜索"
+
+#. Config menu item for the newznab indexer search
+#: sabnzbd/skintext.py
+msgid "Indexers"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
