@@ -797,6 +797,10 @@ h2.activeRSS {
     padding-top: 8px !important;
 }
 
+.NzbSearch .result-box .alert {
+    margin-bottom: 10px;
+}
+
 .source-icon span {
     top: -3px;
 }

@@ -7,7 +7,6 @@
             <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <p>$T('explain-nzbsearch').replace('. ', '.<br/>')</p>
 
-
             <!-- Add a new indexer -->
             <form data-form="add-indexer" action="$url('config/nzbsearch/add_indexer')" method="post" autocomplete="off">
                 <table class="catTable">
@@ -19,7 +18,7 @@
                         <th>$T('srch-apikey')</th>
                         <th>&nbsp;</th>
                     </tr>
-                    <tr class="even">
+                    <tr class="data-row">
                         <td class="nzbsearch-favicon-col">&nbsp;</td>
                         <td><input type="checkbox" name="enable" value="1" checked /></td>
                         <td><input type="text" name="name" placeholder="Indexer" size="20" required /></td>
@@ -27,9 +26,13 @@
                         <td><input type="text" name="api_key" size="32" required /></td>
                         <td class="nowrap">
                             <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-plus"></span> $T('button-add')</button>
+                            <button type="button" class="btn btn-default testIndexer"><span class="glyphicon glyphicon-sort"></span> $T('button-test')</button>
                         </td>
                     </tr>
                 </table>
+                <div class="result-box" role="status" aria-live="polite" aria-atomic="true">
+                    <div class="alert"></div>
+                </div>
             </form>
         </div>
     </div>

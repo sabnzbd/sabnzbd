@@ -115,6 +115,7 @@ class Indexer:
         """GET this indexer's API."""
         url = self._build_url(apikey=self.api_key, **params)
         headers = {"User-Agent": f"SABnzbd/{sabnzbd.__version__}"}
+        logging.debug("Fetching indexer-URL: %s", url)
         try:
             response = requests.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
             response.raise_for_status()

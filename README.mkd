@@ -22,7 +22,7 @@ the current improvements and give us feedback!
 * Prevent potential XSS in the History from malicious Script output (GHSA-rpwc-qfxm-7h2v)
   or malicious NNTP responses (GHSA-c5x2-896f-g5g8).
 * Correct `articles_success` to `articles_failed` in Server statistics API-call.
-* macOS: Tray icon would not show on macOS 26.
+* macOS: Tray icon would not show on macOS 27.
 
 ## Upgrade notices
 

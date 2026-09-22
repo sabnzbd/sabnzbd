@@ -2881,6 +2881,10 @@ html[data-color-scheme="night" i] {
     vertical-align: bottom;
 }
 
+.nzbsearch-table .nzbsearch-title .glyphicon {
+    vertical-align: baseline;
+}
+
 .nzbsearch-col-size {
     width: 90px;
 }
