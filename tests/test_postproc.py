@@ -605,7 +605,7 @@ class TestProcessJobMissingArticles:
     """Verdict of process_job for jobs that finished downloading with missing articles"""
 
     @staticmethod
-    def _make_nzo(bytes_missing: int, extrapars: dict) -> mock.Mock:
+    def _make_nzo(bytes_missing: int, extrapars: dict, unpack: bool = False) -> mock.Mock:
         nzo = mock.Mock()
         nzo.fail_msg = ""
         nzo.bytes = 10000
@@ -615,7 +615,7 @@ class TestProcessJobMissingArticles:
         nzo.check_availability_ratio = functools.partial(NzbObject.check_availability_ratio, nzo)
         nzo.extrapars = extrapars
         nzo.repair = True
-        nzo.unpack = False
+        nzo.unpack = unpack
         nzo.delete = False
         nzo.precheck = False
         nzo.direct_unpacker = None
@@ -625,7 +625,7 @@ class TestProcessJobMissingArticles:
         return nzo
 
     @staticmethod
-    def _process_job(nzo: mock.Mock):
+    def _process_job(nzo: mock.Mock, rars: list[str] = (), unpack_error: int = 0) -> dict[str, mock.Mock]:
         file_sorter = mock.Mock()
         file_sorter.sorter_active = False
         with (
@@ -633,6 +633,9 @@ class TestProcessJobMissingArticles:
                 "sabnzbd.postproc",
                 globber=mock.DEFAULT,
                 parring=mock.DEFAULT,
+                build_filelists=mock.DEFAULT,
+                unpacker=mock.DEFAULT,
+                remove_unwanted_files=mock.DEFAULT,
                 wait_for_direct_unpacker=mock.DEFAULT,
                 sanitize_files=mock.DEFAULT,
                 fix_unix_encoding=mock.DEFAULT,
@@ -655,6 +658,9 @@ class TestProcessJobMissingArticles:
         ):
             mocks["globber"].return_value = ["file_one", "file_two"]
             mocks["parring"].return_value = (False, False)
+            mocks["build_filelists"].return_value = ([], list(rars), [], [], [])
+            mocks["unpacker"].return_value = (unpack_error, [])
+            mocks["remove_unwanted_files"].return_value = []
             mocks["prepare_extraction_path"].return_value = (
                 os.path.join(SAB_CACHE_DIR, "_UNPACK_test_job"),
                 os.path.join(SAB_CACHE_DIR, "test_job"),
@@ -668,6 +674,7 @@ class TestProcessJobMissingArticles:
             mocks["make_script_path"].return_value = None
             mocks["one_file_or_folder"].return_value = os.path.join(SAB_CACHE_DIR, "test_job")
             postproc.process_job(nzo)
+        return mocks
 
     def test_missing_articles_without_par2_is_failed(self):
         nzo = self._make_nzo(bytes_missing=1000, extrapars={})
@@ -677,10 +684,39 @@ class TestProcessJobMissingArticles:
 
     def test_single_missing_article_without_par2_is_failed(self):
         # MAX_BAD_ARTICLES does not apply, nothing else would detect the damage in a non-archive file
-        nzo = self._make_nzo(bytes_missing=1, extrapars={})
-        self._process_job(nzo)
+        nzo = self._make_nzo(bytes_missing=1, extrapars={}, unpack=True)
+        mocks = self._process_job(nzo)
         assert nzo.status == Status.FAILED
         assert nzo.fail_msg
+        mocks["unpacker"].assert_not_called()
+
+    def test_missing_articles_without_par2_with_rars_is_left_to_unpack(self):
+        # Unrar can rebuild damaged volumes from REV files
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={}, unpack=True)
+        mocks = self._process_job(nzo, rars=["test_job.rar"])
+        mocks["unpacker"].assert_called_once()
+        assert nzo.status == Status.COMPLETED
+        assert not nzo.fail_msg
+
+    def test_missing_articles_without_par2_with_rars_fails_when_unpack_fails(self):
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={}, unpack=True)
+        mocks = self._process_job(nzo, rars=["test_job.rar"], unpack_error=1)
+        mocks["unpacker"].assert_called_once()
+        assert nzo.status == Status.FAILED
+
+    def test_missing_articles_without_par2_with_rars_is_failed_without_unpack(self):
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={})
+        self._process_job(nzo, rars=["test_job.rar"])
+        assert nzo.status == Status.FAILED
+        assert nzo.fail_msg
+
+    def test_missing_articles_without_par2_with_rars_is_failed_when_unrar_disabled(self):
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={}, unpack=True)
+        with mock.patch.object(sabnzbd.cfg.enable_unrar, "get", return_value=False):
+            mocks = self._process_job(nzo, rars=["test_job.rar"])
+        assert nzo.status == Status.FAILED
+        assert nzo.fail_msg
+        mocks["unpacker"].assert_not_called()
 
     def test_missing_articles_with_par2_is_completed(self):
         # Repair either succeeded or par_error already failed the job
