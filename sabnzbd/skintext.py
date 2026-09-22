@@ -143,7 +143,7 @@ SKIN_TEXT = {
     "cmenu-sorting": TT("Sorting"),  #: Main menu item
     "cmenu-special": TT("Special"),  #: Main menu item
     "cmenu-search": TT("Search"),  #: Main menu item
-    "cmenu-nzbsearch": TT("Search"),  #: Config menu item for the newznab indexer search
+    "cmenu-nzbsearch": TT("Indexers"),  #: Config menu item for the newznab indexer search
     # Main page
     "shutdownOK?": TT("Are you sure you want to shutdown SABnzbd?"),
     "link-pause": TT("Pause"),  #: Pause downloading
