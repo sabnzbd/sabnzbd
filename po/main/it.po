@@ -194,6 +194,14 @@ msgid "Test Notification"
 msgstr "Notifica di prova"
 
 #: sabnzbd/api.py
+msgid "Indexer URL is not set."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Connected"
+msgstr ""
+
+#: sabnzbd/api.py
 msgid "The hostname is not set."
 msgstr "Il nome host non è impostato."
 
@@ -2439,7 +2447,7 @@ msgstr "Ordinamento"
 msgid "Special"
 msgstr "Speciali"
 
-#. Main menu item
+#. Main menu item - Config menu item for the newznab indexer search
 #: sabnzbd/skintext.py
 msgid "Search"
 msgstr "Cerca"
@@ -3015,6 +3023,38 @@ msgstr ""
 "utilizza il Pianificatore!"
 
 #: sabnzbd/skintext.py
+msgid ""
+"SABnzbd can search one or more Indexers to find relevant NZBs. An indexer is"
+" a website that indexes Usenet content in order to help you find NZBs. To "
+"use the Indexer Search within SABnzbd to find relevant NZBs, you will need "
+"to sign up for an account at one or more indexers. An indexer account is "
+"separate from a Usenet provider account, which is required to download. "
+"Every enabled indexer is searched simultaneously and the results are "
+"combined. "
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Indexer URL"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "Chiave API"
+
+#: sabnzbd/skintext.py
+msgid "Testing indexer..."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Test failed"
+msgstr ""
+
+#. Button to test an indexer connection
+#: sabnzbd/skintext.py
+msgid "Test"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Maximum line speed"
 msgstr "Velocità massima della linea"
 
@@ -3143,10 +3183,6 @@ msgid ""
 msgstr ""
 "Aiutaci a tradurre SABnzbd nella tua lingua! <br/>Aggiungi testi non "
 "tradotti o migliora le traduzioni esistenti qui:"
-
-#: sabnzbd/skintext.py
-msgid "API Key"
-msgstr "Chiave API"
 
 #: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
@@ -4796,6 +4832,40 @@ msgid ""
 "Search by name, or refine with filters <code>cat:</code>, "
 "<code>status:</code> and <code>priority:</code> (Queue). For example: "
 "<code>my show cat:tv</code>"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Search indexers"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Searching"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Manage indexers"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"To search for NZBs, configure an indexer in the Config Search page. To use "
+"the Indexer Search within SABnzbd to find relevant NZBs, you will need to "
+"sign up for an account at one or more indexers. An indexer account is "
+"separate from a Usenet provider account, which is required to download."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Password protected"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "All categories"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"%s results available, only the 100 latest results for each indexer are "
+"shown."
 msgstr ""
 
 #: sabnzbd/skintext.py
