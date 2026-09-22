@@ -73,6 +73,7 @@ from sabnzbd.encoding import utob
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.newsunpack
+import sabnzbd.nzbsearch
 import sabnzbd.utils.ssdp
 from sabnzbd.get_addrinfo import get_fastest_addrinfo
 from sabnzbd.constants import (
@@ -2014,6 +2015,76 @@ def config_sorting_toggle_sorter(request: Request):
         pass
 
     return base_redirect_response(_SORTING_ROOT)
+
+
+##############################################################################
+_NZBSEARCH_ROOT = "/config/nzbsearch"
+
+
+@secured_expose(route="/config/nzbsearch", check_configlock=True, methods=["GET"])
+def config_nzbsearch_index(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
+    indexers = config.get_ordered_indexers()
+    for indexer in indexers:
+        indexer["baselink"] = get_base_url(indexer["host"])
+    conf["indexers"] = indexers
+
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_nzbsearch.tmpl"),
+        search_list=conf,
+    )
+
+
+@secured_expose(route="/config/nzbsearch/add_indexer", check_configlock=True, methods=["POST"])
+def config_nzbsearch_add_indexer(request: Request):
+    params = request_params(request)
+    host = Strip(params.get("host"))
+    raw_name = Strip(params.get("name"))
+    name = config.clean_section_name(raw_name) if raw_name else ""
+    if name and host and not config.get_config("indexers", name):
+        kwargs = dict(params)
+        kwargs["host"] = host
+        # An unchecked checkbox is simply absent from the POST body
+        kwargs.setdefault("enable", 0)
+        config.ConfigIndexer(name, kwargs)
+        sabnzbd.nzbsearch.invalidate_categories()
+        config.save_config()
+    return base_redirect_response(_NZBSEARCH_ROOT)
+
+
+@secured_expose(route="/config/nzbsearch/save_indexer", check_configlock=True, methods=["POST"])
+def config_nzbsearch_save_indexer(request: Request):
+    params = request_params(request)
+    indexer = config.get_config("indexers", params.get("indexer"))
+    if indexer:
+        kwargs = dict(params)
+        # An unchecked checkbox is simply absent from the POST body
+        kwargs.setdefault("enable", 0)
+        indexer.set_dict(kwargs)
+
+        new_name = config.clean_section_name(Strip(params.get("name"))) if Strip(params.get("name")) else ""
+        if new_name and new_name != params.get("indexer") and not config.get_config("indexers", new_name):
+            indexer.rename(new_name)
+
+        config.save_config()
+        sabnzbd.nzbsearch.invalidate_categories()
+    return base_redirect_response(_NZBSEARCH_ROOT)
+
+
+@secured_expose(route="/config/nzbsearch/toggle_indexer", check_configlock=True, methods=["POST"])
+def config_nzbsearch_toggle_indexer(request: Request):
+    indexer = config.get_config("indexers", request_params(request).get("name"))
+    if indexer:
+        indexer.enable.set(not indexer.enable())
+        config.save_config()
+        sabnzbd.nzbsearch.invalidate_categories()
+    return base_redirect_response(_NZBSEARCH_ROOT)
+
+
+@secured_expose(route="/config/nzbsearch/del_indexer", check_configlock=True, methods=["POST"])
+def config_nzbsearch_del_indexer(request: Request):
+    del_from_section({"section": "indexers", "keyword": request_params(request).get("indexer")})
+    return base_redirect_response(_NZBSEARCH_ROOT)
 
 
 def GetRssLog(feed):

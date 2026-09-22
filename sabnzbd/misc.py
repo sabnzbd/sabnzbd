@@ -1477,10 +1477,17 @@ def ip_extract() -> list[str]:
 
 
 def get_base_url(url: str) -> str:
-    """Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
-    But also api.althub.co.za -> althub.co.za
+    """Return the true root domain for a URL or bare hostname, e.g.
+    api.example.com -> example.com and api.example.co.uk -> example.co.uk.
+    Never raises: unparseable input simply yields "".
     """
-    url_host = urllib.parse.urlparse(url).hostname
+    try:
+        url_host = urllib.parse.urlparse(url).hostname
+        if not url_host and "://" not in url and not url.startswith("//"):
+            # Bare hostname, e.g. "api.example.com" - retry with a scheme so urlparse finds a netloc
+            url_host = urllib.parse.urlparse("//" + url).hostname
+    except ValueError:
+        return ""
     if url_host:
         url_split = url_host.split(".")
         # Exception for localhost and IPv6 addresses
