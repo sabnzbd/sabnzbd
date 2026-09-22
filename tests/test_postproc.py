@@ -19,6 +19,7 @@
 tests.test_postproc- Tests of various functions in newspack, among which rar_renamer()
 """
 
+import functools
 import os
 import re
 import shutil
@@ -29,9 +30,11 @@ import pytest
 import sabnzbd
 import sabnzbd.config
 from sabnzbd import postproc
+from sabnzbd.constants import Status
 from sabnzbd.config import ConfigCat, ConfigSorter
 from sabnzbd.filesystem import clip_path, globber_full
 from sabnzbd.misc import sort_to_opts
+from sabnzbd.nzb import NzbObject
 from tests.testhelper import SAB_CACHE_DIR, SAB_DATA_DIR
 
 
@@ -596,3 +599,105 @@ class TestNzbOnlyDownload:
 
         # Verify process_single_nzb was NOT called
         mock_process_single_nzb.assert_not_called()
+
+
+class TestProcessJobMissingArticles:
+    """Verdict of process_job for jobs that finished downloading with missing articles"""
+
+    @staticmethod
+    def _make_nzo(bytes_missing: int, extrapars: dict) -> mock.Mock:
+        nzo = mock.Mock()
+        nzo.fail_msg = ""
+        nzo.bytes = 10000
+        nzo.bytes_par2 = 0
+        nzo.bytes_missing = bytes_missing
+        nzo.bad_articles = 1 if bytes_missing else 0
+        nzo.check_availability_ratio = functools.partial(NzbObject.check_availability_ratio, nzo)
+        nzo.extrapars = extrapars
+        nzo.repair = True
+        nzo.unpack = False
+        nzo.delete = False
+        nzo.precheck = False
+        nzo.direct_unpacker = None
+        nzo.script = ""
+        nzo.final_name = "test_job"
+        nzo.download_path = SAB_CACHE_DIR
+        return nzo
+
+    @staticmethod
+    def _process_job(nzo: mock.Mock):
+        file_sorter = mock.Mock()
+        file_sorter.sorter_active = False
+        with (
+            mock.patch.multiple(
+                "sabnzbd.postproc",
+                globber=mock.DEFAULT,
+                parring=mock.DEFAULT,
+                wait_for_direct_unpacker=mock.DEFAULT,
+                sanitize_files=mock.DEFAULT,
+                fix_unix_encoding=mock.DEFAULT,
+                prepare_extraction_path=mock.DEFAULT,
+                listdir_full=mock.DEFAULT,
+                set_permissions=mock.DEFAULT,
+                cleanup_list=mock.DEFAULT,
+                process_nzb_only_download=mock.DEFAULT,
+                one_file_or_folder=mock.DEFAULT,
+                remove_samples=mock.DEFAULT,
+                deobfuscate=mock.DEFAULT,
+                make_script_path=mock.DEFAULT,
+                try_alt_nzb=mock.DEFAULT,
+                notifier=mock.DEFAULT,
+                emailer=mock.DEFAULT,
+                history_updated=mock.DEFAULT,
+            ) as mocks,
+            mock.patch.object(sabnzbd, "NzbQueue", create=True),
+            mock.patch.object(sabnzbd, "db_pool", create=True),
+        ):
+            mocks["globber"].return_value = ["file_one", "file_two"]
+            mocks["parring"].return_value = (False, False)
+            mocks["prepare_extraction_path"].return_value = (
+                os.path.join(SAB_CACHE_DIR, "_UNPACK_test_job"),
+                os.path.join(SAB_CACHE_DIR, "test_job"),
+                file_sorter,
+                False,
+                None,
+            )
+            mocks["listdir_full"].return_value = []
+            mocks["cleanup_list"].return_value = []
+            mocks["process_nzb_only_download"].return_value = None
+            mocks["make_script_path"].return_value = None
+            mocks["one_file_or_folder"].return_value = os.path.join(SAB_CACHE_DIR, "test_job")
+            postproc.process_job(nzo)
+
+    def test_missing_articles_without_par2_is_failed(self):
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={})
+        self._process_job(nzo)
+        assert nzo.status == Status.FAILED
+        assert nzo.fail_msg
+
+    def test_single_missing_article_without_par2_is_failed(self):
+        # MAX_BAD_ARTICLES does not apply, nothing else would detect the damage in a non-archive file
+        nzo = self._make_nzo(bytes_missing=1, extrapars={})
+        self._process_job(nzo)
+        assert nzo.status == Status.FAILED
+        assert nzo.fail_msg
+
+    def test_missing_articles_with_par2_is_completed(self):
+        # Repair either succeeded or par_error already failed the job
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={"test_job": []})
+        self._process_job(nzo)
+        assert nzo.status == Status.COMPLETED
+        assert not nzo.fail_msg
+
+    def test_no_missing_articles_without_par2_is_completed(self):
+        nzo = self._make_nzo(bytes_missing=0, extrapars={})
+        self._process_job(nzo)
+        assert nzo.status == Status.COMPLETED
+        assert not nzo.fail_msg
+
+    def test_missing_articles_without_par2_is_completed_when_unsafe(self):
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={})
+        with mock.patch.object(sabnzbd.cfg.safe_postproc, "get", return_value=False):
+            self._process_job(nzo)
+        assert nzo.status == Status.COMPLETED
+        assert not nzo.fail_msg
