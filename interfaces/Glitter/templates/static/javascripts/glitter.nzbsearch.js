@@ -37,13 +37,12 @@ function NzbSearchModel(parent) {
         return glitterTranslate.nzbsearch.resultsLimited.replace('%s', self.totalItems());
     });
     self.canSearch = ko.pureComputed(function() {
-        return (self.searchTerm().trim() !== '' || self.category() !== '') && !self.isSearching();
+        return (self.searchTerm().trim() !== '' || self.category() !== '') && !self.isSearching() && !self.noIndexers();
     });
-    self.hasConfiguredIndexers = ko.pureComputed(function() { return self.configuredIndexers().length > 0; });
     // Only after capabilities have actually loaded, so the empty-state notice
     // doesn't flash on screen while that first request is still in flight
-    self.showNoIndexersNotice = ko.pureComputed(function() {
-        return self.capabilitiesLoaded() && !self.hasConfiguredIndexers();
+    self.noIndexers = ko.pureComputed(function() {
+        return self.capabilitiesLoaded() && self.configuredIndexers().length === 0;
     });
 
     // Load the merged category tree and the list of configured indexers (once).

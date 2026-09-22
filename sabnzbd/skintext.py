@@ -841,7 +841,7 @@ SKIN_TEXT = {
     "Glitter-nzbsearchSearching": TT("Searching"),
     "Glitter-nzbsearchManageIndexers": TT("Manage indexers"),
     "Glitter-nzbsearchNoIndexers": TT(
-        "To search for NZBs, configure an indexer in the Config Search page. "
+        "To search for NZBs, configure an indexer on the Config - Indexers page. "
         "To use the Indexer Search within SABnzbd to find relevant NZBs, you will need to sign up for an account at one or more indexers. "
         "An indexer account is separate from a Usenet provider account, which is required to download."
     ),

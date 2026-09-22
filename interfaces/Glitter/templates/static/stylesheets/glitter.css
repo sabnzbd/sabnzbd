@@ -815,6 +815,27 @@ tbody.no-downloads tr td a {
     display: block;
 }
 
+.no-downloads-actions {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: stretch;
+    gap: 2em;
+}
+
+.no-downloads-actions a {
+    flex: 1;
+}
+
+.no-downloads-actions .nzbsearch-icon-svg {
+    margin-bottom: 5px;
+    vertical-align: middle;
+    height: 1.2em;
+}
+
+.no-downloads-actions a.hover-button:hover {
+    opacity: 1;
+}
+
 tbody.no-downloads tr td a span {
     top: 2px;
 }
@@ -2563,11 +2584,6 @@ input[type="checkbox"] {
 .table-striped>tbody>tr:nth-child(even)>td,
 .table>tbody>tr:nth-child(even)>td {
     color: var(--clr-text);
-}
-
-
-.table>tbody>tr:hover {
-    background-color: var(--clr-surface-hover);
 }
 
 /* Form inputs — broad selectors to catch Bootstrap overrides */

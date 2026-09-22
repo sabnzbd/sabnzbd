@@ -75,9 +75,25 @@
         <tbody class="no-downloads">
             <tr>
                 <td colspan="6" data-bind="attr: { 'colspan': 5 + extraQueueColumns().length }">
-                    <a href="#modal-add-nzb" class="hover-button" data-toggle="modal">
-                        <span title="$T('Glitter-dragAndDrop')" data-tooltip="true"><span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')</span>
-                    </a>
+                    <div class="no-downloads-actions">
+                        <a href="#modal-add-nzb" class="hover-button" data-toggle="modal"
+                           title="$T('Glitter-dragAndDrop')" data-tooltip="true">
+                            <span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')
+                        </a>
+                        <a href="#modal-nzbsearch" class="hover-button" title="$T('Glitter-nzbsearchTitle')"
+                           data-toggle="modal">
+                            <svg class="nzbsearch-icon-svg" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
+                                 aria-hidden="true">
+                                <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                                   stroke-linejoin="round">
+                                    <circle cx="6.75" cy="6.75" r="4.75"/>
+                                    <line x1="10.4" y1="10.4" x2="14.5" y2="14.5"/>
+                                    <path d="M6.75 4.25 V8.25 M4.55 6.25 L6.75 8.55 L8.95 6.25"/>
+                                </g>
+                            </svg>
+                            $T('Glitter-nzbsearchTitle')
+                        </a>
+                    </div>
                 </td>
             </tr>
         </tbody>
