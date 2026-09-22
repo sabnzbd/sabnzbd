@@ -1,48 +1,28 @@
-Release Notes - SABnzbd 5.1.0 Release Candidate 2
+Release Notes - SABnzbd 5.2.0 Beta 1
 =========================================================
 
-This is the second release candidate of version 5.1.
+This is the first test release of version 5.2.0.
+We are still working on several other features, but hope you will already enjoy
+the current improvements and give us feedback!
 
-## New features in 5.1.0
+## New features in 5.2.0
 
-* Refreshed the interface.
-* When Retrying a job, only the actually missing articles are tried again.
-  This only works for jobs downloaded in 5.1.0 (or newer).
-* RSS items are now stored in the database instead of on disk.
-* New RSS `Age` rule to filter jobs based on their age.
-* Downloaded RSS items are cleared from the RSS database after 3 days.
-* Added support for filename and path pattern matching to the `Cleanup List`.
-* `Unwanted extensions` will also be removed after unpacking.
-* Allow job setting changes directly from `Extra queue columns`.
-* Added support for unpacking `.tar` files during post-processing.
-* Improved anonymization of the logs when using `Show Logging`.
-* Added `SAB_FILES` environment variable to Post-processing scripts,
-  listing all files that resulted from the job.
-* New Servers will default to 16 connections instead of 8.
-* Use media duration as part of `Ignore Samples` detection.
-* Added option to (auto) sort the queue by Remaining Percentage.
-* Improved support for screen readers.
-* Parsing of header-encrypted RARs will use significantly fewer resources.
-* Add Ayatana AppIndicator tray support on GNOME.
-* Removed redundant `INSTALL.txt` file.
-* Dropped support for Python 3.9.
-* Windows and macOS: Updated Python to 3.14.6, Unrar to 7.23 and 7zip to 26.02.
+* Downloaded data will be written directly to disk (if your hardware supports it),
+  which greatly reduces memory and CPU usage on systems with SSD's.
+  Additionally, several other performance improvements were made.
+* Search your Indexers and Add downloads directly from within SABnzbd.
+* Changed the internal webserver from CherryPy to Starlette.
+* Overview of Active Sessions is available when username and password are enabled.
+* Only allow proxied requests from hosts configured in `xff_trusted_hosts`.
 
-## Bug fixes in 5.1.0
+## Bug fixes in 5.2.0
 
-* Prevent incorrect warnings about non-writeable directories.
-* Files unrelated to job could get removed by the `Cleanup List` logic.
-* Prevent path traversal in orphaned job APIs.
-* `Disk Full` errors from unrar were not handled gracefully during unpacking.
-* Memory leak could occur during article decoding.
-* In containers (like Docker), the Article Cache could exceed the memory limit.
-* Diskspace checks would be too strict when unpacking to different disk.
-* Prevent deadlock when a second signal arrives during shutdown procedure.
-* Verification using SFV-checks could fail, even though files were correct.
-* Windows: Uninstall would not remove Settings or Windows Service.
-* Windows: Warn for OS-limit if more than 1024 connections are configured.
-* macOS: AppleDouble files could result in failures in `Moving` stage.
-* macOS: Restarting the application resulted in Terminal window.
+* Jobs with `Repair` priority would not always be at the top of the queue.
+* Failure to read one RSS URL would stop the whole readout instead of continuing to the next.
+* Prevent potential XSS in the History from malicious Script output (GHSA-rpwc-qfxm-7h2v)
+  or malicious NNTP responses (GHSA-c5x2-896f-g5g8).
+* Correct `articles_success` to `articles_failed` in Server statistics API-call.
+* macOS: Tray icon would not show on macOS 26.
 
 ## Upgrade notices
 
