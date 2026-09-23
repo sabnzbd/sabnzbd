@@ -35,9 +35,12 @@ class TestPar2Parsing:
         with open(source_path, "rb") as source:
             valid_packets = source.read()
 
-        for packet_length in (20, 24, 28):
+        for packet_length in (20, 24, 28, 32, 60):
             malformed_path = tmp_path / f"short_{packet_length}.par2"
-            malformed_path.write_bytes(PAR_PKT_ID + packet_length.to_bytes(8, "little") + bytes(16) + valid_packets)
+            # Put the valid packet exactly at the declared end of the malformed one
+            malformed_path.write_bytes(
+                PAR_PKT_ID + packet_length.to_bytes(8, "little") + bytes(packet_length - 16) + valid_packets
+            )
 
             set_id, table = parse_par2_file(str(malformed_path), {})
             assert set_id == "69af2273e8fa0b4d811b56d02a9c4b59"
