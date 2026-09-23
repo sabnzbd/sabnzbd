@@ -23,13 +23,26 @@ import logging
 import os
 
 
-from sabnzbd.par2file import FilePar2Info, parse_par2_file
+from sabnzbd.par2file import PAR_PKT_ID, FilePar2Info, parse_par2_file
 from tests.testhelper import SAB_DATA_DIR
 
 # TODO: Add testing for edge cases, such as non-unique md5of16k or broken par files
 
 
 class TestPar2Parsing:
+    def test_short_packet_does_not_consume_following_packets(self, tmp_path):
+        source_path = os.path.join(SAB_DATA_DIR, "par2file", "basic_16k.par2")
+        with open(source_path, "rb") as source:
+            valid_packets = source.read()
+
+        for packet_length in (20, 24, 28):
+            malformed_path = tmp_path / f"short_{packet_length}.par2"
+            malformed_path.write_bytes(PAR_PKT_ID + packet_length.to_bytes(8, "little") + bytes(16) + valid_packets)
+
+            set_id, table = parse_par2_file(str(malformed_path), {})
+            assert set_id == "69af2273e8fa0b4d811b56d02a9c4b59"
+            assert list(table) == ["rss_feed_test.xml"]
+
     def test_parse_par2_file(self, caplog):
         # To capture the par2-creator, we need to capture the logging
         with caplog.at_level(logging.DEBUG):
