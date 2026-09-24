@@ -1273,14 +1273,12 @@ def load_data(
     """Read data from disk file"""
     path = os.path.join(path, data_id)
 
-    if not os.path.exists(path):
-        logging.info("[%s] %s missing", sabnzbd.misc.caller_name(), path)
-        return None
-
     if not silent:
         logging.debug("[%s] Loading data for %s from %s", sabnzbd.misc.caller_name(), data_id, path)
 
     try:
+        # Open directly instead of checking existence first, avoiding a race
+        # with writers or cleanup jobs on shared storage
         with open(path, "rb") as data_file:
             if do_pickle:
                 data = RestrictedUnpickler(data_file, encoding=sabnzbd.encoding.CODEPAGE).load()
@@ -1292,6 +1290,9 @@ def load_data(
 
         if remove:
             remove_file(path)
+    except FileNotFoundError:
+        logging.info("[%s] %s missing", sabnzbd.misc.caller_name(), path)
+        return None
     except Exception:
         logging.error(T("Loading %s failed"), path)
         logging.info("Traceback: ", exc_info=True)
