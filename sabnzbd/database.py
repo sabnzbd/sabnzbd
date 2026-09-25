@@ -234,6 +234,7 @@ class HistoryDB:
 
     def create_history_db(self):
         """Create a new (empty) database file"""
+        # The completeness, meta and series columns are unused, but kept for downgrade compatibility
         self.execute("""
         CREATE TABLE history (
             "id" INTEGER PRIMARY KEY,
@@ -465,7 +466,11 @@ class HistoryDB:
             limit = total_items
 
         command_args.extend([start, limit])
-        cmd = "SELECT * FROM history WHERE name LIKE ?"
+        # Only retrieve values we actually use
+        cmd = """SELECT completed, name, nzb_name, category, pp, script, report, url, status, nzo_id, storage, path,
+            script_line, download_time, postproc_time, stage_log, downloaded, fail_message, url_info,
+            bytes, md5sum, password, duplicate_key, archive, time_added
+            FROM history WHERE name LIKE ?"""
         if self.execute(cmd + post + " ORDER BY completed desc LIMIT ?, ?", command_args):
             items = self.cursor.fetchall()
         else:
@@ -858,14 +863,8 @@ def unpack_history_info(item: sqlite3.Row) -> dict[str, Any]:
     else:
         item["stage_log"] = []
 
-    # Remove database id
-    item.pop("id")
-
     # Human-readable size
     item["size"] = to_units(item["bytes"], "B")
-
-    # We do not want the raw script output here
-    item.pop("script_log")
 
     # The action line and loaded is only available for items in the postproc queue
     item["action_line"] = ""
