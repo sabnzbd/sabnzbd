@@ -288,7 +288,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr ""
 
-#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py, sabnzbd/postproc.py
 msgid "Aborted, unwanted extension detected"
 msgstr ""
 
@@ -1318,7 +1318,7 @@ msgid "Pre-queue script marked job as failed"
 msgstr ""
 
 #. Warning message
-#: sabnzbd/nzb/object.py
+#: sabnzbd/nzb/object.py, sabnzbd/postproc.py
 msgid "Unwanted Extension in file %s (%s)"
 msgstr ""
 
@@ -1668,6 +1668,10 @@ msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "Removed %s files with unwanted extensions"
+msgstr ""
+
+#: sabnzbd/postproc.py
+msgid "Failed to remove files with unwanted extensions"
 msgstr ""
 
 #. Error message
