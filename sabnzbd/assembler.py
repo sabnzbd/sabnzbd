@@ -19,6 +19,7 @@
 sabnzbd.assembler - threaded assembly of files
 """
 
+import errno
 import os
 import queue
 import logging
@@ -152,7 +153,8 @@ class Assembler(Thread):
         instead, bounded by ASSEMBLER_MAX_OPEN_WRITERS because they are a limited
         resource shared with every socket the downloader holds.
 
-        A stream gets no new handle once the file or job is finished.
+        A stream gets no new handle once the file or job is finished, and nothing gets
+        one once the job is deleted.
         """
         with self.writers_lock:
             if (writer := nzf.writer) is not None:
@@ -161,6 +163,9 @@ class Assembler(Thread):
 
             if stream and (nzf.deleted or nzf.nzo.removed_from_queue):
                 return None
+
+            if nzf.nzo.status is Status.DELETED:
+                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), nzf.filepath)
 
             writer = sabctools.FileWriter(nzf.filepath)
             nzf.writer = writer
