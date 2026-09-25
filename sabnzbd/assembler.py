@@ -144,18 +144,23 @@ class Assembler(Thread):
         for nzf in nzfs:
             self.close_writer(nzf)
 
-    def get_writer(self, nzf: NzbFile) -> sabctools.FileWriter:
+    def get_writer(self, nzf: NzbFile, stream: bool = False) -> Optional[sabctools.FileWriter]:
         """Open handle for this file, reusing the one already open where there is one.
 
         Opening per write costs an open and a close for every article, which at the
         article rates this is built for outweighs the write itself. Handles are kept
         instead, bounded by ASSEMBLER_MAX_OPEN_WRITERS because they are a limited
         resource shared with every socket the downloader holds.
+
+        A stream gets no new handle once the file or job is finished.
         """
         with self.writers_lock:
             if (writer := nzf.writer) is not None:
                 self.open_writers.move_to_end(nzf.nzf_id)
                 return writer
+
+            if stream and (nzf.deleted or nzf.nzo.removed_from_queue):
+                return None
 
             writer = sabctools.FileWriter(nzf.filepath)
             nzf.writer = writer

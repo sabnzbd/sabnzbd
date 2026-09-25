@@ -213,7 +213,7 @@ class NewsWrapper:
             return None
 
         try:
-            return sabnzbd.Assembler.get_writer(nzf)
+            return sabnzbd.Assembler.get_writer(nzf, stream=True)
         except OSError:
             # Cannot open the file: fall back to memory rather than failing the article
             logging.debug("Could not open %s for streaming", nzf.filepath, exc_info=True)
