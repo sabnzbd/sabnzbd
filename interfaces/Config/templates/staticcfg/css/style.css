@@ -797,6 +797,13 @@ h2.activeRSS {
     padding-top: 8px !important;
 }
 
+.NzbSearch input[type="text"],
+.NzbSearch input[type="password"] {
+    width: 100%;
+    min-width: 100px;
+    max-width: 250px;
+}
+
 .NzbSearch .result-box .alert {
     margin-bottom: 10px;
 }

@@ -270,11 +270,8 @@ jQuery(document).ready(function(){
     jQuery('#language').on('change', function() {
         // Show message
         hideOrShowTranslate()
-        // Re-load page on submit
-        jQuery('.fullform').submit(function() {
-            // Skip the fancy stuff, just submit
-            this.submit()
-        })
+        // Reload the page after saving, so the new language is applied everywhere
+        jQuery(this).parents('form').attr('data-reload-on-save', '')
     })
     hideOrShowTranslate()
 

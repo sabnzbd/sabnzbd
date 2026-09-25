@@ -2859,16 +2859,13 @@ html[data-color-scheme="night" i] {
     margin-bottom: 0;
 }
 
-.nzbsearch-table th {
-    font-weight: bold;
+.nzbsearch-table thead {
+    border: 1px solid var(--clr-border-subtle)
 }
 
 .nzbsearch-table thead th {
-    position: sticky;
-    top: -10px;
     padding: 8px !important;
-    background: var(--clr-modal-bg);
-    z-index: 1;
+    font-weight: bold;
 }
 
 .nzbsearch-table .nzbsearch-title span,
@@ -2894,7 +2891,7 @@ html[data-color-scheme="night" i] {
 }
 
 .nzbsearch-col-cat {
-    width: 170px;
+    width: 130px;
 }
 
 .nzbsearch-col-favicon {

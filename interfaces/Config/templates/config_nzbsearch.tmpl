@@ -21,9 +21,9 @@
                     <tr class="data-row">
                         <td class="nzbsearch-favicon-col">&nbsp;</td>
                         <td><input type="checkbox" name="enable" value="1" checked /></td>
-                        <td><input type="text" name="name" placeholder="Indexer" size="20" required /></td>
-                        <td><input type="text" name="host" placeholder="https://api.indexer.example" size="40" required /></td>
-                        <td><input type="text" name="api_key" size="32" required /></td>
+                        <td><input type="text" name="name" placeholder="Indexer" size="25" required /></td>
+                        <td><input type="text" name="host" placeholder="https://api.indexer.example" size="25" required /></td>
+                        <td><input type="text" name="api_key" size="25" required /></td>
                         <td class="nowrap">
                             <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-plus"></span> $T('button-add')</button>
                             <button type="button" class="btn btn-default testIndexer"><span class="glyphicon glyphicon-sort"></span> $T('button-test')</button>
@@ -57,9 +57,9 @@
                     <tr class="data-row">
                         <td class="nzbsearch-favicon-col"><div class="favicon" style="background-image: url(//$indexer['baselink']/favicon.ico);" data-domain="$indexer['baselink']"></div></td>
                         <td><input type="checkbox" name="enable" value="1" class="toggleIndexerCheckbox" data-name="$indexer['name']" <!--#if $indexer['enable'] then 'checked="checked"' else ""#--> /></td>
-                        <td><input type="text" name="name" value="$indexer['name']" size="20" required /></td>
-                        <td><input type="text" name="host" value="$indexer['host']" size="40" /></td>
-                        <td><input type="password" name="api_key" value="$indexer["api_key"]" size="32" autocomplete="new-password" /></td>
+                        <td><input type="text" name="name" value="$indexer['name']" size="25" required /></td>
+                        <td><input type="text" name="host" value="$indexer['host']" size="25" /></td>
+                        <td><input type="password" name="api_key" value="$indexer["api_key"]" size="25" autocomplete="new-password" /></td>
                         <td class="nowrap">
                             <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-ok"></span> $T('button-save')</button>
                             <button type="button" class="btn btn-default testIndexer" data-name="$indexer['name']"><span class="glyphicon glyphicon-sort"></span> $T('button-test')</button>
