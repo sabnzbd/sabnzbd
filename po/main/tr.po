@@ -1803,10 +1803,6 @@ msgstr "Betiğin çıkış kodu şudur: %s"
 msgid "Ran %s"
 msgstr "%s çalıştırıldı"
 
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
-msgid "More"
-msgstr "Dahası"
-
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
@@ -5124,6 +5120,10 @@ msgid ""
 msgstr ""
 "Bir işi tekrar denediğinizde, 'Kopya Tespiti' ve 'Tamamlanamayacak işleri "
 "iptal et' devre dışı bırakılır."
+
+#: sabnzbd/skintext.py
+msgid "More"
+msgstr "Dahası"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

@@ -1774,10 +1774,6 @@ msgstr "Script exit kode er %s"
 msgid "Ran %s"
 msgstr "Kørte %s"
 
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
-msgid "More"
-msgstr "Mere"
-
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
@@ -5043,6 +5039,10 @@ msgid ""
 msgstr ""
 "Når du genforsøger et job, er 'Dubletdetektering' og 'Afbryd jobs, der ikke "
 "kan fuldføres' deaktiveret."
+
+#: sabnzbd/skintext.py
+msgid "More"
+msgstr "Mere"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

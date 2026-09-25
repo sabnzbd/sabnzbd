@@ -1743,10 +1743,6 @@ msgstr "קוד יציאת תסריט הוא %s"
 msgid "Ran %s"
 msgstr "הריץ את %s"
 
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
-msgid "More"
-msgstr "עוד"
-
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
@@ -4963,6 +4959,10 @@ msgid ""
 msgstr ""
 "כשאתה מנסה שוב עבודה, העבודות 'גילוי שכפולים' ו'בטל עבודות שאינן יכולות "
 "להיות שלמות' מושבתות."
+
+#: sabnzbd/skintext.py
+msgid "More"
+msgstr "עוד"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

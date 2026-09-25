@@ -1835,10 +1835,6 @@ msgstr "Le code script de sortie est %s"
 msgid "Ran %s"
 msgstr "%s exécuté"
 
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
-msgid "More"
-msgstr "Plus"
-
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
@@ -5189,6 +5185,10 @@ msgid ""
 msgstr ""
 "Lorsque vous réessayez une tâche, la \"Détection des doublons\" et "
 "\"Abandonner les travaux qui ne peuvent pas être terminés\" sont désactivés."
+
+#: sabnzbd/skintext.py
+msgid "More"
+msgstr "Plus"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

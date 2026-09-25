@@ -1797,10 +1797,6 @@ msgstr "Il codice di uscita dello script è %s"
 msgid "Ran %s"
 msgstr "Eseguito %s"
 
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
-msgid "More"
-msgstr "Altro"
-
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
@@ -5096,6 +5092,10 @@ msgid ""
 msgstr ""
 "Quando si riprova un processo, 'Rilevamento duplicati' e 'Annulla i processi"
 " che non possono essere completati' sono disabilitati."
+
+#: sabnzbd/skintext.py
+msgid "More"
+msgstr "Altro"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

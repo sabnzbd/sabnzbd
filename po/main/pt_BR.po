@@ -1743,10 +1743,6 @@ msgstr "Código de saída do script é %s"
 msgid "Ran %s"
 msgstr "%s executado"
 
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
-msgid "More"
-msgstr "Mais"
-
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
@@ -4927,6 +4923,10 @@ msgid ""
 "When you Retry a job, 'Duplicate Detection' and 'Abort jobs that cannot be "
 "completed' are disabled."
 msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "More"
+msgstr "Mais"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

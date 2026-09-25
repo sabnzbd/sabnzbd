@@ -1788,10 +1788,6 @@ msgstr "Navratový kód skriptu je %s"
 msgid "Ran %s"
 msgstr "Spuštěno %s"
 
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
-msgid "More"
-msgstr "Více"
-
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
@@ -5051,6 +5047,10 @@ msgid ""
 msgstr ""
 "Když úlohu zopakujete, jsou 'Detekce duplikátů' a 'Přerušit úlohy, které "
 "nelze dokončit' zakázány."
+
+#: sabnzbd/skintext.py
+msgid "More"
+msgstr "Více"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

@@ -1833,10 +1833,6 @@ msgstr "Exit-Code des Skripts ist %s"
 msgid "Ran %s"
 msgstr "%s ausgeführt"
 
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
-msgid "More"
-msgstr "Mehr"
-
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
@@ -5159,6 +5155,10 @@ msgstr ""
 "Wenn Sie einen Auftrag wiederholen, sind die Funktionen „Erkennung von "
 "Duplikaten“ und „Abbruch von Aufträgen, die nicht abgeschlossen werden "
 "können“ deaktiviert."
+
+#: sabnzbd/skintext.py
+msgid "More"
+msgstr "Mehr"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

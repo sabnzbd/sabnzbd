@@ -1823,10 +1823,6 @@ msgstr "El código de retorno del Script es %s"
 msgid "Ran %s"
 msgstr "Se ejecutó %s"
 
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
-msgid "More"
-msgstr "Más"
-
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
@@ -5135,6 +5131,10 @@ msgid ""
 msgstr ""
 "Cuando reintentas una tarea, se desactivan 'Detección de duplicados' y "
 "'Abortar tareas que no se puedan completar'."
+
+#: sabnzbd/skintext.py
+msgid "More"
+msgstr "Más"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

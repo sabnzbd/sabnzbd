@@ -1755,10 +1755,6 @@ msgstr "Codul de ieșire a scriptului este %s"
 msgid "Ran %s"
 msgstr "Durată %s"
 
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
-msgid "More"
-msgstr "Mai mult"
-
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
@@ -4937,6 +4933,10 @@ msgid ""
 "When you Retry a job, 'Duplicate Detection' and 'Abort jobs that cannot be "
 "completed' are disabled."
 msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "More"
+msgstr "Mai mult"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

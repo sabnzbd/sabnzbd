@@ -1801,10 +1801,6 @@ msgstr "Exit code van het script is %s"
 msgid "Ran %s"
 msgstr "%s is klaar"
 
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
-msgid "More"
-msgstr "Meer"
-
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
@@ -5096,6 +5092,10 @@ msgstr ""
 "Wanneer een download Opnieuw geprobeerd wordt, staan 'Identieke/Slimme "
 "downloaddetectie' en 'Download afbreken als deze zeker niet kan worden "
 "voltooid' uit."
+
+#: sabnzbd/skintext.py
+msgid "More"
+msgstr "Meer"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

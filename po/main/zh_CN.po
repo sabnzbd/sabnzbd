@@ -1712,10 +1712,6 @@ msgstr "脚本退出代码为 %s"
 msgid "Ran %s"
 msgstr "执行 %s"
 
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
-msgid "More"
-msgstr "更多"
-
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
@@ -4853,6 +4849,10 @@ msgid ""
 "When you Retry a job, 'Duplicate Detection' and 'Abort jobs that cannot be "
 "completed' are disabled."
 msgstr "重试作业时，\"重复检测\"和\"中止无法完成的作业\"将被禁用。"
+
+#: sabnzbd/skintext.py
+msgid "More"
+msgstr "更多"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"
