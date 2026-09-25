@@ -373,8 +373,8 @@ class Assembler(Thread):
                             self.queued_nzf.discard(nzf.nzf_id)
             else:
                 sabnzbd.NzbQueue.remove(nzo.nzo_id, cleanup=False)
+                self.clear_ready_bytes(*nzo.files_table.values())
                 sabnzbd.PostProcessor.process(nzo)
-                self.clear_ready_bytes(*nzo.files)
 
     @staticmethod
     def diskspace_check(nzo: NzbObject, nzf: NzbFile):

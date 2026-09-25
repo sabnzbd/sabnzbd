@@ -870,3 +870,33 @@ class TestWriterCache:
             thread.join()
 
         assert len({id(writer) for writer in seen}) == 1
+
+    def test_postponed_par2_is_closed_before_post_processing(self, assembler, tmp_path):
+        """A par2 volume moved to extrapars after its first article was written never finishes,
+        and post-processing deletes it once the set verifies"""
+        with (
+            mock.patch.object(NzbObject, "admin_path", new_callable=mock.PropertyMock, return_value=str(tmp_path)),
+            mock.patch.object(sabnzbd, "NzbQueue", create=True),
+            mock.patch.object(sabnzbd, "PostProcessor", create=True) as postprocessor,
+        ):
+            nzo = NzbObject("test.nzb")
+            nzo.download_path = str(tmp_path)
+            nzo.repair = True
+            for name in ("setname.mkv", "setname.vol00+01.par2"):
+                nzf = NzbFile(date=nzo.avg_date, subject=name, raw_article_db=[], file_bytes=0, nzo=nzo)
+                nzf.filepath = os.path.join(nzo.download_path, nzf.filename)
+                nzo.add_nzf(nzf)
+            data, volume = nzo.files
+            writers = [assembler.get_writer(nzf) for nzf in (data, volume)]
+
+            nzo.postpone_pars("setname")
+            assert volume in nzo.extrapars["setname"]
+            assert volume not in nzo.files
+
+            closed_at_handover = []
+            postprocessor.process.side_effect = lambda _: closed_at_handover.extend(w.closed for w in writers)
+            assembler.process(nzo)
+            assembler.stop()
+            assembler.run()
+
+        assert closed_at_handover == [True, True]

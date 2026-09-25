@@ -428,6 +428,7 @@ class NzbQueue:
                     removed.append(nzf_id)
                     nzo.abort_direct_unpacker()
                     post_done = nzo.remove_nzf(nzf)
+                    sabnzbd.Assembler.clear_ready_bytes(nzf)
                     if post_done:
                         if nzo.finished_files:
                             self.end_job(nzo)
@@ -764,7 +765,7 @@ class NzbQueue:
         if not nzo.nzo_id:
             self.add(nzo, quiet=True)
         self.remove(nzo.nzo_id, cleanup=False)
-        sabnzbd.Assembler.clear_ready_bytes(*nzo.files)
+        sabnzbd.Assembler.clear_ready_bytes(*nzo.files_table.values())
         sabnzbd.PostProcessor.process(nzo)
 
     def actives(self, grabs: bool = True) -> int:
