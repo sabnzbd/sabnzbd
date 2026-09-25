@@ -331,6 +331,11 @@ class Assembler(Thread):
                     try:
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done, allow_non_contiguous, direct_write)
+                    except ValueError:
+                        # Raised by a FileWriter closed because the file or job was removed
+                        if not (nzf.deleted or nzo.removed_from_queue):
+                            raise
+                        logging.debug("Ignoring closed file %s, already removed or in post-proc", filepath)
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error
                         if not nzo.pp_or_finished:
@@ -517,7 +522,7 @@ class Assembler(Thread):
                 if not direct_write:
                     return False
                 Assembler.write(writer, None, nzf, article, data)
-            except OSError:
+            except (OSError, ValueError):
                 # nzo has probably been deleted or not enough disk space, ArticleCache tries the fallback and handles it
                 return False
         return True
