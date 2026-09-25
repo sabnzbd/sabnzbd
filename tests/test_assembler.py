@@ -900,3 +900,15 @@ class TestWriterCache:
             assembler.run()
 
         assert closed_at_handover == [True, True]
+
+    @pytest.mark.parametrize("deleted, removed_from_queue", [(True, False), (False, True)])
+    def test_a_stream_does_not_reopen_a_finished_file(self, assembler, tmp_path, deleted, removed_from_queue):
+        nzf = self.make_nzf(tmp_path, "finished")
+        nzf.deleted = deleted
+        nzf.nzo.removed_from_queue = removed_from_queue
+
+        assert assembler.get_writer(nzf, stream=True) is None
+        assert not assembler.open_writers
+        assert not os.path.exists(nzf.filepath)
+        # The assembler still writes what is left of it
+        assert assembler.get_writer(nzf) is not None
