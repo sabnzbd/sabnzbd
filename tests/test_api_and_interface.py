@@ -518,6 +518,51 @@ class TestSecuredExpose:
         result = self.api_wrapper(mode="queue", apikey=sabnzbd.cfg.api_key())
         assert "queue" in result.body.decode()  # Should return queue data
 
+
+    def test_renamed_rss_api_response_and_filter_use_new_name(self, monkeypatch):
+        class FakeFeed:
+            name = "old-feed"
+
+            def set_dict(self, values):
+                pass
+
+            def rename(self, new_name):
+                self.name = new_name
+
+        feed = FakeFeed()
+        filter_updates = []
+        report_calls = []
+        get_dconfig = Mock(return_value={"rss": [{"name": "new-feed"}]})
+
+        monkeypatch.setattr(api.config, "get_config", lambda section, name: feed)
+        monkeypatch.setattr(api.config, "get_dconfig", get_dconfig)
+        monkeypatch.setattr(api.config, "save_config", Mock())
+        monkeypatch.setattr(
+            sabnzbd.interface,
+            "do_upd_rss_filter",
+            lambda values: filter_updates.append(values),
+        )
+        monkeypatch.setattr(api, "report", lambda kwargs, **values: report_calls.append(values) or "response")
+
+        result = api._api_set_config(
+            "",
+            QueryParams(
+                {
+                    "section": "rss",
+                    "keyword": "old-feed",
+                    "newname": "new-feed",
+                    "filter_action": "add",
+                    "filter_text": "release",
+                }
+            ),
+        )
+
+        assert result == "response"
+        assert feed.name == "new-feed"
+        assert filter_updates[0]["feed"] == "new-feed"
+        get_dconfig.assert_called_once_with("rss", "new-feed")
+        assert report_calls[0]["data"] == {"rss": [{"name": "new-feed"}]}
+
     def test_basic(self):
         """Test basic API access functionality"""
         self.check_full_access()

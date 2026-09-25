@@ -23,6 +23,7 @@ import io
 import os
 import shutil
 import time
+import uuid
 import zipfile
 
 import pytest
@@ -81,6 +82,56 @@ class TestOptions:
         test_option = config.OptionPassword(self.test_section, self.test_keyword, default_val="test_password")
         assert test_option.get_dict() == {self.test_keyword: "test_password"}
         assert test_option.get_dict(for_public_api=True) == {self.test_keyword: "**********"}
+
+
+class TestNamedConfigSection:
+    def test_update_or_create(self):
+        name = f"update-or-create-test-{uuid.uuid4().hex}"
+        new_name = f"renamed-test-{uuid.uuid4().hex}"
+        previous_modified = config.CONFIG.modified
+        indexer = None
+
+        try:
+            indexer = config.ConfigIndexer.update_or_create(
+                name, {"host": "https://example.com", "newname": new_name}
+            )
+            assert config.get_config("indexers", name) is indexer
+            assert config.get_config("indexers", new_name) is None
+
+            updated_indexer = config.ConfigIndexer.update_or_create(
+                name, {"notes": "updated", "newname": new_name}
+            )
+            assert updated_indexer is indexer
+            assert indexer.host() == "https://example.com"
+            assert indexer.notes() == "updated"
+            assert indexer.name == name
+        finally:
+            if indexer and config.get_config("indexers", indexer.name) is indexer:
+                indexer.delete()
+            config.CONFIG.modified = previous_modified
+
+    def test_set_dict_updates_fields_without_renaming(self):
+        name = f"rename-test-{uuid.uuid4().hex}"
+        new_name = f"renamed-test-{uuid.uuid4().hex}"
+        previous_modified = config.CONFIG.modified
+        indexer = None
+
+        try:
+            indexer = config.ConfigIndexer(name, {"newname": new_name, "host": "https://example.com"})
+            assert config.get_config("indexers", name) is indexer
+            assert config.get_config("indexers", new_name) is None
+
+            indexer.set_dict({"newname": new_name, "notes": "updated"})
+            assert indexer.name == name
+            assert indexer.notes() == "updated"
+
+            assert indexer.rename(new_name) == new_name
+            assert config.get_config("indexers", name) is None
+            assert config.get_config("indexers", new_name) is indexer
+        finally:
+            if indexer and config.get_config("indexers", indexer.name) is indexer:
+                indexer.delete()
+            config.CONFIG.modified = previous_modified
 
 
 @pytest.mark.usefixtures("clean_cache_dir")

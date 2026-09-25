@@ -1417,6 +1417,7 @@ class XmlOutputFactory:
         return text
 
 
+
 def handle_server_api(kwargs: QueryParams) -> str:
     """Special handler for API-call 'set_config' [servers]"""
     name = kwargs.get("keyword")
@@ -1424,14 +1425,13 @@ def handle_server_api(kwargs: QueryParams) -> str:
         name = kwargs.get("name")
 
     if name:
-        server = config.get_config("servers", name)
-        if server:
-            server.set_dict(kwargs)
-            old_name = name
-        else:
-            config.ConfigServer(name, kwargs)
-            old_name = None
-        sabnzbd.Downloader.update_server(old_name, name)
+        existing_server = config.get_config("servers", name)
+        old_name = existing_server.name if existing_server else None
+        server = config.ConfigServer.update_or_create(name, kwargs)
+        if new_name := kwargs.get("newname"):
+            server.rename(new_name)
+        sabnzbd.Downloader.update_server(old_name, server.name)
+        return server.name
     return name
 
 
@@ -1443,12 +1443,10 @@ def handle_sorter_api(kwargs: QueryParams) -> Optional[str]:
     if not name:
         return None
 
-    sorter = config.get_config("sorters", name)
-    if sorter:
-        sorter.set_dict(kwargs)
-    else:
-        config.ConfigSorter(name, kwargs)
-    return name
+    sorter = config.ConfigSorter.update_or_create(name, kwargs)
+    if new_name := kwargs.get("newname"):
+        sorter.rename(new_name)
+    return sorter.name
 
 
 def handle_indexer_api(kwargs: QueryParams) -> Optional[str]:
@@ -1459,13 +1457,11 @@ def handle_indexer_api(kwargs: QueryParams) -> Optional[str]:
     if not name:
         return None
 
-    indexer = config.get_config("indexers", name)
-    if indexer:
-        indexer.set_dict(kwargs)
-    else:
-        config.ConfigIndexer(name, kwargs)
+    indexer = config.ConfigIndexer.update_or_create(name, kwargs)
+    if new_name := kwargs.get("newname"):
+        indexer.rename(new_name)
     sabnzbd.nzbsearch.invalidate_categories()
-    return name
+    return indexer.name
 
 
 def handle_rss_api(kwargs: QueryParams) -> Optional[str]:
@@ -1476,24 +1472,22 @@ def handle_rss_api(kwargs: QueryParams) -> Optional[str]:
     if not name:
         return None
 
-    feed = config.get_config("rss", name)
-    if feed:
-        feed.set_dict(kwargs)
-    else:
-        config.ConfigRSS(name, kwargs)
+    feed = config.ConfigRSS.update_or_create(name, kwargs)
+    if new_name := kwargs.get("newname"):
+        feed.rename(new_name)
 
     action = kwargs.get("filter_action")
     if action in ("add", "update"):
         filter_kwargs = dict(kwargs)
-        filter_kwargs["feed"] = name
+        filter_kwargs["feed"] = feed.name
         sabnzbd.interface.do_upd_rss_filter(filter_kwargs)
 
     elif action == "delete":
         filter_kwargs = dict(kwargs)
-        filter_kwargs["feed"] = name
+        filter_kwargs["feed"] = feed.name
         sabnzbd.interface.do_del_rss_filter(filter_kwargs)
 
-    return name
+    return feed.name
 
 
 def handle_cat_api(kwargs: QueryParams) -> Optional[str]:
@@ -1505,12 +1499,10 @@ def handle_cat_api(kwargs: QueryParams) -> Optional[str]:
         return None
     name = name.lower()
 
-    cat = config.get_config("categories", name)
-    if cat:
-        cat.set_dict(kwargs)
-    else:
-        config.ConfigCat(name, kwargs)
-    return name
+    cat = config.ConfigCat.update_or_create(name, kwargs)
+    if new_name := kwargs.get("newname"):
+        cat.rename(new_name)
+    return cat.name
 
 
 def test_nntp_server_dict(kwargs: QueryParams) -> tuple[bool, str]:

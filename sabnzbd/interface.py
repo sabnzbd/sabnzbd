@@ -1270,29 +1270,21 @@ def handle_server(params, new_svr=False):
         ):
             return report(params, error=T('Server address "%s:%s" is not valid.') % (host, port))
 
-    # Default server name is just the host name
-    server = host
-
-    svr = None
-    old_server = params.get("server")
-    if old_server:
-        svr = config.get_config("servers", old_server)
-    if svr:
-        server = old_server
-    else:
-        svr = config.get_config("servers", server)
-
-    if new_svr:
-        server = unique_svr_name(server)
-
     for kw in ("ssl", "enable", "required", "optional"):
         if kw not in params.keys():
             params[kw] = None
-    if svr and not new_svr:
-        svr.set_dict(params)
-    else:
-        old_server = None
+
+    old_server = None
+    if new_svr:
+        server = unique_svr_name(host)
         config.ConfigServer(server, params)
+    else:
+        server = params.get("server")
+        svr = config.get_config("servers", server) if server else None
+        if not svr:
+            return report(params, error=T("Server not found"))
+        svr.set_dict(params)
+        old_server = server
 
     config.save_config()
     sabnzbd.Downloader.update_server(old_server, server)
@@ -1470,7 +1462,7 @@ def config_rss_save_rss_feed(request: Request):
     """Update Feed level attributes"""
     params = request_params(request)
     kwargs = dict(params)
-    feed_name = params.get("feed")
+    feed_name: str = params.get("feed")
     try:
         cf = config.get_rss()[feed_name]
     except KeyError:
@@ -1481,11 +1473,9 @@ def config_rss_save_rss_feed(request: Request):
     if cf and uri:
         kwargs["uri"] = uri
         cf.set_dict(kwargs)
-
-        # Did we get a new name for this feed?
-        new_name = params.get("feed_new_name")
-        if new_name and new_name != feed_name:
-            feed_name = cf.rename(new_name)
+        if new_name := Strip(params.get("feed_new_name")):
+            cf.rename(new_name)
+        feed_name = cf.name
 
         config.save_config()
 
@@ -1914,27 +1904,32 @@ def config_categories_delete(request: Request):
 
 @secured_expose(route="/config/categories/save", check_configlock=True, methods=["POST"])
 def config_categories_save(request: Request):
-    name = request_params(request).get("name", "*")
-    newname = request_params(request).get("newname", "")
+    params = request_params(request)
+    name = params.get("name", "*")
+    newname = params.get("newname", "")
     if name == "*":
+        # The Default category always keeps its "*" identifier
         newname = name
 
     if newname:
-        cat_params = dict(request_params(request))
+        cat_params = dict(params)
+        cat_params.pop("newname", None)
         # Validate directory not under incomplete
         if same_directory(
             cfg.download_dir.get_path(),
             real_path(cfg.complete_dir.get_path(), cat_params.get("dir", "")),
         ):
             return report(
-                request_params(request),
+                params,
                 error=T("Category folder cannot be a subfolder of the Temporary Download Folder."),
             )
 
-        # Delete current one and replace with new one
-        if name:
-            config.delete("categories", name)
-        config.ConfigCat(newname.lower(), cat_params)
+        cat = config.get_config("categories", name) if name else None
+        if cat:
+            cat.set_dict(cat_params)
+            cat.rename(newname)
+        else:
+            config.ConfigCat(newname, cat_params)
 
     config.save_config()
     return base_redirect_response("/config/categories")
@@ -1988,17 +1983,17 @@ def config_sorting_delete(request: Request):
 def config_sorting_save_sorter(request: Request):
     params = request_params(request)
     kwargs = dict(params)
-    name = params.get("name", "*")
+    name = params.get("name", "")
     newname = params.get("newname", "")
-    newname = config.clean_section_name(newname)
 
-    if name == "*":
-        newname = name
     if newname:
-        # Delete current one and replace with new one
-        if name:
-            config.delete("sorters", name)
-        config.ConfigSorter(newname, kwargs)
+        kwargs.pop("newname", None)
+        sorter = config.get_config("sorters", name) if name else None
+        if sorter:
+            sorter.set_dict(kwargs)
+            sorter.rename(newname)
+        else:
+            config.ConfigSorter(config.clean_section_name(newname), kwargs)
 
     config.save_config()
     return base_redirect_response(_SORTING_ROOT)
@@ -2060,10 +2055,9 @@ def config_nzbsearch_save_indexer(request: Request):
         kwargs = dict(params)
         # An unchecked checkbox is simply absent from the POST body
         kwargs.setdefault("enable", 0)
+        new_name = Strip(params.get("name"))
         indexer.set_dict(kwargs)
-
-        new_name = config.clean_section_name(Strip(params.get("name"))) if Strip(params.get("name")) else ""
-        if new_name and new_name != params.get("indexer") and not config.get_config("indexers", new_name):
+        if new_name:
             indexer.rename(new_name)
 
         config.save_config()
