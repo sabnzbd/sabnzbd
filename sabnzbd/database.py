@@ -20,6 +20,7 @@ sabnzbd.database - Database Support
 """
 
 import os
+import re
 import tempfile
 import time
 import uuid
@@ -177,11 +178,26 @@ class HistoryDB:
                 with sabnzbd.rss.rss_repository(self) as repo:
                     repo.import_rss_records()
             if version < 9:
-                # Strip the "(More)" scriptlog link that used to be embedded in the Script
-                # stage text; the frontend now builds this button itself from has_script_log
-                _ = self.execute("PRAGMA user_version = 9;") and self.execute("""UPDATE history SET stage_log =
-                    rtrim(substr(stage_log, 1, instr(stage_log, '<a href="./scriptlog?name=') - 1))
-                    WHERE stage_log LIKE '%<a href="./scriptlog?name=%'""")
+                # Strip the "(More)" link the frontend now builds itself; use a regex instead
+                # of assuming its position, since old installs may not have Script as the last stage
+                scriptlog_link = re.compile(r'\s*<a href="\./scriptlog\?name=[^"]*">[^<]*</a>')
+                try:
+                    self.connection.execute("BEGIN")
+                    self.execute("PRAGMA user_version = 9;", raise_on_error=True)
+                    if self.execute(
+                        """SELECT id, stage_log FROM history WHERE stage_log LIKE '%<a href="./scriptlog?name=%'""",
+                        raise_on_error=True,
+                    ):
+                        for row_id, stage_log in self.cursor.fetchall():
+                            self.execute(
+                                "UPDATE history SET stage_log = ? WHERE id = ?",
+                                (scriptlog_link.sub("", stage_log), row_id),
+                                raise_on_error=True,
+                            )
+                    self.connection.commit()
+                except:
+                    self.connection.rollback()
+                    raise
 
             HistoryDB.startup_done = True
 

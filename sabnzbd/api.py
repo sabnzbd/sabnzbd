@@ -2265,7 +2265,6 @@ def add_active_history(postproc_queue: list[NzbObject], items: list[dict[str, An
             "password": nzo.correct_password,
             "action_line": nzo.action_line,
             "loaded": nzo.pp_active,
-            "has_script_log": False,
             "retry": False,
             "archive": False,
             "time_added": nzo.time_added,
