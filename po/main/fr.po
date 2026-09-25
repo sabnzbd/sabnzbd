@@ -202,11 +202,11 @@ msgstr "Test de Notification"
 
 #: sabnzbd/api.py
 msgid "Indexer URL is not set."
-msgstr ""
+msgstr "L'URL de l'indexeur n'est pas définie."
 
 #: sabnzbd/api.py
 msgid "Connected"
-msgstr ""
+msgstr "Connecté"
 
 #: sabnzbd/api.py
 msgid "The hostname is not set."
@@ -2499,7 +2499,7 @@ msgstr "Rechercher"
 #. Config menu item for the newznab indexer search
 #: sabnzbd/skintext.py
 msgid "Indexers"
-msgstr ""
+msgstr "Indexeurs"
 
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
@@ -3086,10 +3086,18 @@ msgid ""
 "Every enabled indexer is searched simultaneously and the results are "
 "combined. "
 msgstr ""
+"SABnzbd peut effectuer une recherche sur un ou plusieurs indexeurs pour "
+"trouver des NZB pertinents. Un indexeur est un site web qui indexe le "
+"contenu Usenet afin d'aider à trouver des NZB. Pour utiliser la recherche "
+"d'indexeur au sein de SABnzbd et trouver des NZB pertinents, créer un compte"
+" auprès d'un ou plusieurs indexeurs. Un compte indexeur est différent d'un "
+"compte fournisseur Usenet, ce dernier étant nécessaire pour télécharger. "
+"Chaque indexeur activé est interrogé simultanément et les résultats sont "
+"combinés."
 
 #: sabnzbd/skintext.py
 msgid "Indexer URL"
-msgstr ""
+msgstr "URL de l'indexeur"
 
 #: sabnzbd/skintext.py
 msgid "API Key"
@@ -3097,16 +3105,16 @@ msgstr "Clé API"
 
 #: sabnzbd/skintext.py
 msgid "Testing indexer..."
-msgstr ""
+msgstr "Test de l'indexeur…"
 
 #: sabnzbd/skintext.py
 msgid "Test failed"
-msgstr ""
+msgstr "Le test a échoué"
 
 #. Button to test an indexer connection
 #: sabnzbd/skintext.py
 msgid "Test"
-msgstr ""
+msgstr "Test"
 
 #: sabnzbd/skintext.py
 msgid "Maximum line speed"
@@ -4919,15 +4927,15 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Search indexers"
-msgstr ""
+msgstr "Rechercher des indexeurs"
 
 #: sabnzbd/skintext.py
 msgid "Searching"
-msgstr ""
+msgstr "Recherche en cours"
 
 #: sabnzbd/skintext.py
 msgid "Manage indexers"
-msgstr ""
+msgstr "Gérer les indexeurs"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4936,20 +4944,27 @@ msgid ""
 "to sign up for an account at one or more indexers. An indexer account is "
 "separate from a Usenet provider account, which is required to download."
 msgstr ""
+"Pour rechercher des NZB, configurer un indexeur dans la page Config - "
+"Indexeurs. Pour utiliser la recherche d'indexeur intégrée à SABnzbd et "
+"trouver des NZB pertinents, créer un compte auprès d'un ou plusieurs "
+"indexeurs. Un compte indexeur est différent d'un compte fournisseur Usenet, "
+"ce dernier étant nécessaire pour télécharger."
 
 #: sabnzbd/skintext.py
 msgid "Password protected"
-msgstr ""
+msgstr "Protégé par mot de passe"
 
 #: sabnzbd/skintext.py
 msgid "All categories"
-msgstr ""
+msgstr "Toutes les catégories"
 
 #: sabnzbd/skintext.py
 msgid ""
 "%s results available, only the 100 latest results for each indexer are "
 "shown."
 msgstr ""
+"%s résultats disponibles, seuls les 100 derniers résultats sont affichés "
+"pour chaque indexeur."
 
 #: sabnzbd/skintext.py
 msgid "Multi-Operations"

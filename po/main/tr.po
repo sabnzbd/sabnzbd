@@ -194,11 +194,11 @@ msgstr "Deneme Bildirimi"
 
 #: sabnzbd/api.py
 msgid "Indexer URL is not set."
-msgstr ""
+msgstr "Dizinleyici URL ayarlanmamış."
 
 #: sabnzbd/api.py
 msgid "Connected"
-msgstr ""
+msgstr "Bağlantı kuruldu"
 
 #: sabnzbd/api.py
 msgid "The hostname is not set."
@@ -1064,6 +1064,7 @@ msgstr "%s parola dosyasının okunması başarısız oldu"
 #: sabnzbd/misc.py
 msgid "Ignoring invalid entry in local_ranges: %s"
 msgstr ""
+"local_ranges yani yerel alanlardaki geçersiz unsur görmezden geliniyor:%s"
 
 #. Warning message
 #: sabnzbd/misc.py
@@ -1071,11 +1072,13 @@ msgid ""
 "%s in local_ranges is not a private network, list it in xff_trusted_hosts to"
 " trust it"
 msgstr ""
+"local_ranges yani yerel alanlardaki %s, özel bir ağ değildir, ona güvenmek "
+"için xff_trusted_hosts unsurunda onu listeleyin"
 
 #. Warning message
 #: sabnzbd/misc.py
 msgid "Ignoring invalid network in the forwarded-header trust list: %s"
-msgstr ""
+msgstr "İletilen başlık güven listesindeki geçersiz ağ dikkate alınmıyor: %s"
 
 #. Error message
 #: sabnzbd/misc.py
@@ -2005,20 +2008,26 @@ msgid ""
 "X-Forwarded-For received while verify_xff_header is off, turn it on and list"
 " %s in xff_trusted_hosts"
 msgstr ""
+"verify_xff_header devre dışı olduğu hâlde X-Forwarded-For alındı, onu "
+"etkinleştirin ve %s unsurunu xff_trusted_hosts unsurunda listeleyin"
 
 #: sabnzbd/security.py
 msgid "X-Forwarded-For received from %s, which is not in xff_trusted_hosts"
 msgstr ""
+"%s unsurundan X-Forwarded-For alındı, ki bu xff_trusted_hosts unsurunda "
+"mevcut değil"
 
 #: sabnzbd/security.py
 msgid "X-Forwarded-For from %s does not name a client address"
-msgstr ""
+msgstr "%s unsurundan X-Forwarded-For, bir istemci adresi belirtmiyor"
 
 #: sabnzbd/security.py
 msgid ""
 "Forwarded is not supported, configure the proxy to send X-Forwarded-For "
 "instead"
 msgstr ""
+"Forwarded yani iletildi desteklenmiyor, vekil sunucuyu bunun yerine "
+"X-Forwarded-For göndermesi için yapılandırın"
 
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py
@@ -2458,7 +2467,7 @@ msgstr "Ara"
 #. Config menu item for the newznab indexer search
 #: sabnzbd/skintext.py
 msgid "Indexers"
-msgstr ""
+msgstr "Dizinleyiciler"
 
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
@@ -2870,6 +2879,8 @@ msgid ""
 "Stay logged in on this browser instead of being signed out when you close "
 "it."
 msgstr ""
+"Tarayıcıyı kapattığınızda oturumun sonlanmasından ziyade bu tarayıcıda "
+"oturum açık kalsın"
 
 #: sabnzbd/skintext.py
 msgid "Enable 7zip"
@@ -3044,10 +3055,18 @@ msgid ""
 "Every enabled indexer is searched simultaneously and the results are "
 "combined. "
 msgstr ""
+"SABnzbd bir veya daha fazla dizinleyicide ilgili NZB dosyaları bulmak için "
+"arama yapabilir. Dizinleyici, NZB dosyalarını bulmanıza yardımcı olmak için "
+"Usenet içeriğini endeksleyen bir İnternet sitesidir. Alakalı NZB dosyaları "
+"bulmak maksadıyla SABnzbd içinden Dizinleyici Araması'nı kullanmak için bir "
+"veya daha fazla dizinleyicide hesap oluşturmanız gerekecektir. Dizinleyici "
+"hesapları, indirme yapmak için gerekli olan Usenet sağlayıcı hesaplarından "
+"ayrıdır. Her etkinleştirilmiş dizinleyicide aramalar aynı anda yapılır ve "
+"sonuçlar birleştirilir."
 
 #: sabnzbd/skintext.py
 msgid "Indexer URL"
-msgstr ""
+msgstr "Dizinleyici URL"
 
 #: sabnzbd/skintext.py
 msgid "API Key"
@@ -3055,16 +3074,16 @@ msgstr "API Anahtarı"
 
 #: sabnzbd/skintext.py
 msgid "Testing indexer..."
-msgstr ""
+msgstr "Dizinleyici deneniyor…"
 
 #: sabnzbd/skintext.py
 msgid "Test failed"
-msgstr ""
+msgstr "Deneme başarısız oldu"
 
 #. Button to test an indexer connection
 #: sabnzbd/skintext.py
 msgid "Test"
-msgstr ""
+msgstr "Dene"
 
 #: sabnzbd/skintext.py
 msgid "Maximum line speed"
@@ -4843,15 +4862,15 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Search indexers"
-msgstr ""
+msgstr "Dizinleyicilerde ara"
 
 #: sabnzbd/skintext.py
 msgid "Searching"
-msgstr ""
+msgstr "Arama devam ediyor"
 
 #: sabnzbd/skintext.py
 msgid "Manage indexers"
-msgstr ""
+msgstr "Dizinleyicileri yönet"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4860,20 +4879,26 @@ msgid ""
 "to sign up for an account at one or more indexers. An indexer account is "
 "separate from a Usenet provider account, which is required to download."
 msgstr ""
+"NZB dosyaları aramak için, Yapılandırma - Dizinleyiciler sayfasında bir "
+"dizinleyici yapılandırın. Alakalı NZB dosyaları bulmak maksadıyla SABnzbd "
+"içinde Dizinleyici Araması'nı kullanmak için bir veya daha fazla "
+"dizinleyicide hesap oluşturmanız gerekecektir. Dizinleyici hesapları, "
+"indirme yapmak için gerekli olan Usenet sağlayıcı hesaplarından ayrıdır."
 
 #: sabnzbd/skintext.py
 msgid "Password protected"
-msgstr ""
+msgstr "Parolayla korunmuş"
 
 #: sabnzbd/skintext.py
 msgid "All categories"
-msgstr ""
+msgstr "Tüm kategoriler"
 
 #: sabnzbd/skintext.py
 msgid ""
 "%s results available, only the 100 latest results for each indexer are "
 "shown."
 msgstr ""
+"%s sonuç mevcut, her bir dizinleyici için sadece son 100 sonuç gösteriliyor."
 
 #: sabnzbd/skintext.py
 msgid "Multi-Operations"
@@ -5004,41 +5029,41 @@ msgstr "Öksüz işler"
 #. Hamburger-menu item and modal title
 #: sabnzbd/skintext.py
 msgid "Active sessions"
-msgstr ""
+msgstr "Etkin oturumlar"
 
 #. Column: when the session was created
 #: sabnzbd/skintext.py
 msgid "Signed in"
-msgstr ""
+msgstr "Oturum açıldı"
 
 #. Column: when the session was last used
 #: sabnzbd/skintext.py
 msgid "Last seen"
-msgstr ""
+msgstr "Son görülme vakti"
 
 #. Column: when the session expires
 #: sabnzbd/skintext.py
 msgid "Expires"
-msgstr ""
+msgstr "Süre dolumu"
 
 #. Column: where the session is used from
 #: sabnzbd/skintext.py
 msgid "IP address"
-msgstr ""
+msgstr "IP adresi"
 
 #. Accessible name for the icon-only revoke button
 #: sabnzbd/skintext.py
 msgid "Revoke"
-msgstr ""
+msgstr "Geri al"
 
 #. Button: sign out every session
 #: sabnzbd/skintext.py
 msgid "Revoke all sessions"
-msgstr ""
+msgstr "Tüm oturumları iptal et"
 
 #: sabnzbd/skintext.py
 msgid "This signs out every device, including this one."
-msgstr ""
+msgstr "Bu, bu cihaz dahil her cihazın oturumunu kapatır."
 
 #: sabnzbd/skintext.py
 msgid "Send back to queue"
