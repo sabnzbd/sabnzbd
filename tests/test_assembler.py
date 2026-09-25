@@ -30,7 +30,7 @@ import pytest
 
 import sabnzbd
 from sabnzbd.assembler import Assembler
-from sabnzbd.constants import ASSEMBLER_MAX_OPEN_WRITERS, GIGI
+from sabnzbd.constants import ASSEMBLER_MAX_OPEN_WRITERS, GIGI, Status
 from sabnzbd.filesystem import Diskspace
 from sabnzbd.misc import pp_to_opts
 from sabnzbd.nzb import Article, NzbFile, NzbObject
@@ -912,3 +912,12 @@ class TestWriterCache:
         assert not os.path.exists(nzf.filepath)
         # The assembler still writes what is left of it
         assert assembler.get_writer(nzf) is not None
+
+    def test_a_deleted_job_gets_no_new_handle(self, assembler, tmp_path):
+        nzf = self.make_nzf(tmp_path, "deleted")
+        nzf.nzo.status = Status.DELETED
+
+        with pytest.raises(FileNotFoundError):
+            assembler.get_writer(nzf)
+        assert not assembler.open_writers
+        assert not os.path.exists(nzf.filepath)
