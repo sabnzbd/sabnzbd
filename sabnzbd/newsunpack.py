@@ -942,7 +942,12 @@ def rar_extract_core(
             if requires_kill:
                 p.kill()
             else:
-                p.wait()
+                p.terminate()
+            try:
+                p.communicate(timeout=10)
+            except subprocess.TimeoutExpired:
+                p.kill()
+                p.communicate()
             logging.debug("UNRAR output: \n%s", "\n".join(lines))
             return fail, [], []
 
