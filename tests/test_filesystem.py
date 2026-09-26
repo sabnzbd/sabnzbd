@@ -641,6 +641,72 @@ class TestPointsOutside:
 
 
 class TestMoveToPath:
+    @pytest.mark.config({"overwrite_files": True})
+    @pytest.mark.parametrize(
+        "destination_kind",
+        ["outside", pytest.param("parent_link", marks=needs_symlinks), pytest.param("leaf_link", marks=needs_symlinks)],
+    )
+    def test_outside_destination_is_not_deleted(self, tmp_path, destination_kind):
+        root = tmp_path / "complete"
+        outside = tmp_path / "outside"
+        root.mkdir()
+        outside.mkdir()
+        source = tmp_path / "source.bin"
+        source.write_bytes(b"new data")
+        victim = outside / "victim.bin"
+        victim.write_bytes(b"keep me")
+
+        if destination_kind == "parent_link":
+            (root / "sub").symlink_to(outside, target_is_directory=True)
+            destination = root / "sub" / victim.name
+        elif destination_kind == "leaf_link":
+            destination = root / victim.name
+            destination.symlink_to(victim)
+        else:
+            destination = victim
+
+        assert filesystem.move_to_path(str(source), str(destination), root=str(root)) == (False, None)
+        assert victim.read_bytes() == b"keep me"
+        assert source.read_bytes() == b"new data"
+        if destination_kind == "leaf_link":
+            assert destination.is_symlink()
+
+    @pytest.mark.config({"overwrite_files": True})
+    @pytest.mark.parametrize("with_root", [True, False])
+    def test_existing_destination_inside_root_is_overwritten(self, tmp_path, with_root):
+        root = tmp_path / "complete"
+        root.mkdir()
+        source = tmp_path / "source.bin"
+        source.write_bytes(b"new data")
+        destination = root / "moved.bin"
+        destination.write_bytes(b"old data")
+
+        assert filesystem.move_to_path(str(source), str(destination), root=str(root) if with_root else None) == (
+            True,
+            str(destination),
+        )
+        assert destination.read_bytes() == b"new data"
+        assert not source.exists()
+
+    @needs_symlinks
+    @pytest.mark.config({"overwrite_files": False})
+    def test_outside_leaf_link_gets_unique_destination(self, tmp_path):
+        root = tmp_path / "complete"
+        root.mkdir()
+        source = tmp_path / "source.bin"
+        source.write_bytes(b"new data")
+        victim = tmp_path / "victim.bin"
+        victim.write_bytes(b"keep me")
+        destination = root / victim.name
+        destination.symlink_to(victim)
+        unique = root / "victim.1.bin"
+
+        assert filesystem.move_to_path(str(source), str(destination), root=str(root)) == (True, str(unique))
+        assert unique.read_bytes() == b"new data"
+        assert victim.read_bytes() == b"keep me"
+        assert destination.is_symlink()
+        assert not source.exists()
+
     @needs_symlinks
     def test_link_in_a_parent_cannot_redirect(self, tmp_path):
         """A linked directory in the path redirects the move just like a linked leaf"""

@@ -891,6 +891,11 @@ def move_to_path(path: str, new_path: str, root: Optional[str] = None) -> tuple[
     new_path = os.path.abspath(new_path)
     new_path_dir = os.path.dirname(new_path)
     if overwrite and os.path.exists(new_path):
+        # Check before deleting: a parent link can redirect the removal outside root.
+        if root and points_outside(root, new_path):
+            logging.error(T("Failed moving %s to %s"), clip_path(path), clip_path(new_path))
+            logging.info("Refusing to move %s, it points outside %s", new_path, root)
+            return False, None
         try:
             os.remove(new_path)
         except Exception:
