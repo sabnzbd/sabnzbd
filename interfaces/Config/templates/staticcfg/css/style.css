@@ -54,6 +54,11 @@ a:focus-visible {
     outline-offset: 2px;
 }
 
+code {
+    color: var(--clr-text);
+    background: var(--clr-surface-alt);
+}
+
 #logo {
     display: block;
     margin: 3px auto auto;

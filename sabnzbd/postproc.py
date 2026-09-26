@@ -52,11 +52,11 @@ from sabnzbd.misc import (
     SABRarFile,
 )
 from sabnzbd.filesystem import (
+    points_into_program_dir,
     real_path,
     get_unique_dir,
     move_to_path,
     make_script_path,
-    long_path,
     clip_path,
     renamer,
     remove_dir,
@@ -760,7 +760,7 @@ def get_complete_directory(nzo: NzbObject) -> tuple[str, Sorter, bool]:
         catdir = catdir[:-1]
         create_job_dir = False
 
-    complete_dir = long_path(real_path(cfg.complete_dir.get_path(), catdir))
+    complete_dir = real_path(cfg.complete_dir.get_path(), catdir)
 
     # Initialize the sorter and let it construct a path for the Complete directory
     file_sorter = Sorter(
@@ -786,6 +786,11 @@ def prepare_extraction_path(nzo: NzbObject) -> tuple[str, str, Sorter, bool, Opt
     """
     complete_dir, file_sorter, create_job_dir = get_complete_directory(nzo)
     marker_file = None
+
+    # Checked again here, as links could have changed or sorting could lead there
+    if points_into_program_dir(complete_dir):
+        logging.error(T("Folder %s is inside the program folder, this is not allowed"), clip_path(complete_dir))
+        raise IOError
 
     if not create_job_dir:
         workdir_complete = create_all_dirs(complete_dir, apply_permissions=True)

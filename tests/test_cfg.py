@@ -19,10 +19,13 @@
 tests.test_cfg - Testing functions in cfg.py
 """
 
+import os
 import sys
 import pytest
 
+import sabnzbd
 import sabnzbd.cfg as cfg
+from sabnzbd.constants import DEF_COMPLETE_DIR, DEF_DOWNLOAD_DIR
 
 
 class TestValidators:
@@ -235,6 +238,33 @@ class TestValidators:
     def test_validate_safedir(self):
         assert cfg.validate_safedir("", "", "def") == (None, "def")
         assert cfg.validate_safedir("", "C:\\", "") == (None, "C:\\")
+
+    @pytest.fixture
+    def prog_dir(self, tmp_path, monkeypatch):
+        prog_dir = str(tmp_path)
+        monkeypatch.setattr(sabnzbd, "DIR_PROG", prog_dir)
+        monkeypatch.setattr(cfg.complete_dir, "get_path", lambda: os.path.join(prog_dir, DEF_COMPLETE_DIR))
+        monkeypatch.setattr(cfg.download_dir, "get_path", lambda: os.path.join(prog_dir, DEF_DOWNLOAD_DIR))
+        return prog_dir
+
+    def test_validate_download_vs_complete_dir_program_dir(self, prog_dir):
+        assert cfg.validate_download_vs_complete_dir(prog_dir, DEF_DOWNLOAD_DIR, DEF_DOWNLOAD_DIR) == (
+            None,
+            DEF_DOWNLOAD_DIR,
+        )
+        assert cfg.validate_download_vs_complete_dir(prog_dir, "interfaces", DEF_DOWNLOAD_DIR)[1] is None
+        assert cfg.validate_download_vs_complete_dir(prog_dir, prog_dir, DEF_DOWNLOAD_DIR)[1] is None
+
+    def test_validate_category_dir(self, prog_dir):
+        assert cfg.validate_category_dir("", "", "") == (None, "")
+        assert cfg.validate_category_dir("", "movies", "") == (None, "movies")
+        assert cfg.validate_category_dir("", "movies*", "") == (None, "movies*")
+        assert cfg.validate_category_dir("", "../../interfaces", "")[1] is None
+        assert cfg.validate_category_dir("", "../../interfaces*", "")[1] is None
+        assert cfg.validate_category_dir("", os.path.join(prog_dir, "email"), "")[1] is None
+        # Not inside the Temporary Download Folder
+        assert cfg.validate_category_dir("", "../incomplete", "")[1] is None
+        assert cfg.validate_category_dir("", "../incomplete/movies*", "")[1] is None
 
     def test_validate_host(self):
         # valid input

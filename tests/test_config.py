@@ -183,6 +183,47 @@ class TestConfig:
 
     @pytest.mark.config(
         {
+            "admin_dir": os.path.join(SAB_CACHE_DIR, "test_config_restore_protected"),
+            "local_ranges": ["10.0.0.0/8"],
+        }
+    )
+    def test_config_restore_keeps_protected(self):
+        """Protected settings cannot be changed remotely, so also not by restoring a backup"""
+        admin_dir = sabnzbd.cfg.admin_dir.get_path()
+        ini_path = os.path.join(admin_dir, DEF_INI_FILE)
+        shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), ini_path)
+        config.read_config(ini_path)
+        assert not sabnzbd.cfg.email_dir()
+        assert sabnzbd.cfg.local_ranges() == ["10.0.0.0/8"]
+
+        backup_ini = "[misc]\nemail_dir = %s\nlocal_ranges = 0.0.0.0/0,\ncache_limit = 123M\n" % SAB_COMPLETE_DIR
+        with io.BytesIO() as zip_buffer:
+            with zipfile.ZipFile(zip_buffer, "w") as zip_ref:
+                zip_ref.writestr(DEF_INI_FILE, backup_ini)
+            config.restore_config_backup(zip_buffer.getvalue())
+
+        # Other settings are restored, the protected ones keep their current value
+        assert sabnzbd.cfg.cache_limit() == "123M"
+        assert not sabnzbd.cfg.email_dir()
+        assert sabnzbd.cfg.local_ranges() == ["10.0.0.0/8"]
+        # The backup's protected values never reach the INI on disk
+        with open(ini_path, "r", encoding="utf-8") as ini_fp:
+            assert "0.0.0.0/0" not in ini_fp.read()
+
+    def test_remove_protected_options(self):
+        ini_data = (
+            b"__version__ = 19\n[misc]\nemail_dir = /tmp/templates\nlocal_ranges = 0.0.0.0/0,\n"
+            b"inet_exposure = 5\ncache_limit = 1G\n"
+        )
+        result = config.CONFIG.remove_protected_options(ini_data)
+        assert b"email_dir" not in result
+        assert b"local_ranges" not in result
+        assert b"inet_exposure" not in result
+        assert b"cache_limit = 1G" in result
+        assert b"__version__ = 19" in result
+
+    @pytest.mark.config(
+        {
             "admin_dir": os.path.join(SAB_CACHE_DIR, "test_config_backup"),
             "complete_dir": os.path.join(SAB_COMPLETE_DIR, "test_config_backup"),
         }

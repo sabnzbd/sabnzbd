@@ -58,6 +58,8 @@ from sabnzbd.constants import (
     DEF_LOG_FILE,
     DEX_FILE_EXTENSION_MAX,
     MEBI,
+    DEF_DOWNLOAD_DIR,
+    DEF_COMPLETE_DIR,
 )
 from sabnzbd.encoding import correct_unknown_encoding, unicode_nfc_normalize, utob, limit_encoded_length
 import rarfile
@@ -450,13 +452,15 @@ def same_directory(a: str, b: str) -> int:
     """Return 0 if A and B have nothing in common
     return 1 if A and B are actually the same path
     return 2 if B is a sub-folder of A
+    Both sides are resolved, so a link cannot hide that they overlap.
     """
-    if sabnzbd.WINDOWS or sabnzbd.MACOS:
-        a = clip_path(a.lower())
-        b = clip_path(b.lower())
+    # realpath() only keeps the \\?\ prefix if it was there to begin with, so clip both
+    a = clip_path(os.path.realpath(a))
+    b = clip_path(os.path.realpath(b))
 
-    a = os.path.normpath(os.path.abspath(a))
-    b = os.path.normpath(os.path.abspath(b))
+    if sabnzbd.WINDOWS or sabnzbd.MACOS:
+        a = a.lower()
+        b = b.lower()
 
     # Need to add separator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
     # But only if it doesn't already end in a slash, for example C:\
@@ -471,7 +475,7 @@ def same_directory(a: str, b: str) -> int:
         is_subfolder = 2
 
     try:
-        # Only available on Linux
+        # Also catches the same folder reached through different mounts
         if os.path.samefile(a, b) is True:
             return 1
         return is_subfolder
@@ -503,7 +507,31 @@ def points_outside(root: str, path: str) -> bool:
     """Return True if the file at path does not end up inside root.
     Both sides are resolved, so a root that is itself a link is fine, a link inside it is not.
     """
-    return same_directory(os.path.realpath(root), os.path.dirname(os.path.realpath(path))) == 0
+    # The file itself is resolved before taking its folder, so a linked file is also caught
+    return same_directory(root, os.path.dirname(os.path.realpath(path))) == 0
+
+
+def points_into_program_dir(path: str) -> bool:
+    """Return True if path resolves to inside the program folder, which holds code and templates.
+    Also when the program folder is inside path, as jobs without a job folder could then write into it.
+    Only the default download folders are allowed there, as that is where they end up when
+    the INI is stored in the program folder. For example in daemon-mode or portable mode.
+    """
+    if not sabnzbd.DIR_PROG:
+        return False
+    # Clip both, comparing a \\?\ prefixed path to a plain one fails
+    prog_dir = clip_path(os.path.realpath(sabnzbd.DIR_PROG))
+    path = clip_path(os.path.realpath(path))
+    if same_directory(path, prog_dir):
+        return True
+    if not same_directory(prog_dir, path):
+        return False
+    for allowed_dir in (DEF_DOWNLOAD_DIR, DEF_COMPLETE_DIR):
+        # Plain string compare, so a resolved path only matches if it is physically there
+        allowed_dir = os.path.normcase(os.path.normpath(os.path.join(prog_dir, allowed_dir)))
+        if os.path.commonpath((allowed_dir, os.path.normcase(path))) == allowed_dir:
+            return False
+    return True
 
 
 def is_network_path(path: str) -> bool:

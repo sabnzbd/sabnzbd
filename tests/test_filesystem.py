@@ -43,7 +43,7 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd import cfg
 import sabnzbd.filesystem as filesystem
-from sabnzbd.constants import DEF_FOLDER_MAX, DEF_FILE_MAX, JOB_ADMIN
+from sabnzbd.constants import DEF_FOLDER_MAX, DEF_FILE_MAX, JOB_ADMIN, DEF_DOWNLOAD_DIR, DEF_COMPLETE_DIR
 
 # Set the global uid for fake filesystems to a non-root user;
 # by default this depends on the user running pytest.
@@ -495,7 +495,9 @@ class TestSanitizeFiles:
 class TestSameDirectory:
     def test_nothing_in_common_win_paths(self):
         assert 0 == filesystem.same_directory("C:\\", "D:\\")
-        assert 0 == filesystem.same_directory("C:\\", "/home/test")
+        if not sys.platform.startswith("win"):
+            # On Windows this resolves to the current drive, so it can be a sub-folder of C:\
+            assert 0 == filesystem.same_directory("C:\\", "/home/test")
 
     def test_nothing_in_common_unix_paths(self):
         assert 0 == filesystem.same_directory("/home/", "/data/test")
@@ -507,8 +509,8 @@ class TestSameDirectory:
     @pytest.mark.platform("linux")
     def test_posix_fun(self):
         assert 1 == filesystem.same_directory("/test", "/test")
-        # IEEE 1003.1-2017 par. 4.13 for details
-        assert 0 == filesystem.same_directory("/test", "//test")
+        # IEEE 1003.1-2017 par. 4.13 allows // to be special, but realpath() treats it as /
+        assert 1 == filesystem.same_directory("/test", "//test")
         assert 1 == filesystem.same_directory("/test", "///test")
         assert 1 == filesystem.same_directory("/test", "/test/")
         assert 1 == filesystem.same_directory("/test", "/test//")
@@ -544,6 +546,21 @@ class TestSameDirectory:
         assert 0 == filesystem.same_directory("/test", "/Test")
         assert 0 == filesystem.same_directory("tesT", "Test")
         assert 0 == filesystem.same_directory("/test/../Home", "/home")
+
+    @needs_symlinks
+    def test_links_are_resolved(self, tmp_path):
+        base = str(tmp_path)
+        incomplete = os.path.join(base, "incomplete")
+        os.makedirs(os.path.join(incomplete, "sub"))
+        link_to_sub = os.path.join(base, "link_to_sub")
+        os.symlink(os.path.join(incomplete, "sub"), link_to_sub)
+        link_to_incomplete = os.path.join(base, "link_to_incomplete")
+        os.symlink(incomplete, link_to_incomplete)
+
+        assert 2 == filesystem.same_directory(incomplete, link_to_sub)
+        assert 1 == filesystem.same_directory(incomplete, link_to_incomplete)
+        assert 2 == filesystem.same_directory(link_to_incomplete, os.path.join(incomplete, "sub"))
+        assert 0 == filesystem.same_directory(link_to_sub, incomplete)
 
 
 class TestPointsIntoAdminDir:
@@ -638,6 +655,74 @@ class TestPointsOutside:
         assert filesystem.points_outside(root, os.path.join(root, "up", "file.bin"))
         assert filesystem.points_outside(root, os.path.join(root, "pivot", os.pardir, "file.bin"))
         assert not filesystem.points_outside(root, os.path.join(root, "pivot", "file.bin"))
+
+
+class TestPointsIntoProgramDir:
+    @pytest.fixture
+    def prog_dir(self, tmp_path, monkeypatch):
+        prog_dir = os.path.join(str(tmp_path), "prog")
+        os.makedirs(os.path.join(prog_dir, "interfaces", "Glitter", "templates"))
+        monkeypatch.setattr(sabnzbd, "DIR_PROG", prog_dir)
+        return prog_dir
+
+    def test_program_dir(self, prog_dir):
+        assert filesystem.points_into_program_dir(prog_dir)
+        assert filesystem.points_into_program_dir(os.path.join(prog_dir, "interfaces", "Glitter", "templates"))
+        assert filesystem.points_into_program_dir(os.path.join(prog_dir, "Downloads"))
+        assert filesystem.points_into_program_dir(os.path.join(prog_dir, "Downloads", "other"))
+        assert filesystem.points_into_program_dir(os.path.join(prog_dir, "Downloads", "complete", os.pardir))
+
+    def test_default_download_dirs_allowed(self, prog_dir):
+        """Where they end up when the INI is stored in the program folder"""
+        assert not filesystem.points_into_program_dir(os.path.join(prog_dir, DEF_DOWNLOAD_DIR))
+        assert not filesystem.points_into_program_dir(os.path.join(prog_dir, DEF_COMPLETE_DIR))
+        assert not filesystem.points_into_program_dir(os.path.join(prog_dir, DEF_COMPLETE_DIR, "movies"))
+
+    def test_long_path(self, prog_dir):
+        assert not filesystem.points_into_program_dir(
+            filesystem.long_path(os.path.join(prog_dir, DEF_COMPLETE_DIR, "movies"))
+        )
+        assert filesystem.points_into_program_dir(filesystem.long_path(os.path.join(prog_dir, "interfaces")))
+
+    def test_outside(self, prog_dir):
+        assert not filesystem.points_into_program_dir(prog_dir + "-data")
+        assert not filesystem.points_into_program_dir(os.path.join(os.path.dirname(prog_dir), "complete"))
+
+    def test_parent_of_program_dir(self, prog_dir):
+        """Jobs without a job folder could otherwise write into the program folder"""
+        assert filesystem.points_into_program_dir(os.path.dirname(prog_dir))
+        assert filesystem.points_into_program_dir(os.path.dirname(os.path.dirname(prog_dir)))
+
+    @needs_symlinks
+    def test_link_into_program_dir(self, prog_dir):
+        link = os.path.join(os.path.dirname(prog_dir), "complete")
+        os.symlink(os.path.join(prog_dir, "interfaces"), link)
+        assert filesystem.points_into_program_dir(link)
+        assert filesystem.points_into_program_dir(os.path.join(link, "Glitter", "templates"))
+
+    @needs_symlinks
+    def test_link_inside_allowed_dir(self, prog_dir):
+        complete_dir = os.path.join(prog_dir, DEF_COMPLETE_DIR)
+        os.makedirs(complete_dir)
+        os.symlink(os.path.join(prog_dir, "interfaces"), os.path.join(complete_dir, "link"))
+        assert filesystem.points_into_program_dir(os.path.join(complete_dir, "link", "Glitter"))
+
+    @needs_symlinks
+    def test_allowed_dir_as_link(self, prog_dir):
+        """A linked default folder should not make its target allowed"""
+        os.makedirs(os.path.join(prog_dir, "Downloads"))
+        interfaces = os.path.join(prog_dir, "interfaces")
+        os.symlink(interfaces, os.path.join(prog_dir, DEF_COMPLETE_DIR), target_is_directory=True)
+        assert filesystem.points_into_program_dir(os.path.join(prog_dir, DEF_COMPLETE_DIR))
+        assert filesystem.points_into_program_dir(interfaces)
+
+    @needs_symlinks
+    def test_allowed_dir_linked_outside(self, prog_dir, tmp_path):
+        outside = os.path.join(str(tmp_path), "outside")
+        os.makedirs(outside)
+        os.makedirs(os.path.join(prog_dir, "Downloads"))
+        os.symlink(outside, os.path.join(prog_dir, DEF_COMPLETE_DIR), target_is_directory=True)
+        assert not filesystem.points_into_program_dir(os.path.join(prog_dir, DEF_COMPLETE_DIR, "movies"))
 
 
 class TestMoveToPath:
