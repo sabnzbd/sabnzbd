@@ -23,6 +23,7 @@ import hashlib
 import logging
 import os
 
+import pytest
 
 from sabnzbd.par2file import PAR_CREATOR_ID, PAR_PKT_ID, FilePar2Info, parse_par2_file
 from tests.testhelper import SAB_DATA_DIR
@@ -31,21 +32,19 @@ from tests.testhelper import SAB_DATA_DIR
 
 
 class TestPar2Parsing:
-    def test_short_packet_does_not_consume_following_packets(self, tmp_path):
+    @pytest.mark.parametrize("packet_length", [0, 4, 8, 12, 16, 20, 22, 24, 28, 32, 60, 2**20, 2**62, 2**64 - 4])
+    def test_invalid_packet_length_does_not_consume_following_packets(self, tmp_path, packet_length):
         source_path = os.path.join(SAB_DATA_DIR, "par2file", "basic_16k.par2")
         with open(source_path, "rb") as source:
             valid_packets = source.read()
 
-        for packet_length in (16, 20, 24, 28, 32, 60):
-            malformed_path = tmp_path / f"short_{packet_length}.par2"
-            # Put the valid packet exactly at the declared end of the malformed one
-            malformed_path.write_bytes(
-                PAR_PKT_ID + packet_length.to_bytes(8, "little") + bytes(packet_length - 16) + valid_packets
-            )
+        malformed_path = tmp_path / "malformed.par2"
+        # Too short, not a multiple of 4 or larger than the file: scanning resumes right after the header
+        malformed_path.write_bytes(PAR_PKT_ID + packet_length.to_bytes(8, "little") + valid_packets)
 
-            set_id, table = parse_par2_file(str(malformed_path), {})
-            assert set_id == "69af2273e8fa0b4d811b56d02a9c4b59"
-            assert list(table) == ["rss_feed_test.xml"]
+        set_id, table = parse_par2_file(str(malformed_path), {})
+        assert set_id == "69af2273e8fa0b4d811b56d02a9c4b59"
+        assert list(table) == ["rss_feed_test.xml"]
 
     def test_minimum_length_creator_packet_is_accepted(self, tmp_path, caplog):
         source_path = os.path.join(SAB_DATA_DIR, "par2file", "basic_16k.par2")

@@ -134,13 +134,9 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
                     # 16  : Type of packet.
                     # ?*4 : Body of Packet. Must be a multiple of 4 bytes.
 
-                    # Length must be multiple of 4 and at least cover the bytes already read
+                    # Length must be multiple of 4, at least 64 and fit in the file
                     pack_len = struct.unpack("<Q", f.read(8))[0]
-                    if pack_len % 4 or pack_len < 16:
-                        continue
-                    # Even invalid short packets must end at their declared boundary
-                    if pack_len < 64:
-                        f.seek(pack_len - 16, os.SEEK_CUR)
+                    if pack_len % 4 or not 64 <= pack_len <= total_size - f.tell() + 16:
                         continue
 
                     # Next 16 bytes is md5sum of this packet
