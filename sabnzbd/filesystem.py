@@ -890,25 +890,24 @@ def move_to_path(path: str, new_path: str, root: Optional[str] = None) -> tuple[
     overwrite = sabnzbd.cfg.overwrite_files()
     new_path = os.path.abspath(new_path)
     new_path_dir = os.path.dirname(new_path)
-    if overwrite and os.path.exists(new_path):
-        # Check before deleting: a parent link can redirect the removal outside root.
-        if root and points_outside(root, new_path):
-            logging.error(T("Failed moving %s to %s"), clip_path(path), clip_path(new_path))
-            logging.info("Refusing to move %s, it points outside %s", new_path, root)
-            return False, None
-        try:
-            os.remove(new_path)
-        except Exception:
-            overwrite = False
     if not overwrite:
         new_path = get_unique_filename(new_path)
 
-    if new_path:
-        if root and points_outside(root, new_path):
-            logging.error(T("Failed moving %s to %s"), clip_path(path), clip_path(new_path))
-            logging.info("Refusing to move %s, it points outside %s", new_path, root)
-            return False, None
+    # Check before deleting anything, a link can redirect the removal outside root
+    if root and points_outside(root, new_path):
+        logging.error(T("Failed moving %s to %s"), clip_path(path), clip_path(new_path))
+        logging.info("Refusing to move %s, it points outside %s", new_path, root)
+        return False, None
 
+    if overwrite and os.path.exists(new_path):
+        try:
+            os.remove(new_path)
+        except Exception:
+            # Same checked directory, and the unique name is never a link
+            overwrite = False
+            new_path = get_unique_filename(new_path)
+
+    if new_path:
         logging.debug("Moving (overwrite: %s) %s => %s", overwrite, path, new_path)
         if not os.path.exists(new_path_dir):
             create_all_dirs(os.path.dirname(new_path), apply_permissions=True)
