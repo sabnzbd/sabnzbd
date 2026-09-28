@@ -2769,6 +2769,10 @@ msgid "SABnzbd can search one or more Indexers to find relevant NZBs. An indexer
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Enable Indexer Search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Indexer URL"
 msgstr ""
 

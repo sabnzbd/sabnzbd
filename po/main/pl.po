@@ -2951,6 +2951,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Enable Indexer Search"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Indexer URL"
 msgstr ""
 
