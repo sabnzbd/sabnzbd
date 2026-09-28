@@ -11,6 +11,8 @@ the current improvements and give us feedback!
   which greatly reduces memory and CPU usage on systems with SSD's.
   Additionally, several other performance improvements were made.
 * Search your Indexers and Add downloads directly from within SABnzbd.
+* Post-Processing, Pre-Queue and Notification Scripts no longer receive
+  command-line arguments. Use the `SAB_*` environment variables instead.
 * Changed the internal webserver from CherryPy to Starlette.
 * Overview of Active Sessions is available when username and password are enabled.
 * Only allow proxied requests from hosts configured in `xff_trusted_hosts`.

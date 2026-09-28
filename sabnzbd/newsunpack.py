@@ -46,7 +46,6 @@ from sabnzbd.misc import (
     run_command,
     build_and_run_command,
     format_time_left,
-    is_none,
     SABRarFile,
 )
 from sabnzbd.filesystem import (
@@ -215,26 +214,13 @@ def external_processing(
 ) -> tuple[str, int]:
     """Run a user postproc script, return console output and exit value"""
     complete_dir = clip_path(complete_dir)
-    failure_url = nzo.nzo_info.get("failure", "")
-    # Items can be bool or null, causing POpen to fail
-    command = [
-        str(extern_proc),
-        str(complete_dir),
-        str(nzo.filename),
-        str(nzo.final_name),
-        "",
-        str(nzo.cat),
-        str(nzo.group),
-        str(status),
-        str(failure_url),
-    ]
 
     # Add path to original NZB
     nzb_paths = globber_full(nzo.admin_path, "*.gz")
 
     # Fields not in the NZO directly
     extra_env_fields = {
-        "failure_url": failure_url,
+        "failure_url": nzo.nzo_info.get("failure", ""),
         "complete_dir": complete_dir,
         "pp_status": status,
         "download_time": nzo.nzo_info.get("download_time", ""),
@@ -249,7 +235,7 @@ def external_processing(
         extra_env_fields["pythonunbuffered"] = True
 
     try:
-        p = build_and_run_command(command, env=create_env(nzo, extra_env_fields))
+        p = build_and_run_command([extern_proc], env=create_env(nzo, extra_env_fields))
         sabnzbd.PostProcessor.external_process = p
 
         # Follow the output, so we can abort it
@@ -1983,29 +1969,9 @@ def pre_queue(nzo: NzbObject, pp: Optional[int], cat: str) -> list[Any]:
     """Run pre-queue script (if any) and process results.
     pp and cat are supplied separate since they can change.
     """
-
-    def fix(p: Any) -> str:
-        # If added via API, some items can still be "None" (as a string)
-        if is_none(p):
-            return ""
-        return str(p)
-
     values = [1, nzo.final_name_with_password, pp, cat, nzo.script, nzo.priority, None]
     script_path = make_script_path(cfg.pre_script())
     if script_path:
-        # Basic command-line parameters
-        command = [
-            script_path,
-            nzo.final_name_with_password,
-            pp,
-            cat,
-            nzo.script,
-            nzo.priority,
-            str(nzo.bytes),
-            " ".join(nzo.groups),
-        ]
-        command = [fix(arg) for arg in command]
-
         # Fields not in the NZO directly
         show_analysis = sabnzbd.sorting.BasicAnalyzer(nzo.final_name)
         extra_env_fields = {
@@ -2024,7 +1990,7 @@ def pre_queue(nzo: NzbObject, pp: Optional[int], cat: str) -> list[Any]:
         }
 
         try:
-            p = build_and_run_command(command, env=create_env(nzo, extra_env_fields))
+            p = build_and_run_command([script_path], env=create_env(nzo, extra_env_fields))
         except Exception:
             logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
             return values
