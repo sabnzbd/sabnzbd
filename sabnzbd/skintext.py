@@ -306,6 +306,7 @@ SKIN_TEXT = {
         "An indexer account is separate from a Usenet provider account, which is required to download. "
         "Every enabled indexer is searched simultaneously and the results are combined. "
     ),
+    "srch-enable": TT("Enable Indexer Search"),
     "srch-host": TT("Indexer URL"),
     "srch-apikey": TT("API Key"),
     "srch-testing": TT("Testing indexer..."),

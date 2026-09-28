@@ -63,6 +63,7 @@
             <li data-tooltip="true" data-placement="bottom" title="$T('Glitter-addNZB')">
                 <a href="#modal-add-nzb" data-toggle="modal" aria-label="$T('Glitter-addNZB')"><span class="glyphicon glyphicon-plus-sign"></span></a>
             </li>
+            <!--#if $enable_nzbsearch#-->
             <li data-tooltip="true" data-placement="bottom" title="$T('Glitter-nzbsearchTitle')">
                 <a href="#modal-nzbsearch" data-toggle="modal" aria-label="$T('Glitter-nzbsearchTitle')">
                     <svg class="nzbsearch-icon-svg" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -74,6 +75,7 @@
                     </svg>
                 </a>
             </li>
+            <!--#end if#-->
             <li data-tooltip="true" data-placement="bottom" title="$T('Glitter-statusInterfaceOptions')" data-bind="click: loadStatusInfo">
                 <a href="#modal-options" data-toggle="modal" aria-label="$T('Glitter-statusInterfaceOptions')"><span class="glyphicon glyphicon-wrench"></span></a>
             </li>

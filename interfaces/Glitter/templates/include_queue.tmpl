@@ -80,6 +80,7 @@
                            title="$T('Glitter-dragAndDrop')" data-tooltip="true">
                             <span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')
                         </a>
+                        <!--#if $enable_nzbsearch#-->
                         <a href="#modal-nzbsearch" class="hover-button" title="$T('Glitter-nzbsearchTitle')"
                            data-toggle="modal">
                             <svg class="nzbsearch-icon-svg" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
@@ -93,6 +94,7 @@
                             </svg>
                             $T('Glitter-nzbsearchTitle')
                         </a>
+                        <!--#end if#-->
                     </div>
                 </td>
             </tr>

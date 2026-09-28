@@ -2,6 +2,13 @@
 <!--#set global $help_uri = $confighelpuri + "nzbsearch"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 <div class="colmask">
+    <div class="padding alt section">
+        <label for="nzbsearch-enable-button" class="form-control bar-button bar-button-left">
+            <input type="checkbox" id="nzbsearch-enable-button" <!--#if $enable_nzbsearch then 'checked="checked"' else ""#--> /> $T('srch-enable')
+        </label>
+    </div>
+
+    <!--#if $enable_nzbsearch#-->
     <div class="section">
         <div class="padTable">
             <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
@@ -75,11 +82,23 @@
         </div>
     </div>
     <!--#end if#-->
+    <!--#end if#-->
 </div>
 
 <script type="text/javascript">
 jQuery(document).ready(function() {
     loadFavicons()
+
+    jQuery('#nzbsearch-enable-button').change(function() {
+        jQuery.ajax({
+            type: "POST",
+            url: "$url('config/nzbsearch/toggle_nzbsearch')"
+        }).done(function() {
+            formWasSubmitted = true;
+            formHasChanged = false;
+            location.reload();
+        });
+    });
 
     jQuery('.delIndexer').click(function() {
         if (confirm("$T('confirm')")) {

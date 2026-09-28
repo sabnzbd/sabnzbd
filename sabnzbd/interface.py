@@ -490,6 +490,7 @@ def main_index(request: Request):
         info = build_header(request=request)
 
         info["have_rss_defined"] = bool(config.get_rss())
+        info["enable_nzbsearch"] = cfg.enable_nzbsearch()
         info["have_watched_dir"] = bool(cfg.dirscan_dir())
         info["cpumodel"] = get_cpu_name()
         info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
@@ -2028,6 +2029,7 @@ def config_nzbsearch_index(request: Request):
     for indexer in indexers:
         indexer["baselink"] = get_base_url(indexer["host"])
     conf["indexers"] = indexers
+    conf["enable_nzbsearch"] = cfg.enable_nzbsearch()
 
     return template_filtered_response(
         file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_nzbsearch.tmpl"),
@@ -2068,6 +2070,13 @@ def config_nzbsearch_save_indexer(request: Request):
 
         config.save_config()
         sabnzbd.nzbsearch.invalidate_categories()
+    return base_redirect_response(_NZBSEARCH_ROOT)
+
+
+@secured_expose(route="/config/nzbsearch/toggle_nzbsearch", check_configlock=True, methods=["POST"])
+def config_nzbsearch_toggle_nzbsearch(request: Request):
+    cfg.enable_nzbsearch.set(not cfg.enable_nzbsearch())
+    config.save_config()
     return base_redirect_response(_NZBSEARCH_ROOT)
 
 
