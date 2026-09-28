@@ -344,6 +344,10 @@ class NewsWrapper:
         if bytes_recv == 0:
             raise ConnectionError("Server closed connection")
 
+        # Data without a request, such as an idle timeout notice
+        if not self.decoder.expected:
+            raise ConnectionError("Unsolicited data from server")
+
         # Success, move timeout
         self.timeout = time.time() + self.server.timeout
 

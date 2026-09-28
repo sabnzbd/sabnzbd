@@ -33,6 +33,7 @@ from sabnzbd.constants import NNTP_BUFFER_SIZE
 from sabnzbd.downloader import Server, Downloader
 from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.get_addrinfo import AddrInfo
+from tests.testhelper import wait_for
 
 
 class FakeNNTPServer:
@@ -266,6 +267,29 @@ class TestConnectionStateMachine:
 
 class TestRequestTracking:
     """Requests in flight are counted by the decoder"""
+
+    def test_unsolicited_response_resets_connection(self, fake_nntp_server, test_server, mock_downloader):
+        """A line the server sends to an idle connection should reset it, not stop the downloader"""
+        mock_downloader.force_disconnect = False
+        nw = NewsWrapper(test_server, thrdnum=1)
+        test_server.idle_threads.add(nw)
+        nw.init_connect()
+        wait_for(lambda: nw.connected)
+
+        # Read the 200 Welcome
+        nw.nntp.sock.setblocking(True)
+        nw.nntp.sock.settimeout(2)
+        nw.read()
+        assert nw.ready is True
+        assert nw.decoder.expected == 0
+
+        fake_nntp_server.connections[0].sendall(b"400 Idle timeout\r\n")
+        generation = nw.generation
+        Downloader.process_nw_read(mock_downloader, nw, generation)
+
+        assert nw.generation == generation + 1
+        assert nw.nntp is None
+        assert test_server.active is True
 
     def test_failed_send_is_retried(self, ready_nw):
         """A send that raises should not use up the pipelining capacity"""
