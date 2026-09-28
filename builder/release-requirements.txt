@@ -6,7 +6,7 @@ pefile==2024.8.26
 # PyGithub dependencies
 pynacl==1.6.2
 requests==2.34.2
-pyjwt==2.13.0
+pyjwt==2.14.0
 typing-extensions==4.16.0
 urllib3==2.7.0
 

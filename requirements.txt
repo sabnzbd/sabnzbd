@@ -18,7 +18,7 @@ rarfile==4.5
 guessit==4.4.0
 babelfish==0.6.1
 rebulk==6.0.1
-hachoir==3.3.0
+hachoir==3.4.0
 
 # starlette/uvicorn
 starlette==1.6.0
@@ -71,7 +71,7 @@ idna==3.19
 urllib3==2.7.0
 certifi==2026.7.22
 oauthlib==3.3.1
-PyJWT==2.13.0
+PyJWT==2.14.0
 blinker==1.9.0
 
 # Optional support for *nix tray icon.
