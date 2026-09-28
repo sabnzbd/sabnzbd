@@ -526,7 +526,8 @@ class TestSameDirectory:
     def test_subfolder(self):
         assert 2 == filesystem.same_directory("/home/test123", "/home/test123/sub")
         assert 2 == filesystem.same_directory("/test", "/test/./test")
-        assert 2 == filesystem.same_directory("/home/../test", "/test/./test")
+        # Not /home, on macOS that is a link and .. is resolved after following it
+        assert 2 == filesystem.same_directory("/sabnzbd_test/../test", "/test/./test")
 
     @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Relies on os.sep so should only run on Windows")
     def test_windows(self):
