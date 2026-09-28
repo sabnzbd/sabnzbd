@@ -1562,7 +1562,7 @@ def test_nntp_server_dict(kwargs: QueryParams) -> tuple[bool, str]:
             use_ssl=ssl,
             ssl_verify=ssl_verify,
             ssl_ciphers=ssl_ciphers,
-            pipelining_requests=lambda: pipelining_requests,
+            pipelining_requests=pipelining_requests,
             username=username,
             password=password,
         )

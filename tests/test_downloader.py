@@ -19,13 +19,17 @@
 tests.test_downloader - Test the downloader connection state machine
 """
 
+import selectors
 import socket
 import threading
 import pytest
 import time
 from unittest import mock
 
+import sabctools
+
 import sabnzbd.cfg
+from sabnzbd.constants import NNTP_BUFFER_SIZE
 from sabnzbd.downloader import Server, Downloader
 from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.get_addrinfo import AddrInfo
@@ -133,7 +137,7 @@ def mock_downloader(mocker):
 
 
 @pytest.fixture
-def test_server(request, fake_nntp_server, mocker):
+def test_server(request, fake_nntp_server):
     """Create a Server pointing to the fake NNTP server"""
     addrinfo = AddrInfo(
         *socket.getaddrinfo(fake_nntp_server.host, fake_nntp_server.port, socket.AF_INET, socket.SOCK_STREAM)[0]
@@ -152,10 +156,23 @@ def test_server(request, fake_nntp_server, mocker):
         use_ssl=False,
         ssl_verify=0,
         ssl_ciphers="",
-        pipelining_requests=mocker.Mock(return_value=1),
+        pipelining_requests=1,
     )
     server.addrinfo = addrinfo
     return server
+
+
+@pytest.fixture
+def ready_nw(test_server, mock_downloader):
+    """Logged in NewsWrapper on a mocked socket, with nothing in flight"""
+    mock_downloader.no_active_jobs.return_value = False
+    mock_downloader.force_disconnect = False
+    nw = NewsWrapper(test_server, thrdnum=1)
+    nw.decoder = sabctools.Decoder(NNTP_BUFFER_SIZE)
+    nw.nntp = mock.Mock(write_buffer=b"")
+    nw.nntp.sock.send.side_effect = len
+    nw.connected = nw.ready = True
+    return nw
 
 
 class TestConnectionStateMachine:
@@ -245,3 +262,34 @@ class TestConnectionStateMachine:
         assert nw.nntp is None
         assert nw.connected is False
         assert nw.ready is False
+
+
+class TestRequestTracking:
+    """Requests in flight are counted by the decoder"""
+
+    def test_failed_send_is_retried(self, ready_nw):
+        """A send that raises should not use up the pipelining capacity"""
+        command = b"BODY <test@home>\r\n"
+        ready_nw.nntp.sock.send.side_effect = [BlockingIOError(), len(command)]
+        ready_nw.next_request = (command, None)
+
+        ready_nw.write()
+        assert ready_nw.next_request == (command, None)
+        assert ready_nw.decoder.expected == 0
+
+        ready_nw.write()
+        assert ready_nw.next_request is None
+        assert ready_nw.decoder.expected == 1
+
+    def test_pipelining_limit(self, ready_nw, test_server, mock_downloader):
+        """No more requests are sent than pipelining_requests allows"""
+        test_server.pipelining_requests = 2
+
+        for i in range(3):
+            ready_nw.next_request = (b"BODY <%d@home>\r\n" % i, None)
+            ready_nw.write()
+
+        assert ready_nw.nntp.sock.send.call_count == 2
+        assert ready_nw.decoder.expected == 2
+        assert ready_nw.next_request is not None
+        mock_downloader.modify_socket.assert_called_with(ready_nw, selectors.EVENT_READ)

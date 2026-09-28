@@ -78,7 +78,7 @@ def nzbqueue_env(monkeypatch, mocker, tmp_path):
             use_ssl=False,
             ssl_verify=3,
             ssl_ciphers="",
-            pipelining_requests=mocker.Mock(return_value=1),
+            pipelining_requests=1,
         )
     ]
     sabnzbd.NzbQueue = NzbQueue()

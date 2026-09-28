@@ -29,7 +29,7 @@ import sys
 import ssl
 import time
 from datetime import date
-from typing import Optional, Callable
+from typing import Optional
 
 import sabctools
 
@@ -142,7 +142,7 @@ class Server:
         self.retention: int = retention
         self.username: Optional[str] = username
         self.password: Optional[str] = password
-        self.pipelining_requests: Callable[[], int] = pipelining_requests
+        self.pipelining_requests: int = pipelining_requests
 
         self.busy_threads: set[NewsWrapper] = set()
         self.next_busy_threads_check: float = 0
@@ -344,7 +344,7 @@ class Downloader(Thread):
             ssl = srv.ssl()
             ssl_verify = srv.ssl_verify()
             ssl_ciphers = srv.ssl_ciphers()
-            pipelining_requests = srv.pipelining_requests
+            pipelining_requests = srv.pipelining_requests()
             username = srv.username()
             password = srv.password()
             required = srv.required()
