@@ -3062,7 +3062,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable Indexer Search"
-msgstr ""
+msgstr "Dizinleyici Aramasını Etkinleştir"
 
 #: sabnzbd/skintext.py
 msgid "Indexer URL"
