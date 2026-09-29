@@ -1417,70 +1417,40 @@ class XmlOutputFactory:
         return text
 
 
-def handle_server_api(kwargs: QueryParams) -> str:
-    """Special handler for API-call 'set_config' [servers]"""
-    name = kwargs.get("keyword")
-    if not name:
-        name = kwargs.get("name")
+def _config_item_name(kwargs: QueryParams) -> Optional[str]:
+    """Name of the item to set in a multi-item section, from 'keyword' or 'name'"""
+    return kwargs.get("keyword") or kwargs.get("name") or None
 
-    if name:
-        server = config.get_config("servers", name)
-        if server:
-            server.set_dict(kwargs)
-            old_name = name
-        else:
-            config.ConfigServer(name, kwargs)
-            old_name = None
-        sabnzbd.Downloader.update_server(old_name, name)
+
+def handle_server_api(kwargs: QueryParams) -> Optional[str]:
+    """Special handler for API-call 'set_config' [servers]"""
+    if name := _config_item_name(kwargs):
+        existed = config.ConfigServer.update_or_create(name, kwargs)
+        sabnzbd.Downloader.update_server(name if existed else None, name)
     return name
 
 
 def handle_sorter_api(kwargs: QueryParams) -> Optional[str]:
     """Special handler for API-call 'set_config' [sorters]"""
-    name = kwargs.get("keyword")
-    if not name:
-        name = kwargs.get("name")
-    if not name:
-        return None
-
-    sorter = config.get_config("sorters", name)
-    if sorter:
-        sorter.set_dict(kwargs)
-    else:
-        config.ConfigSorter(name, kwargs)
+    if name := _config_item_name(kwargs):
+        config.ConfigSorter.update_or_create(name, kwargs)
     return name
 
 
 def handle_indexer_api(kwargs: QueryParams) -> Optional[str]:
     """Special handler for API-call 'set_config' [indexers]"""
-    name = kwargs.get("keyword")
-    if not name:
-        name = kwargs.get("name")
-    if not name:
-        return None
-
-    indexer = config.get_config("indexers", name)
-    if indexer:
-        indexer.set_dict(kwargs)
-    else:
-        config.ConfigIndexer(name, kwargs)
-    sabnzbd.nzbsearch.invalidate_categories()
+    if name := _config_item_name(kwargs):
+        config.ConfigIndexer.update_or_create(name, kwargs)
+        sabnzbd.nzbsearch.invalidate_categories()
     return name
 
 
 def handle_rss_api(kwargs: QueryParams) -> Optional[str]:
     """Special handler for API-call 'set_config' [rss]"""
-    name = kwargs.get("keyword")
-    if not name:
-        name = kwargs.get("name")
-    if not name:
+    if not (name := _config_item_name(kwargs)):
         return None
 
-    feed = config.get_config("rss", name)
-    if feed:
-        feed.set_dict(kwargs)
-    else:
-        config.ConfigRSS(name, kwargs)
+    config.ConfigRSS.update_or_create(name, kwargs)
 
     action = kwargs.get("filter_action")
     if action in ("add", "update"):
@@ -1498,18 +1468,9 @@ def handle_rss_api(kwargs: QueryParams) -> Optional[str]:
 
 def handle_cat_api(kwargs: QueryParams) -> Optional[str]:
     """Special handler for API-call 'set_config' [categories]"""
-    name = kwargs.get("keyword")
-    if not name:
-        name = kwargs.get("name")
-    if not name:
-        return None
-    name = name.lower()
-
-    cat = config.get_config("categories", name)
-    if cat:
-        cat.set_dict(kwargs)
-    else:
-        config.ConfigCat(name, kwargs)
+    if name := _config_item_name(kwargs):
+        name = name.lower()
+        config.ConfigCat.update_or_create(name, kwargs)
     return name
 
 
@@ -2317,7 +2278,7 @@ def plural_to_single(kw, def_kw=""):
 def del_from_section(kwargs: QueryParams) -> bool:
     """Remove keyword in section"""
     section = kwargs.get("section", "")
-    if section in ("sorters", "servers", "rss", "categories", "indexers"):
+    if section in config.SABnzbdConfig.SPECIAL_SECTIONS:
         keyword = kwargs.get("keyword")
         if keyword:
             item = config.get_config(section, keyword)
