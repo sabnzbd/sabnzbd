@@ -15,7 +15,7 @@
     --clr-border:        light-dark(rgba(0, 0, 0, 0.2), #555555);
     --clr-text:          light-dark(#000000, #EBEBEB);
     --clr-text-muted:    light-dark(#777777, #c7c7c7);
-    --clr-link:          light-dark(#555555, #63a7e1);
+    --clr-link:          light-dark(#000000, #EBEBEB);
     --clr-input-bg:      light-dark(#FFFFFF, #555555);
     --clr-input-border:  light-dark(#cccccc, #252525);
     --clr-toggle-active:   #f9ca33;

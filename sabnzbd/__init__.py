@@ -19,7 +19,6 @@ import os
 import logging
 import datetime
 import ctypes.util
-import time
 import ssl
 from typing import Optional
 
