@@ -25,6 +25,7 @@ import shutil
 import time
 import zipfile
 
+import configobj
 import pytest
 
 import sabnzbd
@@ -207,8 +208,10 @@ class TestConfig:
         assert not sabnzbd.cfg.email_dir()
         assert sabnzbd.cfg.local_ranges() == ["10.0.0.0/8"]
         # The backup's protected values never reach the INI on disk
-        with open(ini_path, "r", encoding="utf-8") as ini_fp:
-            assert "0.0.0.0/0" not in ini_fp.read()
+        ini_on_disk = configobj.ConfigObj(ini_path, encoding="utf-8")
+        assert ini_on_disk["misc"]["cache_limit"] == "123M"
+        assert ini_on_disk["misc"].get("email_dir", "") == ""
+        assert "0.0.0.0/0" not in ini_on_disk["misc"].get("local_ranges", [])
 
     def test_remove_protected_options(self):
         ini_data = (

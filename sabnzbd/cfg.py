@@ -295,7 +295,7 @@ def validate_category_dir(root: str, value: str, default: str) -> ValidateResult
         path = real_path(complete_dir.get_path(), value.removesuffix("*"))
         if same_directory(download_dir.get_path(), path):
             return T("Category folder cannot be a subfolder of the Temporary Download Folder."), None
-        if points_into_program_dir(path):
+        if points_into_program_dir(path, without_job_folder=value.endswith("*")):
             return T("Folder %s is inside the program folder, this is not allowed") % clip_path(path), None
     return None, value
 

@@ -511,25 +511,31 @@ def points_outside(root: str, path: str) -> bool:
     return same_directory(root, os.path.dirname(os.path.realpath(path))) == 0
 
 
-def points_into_program_dir(path: str) -> bool:
+def points_into_program_dir(path: str, without_job_folder: bool = False) -> bool:
     """Return True if path resolves to inside the program folder, which holds code and templates.
-    Also when the program folder is inside path, as jobs without a job folder could then write into it.
     Only the default download folders are allowed there, as that is where they end up when
     the INI is stored in the program folder. For example in daemon-mode or portable mode.
+    Without a job folder, files are written directly into path, so the program folder
+    could then also be reached when path is a folder above it.
     """
     if not sabnzbd.DIR_PROG:
         return False
     # Clip both, comparing a \\?\ prefixed path to a plain one fails
     prog_dir = clip_path(os.path.realpath(sabnzbd.DIR_PROG))
     path = clip_path(os.path.realpath(path))
-    if same_directory(path, prog_dir):
+    if without_job_folder and same_directory(path, prog_dir):
         return True
     if not same_directory(prog_dir, path):
         return False
     for allowed_dir in (DEF_DOWNLOAD_DIR, DEF_COMPLETE_DIR):
         # Plain string compare, so a resolved path only matches if it is physically there
-        allowed_dir = os.path.normcase(os.path.normpath(os.path.join(prog_dir, allowed_dir)))
-        if os.path.commonpath((allowed_dir, os.path.normcase(path))) == allowed_dir:
+        allowed_dir = os.path.normpath(os.path.join(prog_dir, allowed_dir))
+        compare_path = path
+        if sabnzbd.WINDOWS or sabnzbd.MACOS:
+            # Case-insensitive, like same_directory
+            allowed_dir = allowed_dir.lower()
+            compare_path = compare_path.lower()
+        if os.path.commonpath((allowed_dir, compare_path)) == allowed_dir:
             return False
     return True
 

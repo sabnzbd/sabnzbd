@@ -679,6 +679,12 @@ class TestPointsIntoProgramDir:
         assert not filesystem.points_into_program_dir(os.path.join(prog_dir, DEF_COMPLETE_DIR))
         assert not filesystem.points_into_program_dir(os.path.join(prog_dir, DEF_COMPLETE_DIR, "movies"))
 
+    def test_default_download_dirs_case_insensitive(self, prog_dir, monkeypatch):
+        """On macOS and Windows another casing is the same folder"""
+        monkeypatch.setattr(sabnzbd, "MACOS", True)
+        assert not filesystem.points_into_program_dir(os.path.join(prog_dir, DEF_COMPLETE_DIR.upper(), "movies"))
+        assert filesystem.points_into_program_dir(os.path.join(prog_dir, "INTERFACES"))
+
     def test_long_path(self, prog_dir):
         assert not filesystem.points_into_program_dir(
             filesystem.long_path(os.path.join(prog_dir, DEF_COMPLETE_DIR, "movies"))
@@ -691,8 +697,13 @@ class TestPointsIntoProgramDir:
 
     def test_parent_of_program_dir(self, prog_dir):
         """Jobs without a job folder could otherwise write into the program folder"""
-        assert filesystem.points_into_program_dir(os.path.dirname(prog_dir))
-        assert filesystem.points_into_program_dir(os.path.dirname(os.path.dirname(prog_dir)))
+        parent_dir = os.path.dirname(prog_dir)
+        assert filesystem.points_into_program_dir(parent_dir, without_job_folder=True)
+        assert filesystem.points_into_program_dir(os.path.dirname(parent_dir), without_job_folder=True)
+        # Each job gets its own new folder, so it cannot end up in the program folder
+        assert not filesystem.points_into_program_dir(parent_dir)
+        # The program folder itself is never allowed
+        assert filesystem.points_into_program_dir(prog_dir)
 
     @needs_symlinks
     def test_link_into_program_dir(self, prog_dir):

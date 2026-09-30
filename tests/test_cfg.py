@@ -265,6 +265,10 @@ class TestValidators:
         # Not inside the Temporary Download Folder
         assert cfg.validate_category_dir("", "../incomplete", "")[1] is None
         assert cfg.validate_category_dir("", "../incomplete/movies*", "")[1] is None
+        # A folder above the program folder is only a problem without job folders
+        parent_dir = os.path.dirname(prog_dir)
+        assert cfg.validate_category_dir("", parent_dir, "") == (None, parent_dir)
+        assert cfg.validate_category_dir("", parent_dir + "*", "")[1] is None
 
     def test_validate_host(self):
         # valid input

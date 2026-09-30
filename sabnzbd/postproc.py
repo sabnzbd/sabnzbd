@@ -788,7 +788,7 @@ def prepare_extraction_path(nzo: NzbObject) -> tuple[str, str, Sorter, bool, Opt
     marker_file = None
 
     # Checked again here, as links could have changed or sorting could lead there
-    if points_into_program_dir(complete_dir):
+    if points_into_program_dir(complete_dir, without_job_folder=not create_job_dir):
         logging.error(T("Folder %s is inside the program folder, this is not allowed"), clip_path(complete_dir))
         raise IOError
 
