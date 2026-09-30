@@ -88,6 +88,15 @@ class TestGetIpAddress:
     def test_public_ipv4(self, selftest_server):
         assert public_ipv4() == LOCAL_PUBLIC_IPV4
 
+    def test_public_ipv4_cached(self, selftest_server):
+        # Force a fresh lookup, an earlier test could have filled the cache
+        assert getipaddress.public_ip(socket.AF_INET, force=True) == LOCAL_PUBLIC_IPV4
+        assert len(selftest_server.log) == 1
+
+        # Next call is served from the cache
+        assert public_ipv4() == LOCAL_PUBLIC_IPV4
+        assert len(selftest_server.log) == 1
+
     def test_local_ipv4(self):
         if localipv4 := local_ipv4():
             assert is_ipv4_addr(localipv4)
