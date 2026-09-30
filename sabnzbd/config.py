@@ -469,6 +469,30 @@ class ConfigSection:
         cls(name, values)
         return False
 
+    @classmethod
+    def unique_name(cls, name: str) -> str:
+        """Return a variant of the name that is not yet used in this section"""
+        name = clean_section_name(name)
+        items = CONFIG.database.get(cls.SECTION, {})
+        new_name = name
+        num = 0
+        while new_name in items:
+            num += 1
+            new_name = f"{name}@{num}"
+        return new_name
+
+    @classmethod
+    def create(cls, name: str, values: dict[str, Any]) -> "ConfigSection":
+        """Create an item under a name that is not yet used, so no existing item is overwritten"""
+        return cls(cls.unique_name(name), values)
+
+    @classmethod
+    def replace(cls, old_name: str, new_name: str, values: dict[str, Any]) -> "ConfigSection":
+        """Delete the item with old_name (if any) and create a new one from values.
+        Options missing from values get their defaults, another item is never overwritten"""
+        CONFIG.delete_config(cls.SECTION, old_name)
+        return cls.create(new_name, values)
+
     @property
     def name(self) -> str:
         return self._name
@@ -493,13 +517,21 @@ class ConfigSection:
                 output_dict[kw] = attr()
         return output_dict
 
+    def toggle(self, keyword: str = "enable"):
+        """Invert a boolean option"""
+        option = getattr(self, keyword)
+        option.set(not option())
+
     def delete(self):
         """Remove from database"""
         delete_from_database(self.SECTION, self._name)
 
     def rename(self, new_name: str) -> str:
-        """Give this item a new identifier, returns the sanitized name"""
+        """Give this item a new identifier, unless that one is already taken.
+        Returns the identifier in use afterwards"""
         new_name = clean_section_name(new_name)
+        if new_name == self._name or new_name in CONFIG.database.get(self.SECTION, {}):
+            return self._name
         delete_from_database(self.SECTION, self._name)
         self._name = new_name
         add_to_database(self.SECTION, self._name, self)
@@ -567,6 +599,10 @@ class ConfigServer(ConfigSection):
         super().set_dict(values)
         if not self.displayname():
             self.displayname.set(self._name)
+
+    def rename(self, name: str):
+        """Give server new display name, the identifier stays the same"""
+        self.displayname.set(name)
 
 
 class ConfigIndexer(ConfigSection):
@@ -712,10 +748,12 @@ class ConfigRSS(ConfigSection):
 
     def rename(self, new_name: str) -> str:
         """Update the name and the saved entries"""
-        new_name = clean_section_name(new_name)
-        with sabnzbd.rss.rss_repository() as repo:
-            repo.rename(self._name, new_name)
-        return super().rename(new_name)
+        old_name = self._name
+        new_name = super().rename(new_name)
+        if new_name != old_name:
+            with sabnzbd.rss.rss_repository() as repo:
+                repo.rename(old_name, new_name)
+        return new_name
 
 
 # Add typing to the options database-dict
