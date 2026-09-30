@@ -1223,27 +1223,11 @@ def config_server_clr(request: Request):
 def config_server_toggle(request: Request):
     server = request_params(request).get("server")
     if server:
-        svr = config.get_config("servers", server)
-        if svr:
-            svr.enable.set(not svr.enable())
+        if svr := config.get_config("servers", server):
+            svr.toggle()
             config.save_config()
             sabnzbd.Downloader.update_server(server, server)
     return base_redirect_response("/config/server")
-
-
-def unique_svr_name(server):
-    """Return a unique variant on given server name"""
-    num = 0
-    svr = 1
-    new_name = server
-    while svr:
-        if num:
-            new_name = "%s@%d" % (server, num)
-        else:
-            new_name = "%s" % server
-        svr = config.get_config("servers", new_name)
-        num += 1
-    return new_name
 
 
 def handle_server(params, new_svr=False):
@@ -1270,31 +1254,20 @@ def handle_server(params, new_svr=False):
             return report(params, error=T('Server address "%s:%s" is not valid.') % (host, port))
 
     # Default server name is just the host name
-    server = host
-
-    svr = None
-    old_server = params.get("server")
-    if old_server:
-        svr = config.get_config("servers", old_server)
-    if svr:
-        server = old_server
-    else:
-        svr = config.get_config("servers", server)
+    server = params.get("server")
+    if not (server and config.get_config("servers", server)):
+        server = host
 
     if new_svr:
-        server = unique_svr_name(server)
+        server = config.ConfigServer.unique_name(server)
 
     for kw in ("ssl", "enable", "required", "optional"):
         if kw not in params.keys():
             params[kw] = None
-    if svr and not new_svr:
-        svr.set_dict(params)
-    else:
-        old_server = None
-        config.ConfigServer(server, params)
+    existed = config.ConfigServer.update_or_create(server, params)
 
     config.save_config()
-    sabnzbd.Downloader.update_server(old_server, server)
+    sabnzbd.Downloader.update_server(server if existed else None, server)
     return report(params)
 
 
@@ -1309,9 +1282,7 @@ def do_upd_rss_filter(kwargs):
     Performs the config mutation and re-evaluates the feed against the new
     filters so the cached match log reflects the change. Holds no UI state.
     """
-    try:
-        feed_cfg = config.get_rss()[kwargs.get("feed")]
-    except KeyError:
+    if not (feed_cfg := config.get_rss().get(kwargs.get("feed"))):
         return
 
     pp = kwargs.get("pp", "")
@@ -1345,9 +1316,7 @@ def do_del_rss_filter(kwargs):
 
     Performs the config mutation and re-evaluates the feed. Holds no UI state.
     """
-    try:
-        feed_cfg = config.get_rss()[kwargs.get("feed")]
-    except KeyError:
+    if not (feed_cfg := config.get_rss().get(kwargs.get("feed"))):
         return
 
     feed_cfg.filters.delete(int(kwargs.get("index", 0)))
@@ -1451,10 +1420,7 @@ def config_rss_upd_rss_feed(request: Request):
     kwargs = dict(params)
     if params.get("enable") is not None:
         del kwargs["enable"]
-    try:
-        cf = config.get_rss()[params.get("feed")]
-    except KeyError:
-        cf = None
+    cf = config.get_rss().get(params.get("feed"))
     uri = Strip(params.get("uri"))
     if cf and uri:
         kwargs["uri"] = uri
@@ -1470,10 +1436,7 @@ def config_rss_save_rss_feed(request: Request):
     params = request_params(request)
     kwargs = dict(params)
     feed_name = params.get("feed")
-    try:
-        cf = config.get_rss()[feed_name]
-    except KeyError:
-        cf = None
+    cf = config.get_rss().get(feed_name)
     if "enable" not in kwargs:
         kwargs["enable"] = 0
     uri = Strip(params.get("uri"))
@@ -1482,8 +1445,7 @@ def config_rss_save_rss_feed(request: Request):
         cf.set_dict(kwargs)
 
         # Did we get a new name for this feed?
-        new_name = params.get("feed_new_name")
-        if new_name and new_name != feed_name:
+        if new_name := params.get("feed_new_name"):
             feed_name = cf.rename(new_name)
 
         config.save_config()
@@ -1495,12 +1457,8 @@ def config_rss_save_rss_feed(request: Request):
 def config_rss_toggle_rss_feed(request: Request):
     """Toggle automatic read-out flag of Feed"""
     params = request_params(request)
-    try:
-        item = config.get_rss()[params.get("feed")]
-    except KeyError:
-        item = None
-    if item:
-        item.enable.set(not item.enable())
+    if item := config.get_rss().get(params.get("feed")):
+        item.toggle()
         config.save_config()
     if params.get("table"):
         return base_redirect_response(_RSS_ROOT)
@@ -1517,25 +1475,17 @@ def config_rss_add_rss_feed(request: Request):
     feed = Strip(params.get("feed", "")).strip("[]")
     uri = Strip(params.get("uri"))
     if feed and uri:
-        try:
-            rss_cfg = config.get_rss()[feed]
-        except KeyError:
-            rss_cfg = None
-        if not rss_cfg and uri:
-            kwargs["feed"] = feed
-            kwargs["uri"] = uri
-            config.ConfigRSS(feed, kwargs)
-            # Clear out any existing reference to this feed name
-            # Otherwise first-run detection can fail
-            with sabnzbd.rss.rss_repository() as repo:
-                repo.clear_feed(feed)
-            config.save_config()
-            # Read out the new feed now (this handler runs in the threadpool) and
-            # carry the result message to the redirected page via the session flash.
-            errors = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
-            return _rss_flash_redirect(request, feed, errors)
-        else:
-            return base_redirect_response(_RSS_ROOT)
+        kwargs["uri"] = uri
+        feed = config.ConfigRSS.create(feed, kwargs).name
+        # Clear out any existing reference to this feed name
+        # Otherwise first-run detection can fail
+        with sabnzbd.rss.rss_repository() as repo:
+            repo.clear_feed(feed)
+        config.save_config()
+        # Read out the new feed now (this handler runs in the threadpool) and
+        # carry the result message to the redirected page via the session flash.
+        errors = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
+        return _rss_flash_redirect(request, feed, errors)
     else:
         return base_redirect_response(_RSS_ROOT)
 
@@ -1924,9 +1874,7 @@ def config_categories_save(request: Request):
             return report(request_params(request), error=msg)
 
         # Delete current one and replace with new one
-        if name:
-            config.delete("categories", name)
-        config.ConfigCat(newname.lower(), cat_params)
+        config.ConfigCat.replace(name, newname.lower(), cat_params)
 
     config.save_config()
     return base_redirect_response("/config/categories")
@@ -1988,9 +1936,7 @@ def config_sorting_save_sorter(request: Request):
         newname = name
     if newname:
         # Delete current one and replace with new one
-        if name:
-            config.delete("sorters", name)
-        config.ConfigSorter(newname, kwargs)
+        config.ConfigSorter.replace(name, newname, kwargs)
 
     config.save_config()
     return base_redirect_response(_SORTING_ROOT)
@@ -2001,7 +1947,7 @@ def config_sorting_toggle_sorter(request: Request):
     """Toggle is_active flag of a sorter"""
     try:
         sorter = config.get_sorters()[request_params(request).get("sorter")]
-        sorter.is_active.set(not sorter.is_active())
+        sorter.toggle("is_active")
         config.save_config()
     except Exception:
         pass
@@ -2032,14 +1978,13 @@ def config_nzbsearch_index(request: Request):
 def config_nzbsearch_add_indexer(request: Request):
     params = request_params(request)
     host = Strip(params.get("host"))
-    raw_name = Strip(params.get("name"))
-    name = config.clean_section_name(raw_name) if raw_name else ""
-    if name and host and not config.get_config("indexers", name):
+    name = Strip(params.get("name"))
+    if name and host:
         kwargs = dict(params)
         kwargs["host"] = host
         # An unchecked checkbox is simply absent from the POST body
         kwargs.setdefault("enable", 0)
-        config.ConfigIndexer(name, kwargs)
+        config.ConfigIndexer.create(name, kwargs)
         sabnzbd.nzbsearch.invalidate_categories()
         config.save_config()
     return base_redirect_response(_NZBSEARCH_ROOT)
@@ -2055,8 +2000,7 @@ def config_nzbsearch_save_indexer(request: Request):
         kwargs.setdefault("enable", 0)
         indexer.set_dict(kwargs)
 
-        new_name = config.clean_section_name(Strip(params.get("name"))) if Strip(params.get("name")) else ""
-        if new_name and new_name != params.get("indexer") and not config.get_config("indexers", new_name):
+        if new_name := Strip(params.get("name")):
             indexer.rename(new_name)
 
         config.save_config()
@@ -2075,7 +2019,7 @@ def config_nzbsearch_toggle_nzbsearch(request: Request):
 def config_nzbsearch_toggle_indexer(request: Request):
     indexer = config.get_config("indexers", request_params(request).get("name"))
     if indexer:
-        indexer.enable.set(not indexer.enable())
+        indexer.toggle()
         config.save_config()
         sabnzbd.nzbsearch.invalidate_categories()
     return base_redirect_response(_NZBSEARCH_ROOT)
