@@ -1310,7 +1310,7 @@ msgid "Pre-queue script marked job as failed"
 msgstr ""
 
 #. Warning message
-#: sabnzbd/nzb/object.py, sabnzbd/postproc.py
+#: sabnzbd/nzb/object.py
 msgid "Unwanted Extension in file %s (%s)"
 msgstr ""
 

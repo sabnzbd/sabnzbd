@@ -476,13 +476,16 @@ class TestDeobfuscateFinalResult:
         assert os.path.isfile(small_txt)
 
         # go
-        deobfuscate_subtitles(nzo, [bigfile, already_correct_srt, small_srt, small_txt])
+        filelist = [bigfile, already_correct_srt, small_srt, small_txt]
+        deobfuscate_subtitles(nzo, filelist)
 
         assert os.path.isfile(bigfile)  # unchanged
         assert os.path.isfile(already_correct_srt)  # unchanged
         assert not os.path.isfile(small_srt)  # should be renamed to:
         assert os.path.isfile(expected_small_srt)
         assert os.path.isfile(small_txt)  # unchanged
+        # the list should track the renamed file
+        assert filelist == [bigfile, already_correct_srt, expected_small_srt, small_txt]
 
         # and if we go again ... nothing should happen: all files are already correct
         deobfuscate_subtitles(nzo, [bigfile, already_correct_srt, expected_small_srt, small_txt])

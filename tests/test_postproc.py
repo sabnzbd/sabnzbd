@@ -519,6 +519,18 @@ class TestRemoveUnwantedFiles:
         fake_nzo.set_unpack_info.assert_called_once()
 
     @pytest.mark.config({"unwanted_extensions": ["exe"], "action_on_unwanted_extensions": 2})
+    def test_remove_unwanted_files_keeps_earlier_fail_msg(self):
+        """The reason of an earlier failure of the job is not overwritten"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_unwanted")
+        job_files = [self._create_file(os.path.join(base_dir, "job.exe"))]
+        fake_nzo = self._fake_nzo()
+        fake_nzo.fail_msg = "Earlier failure"
+
+        assert postproc.remove_unwanted_files(fake_nzo, job_files, base_dir) == ([], True)
+        assert not os.path.exists(job_files[0])
+        assert fake_nzo.fail_msg == "Earlier failure"
+
+    @pytest.mark.config({"unwanted_extensions": ["exe"], "action_on_unwanted_extensions": 2})
     def test_remove_unwanted_files_nothing_unwanted(self):
         """A clean job is left alone and not failed"""
         base_dir = os.path.join(SAB_CACHE_DIR, "complete_unwanted")
