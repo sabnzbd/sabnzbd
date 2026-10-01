@@ -487,8 +487,9 @@ date_sort_string = OptionStr("misc", "date_sort_string", public=False)
 date_categories = OptionList("misc", "date_categories", ["tv"], public=False)
 
 ##############################################################################
-# Config - Scheduling and RSS
+# Config - Indexer Search, Scheduling and RSS
 ##############################################################################
+enable_nzbsearch = OptionBool("misc", "enable_nzbsearch", True)
 schedules = OptionList("misc", "schedlines")
 rss_rate = OptionNumber("misc", "rss_rate", 60, minval=15, maxval=24 * 60)
 

@@ -30,10 +30,11 @@ import pytest
 
 import sabnzbd
 from sabnzbd.assembler import Assembler
-from sabnzbd.constants import ASSEMBLER_MAX_OPEN_WRITERS, GIGI
+from sabnzbd.constants import ASSEMBLER_MAX_OPEN_WRITERS, GIGI, Status
 from sabnzbd.filesystem import Diskspace
 from sabnzbd.misc import pp_to_opts
 from sabnzbd.nzb import Article, NzbFile, NzbObject
+from tests.testhelper import make_mock_nzo
 
 
 class TestAssembler:
@@ -368,11 +369,7 @@ class TestDiskspaceCheck:
 
     @pytest.fixture(autouse=True)
     def setup_mocks(self):
-        self.nzo = mock.Mock()
-        self.nzo.bytes = int(2 * GIGI)
-        self.nzo.bytes_tried = 0
-        self.nzo.bytes_par2 = 0
-        self.nzo.unpack = True
+        self.nzo = make_mock_nzo(bytes=int(2 * GIGI), unpack=True)
 
         self.nzf = mock.Mock()
         self.nzf.bytes = int(0.5 * GIGI)
@@ -555,9 +552,7 @@ class TestDiskspaceCheckScenarios:
         disk_free_gb is the free space on the download device *before* the job started; the bytes
         downloaded so far are subtracted from it. On a single-device layout the complete dir sees
         that same reduced figure, because the partially downloaded job is already occupying it."""
-        nzo = mock.Mock()
-        nzo.bytes = int(job_gb * GIGI)
-        nzo.bytes_par2 = int(par2_gb * GIGI)
+        nzo = make_mock_nzo(bytes=int(job_gb * GIGI), bytes_par2=int(par2_gb * GIGI))
         nzo.bytes_tried = int((nzo.bytes - nzo.bytes_par2) * progress)
         nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(pp)
 
@@ -870,3 +865,54 @@ class TestWriterCache:
             thread.join()
 
         assert len({id(writer) for writer in seen}) == 1
+
+    def test_postponed_par2_is_closed_before_post_processing(self, assembler, tmp_path):
+        """A par2 volume moved to extrapars after its first article was written never finishes,
+        and post-processing deletes it once the set verifies"""
+        with (
+            mock.patch.object(NzbObject, "admin_path", new_callable=mock.PropertyMock, return_value=str(tmp_path)),
+            mock.patch.object(sabnzbd, "NzbQueue", create=True),
+            mock.patch.object(sabnzbd, "PostProcessor", create=True) as postprocessor,
+        ):
+            nzo = NzbObject("test.nzb")
+            nzo.download_path = str(tmp_path)
+            nzo.repair = True
+            for name in ("setname.mkv", "setname.vol00+01.par2"):
+                nzf = NzbFile(date=nzo.avg_date, subject=name, raw_article_db=[], file_bytes=0, nzo=nzo)
+                nzf.filepath = os.path.join(nzo.download_path, nzf.filename)
+                nzo.add_nzf(nzf)
+            data, volume = nzo.files
+            writers = [assembler.get_writer(nzf) for nzf in (data, volume)]
+
+            nzo.postpone_pars("setname")
+            assert volume in nzo.extrapars["setname"]
+            assert volume not in nzo.files
+
+            closed_at_handover = []
+            postprocessor.process.side_effect = lambda _: closed_at_handover.extend(w.closed for w in writers)
+            assembler.process(nzo)
+            assembler.stop()
+            assembler.run()
+
+        assert closed_at_handover == [True, True]
+
+    @pytest.mark.parametrize("deleted, removed_from_queue", [(True, False), (False, True)])
+    def test_a_stream_does_not_reopen_a_finished_file(self, assembler, tmp_path, deleted, removed_from_queue):
+        nzf = self.make_nzf(tmp_path, "finished")
+        nzf.deleted = deleted
+        nzf.nzo.removed_from_queue = removed_from_queue
+
+        assert assembler.get_writer(nzf, stream=True) is None
+        assert not assembler.open_writers
+        assert not os.path.exists(nzf.filepath)
+        # The assembler still writes what is left of it
+        assert assembler.get_writer(nzf) is not None
+
+    def test_a_deleted_job_gets_no_new_handle(self, assembler, tmp_path):
+        nzf = self.make_nzf(tmp_path, "deleted")
+        nzf.nzo.status = Status.DELETED
+
+        with pytest.raises(FileNotFoundError):
+            assembler.get_writer(nzf)
+        assert not assembler.open_writers
+        assert not os.path.exists(nzf.filepath)

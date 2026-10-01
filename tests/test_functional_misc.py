@@ -104,36 +104,32 @@ class TestQueueRepair(SABnzbdBaseTest):
 class TestSamplePostProc:
     def test_sample_post_proc(self):
         """Make sure we don't break things"""
-        # Set parameters
-        script_params = [
-            "somedir222",
-            "nzbname",
-            "frènch_german_demö",
-            "Index12",
-            "Cat88",
-            "MyGroup",
-            "PP0",
-            "https://example.com/",
-        ]
-        script_call = [sys.executable, "scripts/Sample-PostProc.py", "server"]
-        script_call.extend(script_params)
-
         # Set parameters via env
+        script_env = {
+            "SAB_COMPLETE_DIR": "somedir222",
+            "SAB_FILENAME": "nzbname",
+            "SAB_FINAL_NAME": "frènch_german_demö",
+            "SAB_CAT": "Cat88",
+            "SAB_GROUP": "MyGroup",
+            "SAB_PP_STATUS": "0",
+            "SAB_FAILURE_URL": "https://example.com/",
+            "SAB_VERSION": "frènch_german_demö_version",
+        }
         env = os.environ.copy()
-        env["SAB_VERSION"] = "frènch_german_demö_version"
+        env.update(script_env)
 
         # Run script and check output
-        script_call = subprocess.Popen(script_call, stdout=subprocess.PIPE, env=env)
+        script_call = subprocess.Popen([sys.executable, "scripts/Sample-PostProc.py"], stdout=subprocess.PIPE, env=env)
         script_output, _errs = script_call.communicate(timeout=15)
+        assert script_call.returncode == 0
 
         # This is a bit bad, since we use our own function
         # But in a way it is also a test if the function does its job!
         script_output = sabnzbd.encoding.platform_btou(script_output)
 
         # Check if all parameters are there
-        for param in script_params:
-            assert param in script_output
-        assert env["SAB_VERSION"] in script_output
+        for key, value in script_env.items():
+            assert f"{key} {value}" in script_output
 
 
 class TestExtractPot:

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/">
+  <channel>
+    <atom:link href="https://a.example.com/api" rel="self" type="application/rss+xml" />
+    <title>a.example.com</title>
+    <newznab:response offset="0" total="2" />
+    <item>
+      <title>Ubuntu.22.04.Desktop.amd64-ISO</title>
+      <guid isPermaLink="true">https://a.example.com/details/aaa1</guid>
+      <link>https://a.example.com/getnzb/aaa1.nzb&amp;apikey=AKEY</link>
+      <comments>https://a.example.com/details/aaa1#comments</comments>
+      <pubDate>Mon, 02 Sep 2024 12:00:00 +0000</pubDate>
+      <category>PC &gt; ISO</category>
+      <enclosure url="https://a.example.com/getnzb/aaa1.nzb&amp;apikey=AKEY" length="3000000000" type="application/x-nzb" />
+      <newznab:attr name="category" value="4000" />
+      <newznab:attr name="category" value="4020" />
+      <newznab:attr name="size" value="3000000000" />
+      <newznab:attr name="files" value="12" />
+      <newznab:attr name="grabs" value="45" />
+      <newznab:attr name="poster" value="poster@example.com" />
+      <newznab:attr name="group" value="alt.binaries.iso" />
+      <newznab:attr name="password" value="0" />
+      <newznab:attr name="usenetdate" value="Mon, 02 Sep 2024 11:30:00 +0000" />
+    </item>
+    <item>
+      <title>Some.Show.S01E01.1080p.WEB.H264-GRP</title>
+      <guid isPermaLink="true">https://a.example.com/details/aaa2</guid>
+      <link>https://a.example.com/getnzb/aaa2.nzb&amp;apikey=AKEY</link>
+      <pubDate>Tue, 03 Sep 2024 09:00:00 +0000</pubDate>
+      <category>TV &gt; HD</category>
+      <enclosure url="https://a.example.com/getnzb/aaa2.nzb&amp;apikey=AKEY" length="800000000" type="application/x-nzb" />
+      <newznab:attr name="category" value="5000" />
+      <newznab:attr name="category" value="5040" />
+      <newznab:attr name="size" value="800000000" />
+      <newznab:attr name="grabs" value="310" />
+      <newznab:attr name="season" value="1" />
+      <newznab:attr name="episode" value="1" />
+      <newznab:attr name="password" value="1" />
+      <newznab:attr name="usenetdate" value="Tue, 03 Sep 2024 08:45:00 +0000" />
+    </item>
+  </channel>
+</rss>

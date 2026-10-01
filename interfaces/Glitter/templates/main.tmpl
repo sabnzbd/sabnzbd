@@ -31,7 +31,8 @@
         <link rel="apple-touch-icon" sizes="180x180" href="$url('staticcfg/ico/apple-touch-icon-180x180-precomposed.png', v=$cache_buster)" />
         <link rel="apple-touch-icon" sizes="192x192" href="$url('staticcfg/ico/android-192x192.png', v=$cache_buster)" />
         <link rel="mask-icon" href="$url('staticcfg/ico/safari-pinned-tab.svg', v=$cache_buster)" color="#383F45">
-        <link rel="shortcut icon" type="image/ico" href="$url('staticcfg/ico/favicon.ico', v=$cache_buster)" data-bind="attr: { 'href': SABIcon }" />
+        <link rel="icon" href="$url('staticcfg/ico/favicon.ico', v=$cache_buster)" sizes="32x32" data-bind="attr: { 'href': SABIcon() + '.ico?v=$cache_buster' }" />
+        <link rel="icon" type="image/svg+xml" href="$url('staticcfg/ico/favicon.svg', v=$cache_buster)" data-bind="attr: { 'href': SABIcon() + '.svg?v=$cache_buster' }" />
 
         <link rel="stylesheet" type="text/css" href="$url('static/bootstrap/css/bootstrap.min.css', v=$cache_buster)" />
         <link rel="stylesheet" type="text/css" href="$url('static/stylesheets/glitter.css', v=$cache_buster)" />
@@ -122,6 +123,10 @@
             glitterTranslate.priority['Normal'] = "$T('pr-normal')";
             glitterTranslate.priority['Low'] = "$T('pr-low')";
             glitterTranslate.priority['Stop'] = "$T('pr-stop')";
+
+            glitterTranslate.nzbsearch = {};
+            glitterTranslate.nzbsearch.allCategories = "$T('Glitter-nzbsearchAllCategories')";
+            glitterTranslate.nzbsearch.resultsLimited = "$T('Glitter-nzbsearchResultsLimited')";
         </script>
 
         <script type="text/javascript" src="$url('staticcfg/js/jquery-3.7.1.min.js', v=$cache_buster)"></script>
@@ -138,6 +143,7 @@
         <script type="text/javascript" src="$url('static/javascripts/glitter.queue.js', v=$cache_buster)"></script>
         <script type="text/javascript" src="$url('static/javascripts/glitter.history.js', v=$cache_buster)"></script>
         <script type="text/javascript" src="$url('static/javascripts/glitter.filelist.pagination.js', v=$cache_buster)"></script>
+        <script type="text/javascript" src="$url('static/javascripts/glitter.nzbsearch.js', v=$cache_buster)"></script>
         <script type="text/javascript">
             jQuery(function () {
                 ko.applyBindings(new ViewModel(), document.getElementById("sabnzbd"));

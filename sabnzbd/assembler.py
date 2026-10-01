@@ -19,6 +19,7 @@
 sabnzbd.assembler - threaded assembly of files
 """
 
+import errno
 import os
 import queue
 import logging
@@ -144,18 +145,27 @@ class Assembler(Thread):
         for nzf in nzfs:
             self.close_writer(nzf)
 
-    def get_writer(self, nzf: NzbFile) -> sabctools.FileWriter:
+    def get_writer(self, nzf: NzbFile, stream: bool = False) -> Optional[sabctools.FileWriter]:
         """Open handle for this file, reusing the one already open where there is one.
 
         Opening per write costs an open and a close for every article, which at the
         article rates this is built for outweighs the write itself. Handles are kept
         instead, bounded by ASSEMBLER_MAX_OPEN_WRITERS because they are a limited
         resource shared with every socket the downloader holds.
+
+        A stream gets no new handle once the file or job is finished, and nothing gets
+        one once the job is deleted.
         """
         with self.writers_lock:
             if (writer := nzf.writer) is not None:
                 self.open_writers.move_to_end(nzf.nzf_id)
                 return writer
+
+            if stream and (nzf.deleted or nzf.nzo.removed_from_queue):
+                return None
+
+            if nzf.nzo.status is Status.DELETED:
+                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), nzf.filepath)
 
             writer = sabctools.FileWriter(nzf.filepath)
             nzf.writer = writer
@@ -326,6 +336,11 @@ class Assembler(Thread):
                     try:
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done, allow_non_contiguous, direct_write)
+                    except ValueError:
+                        # Raised by a FileWriter closed because the file or job was removed
+                        if not (nzf.deleted or nzo.removed_from_queue):
+                            raise
+                        logging.debug("Ignoring closed file %s, already removed or in post-proc", filepath)
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error
                         if not nzo.pp_or_finished:
@@ -373,8 +388,8 @@ class Assembler(Thread):
                             self.queued_nzf.discard(nzf.nzf_id)
             else:
                 sabnzbd.NzbQueue.remove(nzo.nzo_id, cleanup=False)
+                self.clear_ready_bytes(*nzo.files_table.values())
                 sabnzbd.PostProcessor.process(nzo)
-                self.clear_ready_bytes(*nzo.files)
 
     @staticmethod
     def diskspace_check(nzo: NzbObject, nzf: NzbFile):
@@ -512,7 +527,7 @@ class Assembler(Thread):
                 if not direct_write:
                     return False
                 Assembler.write(writer, None, nzf, article, data)
-            except OSError:
+            except (OSError, ValueError):
                 # nzo has probably been deleted or not enough disk space, ArticleCache tries the fallback and handles it
                 return False
         return True

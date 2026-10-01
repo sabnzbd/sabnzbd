@@ -41,7 +41,7 @@ import sabnzbd
 import sabnzbd.newsunpack as newsunpack
 from sabnzbd.constants import JOB_ADMIN
 from sabnzbd.par2file import FilePar2Info
-from tests.testhelper import SAB_CACHE_DIR
+from tests.testhelper import SAB_CACHE_DIR, make_mock_nzo
 from sabnzbd.misc import format_time_string, SABRarFile
 from sabnzbd.filesystem import long_path, build_filelists, create_all_dirs, listdir_full, clip_path
 
@@ -89,12 +89,7 @@ class TestNewsUnpackFunctions:
         # The link sits where the joined file is written, not next to the parts
         os.symlink(os.path.join("..", "outside.bin"), os.path.join(workdir_complete, "victim"))
 
-        nzo = mock.Mock()
-        nzo.download_path = download_path
-        nzo.final_name = "test"
-        nzo.delete = False
-        nzo.set_action_line = mock.Mock()
-        nzo.set_unpack_info = mock.Mock()
+        nzo = make_mock_nzo(download_path=download_path)
 
         failed, newfiles = newsunpack.file_join(nzo, workdir_complete, joinables)
 
@@ -120,12 +115,7 @@ class TestNewsUnpackFunctions:
                 part.write(b"part%d" % num)
             joinables.append(joinable)
 
-        nzo = mock.Mock()
-        nzo.download_path = download_path
-        nzo.final_name = "test"
-        nzo.delete = False
-        nzo.set_action_line = mock.Mock()
-        nzo.set_unpack_info = mock.Mock()
+        nzo = make_mock_nzo(download_path=download_path)
 
         failed, newfiles = newsunpack.file_join(nzo, workdir_complete, joinables)
 
@@ -147,7 +137,7 @@ class TestNewsUnpackFunctions:
             sfv_file.write("../escaped.bin deadbeef\n")
 
         nzf = mock.Mock(filename=obfuscated_name, filepath=obfuscated_path, crc32=0xDEADBEEF)
-        nzo = mock.Mock(download_path=download_path, finished_files=[nzf])
+        nzo = make_mock_nzo(download_path=download_path, finished_files=[nzf])
 
         assert newsunpack.sfv_check([sfv_path], nzo) is False
         assert not os.path.exists(os.path.join(download_path, os.pardir, "escaped.bin"))
@@ -218,23 +208,18 @@ class TestPar2Repair:
         sabnzbd.PostProcessor = mock.Mock()
 
         # Mock basic NZO structure
-        nzo = mock.Mock()
-        nzo.download_path = temp_test_dir
-        nzo.admin_path = test_dir_admin
-        nzo.fail_msg = ""
-        nzo.extrapars = {"test": []}
-        nzo.par2packs = {"test": None}
+        nzo = make_mock_nzo(
+            download_path=temp_test_dir,
+            admin_path=test_dir_admin,
+            extrapars={"test": []},
+            par2packs={"test": None},
+        )
 
         for file in glob.glob(test_dir + "/*.par2"):
             # Simple NZF mock for the filename
             parfile = mock.Mock()
             parfile.filename = os.path.basename(file)
             nzo.extrapars["test"].append(parfile)
-
-        # We want to collect all updates
-        nzo.set_action_line = mock.Mock()
-        nzo.set_unpack_info = mock.Mock()
-        nzo.renamed_file = mock.Mock()
 
         # Run repair
         with caplog.at_level(logging.DEBUG):
@@ -404,23 +389,13 @@ class TestRarUnpack:
     @staticmethod
     def _create_test_nzo(temp_dir, filename: str = "test.nzb", password: Optional[str] = None):
         """Create a mock NZO object for testing"""
-        nzo = mock.Mock()
-        nzo.download_path = temp_dir
-        nzo.admin_path = os.path.join(temp_dir, JOB_ADMIN)
-        nzo.fail_msg = ""
-        nzo.final_name = filename
-        nzo.delete = True  # Enable deletion of extracted files
-        nzo.direct_unpacker = None  # No direct unpacker
-        nzo.set_unpack_info = mock.Mock()
-        nzo.set_action_line = mock.Mock()
-
-        # Mock password-related attributes
-        nzo.password = password
-        nzo.nzo_info = {}  # Empty nzo_info
-        nzo.meta = {}  # Empty meta data
-        nzo.correct_password = password
-
-        return nzo
+        return make_mock_nzo(
+            download_path=temp_dir,
+            final_name=filename,
+            delete=True,  # Enable deletion of extracted files
+            password=password,
+            correct_password=password,
+        )
 
     @staticmethod
     def _run_rar_unpack(
@@ -1141,18 +1116,10 @@ class TestUnpackNestedRarSets:
         newsunpack.find_programs(".")
         sabnzbd.PostProcessor = mock.Mock()
 
-        nzo = mock.Mock(
+        nzo = make_mock_nzo(
             download_path=download_path,
-            admin_path=os.path.join(download_path, JOB_ADMIN),
             final_name="Foo.Bar.S05.1080p",
-            fail_msg="",
             delete=True,
-            reuse=False,
-            password=None,
-            correct_password=None,
-            nzo_info={},
-            meta={},
-            direct_unpacker=None,
             # As NzbObject.sub_directories() would report it for a job assembled into it
             sub_directories=mock.Mock(return_value={os.path.join(download_path, subdir)} if subdir else set()),
         )
@@ -1188,7 +1155,7 @@ class TestUnpackNestedRarSets:
         """Where the job assembled its files (nzf.filename) plus anything par2cmdline
         restored into a folder during repair (nzo.renames)"""
         download_path = str(tmp_path)
-        nzo = mock.Mock(
+        nzo = make_mock_nzo(
             download_path=download_path,
             finished_files=[
                 mock.Mock(filename=os.path.join(self.SUBDIR, "testfile.rar")),
@@ -1233,10 +1200,9 @@ class TestUnpackNestedRarSets:
             setname=obfuscated_name,
             vol=1,
         )
-        nzo = mock.Mock(
+        nzo = make_mock_nzo(
             download_path=download_path,
             finished_files=[nzf],
-            direct_unpacker=None,
             par2packs={
                 "testset": {
                     par2_name: FilePar2Info(
@@ -1271,7 +1237,7 @@ class TestUnpackNestedRarSets:
         nzf = mock.Mock(filename=flat_name, filepath=flat_path, crc32=1234, vol=2)
         nzf.setname = "%s_foo.bar.s05e03" % self.SUBDIR
         direct_unpacker = mock.Mock(success_sets={nzf.setname: (["volumes"], ["extracted.mkv"])})
-        nzo = mock.Mock(
+        nzo = make_mock_nzo(
             download_path=download_path,
             finished_files=[nzf],
             direct_unpacker=direct_unpacker,
@@ -1309,7 +1275,7 @@ class TestUnpackNestedRarSets:
             sfv_file.write(b"; generated by test\n%s %08x\n" % (real_name.encode(), crc32))
 
         nzf = mock.Mock(filename=obfuscated_name, crc32=crc32, setname=obfuscated_name, vol=1)
-        nzo = mock.Mock(download_path=download_path, finished_files=[nzf], direct_unpacker=None)
+        nzo = make_mock_nzo(download_path=download_path, finished_files=[nzf])
 
         assert newsunpack.sfv_check([sfv_path], nzo)
 
@@ -1407,15 +1373,13 @@ class TestExternalProcessingEnv:
     @classmethod
     def _make_nzo(cls, admin_dir: str, overrides: dict):
         """A mock NZO with clean string values for every field create_env reads."""
-        nzo = mock.Mock()
-        for field, value in {**cls.NZO_DEFAULTS, **overrides}.items():
-            setattr(nzo, field, value)
-        nzo.nzo_info = {}
-        nzo.admin_path = admin_dir
-        nzo.avg_bps_total = 0
-        nzo.avg_bps_freq = 0
-        nzo.avg_date = datetime.datetime(2026, 1, 1)
-        return nzo
+        return make_mock_nzo(
+            **{**cls.NZO_DEFAULTS, **overrides},
+            admin_path=admin_dir,
+            avg_bps_total=0,
+            avg_bps_freq=0,
+            avg_date=datetime.datetime(2026, 1, 1),
+        )
 
     def _run(self, filenames=None, status=0, nzo_overrides=None):
         """Invoke external_processing with a real script.

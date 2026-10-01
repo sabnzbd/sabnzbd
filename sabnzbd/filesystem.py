@@ -890,20 +890,24 @@ def move_to_path(path: str, new_path: str, root: Optional[str] = None) -> tuple[
     overwrite = sabnzbd.cfg.overwrite_files()
     new_path = os.path.abspath(new_path)
     new_path_dir = os.path.dirname(new_path)
+    if not overwrite:
+        new_path = get_unique_filename(new_path)
+
+    # Check before deleting anything, a link can redirect the removal outside root
+    if root and points_outside(root, new_path):
+        logging.error(T("Failed moving %s to %s"), clip_path(path), clip_path(new_path))
+        logging.info("Refusing to move %s, it points outside %s", new_path, root)
+        return False, None
+
     if overwrite and os.path.exists(new_path):
         try:
             os.remove(new_path)
         except Exception:
+            # Same checked directory, and the unique name is never a link
             overwrite = False
-    if not overwrite:
-        new_path = get_unique_filename(new_path)
+            new_path = get_unique_filename(new_path)
 
     if new_path:
-        if root and points_outside(root, new_path):
-            logging.error(T("Failed moving %s to %s"), clip_path(path), clip_path(new_path))
-            logging.info("Refusing to move %s, it points outside %s", new_path, root)
-            return False, None
-
         logging.debug("Moving (overwrite: %s) %s => %s", overwrite, path, new_path)
         if not os.path.exists(new_path_dir):
             create_all_dirs(os.path.dirname(new_path), apply_permissions=True)
@@ -1273,14 +1277,12 @@ def load_data(
     """Read data from disk file"""
     path = os.path.join(path, data_id)
 
-    if not os.path.exists(path):
-        logging.info("[%s] %s missing", sabnzbd.misc.caller_name(), path)
-        return None
-
     if not silent:
         logging.debug("[%s] Loading data for %s from %s", sabnzbd.misc.caller_name(), data_id, path)
 
     try:
+        # Open directly instead of checking existence first, avoiding a race
+        # with writers or cleanup jobs on shared storage
         with open(path, "rb") as data_file:
             if do_pickle:
                 data = RestrictedUnpickler(data_file, encoding=sabnzbd.encoding.CODEPAGE).load()
@@ -1292,6 +1294,9 @@ def load_data(
 
         if remove:
             remove_file(path)
+    except FileNotFoundError:
+        logging.info("[%s] %s missing", sabnzbd.misc.caller_name(), path)
+        return None
     except Exception:
         logging.error(T("Loading %s failed"), path)
         logging.info("Traceback: ", exc_info=True)

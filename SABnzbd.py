@@ -48,6 +48,7 @@ try:
     import feedparser
     import configobj
     import uvicorn
+    import python_multipart
     import cryptography
     import charset_normalizer
     import guessit

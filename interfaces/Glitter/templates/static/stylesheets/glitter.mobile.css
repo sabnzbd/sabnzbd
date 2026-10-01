@@ -113,6 +113,11 @@ h2 {
     height: 2em;
 }
 
+.no-downloads-actions {
+    flex-direction: column;
+    gap: 0.5em;
+}
+
 .queue-table .progress-indicator {
     display: block;
     position: absolute;

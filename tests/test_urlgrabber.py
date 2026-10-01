@@ -23,17 +23,24 @@ import base64
 
 import binascii
 import json
+import datetime
+import ipaddress
 import re
+import ssl
 import urllib.error
 import urllib.parse
+import urllib.request
 
 import pytest
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.x509.oid import NameOID
 from pytest_httpserver import HTTPServer
 from werkzeug import Request, Response
 
 import sabnzbd
 import sabnzbd.urlgrabber as urlgrabber
-import sabnzbd.cfg as cfg
 
 
 def _json_response(payload, status: int = 200) -> Response:
@@ -84,7 +91,72 @@ def local_server(request):
     server.stop()
 
 
-@pytest.mark.usefixtures("local_server")
+_NO_KEY_USAGE = dict.fromkeys(
+    (
+        "digital_signature",
+        "content_commitment",
+        "key_encipherment",
+        "data_encipherment",
+        "key_agreement",
+        "key_cert_sign",
+        "crl_sign",
+        "encipher_only",
+        "decipher_only",
+    ),
+    False,
+)
+
+
+@pytest.fixture(scope="class")
+def local_https_server(request, tmp_path_factory):
+    """Same as local_server, but with TLS using a self-signed certificate for 127.0.0.1"""
+    key = ec.generate_private_key(ec.SECP256R1())
+    name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "127.0.0.1")])
+    now = datetime.datetime.now(datetime.timezone.utc)
+    cert = (
+        x509.CertificateBuilder()
+        .subject_name(name)
+        .issuer_name(name)
+        .public_key(key.public_key())
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(now - datetime.timedelta(days=1))
+        .not_valid_after(now + datetime.timedelta(days=1))
+        .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
+        .add_extension(
+            x509.KeyUsage(**{**_NO_KEY_USAGE, "key_cert_sign": True, "digital_signature": True}), critical=True
+        )
+        .add_extension(x509.SubjectKeyIdentifier.from_public_key(key.public_key()), critical=False)
+        .add_extension(x509.AuthorityKeyIdentifier.from_issuer_public_key(key.public_key()), critical=False)
+        .add_extension(x509.SubjectAlternativeName([x509.IPAddress(ipaddress.ip_address("127.0.0.1"))]), critical=False)
+        .sign(key, hashes.SHA256())
+    )
+    cert_dir = tmp_path_factory.mktemp("https")
+    cert_file = cert_dir / "cert.pem"
+    key_file = cert_dir / "key.pem"
+    cert_file.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
+    key_file.write_bytes(
+        key.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8, serialization.NoEncryption())
+    )
+
+    server_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    server_context.load_cert_chain(cert_file, key_file)
+    server = HTTPServer(host="127.0.0.1", ssl_context=server_context)
+    server.expect_request(re.compile(r".*")).respond_with_handler(_request_handler)
+    server.start()
+    request.cls.https_server = server
+
+    # urlopen() caches an opener with the default context, so replace both while the server runs
+    client_context = ssl.create_default_context(cafile=str(cert_file))
+    original_factory = ssl._create_default_https_context
+    ssl._create_default_https_context = lambda: client_context
+    urllib.request._opener = None
+    yield
+    ssl._create_default_https_context = original_factory
+    urllib.request._opener = None
+    server.stop()
+
+
+@pytest.mark.usefixtures("local_server", "local_https_server")
 class TestBuildRequest:
     def test_empty(self):
         with pytest.raises(ValueError):
@@ -134,16 +206,11 @@ class TestBuildRequest:
         assert "authorization" not in json_headers["headers"].keys()
 
     def test_http_basic(self):
-        # Use selftest_host for the most basic URL
-        self._runner("http://" + cfg.selftest_host(), 200)
-        # Repeat with the local server, which runs on a random non-standard port
+        # The local server runs on a random non-standard port
         self._runner(self.server.url_for("/"), 200)
 
     def test_https_basic(self):
-        # Use a real HTTPS server, since the local server only serves plain HTTP
-        self._runner("https://" + cfg.selftest_host(), 200)
-        # Repeat with the port explicitly specified
-        self._runner("https://" + cfg.selftest_host() + ":443/", 200)
+        self._runner(self.https_server.url_for("/"), 200)
 
     def test_http_code(self):
         # Make the server reply with a non-standard status code

@@ -201,6 +201,14 @@ msgid "Test Notification"
 msgstr "Test de Notification"
 
 #: sabnzbd/api.py
+msgid "Indexer URL is not set."
+msgstr "L'URL de l'indexeur n'est pas définie."
+
+#: sabnzbd/api.py
+msgid "Connected"
+msgstr "Connecté"
+
+#: sabnzbd/api.py
 msgid "The hostname is not set."
 msgstr "Le nom d'hôte n'est pas défini."
 
@@ -1827,10 +1835,6 @@ msgstr "Le code script de sortie est %s"
 msgid "Ran %s"
 msgstr "%s exécuté"
 
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
-msgid "More"
-msgstr "Plus"
-
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
@@ -2488,6 +2492,11 @@ msgstr "Spécial"
 msgid "Search"
 msgstr "Rechercher"
 
+#. Config menu item for the newznab indexer search
+#: sabnzbd/skintext.py
+msgid "Indexers"
+msgstr "Indexeurs"
+
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Etes-vous sûr de vouloir arrêter SABnzbd ?"
@@ -3064,6 +3073,50 @@ msgstr ""
 "utilisez le Planificateur !"
 
 #: sabnzbd/skintext.py
+msgid ""
+"SABnzbd can search one or more Indexers to find relevant NZBs. An indexer is"
+" a website that indexes Usenet content in order to help you find NZBs. To "
+"use the Indexer Search within SABnzbd to find relevant NZBs, you will need "
+"to sign up for an account at one or more indexers. An indexer account is "
+"separate from a Usenet provider account, which is required to download. "
+"Every enabled indexer is searched simultaneously and the results are "
+"combined. "
+msgstr ""
+"SABnzbd peut effectuer une recherche sur un ou plusieurs indexeurs pour "
+"trouver des NZB pertinents. Un indexeur est un site web qui indexe le "
+"contenu Usenet afin d'aider à trouver des NZB. Pour utiliser la recherche "
+"d'indexeur au sein de SABnzbd et trouver des NZB pertinents, créer un compte"
+" auprès d'un ou plusieurs indexeurs. Un compte indexeur est différent d'un "
+"compte fournisseur Usenet, ce dernier étant nécessaire pour télécharger. "
+"Chaque indexeur activé est interrogé simultanément et les résultats sont "
+"combinés."
+
+#: sabnzbd/skintext.py
+msgid "Enable Indexer Search"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Indexer URL"
+msgstr "URL de l'indexeur"
+
+#: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "Clé API"
+
+#: sabnzbd/skintext.py
+msgid "Testing indexer..."
+msgstr "Test de l'indexeur…"
+
+#: sabnzbd/skintext.py
+msgid "Test failed"
+msgstr "Le test a échoué"
+
+#. Button to test an indexer connection
+#: sabnzbd/skintext.py
+msgid "Test"
+msgstr "Test"
+
+#: sabnzbd/skintext.py
 msgid "Maximum line speed"
 msgstr "Vitesse maximale de la ligne"
 
@@ -3195,10 +3248,6 @@ msgid ""
 msgstr ""
 "Aidez-nous à traduire SABnzbd dans votre langue ! <br/>Améliorez les "
 "traductions existantes ou ajoutez celles qui manquent ici :"
-
-#: sabnzbd/skintext.py
-msgid "API Key"
-msgstr "Clé API"
 
 #: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
@@ -4877,6 +4926,47 @@ msgstr ""
 "exemple : <code>mon show cat:tv</code>"
 
 #: sabnzbd/skintext.py
+msgid "Search indexers"
+msgstr "Rechercher des indexeurs"
+
+#: sabnzbd/skintext.py
+msgid "Searching"
+msgstr "Recherche en cours"
+
+#: sabnzbd/skintext.py
+msgid "Manage indexers"
+msgstr "Gérer les indexeurs"
+
+#: sabnzbd/skintext.py
+msgid ""
+"To search for NZBs, configure an indexer on the Config - Indexers page. To "
+"use the Indexer Search within SABnzbd to find relevant NZBs, you will need "
+"to sign up for an account at one or more indexers. An indexer account is "
+"separate from a Usenet provider account, which is required to download."
+msgstr ""
+"Pour rechercher des NZB, configurer un indexeur dans la page Config - "
+"Indexeurs. Pour utiliser la recherche d'indexeur intégrée à SABnzbd et "
+"trouver des NZB pertinents, créer un compte auprès d'un ou plusieurs "
+"indexeurs. Un compte indexeur est différent d'un compte fournisseur Usenet, "
+"ce dernier étant nécessaire pour télécharger."
+
+#: sabnzbd/skintext.py
+msgid "Password protected"
+msgstr "Protégé par mot de passe"
+
+#: sabnzbd/skintext.py
+msgid "All categories"
+msgstr "Toutes les catégories"
+
+#: sabnzbd/skintext.py
+msgid ""
+"%s results available, only the 100 latest results for each indexer are "
+"shown."
+msgstr ""
+"%s résultats disponibles, seuls les 100 derniers résultats sont affichés "
+"pour chaque indexeur."
+
+#: sabnzbd/skintext.py
 msgid "Multi-Operations"
 msgstr "Multi-Operations"
 
@@ -5099,6 +5189,10 @@ msgid ""
 msgstr ""
 "Lorsque vous réessayez une tâche, la \"Détection des doublons\" et "
 "\"Abandonner les travaux qui ne peuvent pas être terminés\" sont désactivés."
+
+#: sabnzbd/skintext.py
+msgid "More"
+msgstr "Plus"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

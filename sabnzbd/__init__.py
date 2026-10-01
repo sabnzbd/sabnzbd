@@ -19,7 +19,6 @@ import os
 import logging
 import datetime
 import ctypes.util
-import time
 import ssl
 from typing import Optional
 
@@ -94,6 +93,7 @@ import sabnzbd.lang as lang
 import sabnzbd.nzb
 import sabnzbd.nzbparser as nzbparser
 import sabnzbd.rss as rss
+import sabnzbd.nzbsearch
 import sabnzbd.emailer as emailer
 import sabnzbd.getipaddress
 import sabnzbd.newsunpack

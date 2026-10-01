@@ -19,17 +19,52 @@
 Testing SABnzbd par2 parsing
 """
 
+import hashlib
 import logging
 import os
 
+import pytest
 
-from sabnzbd.par2file import FilePar2Info, parse_par2_file
+from sabnzbd.par2file import PAR_CREATOR_ID, PAR_PKT_ID, FilePar2Info, parse_par2_file
 from tests.testhelper import SAB_DATA_DIR
 
 # TODO: Add testing for edge cases, such as non-unique md5of16k or broken par files
 
 
 class TestPar2Parsing:
+    @pytest.mark.parametrize("packet_length", [0, 4, 8, 12, 16, 20, 22, 24, 28, 32, 60, 2**20, 2**62, 2**64 - 4])
+    def test_invalid_packet_length_does_not_consume_following_packets(self, tmp_path, packet_length):
+        source_path = os.path.join(SAB_DATA_DIR, "par2file", "basic_16k.par2")
+        with open(source_path, "rb") as source:
+            valid_packets = source.read()
+
+        malformed_path = tmp_path / "malformed.par2"
+        # Too short, not a multiple of 4 or larger than the file: scanning resumes right after the header
+        malformed_path.write_bytes(PAR_PKT_ID + packet_length.to_bytes(8, "little") + valid_packets)
+
+        set_id, table = parse_par2_file(str(malformed_path), {})
+        assert set_id == "69af2273e8fa0b4d811b56d02a9c4b59"
+        assert list(table) == ["rss_feed_test.xml"]
+
+    def test_minimum_length_creator_packet_is_accepted(self, tmp_path, caplog):
+        source_path = os.path.join(SAB_DATA_DIR, "par2file", "basic_16k.par2")
+        with open(source_path, "rb") as source:
+            valid_packets = source.read()
+
+        # A 64-byte Creator has no body, but its checksum still covers the set ID and packet type.
+        creator_data = valid_packets[32:48] + PAR_CREATOR_ID
+        creator_packet = PAR_PKT_ID + (64).to_bytes(8, "little") + hashlib.md5(creator_data).digest() + creator_data
+        assert len(creator_packet) == 64
+        creator_path = tmp_path / "creator_64.par2"
+        creator_path.write_bytes(creator_packet + valid_packets)
+
+        with caplog.at_level(logging.DEBUG):
+            set_id, table = parse_par2_file(str(creator_path), {})
+
+        assert set_id == "69af2273e8fa0b4d811b56d02a9c4b59"
+        assert list(table) == ["rss_feed_test.xml"]
+        assert "Par2-creator of creator_64.par2 is: " in (record.getMessage() for record in caplog.records)
+
     def test_parse_par2_file(self, caplog):
         # To capture the par2-creator, we need to capture the logging
         with caplog.at_level(logging.DEBUG):

@@ -238,6 +238,16 @@ function FileslistingModel(parent, data) {
 function paginationModel(parent) {
     var self = this;
 
+    // Queue/History refresh through the app-wide poller; other users of this
+    // model (e.g. search) supply their own parent.onPaginationChange instead
+    self.triggerRefresh = function() {
+        if (parent.onPaginationChange) {
+            parent.onPaginationChange();
+        } else {
+            parent.parent.refresh(true);
+        }
+    }
+
     // Var's
     self.nrPages = ko.observable(0);
     self.currentPage = ko.observable(1);
@@ -297,7 +307,7 @@ function paginationModel(parent) {
             // Are we on next page? Bad!
             if(self.currentPage() > 1) {
                 // Force full update
-                parent.parent.refresh(true);
+                self.triggerRefresh();
             }
 
             // Move to current page
@@ -371,6 +381,6 @@ function paginationModel(parent) {
         // Re-paginate
         self.updatePages();
         // Force full update
-        parent.parent.refresh(true);
+        self.triggerRefresh();
     }
 }

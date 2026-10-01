@@ -46,12 +46,9 @@ stages:
               postproc_time: !anyint
               stage_log: !anylist
               downloaded: !anyint
-              completeness: null
               fail_message: !anystr
               url_info: !anystr
               bytes: !anyint
-              meta: null
-              series: !anything
               duplicate_key: !anything
               md5sum: !re_match "[0-9a-fA-F]+"
               password: !anystr
@@ -116,12 +113,9 @@ stages:
             <postproc_time>!anyint</postproc_time>
             <stage_log>!anystr</stage_log>
             <downloaded>!anyint</downloaded>
-            <completeness>!anything</completeness>
             <fail_message>!anystr</fail_message>
             <url_info>!anystr</url_info>
             <bytes>!anyint</bytes>
-            <meta>!anystr</meta>
-            <series>!anystr</series>
             <duplicate_key>!anystr</duplicate_key>
             <md5sum>!anystr</md5sum>
             <password>!anystr</password>

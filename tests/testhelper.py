@@ -49,6 +49,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.config import Option
 from sabnzbd.constants import (
     DEF_INI_FILE,
+    JOB_ADMIN,
     Status,
     PP_LOOKUP,
     NORMAL_PRIORITY,
@@ -365,6 +366,42 @@ def sleepless(monkeypatch):
     yield
 
 
+def make_mock_nzo(**overrides) -> mock.Mock:
+    """Mock NzbObject with plain values for the attributes most code paths read.
+    Methods stay auto-mocked; any attribute can be set through the keyword arguments."""
+    nzo = mock.Mock()
+    nzo.nzo_id = "SABnzbd_nzo_test"
+    nzo.final_name = "test"
+    nzo.filename = "test.nzb"
+    nzo.cat = "*"
+    nzo.script = "None"
+    nzo.url = ""
+    nzo.priority = NORMAL_PRIORITY
+    nzo.status = Status.QUEUED
+    nzo.fail_msg = ""
+    nzo.action_line = ""
+    nzo.password = None
+    nzo.correct_password = None
+    nzo.duplicate_key = ""
+    nzo.time_added = 0
+    nzo.nzo_info = {}
+    nzo.unpack_info = {}
+    nzo.meta = {}
+    nzo.extrapars = {}
+    nzo.par2packs = {}
+    nzo.repair = nzo.unpack = nzo.delete = False
+    nzo.precheck = nzo.reuse = nzo.futuretype = nzo.pp_active = False
+    nzo.direct_unpacker = None
+    nzo.bytes = nzo.bytes_downloaded = nzo.bytes_tried = nzo.bytes_par2 = nzo.bytes_missing = 0
+    nzo.bad_articles = 0
+    nzo.download_path = SAB_CACHE_DIR
+    for key, value in overrides.items():
+        setattr(nzo, key, value)
+    if "admin_path" not in overrides:
+        nzo.admin_path = os.path.join(nzo.download_path, JOB_ADMIN)
+    return nzo
+
+
 class FakeHistoryDB(db.HistoryDB):
     """
     HistoryDB class with added control of the db_path via an argument and the
@@ -409,29 +446,29 @@ class FakeHistoryDB(db.HistoryDB):
         completed: Optional[float] = None,
     ) -> str:
         """Add a single history entry, with random values for anything not specified"""
-        nzo = mock.Mock()
-
-        nzo.password = password
-        nzo.correct_password = "secret"
-        nzo.final_name = name
-        nzo.filename = "%s%s.nzb" % (name, "{{" + password + "}}" if password else "")
-        nzo.cat = category
-        nzo.script = "placeholder_script"
-        nzo.url = "placeholder_url"
-        nzo.status = status
-        nzo.fail_msg = "Failure" if status == Status.FAILED else ""
-        nzo.nzo_id = str(uuid.uuid4())
-        nzo.bytes_downloaded = randint(1024, 1024**4)
-        nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
-        nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))  # for "pp"
-        nzo.nzo_info = {"download_time": randint(1, 10**4)}
-        nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
-        nzo.duplicate_key = "show/season/episode"
-        nzo.time_added = int(time.time())
-        nzo.futuretype = futuretype  # for "report", only True when fetching an URL
         if path is None:
             path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
-        nzo.download_path = path
+        nzo = make_mock_nzo(
+            password=password,
+            correct_password="secret",
+            final_name=name,
+            filename="%s%s.nzb" % (name, "{{" + password + "}}" if password else ""),
+            cat=category,
+            script="placeholder_script",
+            url="placeholder_url",
+            status=status,
+            fail_msg="Failure" if status == Status.FAILED else "",
+            nzo_id=str(uuid.uuid4()),
+            bytes_downloaded=randint(1024, 1024**4),
+            md5sum="".join(choice("abcdef" + digits) for i in range(32)),
+            nzo_info={"download_time": randint(1, 10**4)},
+            unpack_info={"unpack_info": "placeholder unpack_info line\r\n" * 3},
+            duplicate_key="show/season/episode",
+            time_added=int(time.time()),
+            futuretype=futuretype,  # for "report", only True when fetching an URL
+            download_path=path,
+        )
+        nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))  # for "pp"
 
         # Mock time when calling add_history_db() to randomize completion times
         almost_time = mock.Mock(return_value=completed if completed is not None else time.time() - randint(0, 10**8))

@@ -8,7 +8,7 @@
     </div>
     <div class="padding alt section">
         <button type="button" class="btn btn-default addSorter"><span class="glyphicon glyphicon-plus"></span> $T('add-sorter')</button>
-        <label for="advanced-settings-button" class="form-control advanced-button ">
+        <label for="advanced-settings-button" class="form-control bar-button advanced-button">
             <input type="checkbox" id="advanced-settings-button" name="advanced-settings-button"> $T('button-advanced')
         </label>
         <div class="advanced-buttonSeperator"></div>
@@ -420,7 +420,7 @@
                         output: 'json'
                     },
                     success: function(data) {
-                        jQuery('#preview_result_' + sort_nr).html(data.result);
+                        jQuery('#preview_result_' + sort_nr).text(data.result);
                     },
                     error: function(data) {
                         jQuery('#preview_result_' + sort_nr).html('$T('button-failed')');

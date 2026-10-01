@@ -70,7 +70,6 @@ class NewsWrapper:
         "pass_ok",
         "force_login",
         "next_request",
-        "concurrent_requests",
         "selector_events",
         "lock",
         "generation",
@@ -102,9 +101,6 @@ class NewsWrapper:
 
         # Command queue and concurrency
         self.next_request: Optional[tuple[bytes, Optional[sabnzbd.nzb.Article]]] = None
-        self.concurrent_requests: threading.BoundedSemaphore = threading.BoundedSemaphore(
-            self.server.pipelining_requests()
-        )
         self.selector_events = 0
         self.tls_wants_write: bool = False
 
@@ -129,7 +125,6 @@ class NewsWrapper:
 
         # On connect the first "response" will be 200 Welcome
         self.decoder.expect(None)
-        self.concurrent_requests.acquire()
 
     def finish_connect(self, code: int, message: str) -> None:
         """Perform login options"""
@@ -213,7 +208,7 @@ class NewsWrapper:
             return None
 
         try:
-            return sabnzbd.Assembler.get_writer(nzf)
+            return sabnzbd.Assembler.get_writer(nzf, stream=True)
         except OSError:
             # Cannot open the file: fall back to memory rather than failing the article
             logging.debug("Could not open %s for streaming", nzf.filepath, exc_info=True)
@@ -247,7 +242,6 @@ class NewsWrapper:
 
     def on_response(self, response: sabctools.NNTPResponse, article: Optional["sabnzbd.nzb.Article"]) -> None:
         """A response to a NNTP request is received"""
-        self.concurrent_requests.release()
         server = self.server
         article_done = response.status_code in (220, 222) and article
 
@@ -349,6 +343,10 @@ class NewsWrapper:
         # No data received
         if bytes_recv == 0:
             raise ConnectionError("Server closed connection")
+
+        # Data without a request, such as an idle timeout notice
+        if not self.decoder.expected:
+            raise ConnectionError("Unsolicited data from server")
 
         # Success, move timeout
         self.timeout = time.time() + self.server.timeout
@@ -458,7 +456,7 @@ class NewsWrapper:
                     sabnzbd.Downloader.modify_socket(self, EVENT_READ)
                     return
 
-                if self.concurrent_requests.acquire(blocking=False):
+                if self.decoder.expected < server.pipelining_requests:
                     command, article = self.next_request
                     if article:
                         nzo = article.nzf.nzo
@@ -466,7 +464,6 @@ class NewsWrapper:
                             nzo.status is Status.PAUSED and nzo.priority is not FORCE_PRIORITY
                         ):
                             self.discard(article, count_article_try=False, retry_article=True)
-                            self.concurrent_requests.release()
                             self.next_request = None
                             return
 

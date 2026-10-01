@@ -25,7 +25,6 @@ import tempfile
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Optional
-from unittest import mock
 
 import pytest
 
@@ -53,6 +52,7 @@ from tests.testhelper import (
     SAB_NEWSSERVER_HOST,
     SAB_NEWSSERVER_PORT,
     create_and_read_nzb_fp,
+    make_mock_nzo,
 )
 
 
@@ -78,7 +78,7 @@ def nzbqueue_env(monkeypatch, mocker, tmp_path):
             use_ssl=False,
             ssl_verify=3,
             ssl_ciphers="",
-            pipelining_requests=mocker.Mock(return_value=1),
+            pipelining_requests=1,
         )
     ]
     sabnzbd.NzbQueue = NzbQueue()
@@ -118,26 +118,19 @@ def make_dummy_nzo(name: str, priority: int = NORMAL_PRIORITY, files: int = 50, 
 def make_dummy_postproc_nzo(name: str, download_path: str, status: str = Status.QUEUED, pp_active: bool = False):
     """Mock NzbObject in the post-processing queue, with all the attributes
     add_active_history() needs so it can pass through build_history()"""
-    nzo = mock.Mock()
-    nzo.nzo_id = f"SABnzbd_nzo_{name}"
-    nzo.final_name = name
-    nzo.filename = f"{name}.nzb"
-    nzo.cat = "*"
-    nzo.script = "none"
-    nzo.url = ""
-    nzo.status = status
-    nzo.pp_active = pp_active
-    nzo.repair = nzo.unpack = nzo.delete = True
-    nzo.nzo_info = {}
-    nzo.unpack_info = {}
-    nzo.bytes_downloaded = 1024
-    nzo.fail_msg = ""
-    nzo.correct_password = ""
-    nzo.action_line = ""
-    nzo.duplicate_key = ""
-    nzo.time_added = 0
-    nzo.download_path = download_path
-    return nzo
+    return make_mock_nzo(
+        nzo_id=f"SABnzbd_nzo_{name}",
+        final_name=name,
+        filename=f"{name}.nzb",
+        status=status,
+        pp_active=pp_active,
+        repair=True,
+        unpack=True,
+        delete=True,
+        bytes_downloaded=1024,
+        correct_password="",
+        download_path=download_path,
+    )
 
 
 @pytest.fixture()

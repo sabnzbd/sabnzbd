@@ -19,6 +19,7 @@
 tests.test_postproc- Tests of various functions in newspack, among which rar_renamer()
 """
 
+import functools
 import os
 import re
 import shutil
@@ -29,11 +30,13 @@ import pytest
 import sabnzbd
 import sabnzbd.config
 from sabnzbd import postproc
+from sabnzbd.constants import Status
 from sabnzbd.config import ConfigCat, ConfigSorter
 from sabnzbd.deobfuscate_filenames import deobfuscate
 from sabnzbd.filesystem import clip_path, globber_full
 from sabnzbd.misc import sort_to_opts
-from tests.testhelper import SAB_CACHE_DIR, SAB_DATA_DIR
+from sabnzbd.nzb import NzbObject
+from tests.testhelper import SAB_CACHE_DIR, SAB_DATA_DIR, make_mock_nzo
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
@@ -58,9 +61,7 @@ class TestPostProc:
             pytest.fail("Could not create copy of files for rar_renamer")
 
         # And now let the magic happen:
-        nzo = mock.Mock()
-        nzo.final_name = "somedownloadname"
-        nzo.download_path = workingdir
+        nzo = make_mock_nzo(final_name="somedownloadname", download_path=workingdir)
         number_renamed_files = postproc.rar_renamer(nzo)
 
         # run check on the resulting files
@@ -187,10 +188,7 @@ class TestPostProc:
             assert sabnzbd.config.CONFIG.database["categories"][category]
 
         # Mock a minimal nzo, required as function input
-        fake_nzo = mock.Mock()
-        fake_nzo.final_name = "FOSS.Rules.S23E06.2160p-SABnzbd"
-        fake_nzo.cat = category
-        fake_nzo.nzo_info = {}  # Placeholder to prevent a crash in sorting.get_titles()
+        fake_nzo = make_mock_nzo(final_name="FOSS.Rules.S23E06.2160p-SABnzbd", cat=category)
 
         def _func():
             (
@@ -386,11 +384,7 @@ class TestRemoveUnwantedFiles:
 
     @staticmethod
     def _fake_nzo(unwanted_ext=0):
-        fake_nzo = mock.Mock()
-        fake_nzo.final_name = "TestDownload"
-        fake_nzo.unwanted_ext = unwanted_ext
-        fake_nzo.fail_msg = ""
-        return fake_nzo
+        return make_mock_nzo(final_name="TestDownload", unwanted_ext=unwanted_ext)
 
     @pytest.mark.config({"unwanted_extensions": ["exe"], "action_on_unwanted_extensions": 2})
     def test_remove_unwanted_files_only_tracked_files(self):
@@ -575,13 +569,14 @@ class TestNzbOnlyDownload:
     def test_process_nzb_only_download_single_nzb(self, mock_listdir, mock_process_single_nzb):
         """Test process_nzb_only_download with a single NZB file"""
         # Setup mock NZO
-        fake_nzo = mock.Mock()
-        fake_nzo.final_name = "TestDownload"
-        fake_nzo.pp = 3
-        fake_nzo.script = "test_script.py"
-        fake_nzo.cat = "movies"
-        fake_nzo.url = "http://example.com/test.nzb"
-        fake_nzo.priority = 0
+        fake_nzo = make_mock_nzo(
+            final_name="TestDownload",
+            pp=3,
+            script="test_script.py",
+            cat="movies",
+            url="http://example.com/test.nzb",
+            priority=0,
+        )
 
         # Mock single NZB file
         workdir = os.path.join(SAB_CACHE_DIR, "test_workdir")
@@ -612,13 +607,14 @@ class TestNzbOnlyDownload:
     def test_process_nzb_only_download_multiple_nzbs(self, mock_listdir, mock_process_single_nzb):
         """Test process_nzb_only_download with multiple NZB files"""
         # Setup mock NZO
-        fake_nzo = mock.Mock()
-        fake_nzo.final_name = "TestDownload"
-        fake_nzo.pp = 2
-        fake_nzo.script = None
-        fake_nzo.cat = "tv"
-        fake_nzo.url = "http://example.com/test.nzb"
-        fake_nzo.priority = 1
+        fake_nzo = make_mock_nzo(
+            final_name="TestDownload",
+            pp=2,
+            script=None,
+            cat="tv",
+            url="http://example.com/test.nzb",
+            priority=1,
+        )
 
         # Mock multiple NZB files
         workdir = os.path.join(SAB_CACHE_DIR, "test_workdir")
@@ -662,8 +658,7 @@ class TestNzbOnlyDownload:
     def test_process_nzb_only_download_mixed_files(self, mock_listdir, mock_process_single_nzb):
         """Test process_nzb_only_download with mixed file types returns None"""
         # Setup mock NZO
-        fake_nzo = mock.Mock()
-        fake_nzo.final_name = "TestDownload"
+        fake_nzo = make_mock_nzo(final_name="TestDownload")
 
         # Mock mixed files (NZB and non-NZB)
         workdir = os.path.join(SAB_CACHE_DIR, "test_workdir")
@@ -686,8 +681,7 @@ class TestNzbOnlyDownload:
     def test_process_nzb_only_download_empty_directory(self, mock_listdir, mock_process_single_nzb):
         """Test process_nzb_only_download with empty directory returns None"""
         # Setup mock NZO
-        fake_nzo = mock.Mock()
-        fake_nzo.final_name = "TestDownload"
+        fake_nzo = make_mock_nzo(final_name="TestDownload")
 
         # Mock empty directory
         workdir = os.path.join(SAB_CACHE_DIR, "test_workdir")
@@ -701,3 +695,137 @@ class TestNzbOnlyDownload:
 
         # Verify process_single_nzb was NOT called
         mock_process_single_nzb.assert_not_called()
+
+
+class TestProcessJobMissingArticles:
+    """Verdict of process_job for jobs that finished downloading with missing articles"""
+
+    @staticmethod
+    def _make_nzo(bytes_missing: int, extrapars: dict, unpack: bool = False) -> mock.Mock:
+        nzo = make_mock_nzo(
+            bytes=10000,
+            bytes_missing=bytes_missing,
+            bad_articles=1 if bytes_missing else 0,
+            extrapars=extrapars,
+            repair=True,
+            unpack=unpack,
+            script="",
+            final_name="test_job",
+            pp_active=True,
+        )
+        nzo.check_availability_ratio = functools.partial(NzbObject.check_availability_ratio, nzo)
+        return nzo
+
+    @staticmethod
+    def _process_job(nzo: mock.Mock, rars: list[str] = (), unpack_error: int = 0) -> dict[str, mock.Mock]:
+        file_sorter = mock.Mock()
+        file_sorter.sorter_active = False
+        with (
+            mock.patch.multiple(
+                "sabnzbd.postproc",
+                globber=mock.DEFAULT,
+                parring=mock.DEFAULT,
+                build_filelists=mock.DEFAULT,
+                unpacker=mock.DEFAULT,
+                remove_unwanted_files=mock.DEFAULT,
+                wait_for_direct_unpacker=mock.DEFAULT,
+                sanitize_files=mock.DEFAULT,
+                fix_unix_encoding=mock.DEFAULT,
+                prepare_extraction_path=mock.DEFAULT,
+                listdir_full=mock.DEFAULT,
+                set_permissions=mock.DEFAULT,
+                cleanup_list=mock.DEFAULT,
+                process_nzb_only_download=mock.DEFAULT,
+                one_file_or_folder=mock.DEFAULT,
+                remove_samples=mock.DEFAULT,
+                deobfuscate=mock.DEFAULT,
+                make_script_path=mock.DEFAULT,
+                try_alt_nzb=mock.DEFAULT,
+                notifier=mock.DEFAULT,
+                emailer=mock.DEFAULT,
+                history_updated=mock.DEFAULT,
+            ) as mocks,
+            mock.patch.object(sabnzbd, "NzbQueue", create=True),
+            mock.patch.object(sabnzbd, "db_pool", create=True),
+        ):
+            mocks["globber"].return_value = ["file_one", "file_two"]
+            mocks["parring"].return_value = (False, False)
+            mocks["build_filelists"].return_value = ([], list(rars), [], [], [])
+            mocks["unpacker"].return_value = (unpack_error, [])
+            mocks["remove_unwanted_files"].return_value = ([], False)
+            mocks["prepare_extraction_path"].return_value = (
+                os.path.join(SAB_CACHE_DIR, "_UNPACK_test_job"),
+                os.path.join(SAB_CACHE_DIR, "test_job"),
+                file_sorter,
+                False,
+                None,
+            )
+            mocks["listdir_full"].return_value = []
+            mocks["cleanup_list"].return_value = []
+            mocks["process_nzb_only_download"].return_value = None
+            mocks["make_script_path"].return_value = None
+            mocks["one_file_or_folder"].return_value = os.path.join(SAB_CACHE_DIR, "test_job")
+            postproc.process_job(nzo)
+        return mocks
+
+    def test_missing_articles_without_par2_is_failed(self):
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={})
+        self._process_job(nzo)
+        assert nzo.status == Status.FAILED
+        assert nzo.fail_msg
+
+    def test_single_missing_article_without_par2_is_failed(self):
+        # MAX_BAD_ARTICLES does not apply, nothing else would detect the damage in a non-archive file
+        nzo = self._make_nzo(bytes_missing=1, extrapars={}, unpack=True)
+        mocks = self._process_job(nzo)
+        assert nzo.status == Status.FAILED
+        assert nzo.fail_msg
+        mocks["unpacker"].assert_not_called()
+
+    def test_missing_articles_without_par2_with_rars_is_left_to_unpack(self):
+        # Unrar can rebuild damaged volumes from REV files
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={}, unpack=True)
+        mocks = self._process_job(nzo, rars=["test_job.rar"])
+        mocks["unpacker"].assert_called_once()
+        assert nzo.status == Status.COMPLETED
+        assert not nzo.fail_msg
+
+    def test_missing_articles_without_par2_with_rars_fails_when_unpack_fails(self):
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={}, unpack=True)
+        mocks = self._process_job(nzo, rars=["test_job.rar"], unpack_error=1)
+        mocks["unpacker"].assert_called_once()
+        assert nzo.status == Status.FAILED
+
+    def test_missing_articles_without_par2_with_rars_is_failed_without_unpack(self):
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={})
+        self._process_job(nzo, rars=["test_job.rar"])
+        assert nzo.status == Status.FAILED
+        assert nzo.fail_msg
+
+    def test_missing_articles_without_par2_with_rars_is_failed_when_unrar_disabled(self):
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={}, unpack=True)
+        with mock.patch.object(sabnzbd.cfg.enable_unrar, "get", return_value=False):
+            mocks = self._process_job(nzo, rars=["test_job.rar"])
+        assert nzo.status == Status.FAILED
+        assert nzo.fail_msg
+        mocks["unpacker"].assert_not_called()
+
+    def test_missing_articles_with_par2_is_completed(self):
+        # Repair either succeeded or par_error already failed the job
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={"test_job": []})
+        self._process_job(nzo)
+        assert nzo.status == Status.COMPLETED
+        assert not nzo.fail_msg
+
+    def test_no_missing_articles_without_par2_is_completed(self):
+        nzo = self._make_nzo(bytes_missing=0, extrapars={})
+        self._process_job(nzo)
+        assert nzo.status == Status.COMPLETED
+        assert not nzo.fail_msg
+
+    def test_missing_articles_without_par2_is_completed_when_unsafe(self):
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={})
+        with mock.patch.object(sabnzbd.cfg.safe_postproc, "get", return_value=False):
+            self._process_job(nzo)
+        assert nzo.status == Status.COMPLETED
+        assert not nzo.fail_msg

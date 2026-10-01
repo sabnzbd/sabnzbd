@@ -72,7 +72,7 @@ a:focus-visible {
     overflow: visible;
     width: 100%;
 }
-.advanced-button {
+.bar-button {
     float: right;
     width: auto;
     margin: 0 4px 0px 0px;
@@ -82,7 +82,10 @@ a:focus-visible {
     padding-bottom: 5px;
     line-height: 1.5em;
 }
-#advanced-settings-button {
+.bar-button.bar-button-left {
+    float: left;
+}
+.bar-button input[type="checkbox"] {
     float: right;
     margin: 0px 0px 0px 7px;
 }
@@ -791,6 +794,23 @@ h2.activeRSS {
     text-align: center;
     color: black !important;
 }
+
+.nzbsearch-favicon-col {
+    width: 40px;
+    padding-top: 8px !important;
+}
+
+.NzbSearch input[type="text"],
+.NzbSearch input[type="password"] {
+    width: 100%;
+    min-width: 100px;
+    max-width: 250px;
+}
+
+.NzbSearch .result-box .alert {
+    margin-bottom: 10px;
+}
+
 .source-icon span {
     top: -3px;
 }
@@ -1133,6 +1153,14 @@ input[type="checkbox"] {
 .rss-symbol {
     stroke: none;
     fill: white;
+}
+
+.nzbsearch-icon-svg {
+    display: inline-block;
+    margin-top: 1px;
+    margin-bottom: -1px;
+    width: 1em;
+    height: 1em;
 }
 
 .col2 table {
@@ -1651,12 +1679,12 @@ html[data-color-scheme="night" i] {
     input,
     select,
     textarea,
-    .advanced-button,
+    .bar-button,
     .list-group-item {
         border-color: var(--clr-input-border) !important;
     }
 
-    .advanced-button {
+    .bar-button {
         background-color: var(--clr-surface-alt);
     }
 
@@ -1942,12 +1970,12 @@ html[data-color-scheme="night" i] {
         input,
         select,
         textarea,
-        .advanced-button,
+        .bar-button,
         .list-group-item {
             border-color: var(--clr-input-border) !important;
         }
 
-        .advanced-button {
+        .bar-button {
             background-color: var(--clr-surface-alt);
         }
 

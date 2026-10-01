@@ -475,6 +475,17 @@ def process_job(nzo: NzbObject) -> bool:
         if flag_repair and cfg.safe_postproc():
             all_ok = all_ok and not par_error
 
+        # Without par2 there is nothing to repair missing articles with, except unrar using REV files
+        if all_ok and nzo.bytes_missing and not nzo.extrapars and cfg.safe_postproc():
+            _, rars, _, _, _ = build_filelists(nzo.download_path, extra_dirs=nzo.sub_directories())
+            if not (flag_unpack and cfg.enable_unrar() and rars):
+                emsg = T("Download failed - Not on your server(s)") + " - https://sabnzbd.org/not-complete"
+                nzo.fail_msg = emsg
+                nzo.set_unpack_info("Download", emsg)
+                nzo.status = Status.FAILED
+                all_ok = False
+                par_error = True
+
         if all_ok:
             # Fix encodings
             fix_unix_encoding(nzo.download_path)
@@ -655,14 +666,6 @@ def process_job(nzo: NzbObject) -> bool:
                         script_log,
                         script_ret,
                     )
-
-            if script_log and len(script_log.rstrip().split("\n")) > 1:
-                # Can do this only now, otherwise it would show up in the email
-                nzo.set_unpack_info(
-                    "Script",
-                    '%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_line, nzo.nzo_id, T("More")),
-                    unique=True,
-                )
 
         # Cleanup again, including NZB files
         if all_ok and os.path.isdir(workdir_complete):

@@ -23,7 +23,7 @@
 <div class="colmask">
     <div class="padding alt section">
         <button type="button" class="btn btn-default" id="addServerButton"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
-        <label for="advanced-settings-button" class="form-control advanced-button ">
+        <label for="advanced-settings-button" class="form-control bar-button advanced-button">
             <input type="checkbox" id="advanced-settings-button" name="advanced-settings-button"> $T('button-advanced')
         </label>
 
@@ -611,7 +611,8 @@
                 } else {
                     // Show error in the result box
                     resultBox.removeClass('alert-success').addClass('alert-danger').show()
-                    resultBox.html('<span class="glyphicon glyphicon-exclamation-sign"></span> ' + data.error)
+                    resultBox.text(data.error)
+                    resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
                     theButton.removeAttr("disabled")
                 }
             })

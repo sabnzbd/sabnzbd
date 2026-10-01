@@ -26,7 +26,6 @@ import shutil
 import sys
 from random import choice, choices, randint, sample
 from string import ascii_letters
-from unittest import mock
 
 import pyfakefs
 import pytest
@@ -36,7 +35,7 @@ from sabnzbd import sorting
 from sabnzbd.constants import GUESSIT_PART_INDICATORS, IGNORED_MOVIE_FOLDERS
 from sabnzbd.filesystem import get_ext, globber
 from sabnzbd.misc import sort_to_opts
-from tests.testhelper import SAB_CACHE_DIR
+from tests.testhelper import SAB_CACHE_DIR, make_mock_nzo
 
 
 class TestSortingFunctions:
@@ -1291,10 +1290,7 @@ class TestSortingSorter:
         """Run the renamer against assorted season packs in the data dir"""
         # Mock a minimal nzo
         job_dir = os.path.join(SAB_CACHE_DIR, "".join(choices(ascii_letters, k=randint(4, 12))), job_name)
-        nzo = mock.Mock()
-        nzo.final_name = job_name
-        nzo.download_path = job_dir
-        nzo.nzo_info = {}
+        nzo = make_mock_nzo(final_name=job_name, download_path=job_dir)
 
         # Setup a sorter instance
         sorter = sorting.Sorter(

@@ -23,7 +23,6 @@ import os.path
 import random
 import shutil
 import zipfile
-from unittest import mock
 
 import pytest
 
@@ -34,7 +33,7 @@ from sabnzbd.deobfuscate_filenames import (
     get_biggest_file,
     deobfuscate_subtitles,
 )
-from tests.testhelper import SAB_CACHE_DIR, SAB_DATA_DIR
+from tests.testhelper import SAB_CACHE_DIR, SAB_DATA_DIR, make_mock_nzo
 
 
 def create_big_file(filename):
@@ -94,8 +93,7 @@ class TestDeobfuscateFinalResult:
     @staticmethod
     def deobfuscate_wrapper(filelist, jobname):
         """Wrapper to avoid the need for NZO"""
-        nzo = mock.Mock()
-        nzo.set_unpack_info = mock.Mock()
+        nzo = make_mock_nzo()
         deobfuscate(nzo, filelist, jobname)
 
     def test_deobfuscate_filelist_lite(self):
@@ -451,8 +449,7 @@ class TestDeobfuscateFinalResult:
         # result: srt file renamed according to the big file
 
         """Wrapper to avoid the need for NZO"""
-        nzo = mock.Mock()
-        nzo.set_unpack_info = mock.Mock()
+        nzo = make_mock_nzo()
 
         # Create directory (with a random directory name)
         dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))

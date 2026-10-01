@@ -7,6 +7,7 @@ function ViewModel() {
     self.queue = new QueueListModel(this);
     self.history = new HistoryListModel(this);
     self.filelist = new Fileslisting(this);
+    self.nzbsearch = new NzbSearchModel(this);
 
     // Set status varibales
     self.isRestarting = ko.observable(false);
@@ -111,11 +112,7 @@ function ViewModel() {
 
     // Dynamic icon
     self.SABIcon = ko.pureComputed(function() {
-        if (self.downloadsPaused()) {
-            return './staticcfg/ico/faviconpaused.ico?v=1.1.0';
-        } else {
-            return './staticcfg/ico/favicon.ico?v=1.1.0';
-        }
+        return './staticcfg/ico/' + (self.downloadsPaused() ? 'faviconpaused' : 'favicon');
     })
 
     // Dynamic queue length check
@@ -681,6 +678,12 @@ function ViewModel() {
       $('input[name="nzbURL"]').focus();
     })
 
+    // Load indexer capabilities lazily and focus the query box when Search opens
+    $('#modal-nzbsearch').on('shown.bs.modal', function() {
+      self.nzbsearch.loadCapabilities();
+      $('#modal-nzbsearch .nzbsearch-query input').focus();
+    })
+
     // From the upload or filedrop
     self.addNZBFromFile = function(files, fileindex) {
         // First file
@@ -913,7 +916,7 @@ function ViewModel() {
         callAPI({
             mode: "status",
             name: $(htmlElement.currentTarget).data('action'),
-            value: $("<div/>").html(folder).text()
+            value: folder
         }).then(function() {
             // Refresh
             self.loadStatusInfo(true, true)

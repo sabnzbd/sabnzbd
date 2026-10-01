@@ -494,14 +494,21 @@ def send_nscript(title, msg, notification_type, force=False, test=None):
     logging.debug("Sending notification script notification")
     if test:
         script = test.get("nscript_script")
-        env_params = {"notification_parameters": test.get("nscript_parameters")}
+        parameters = test.get("nscript_parameters")
     else:
         script = sabnzbd.cfg.nscript_script()
-        env_params = {"notification_parameters": sabnzbd.cfg.nscript_parameters()}
+        parameters = sabnzbd.cfg.nscript_parameters()
 
     if not script:
         return T("Cannot send, missing required data")
+
     title = "SABnzbd: " + T(NOTIFICATION_TYPES.get(notification_type, "other"))
+    env_params = {
+        "notification_type": notification_type,
+        "notification_title": title,
+        "notification_message": msg,
+        "notification_parameters": parameters,
+    }
 
     if force or check_classes(notification_type, "nscript"):
         script_path = make_script_path(script)
@@ -509,15 +516,7 @@ def send_nscript(title, msg, notification_type, force=False, test=None):
             ret = -1
             output = None
             try:
-                p = build_and_run_command(
-                    [
-                        script_path,
-                        notification_type,
-                        title,
-                        msg,
-                    ],
-                    env=create_env(extra_env_fields=env_params),
-                )
+                p = build_and_run_command([script_path], env=create_env(extra_env_fields=env_params))
                 output = p.stdout.read()
                 ret = p.wait()
             except Exception:

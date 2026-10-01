@@ -39,7 +39,7 @@ import sabnzbd
 import sabnzbd.database as db
 from sabnzbd.constants import DB_HISTORY_NAME, DEF_ADMIN_DIR, PP_LOOKUP, AddNzbFileResult, Status
 from sabnzbd.misc import pp_to_opts
-from tests.testhelper import FakeHistoryDB, SAB_CACHE_DIR, run_async
+from tests.testhelper import FakeHistoryDB, SAB_CACHE_DIR, make_mock_nzo, run_async
 from tests.test_interface import resolve_client
 
 
@@ -769,12 +769,13 @@ class TestHistory:
             history_job = jobs[-1]
 
             # Add minimal attributes to create pp-job
-            nzo = mock.Mock()
-            nzo.final_name = "test_add_active_history"
+            nzo = make_mock_nzo(
+                final_name="test_add_active_history",
+                download_path=os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath"),
+                bytes_downloaded=randint(1024, 1024**4),
+                unpack_info={"unpack_info": "placeholder unpack_info line\r\n" * 3},
+            )
             nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))
-            nzo.download_path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
-            nzo.bytes_downloaded = randint(1024, 1024**4)
-            nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
             api.add_active_history([nzo], jobs)
 
             # Make sure the job was added to the list
@@ -799,13 +800,14 @@ class TestHistory:
             history_job = jobs[-1]
 
             # Add minimal attributes to create pp-job
-            nzo = mock.Mock()
-            nzo.nzo_id = history_job["nzo_id"]
-            nzo.final_name = "test_add_active_history"
+            nzo = make_mock_nzo(
+                nzo_id=history_job["nzo_id"],
+                final_name="test_add_active_history",
+                download_path=os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath"),
+                bytes_downloaded=randint(1024, 1024**4),
+                unpack_info={"unpack_info": "placeholder unpack_info line\r\n" * 3},
+            )
             nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))
-            nzo.download_path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
-            nzo.bytes_downloaded = randint(1024, 1024**4)
-            nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
             api.add_active_history([nzo], jobs)
 
             # Make sure the job was not added to the list, a completed entry already exists
