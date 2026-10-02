@@ -325,6 +325,9 @@ SKIN_TEXT = {
         "If the Backup Folder is not set, the backup will be created in the Completed Download Folder.<br>"
         "Recurring backups can be configured on the Scheduling page."
     ),
+    "explain-restore_backup_limits": TT(
+        "Some security related settings will not be restored, in order to prevent abuse."
+    ),
     "opt-cleanup_list": TT("Cleanup List"),
     "explain-cleanup_list": TT(
         "List of file extensions, filenames or patterns that should be deleted after download.<br />"
