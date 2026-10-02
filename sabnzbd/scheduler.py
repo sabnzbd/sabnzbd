@@ -39,6 +39,8 @@ class Scheduler:
     def __init__(self):
         self.scheduler = kronos.ThreadedScheduler()
         self.pause_end: Optional[float] = None  # Moment when pause will end
+        self.resume_end: Optional[float] = None  # Moment when temporary resume will end
+        self.resume_until_empty = False  # Re-pause once the queue is empty
         self.resume_task: Optional[kronos.Task] = None
         self.rss_task: Optional[kronos.Task] = None  # RSS interval task
         self.restart_scheduler = False
@@ -378,16 +380,59 @@ class Scheduler:
         else:
             logging.debug("Ignoring cancelled resume")
 
+    def __reset_scheduled_state(self):
+        """Clear any pending timed pause/resume or unpause-until-empty"""
+        self.pause_end = None
+        self.resume_end = None
+        self.resume_until_empty = False
+
     def plan_resume(self, interval):
         """Set a scheduled resume after the interval"""
+        self.__reset_scheduled_state()
         if interval > 0:
             self.pause_end = time.time() + (interval * 60)
             logging.debug("Schedule resume at %s", self.pause_end)
             self.scheduler.add_single_task(self.__oneshot_resume, "", interval * 60, args=[self.pause_end])
             sabnzbd.Downloader.pause()
         else:
-            self.pause_end = None
             sabnzbd.downloader.unpause_all()
+
+    def __oneshot_pause(self, when):
+        """Called by delayed re-pause schedule
+        Only pauses if call comes at the planned time
+        """
+        if self.resume_end is not None and (when > self.resume_end - 5) and (when < self.resume_end + 55):
+            self.resume_end = None
+            logging.debug("Re-pause after resume-interval")
+            sabnzbd.Downloader.pause()
+        else:
+            logging.debug("Ignoring cancelled re-pause")
+
+    def plan_pause(self, interval):
+        """Set a scheduled re-pause after the interval"""
+        self.__reset_scheduled_state()
+        if interval > 0:
+            self.resume_end = time.time() + (interval * 60)
+            logging.debug("Schedule re-pause at %s", self.resume_end)
+            self.scheduler.add_single_task(self.__oneshot_pause, "", interval * 60, args=[self.resume_end])
+            sabnzbd.downloader.unpause_all()
+        else:
+            sabnzbd.Downloader.pause()
+
+    def plan_resume_until_empty(self):
+        """Resume now and re-pause once the queue is empty, ignored if nothing is queued"""
+        if sabnzbd.NzbQueue.is_empty():
+            return
+        self.__reset_scheduled_state()
+        self.resume_until_empty = True
+        sabnzbd.downloader.unpause_all()
+
+    def repause_on_empty_queue(self):
+        """Re-pause when an 'unpause until queue empty' was armed, called at end-of-queue"""
+        if self.resume_until_empty:
+            self.resume_until_empty = False
+            logging.debug("Re-pause after queue finished")
+            sabnzbd.Downloader.pause()
 
     def __check_diskspace(self, full_dir: str, required_space: float):
         """Resume if there is sufficient available space"""
@@ -435,16 +480,25 @@ class Scheduler:
         """Return minutes:seconds until pause ends"""
         if self.pause_end is None:
             return "0"
-        else:
-            val = self.pause_end - time.time()
-            if val < 0:
-                sign = "-"
-                val = abs(val)
-            else:
-                sign = ""
-            mins = int(val / 60)
-            sec = int(val - mins * 60)
-            return "%s%d:%02d" % (sign, mins, sec)
+        val = self.pause_end - time.time()
+        if val < 0:
+            # Expired; the one-shot resume fires imminently
+            return "0"
+        mins = int(val / 60)
+        sec = int(val - mins * 60)
+        return "%d:%02d" % (mins, sec)
+
+    def resume_int(self) -> str:
+        """Return minutes:seconds until resume ends"""
+        if self.resume_end is None:
+            return "0"
+        val = self.resume_end - time.time()
+        if val < 0:
+            # Expired; the one-shot re-pause fires imminently
+            return "0"
+        mins = int(val / 60)
+        sec = int(val - mins * 60)
+        return "%d:%02d" % (mins, sec)
 
     def pause_check(self):
         """Unpause when time left is negative, compensate for missed schedule"""
@@ -452,6 +506,10 @@ class Scheduler:
             self.pause_end = None
             logging.debug("Force resume, negative timer")
             sabnzbd.downloader.unpause_all()
+        if self.resume_end is not None and (self.resume_end - time.time()) < 0:
+            self.resume_end = None
+            logging.debug("Force re-pause, negative timer")
+            sabnzbd.Downloader.pause()
 
     def plan_server(self, action, parms, interval):
         """Plan to re-activate server after 'interval' minutes"""
