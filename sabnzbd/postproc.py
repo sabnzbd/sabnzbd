@@ -392,6 +392,7 @@ def process_job(nzo: NzbObject) -> bool:
     nzb_list = []
     one_folder = False
     newfiles = []
+    unwanted_failed = False
     # These need to be initialized in case of a crash
     workdir_complete = ""
     tmp_workdir_complete = None
@@ -515,6 +516,12 @@ def process_job(nzo: NzbObject) -> bool:
 
                 # Sanitize the resulting files
                 newfiles = sanitize_files(filelist=newfiles)
+
+                # Check unpacked files for unwanted extensions, the download-time check can miss files
+                # hidden inside archives
+                newfiles, unwanted_failed = remove_unwanted_files(nzo, newfiles, tmp_workdir_complete)
+                if unwanted_failed:
+                    all_ok = False
                 logging.info("Finished unpack_magic on %s", filename)
 
             if cfg.safe_postproc():
@@ -578,14 +585,12 @@ def process_job(nzo: NzbObject) -> bool:
                     # Deobfuscate the subtitles
                     deobfuscate.deobfuscate_subtitles(nzo, newfiles)
 
-            # Check for unwanted extensions that the download-time check could not see, for example
-            # files hidden inside archives or extensions only revealed by deobfuscation.
-            # Must run after deobfuscation, but before the folder gets its final (or failed) name.
-            newfiles, unwanted_failed = remove_unwanted_files(nzo, newfiles, tmp_workdir_complete)
-            # Keep the result of an earlier failure
-            unwanted_failed = unwanted_failed and all_ok
-            if unwanted_failed:
+            # Check again for unwanted extensions, deobfuscation can reveal extensions the check after
+            # unpack could not see. Must run before the folder gets its final (or failed) name.
+            newfiles, deobfuscated_unwanted_failed = remove_unwanted_files(nzo, newfiles, tmp_workdir_complete)
+            if deobfuscated_unwanted_failed and all_ok:
                 all_ok = False
+                unwanted_failed = True
 
             # Give destination its final name
             if cfg.folder_rename() and tmp_workdir_complete and not one_folder:
