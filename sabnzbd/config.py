@@ -19,6 +19,8 @@
 sabnzbd.config - Configuration Support
 """
 
+from __future__ import annotations
+
 import logging
 import os
 import re
@@ -74,13 +76,13 @@ class Option:
         `protect`     : do not allow setting remotely, via the API (set_dict) or by restoring a backup
         """
 
-        self.__section = section
+        self.__section: str = section
         self.__keyword: str = keyword
         self.__default_val: Any = default_val
         self.__value: Any = None
         self.__callback: Optional[Callable] = None
         self.__public: bool = public
-        self.__protect = protect
+        self.__protect: bool = protect
 
         # Add myself to the config dictionary
         if add:
@@ -126,11 +128,11 @@ class Option:
                     self.__callback()
 
     @property
-    def section(self) -> Any:
+    def section(self) -> str:
         return self.__section
 
     @property
-    def keyword(self) -> Any:
+    def keyword(self) -> str:
         return self.__keyword
 
     @property
@@ -461,13 +463,13 @@ class ConfigSection:
         raise NotImplementedError
 
     @classmethod
-    def update_or_create(cls, name: str, values: dict[str, Any]) -> bool:
-        """Update the item if it exists, otherwise create it. Returns True if it existed"""
+    def update_or_create(cls, name: str, values: dict[str, Any]) -> ConfigSection:
+        """Update the item if it exists, otherwise create it. Returns the item"""
+        name = clean_section_name(name)
         if item := get_config(cls.SECTION, name):
             item.set_dict(values)
-            return True
-        cls(name, values)
-        return False
+            return item
+        return cls(name, values)
 
     @classmethod
     def unique_name(cls, name: str) -> str:
@@ -482,14 +484,16 @@ class ConfigSection:
         return new_name
 
     @classmethod
-    def create(cls, name: str, values: dict[str, Any]) -> "ConfigSection":
+    def create(cls, name: str, values: dict[str, Any]) -> ConfigSection:
         """Create an item under a name that is not yet used, so no existing item is overwritten"""
         return cls(cls.unique_name(name), values)
 
     @classmethod
-    def replace(cls, old_name: str, new_name: str, values: dict[str, Any]) -> "ConfigSection":
+    def replace(cls, old_name: str, new_name: str, values: dict[str, Any]) -> ConfigSection:
         """Delete the item with old_name (if any) and create a new one from values.
         Options missing from values get their defaults, another item is never overwritten"""
+        # Validate the new name first, so an invalid one cannot leave us with the old item deleted
+        new_name = clean_section_name(new_name)
         CONFIG.delete_config(cls.SECTION, old_name)
         return cls.create(new_name, values)
 

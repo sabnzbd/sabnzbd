@@ -71,7 +71,6 @@ class Server:
     # Pre-define attributes to save memory and improve get/set performance
     __slots__ = (
         "id",
-        "newid",
         "restart",
         "displayname",
         "host",
@@ -125,7 +124,6 @@ class Server:
         retention=0,
     ):
         self.id: str = server_id
-        self.newid: Optional[str] = None
         self.restart: bool = False
         self.displayname: str = displayname
         self.host: str = host
@@ -319,21 +317,21 @@ class Downloader(Thread):
         self.timers: dict[str, list[float]] = {}
 
         for server in config.get_servers():
-            self.init_server(None, server)
+            self.init_server(server)
 
         self.check_total_number_of_connections()
 
-    def init_server(self, oldserver: Optional[str], newserver: str):
-        """Setup or re-setup single server
-        When oldserver is defined and in use, delay startup.
+    def init_server(self, server_id: str):
+        """Setup or re-setup a single server, a server that is no longer configured is removed.
+        When the server is in use, delay the restart.
         Note that the server names are "host:port" strings!
         """
 
         create = False
 
         servers = config.get_servers()
-        if newserver in servers:
-            srv = servers[newserver]
+        if server_id in servers:
+            srv = servers[server_id]
             enabled = srv.enable()
             displayname = srv.displayname()
             host = srv.host()
@@ -352,20 +350,18 @@ class Downloader(Thread):
             retention = int(srv.retention() * 24 * 3600)  # days ==> seconds
             create = True
 
-        if oldserver:
-            for server in self.servers:
-                if server.id == oldserver:
-                    # Server exists, do re-init later
-                    create = False
-                    server.newid = newserver
-                    server.restart = True
-                    self.server_restarts += 1
-                    break
+        for server in self.servers:
+            if server.id == server_id:
+                # Server exists, do re-init later
+                create = False
+                server.restart = True
+                self.server_restarts += 1
+                break
 
         if create and enabled and host and port and threads:
             self.servers.append(
                 Server(
-                    newserver,
+                    server_id,
                     displayname,
                     host,
                     port,
@@ -624,8 +620,7 @@ class Downloader(Thread):
                         if not server.busy_threads:
                             server.stop()
                             self.servers.remove(server)
-                            if newid := server.newid:
-                                self.init_server(None, newid)
+                            self.init_server(server.id)
                             self.server_restarts -= 1
                             # Have to leave this loop, because we removed element
                             break
@@ -988,7 +983,7 @@ class Downloader(Thread):
         if server_id in self.timers:
             if timestamp in self.timers[server_id]:
                 del self.timers[server_id]
-                self.init_server(server_id, server_id)
+                self.init_server(server_id)
 
     @NzbQueueLocker
     @synchronized(TIMER_LOCK)
@@ -1002,7 +997,7 @@ class Downloader(Thread):
         for server in self.servers:
             if server.id == server_id and not server.active:
                 logging.debug("Unblock server %s", server.host)
-                self.init_server(server_id, server_id)
+                self.init_server(server_id)
                 break
 
     def unblock_all(self):
@@ -1021,19 +1016,19 @@ class Downloader(Thread):
             if not [stamp for stamp in self.timers[server_id] if stamp >= now]:
                 logging.debug("Forcing re-evaluation of server-id %s", server_id)
                 del self.timers[server_id]
-                self.init_server(server_id, server_id)
+                self.init_server(server_id)
                 kicked.append(server_id)
         # Activate every inactive server without an active timer
         for server in self.servers:
             if server.id not in self.timers:
                 if server.id not in kicked and not server.active:
                     logging.debug("Forcing activation of server %s", server.host)
-                    self.init_server(server.id, server.id)
+                    self.init_server(server.id)
 
-    def update_server(self, oldserver: str, newserver: Optional[str]):
-        """Update the server and make sure we trigger
+    def update_server(self, server_id: str):
+        """Apply an added, changed or deleted server and make sure we trigger
         the update in the loop to do housekeeping"""
-        self.init_server(oldserver, newserver)
+        self.init_server(server_id)
         self.wakeup()
 
     def check_total_number_of_connections(self):

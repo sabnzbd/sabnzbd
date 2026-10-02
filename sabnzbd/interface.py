@@ -1226,7 +1226,7 @@ def config_server_toggle(request: Request):
         if svr := config.get_config("servers", server):
             svr.toggle()
             config.save_config()
-            sabnzbd.Downloader.update_server(server, server)
+            sabnzbd.Downloader.update_server(server)
     return base_redirect_response("/config/server")
 
 
@@ -1264,10 +1264,10 @@ def handle_server(params, new_svr=False):
     for kw in ("ssl", "enable", "required", "optional"):
         if kw not in params.keys():
             params[kw] = None
-    existed = config.ConfigServer.update_or_create(server, params)
+    server = config.ConfigServer.update_or_create(server, params).name
 
     config.save_config()
-    sabnzbd.Downloader.update_server(server if existed else None, server)
+    sabnzbd.Downloader.update_server(server)
     return report(params)
 
 
@@ -1445,7 +1445,7 @@ def config_rss_save_rss_feed(request: Request):
         cf.set_dict(kwargs)
 
         # Did we get a new name for this feed?
-        if new_name := params.get("feed_new_name"):
+        if new_name := Strip(params.get("feed_new_name", "")).strip("[]"):
             feed_name = cf.rename(new_name)
 
         config.save_config()
@@ -1978,7 +1978,7 @@ def config_nzbsearch_index(request: Request):
 def config_nzbsearch_add_indexer(request: Request):
     params = request_params(request)
     host = Strip(params.get("host"))
-    name = Strip(params.get("name"))
+    name = Strip(params.get("name", "")).strip("[]")
     if name and host:
         kwargs = dict(params)
         kwargs["host"] = host
@@ -2000,7 +2000,7 @@ def config_nzbsearch_save_indexer(request: Request):
         kwargs.setdefault("enable", 0)
         indexer.set_dict(kwargs)
 
-        if new_name := Strip(params.get("name")):
+        if new_name := Strip(params.get("name", "")).strip("[]"):
             indexer.rename(new_name)
 
         config.save_config()
