@@ -448,6 +448,18 @@ msgstr ""
 
 #: sabnzbd/cfg.py
 msgid ""
+"Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr ""
+"Der Category-Ordner darf kein Unterordner des Temporärer Download-Ordners "
+"sein."
+
+#. Error message
+#: sabnzbd/cfg.py, sabnzbd/postproc.py
+msgid "Folder %s is inside the program folder, this is not allowed"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
@@ -915,13 +927,6 @@ msgstr "Aus"
 #: sabnzbd/interface.py
 msgid "Undefined server!"
 msgstr "Undefinierter Server!"
-
-#: sabnzbd/interface.py
-msgid ""
-"Category folder cannot be a subfolder of the Temporary Download Folder."
-msgstr ""
-"Der Category-Ordner darf kein Unterordner des Temporärer Download-Ordners "
-"sein."
 
 #. Warning message
 #: sabnzbd/internetspeed.py
@@ -3144,6 +3149,12 @@ msgstr ""
 "konfiguriert werden."
 
 #: sabnzbd/skintext.py
+msgid ""
+"Some security related settings will not be restored, in order to prevent "
+"abuse."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Unerwünschte Dateien"
 
@@ -3411,14 +3422,6 @@ msgstr "Skript Ordner"
 #: sabnzbd/skintext.py
 msgid "Folder containing user scripts."
 msgstr "Ordner enthält Benutzer Skripte"
-
-#: sabnzbd/skintext.py
-msgid "Email Templates Folder"
-msgstr "Ordner mit E-Mail-Vorlagen"
-
-#: sabnzbd/skintext.py
-msgid "Folder containing user-defined email templates."
-msgstr "Ordner, der benutzerdefinierte E-Mail-Vorlagen enthält."
 
 #: sabnzbd/skintext.py
 msgid "Password file"
@@ -4275,6 +4278,12 @@ msgid ""
 msgstr ""
 "Wenn nur die <em>Standard</em>-Kategorie ausgewählt ist, werden die "
 "Benachrichtigungen für Jobs in allen Kategorien aktiviert. "
+
+#: sabnzbd/skintext.py
+msgid ""
+"User-defined email template folder can be set in your configuration file "
+"using <code>email_dir</code>."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"

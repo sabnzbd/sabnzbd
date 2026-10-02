@@ -434,6 +434,16 @@ msgstr "Kuyruk boş değil, dizin değiştirilemez."
 
 #: sabnzbd/cfg.py
 msgid ""
+"Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr "Kategori dizini Geçici İndirme Dizini'nin bir alt dizini olamaz."
+
+#. Error message
+#: sabnzbd/cfg.py, sabnzbd/postproc.py
+msgid "Folder %s is inside the program folder, this is not allowed"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
@@ -891,11 +901,6 @@ msgstr "kapalı"
 #: sabnzbd/interface.py
 msgid "Undefined server!"
 msgstr "Tanımlanmamış sunucu!"
-
-#: sabnzbd/interface.py
-msgid ""
-"Category folder cannot be a subfolder of the Temporary Download Folder."
-msgstr "Kategori dizini Geçici İndirme Dizini'nin bir alt dizini olamaz."
 
 #. Warning message
 #: sabnzbd/internetspeed.py
@@ -3128,6 +3133,12 @@ msgstr ""
 " Zamanlaylıcı sayfasında yapılandırılabilirler."
 
 #: sabnzbd/skintext.py
+msgid ""
+"Some security related settings will not be restored, in order to prevent "
+"abuse."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Listeyi Temizle"
 
@@ -3384,14 +3395,6 @@ msgstr "Betik Dizini"
 #: sabnzbd/skintext.py
 msgid "Folder containing user scripts."
 msgstr "Kullanıcı betiklerini içeren dizin."
-
-#: sabnzbd/skintext.py
-msgid "Email Templates Folder"
-msgstr "E-posta Şablon Dizini"
-
-#: sabnzbd/skintext.py
-msgid "Folder containing user-defined email templates."
-msgstr "Kullanıcı tarafından tanımlanmış e-posta şablonlarını içeren dizin."
 
 #: sabnzbd/skintext.py
 msgid "Password file"
@@ -4234,6 +4237,12 @@ msgid ""
 msgstr ""
 "Eğer sadece <em>Varsayılan</em> kategorisi seçildiyse, bildirimler tüm "
 "kategorilerdeki işler için etkinleştirilir."
+
+#: sabnzbd/skintext.py
+msgid ""
+"User-defined email template folder can be set in your configuration file "
+"using <code>email_dir</code>."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"

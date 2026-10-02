@@ -444,6 +444,18 @@ msgstr "La file d'attente n'est pas vide, impossible de changer de dossier."
 
 #: sabnzbd/cfg.py
 msgid ""
+"Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr ""
+"Le dossier de catégorie ne peut pas être un sous-dossier du dossier de "
+"téléchargement temporaire."
+
+#. Error message
+#: sabnzbd/cfg.py, sabnzbd/postproc.py
+msgid "Folder %s is inside the program folder, this is not allowed"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
@@ -908,13 +920,6 @@ msgstr "non"
 #: sabnzbd/interface.py
 msgid "Undefined server!"
 msgstr "Serveur non défini !"
-
-#: sabnzbd/interface.py
-msgid ""
-"Category folder cannot be a subfolder of the Temporary Download Folder."
-msgstr ""
-"Le dossier de catégorie ne peut pas être un sous-dossier du dossier de "
-"téléchargement temporaire."
 
 #. Warning message
 #: sabnzbd/internetspeed.py
@@ -3161,6 +3166,12 @@ msgstr ""
 "page Planification."
 
 #: sabnzbd/skintext.py
+msgid ""
+"Some security related settings will not be restored, in order to prevent "
+"abuse."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Nettoyer la liste"
 
@@ -3430,14 +3441,6 @@ msgstr "Dossier des scripts"
 #: sabnzbd/skintext.py
 msgid "Folder containing user scripts."
 msgstr "Dossier contenant les scripts utilisateurs."
-
-#: sabnzbd/skintext.py
-msgid "Email Templates Folder"
-msgstr "Dossier des modèles d'email"
-
-#: sabnzbd/skintext.py
-msgid "Folder containing user-defined email templates."
-msgstr "Dossier contenant les modèles d'email définis par l'utilisateur."
 
 #: sabnzbd/skintext.py
 msgid "Password file"
@@ -4294,6 +4297,12 @@ msgid ""
 msgstr ""
 "Si seule la catégorie <em>Défaut</em> est sélectionnée, les notifications "
 "seront activées pour les tâches de toutes les catégories."
+
+#: sabnzbd/skintext.py
+msgid ""
+"User-defined email template folder can be set in your configuration file "
+"using <code>email_dir</code>."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"

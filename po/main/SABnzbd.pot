@@ -359,6 +359,15 @@ msgid "Queue not empty, cannot change folder."
 msgstr ""
 
 #: sabnzbd/cfg.py
+msgid "Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr ""
+
+#. Error message
+#: sabnzbd/cfg.py, sabnzbd/postproc.py
+msgid "Folder %s is inside the program folder, this is not allowed"
+msgstr ""
+
+#: sabnzbd/cfg.py
 msgid "The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"
 msgstr ""
 
@@ -763,10 +772,6 @@ msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Undefined server!"
-msgstr ""
-
-#: sabnzbd/interface.py
-msgid "Category folder cannot be a subfolder of the Temporary Download Folder."
 msgstr ""
 
 #. Warning message
@@ -2823,6 +2828,10 @@ msgid "Create a backup of the configuration file and databases in the Backup Fol
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Some security related settings will not be restored, in order to prevent abuse."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr ""
 
@@ -3030,14 +3039,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Folder containing user scripts."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Email Templates Folder"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Folder containing user-defined email templates."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3749,6 +3750,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "If only the <em>Default</em> category is selected, notifications are enabled for jobs in all categories."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "User-defined email template folder can be set in your configuration file using <code>email_dir</code>."
 msgstr ""
 
 #: sabnzbd/skintext.py

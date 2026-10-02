@@ -430,6 +430,18 @@ msgstr "Wachtrij is niet leeg, andere map kiezen niet mogelijk."
 
 #: sabnzbd/cfg.py
 msgid ""
+"Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr ""
+"Een Categorie specifieke map mag niet een map in de Tijdelijke download map "
+"zijn."
+
+#. Error message
+#: sabnzbd/cfg.py, sabnzbd/postproc.py
+msgid "Folder %s is inside the program folder, this is not allowed"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
@@ -898,13 +910,6 @@ msgstr "uit"
 #: sabnzbd/interface.py
 msgid "Undefined server!"
 msgstr "Onbekende server."
-
-#: sabnzbd/interface.py
-msgid ""
-"Category folder cannot be a subfolder of the Temporary Download Folder."
-msgstr ""
-"Een Categorie specifieke map mag niet een map in de Tijdelijke download map "
-"zijn."
 
 #. Warning message
 #: sabnzbd/internetspeed.py
@@ -3108,6 +3113,12 @@ msgstr ""
 "Taakplanner."
 
 #: sabnzbd/skintext.py
+msgid ""
+"Some security related settings will not be restored, in order to prevent "
+"abuse."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Opschoon lijst"
 
@@ -3363,14 +3374,6 @@ msgstr "Map voor scripts"
 #: sabnzbd/skintext.py
 msgid "Folder containing user scripts."
 msgstr "Map met scripts van de gebruiker"
-
-#: sabnzbd/skintext.py
-msgid "Email Templates Folder"
-msgstr "Map met e-mailsjablonen"
-
-#: sabnzbd/skintext.py
-msgid "Folder containing user-defined email templates."
-msgstr "Map met e-mailsjablonen."
 
 #: sabnzbd/skintext.py
 msgid "Password file"
@@ -4216,6 +4219,12 @@ msgid ""
 msgstr ""
 "Notificaties zullen worden verstuurd voor alle downloads als de "
 "<em>Standaard</em> categorie geselecteerd is."
+
+#: sabnzbd/skintext.py
+msgid ""
+"User-defined email template folder can be set in your configuration file "
+"using <code>email_dir</code>."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"

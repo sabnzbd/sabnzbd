@@ -397,6 +397,16 @@ msgstr "队列非空，无法变更文件夹。"
 
 #: sabnzbd/cfg.py
 msgid ""
+"Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr "类别文件夹不能是临时下载文件夹的子文件夹。"
+
+#. Error message
+#: sabnzbd/cfg.py, sabnzbd/postproc.py
+msgid "Folder %s is inside the program folder, this is not allowed"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr "完成下载文件夹不能与临时下载文件夹相同或是其子文件夹"
@@ -832,11 +842,6 @@ msgstr "关"
 #: sabnzbd/interface.py
 msgid "Undefined server!"
 msgstr "未定义服务器!"
-
-#: sabnzbd/interface.py
-msgid ""
-"Category folder cannot be a subfolder of the Temporary Download Folder."
-msgstr "类别文件夹不能是临时下载文件夹的子文件夹。"
 
 #. Warning message
 #: sabnzbd/internetspeed.py
@@ -2987,6 +2992,12 @@ msgstr ""
 "在备份文件夹中创建配置文件和数据库的备份。<br>如果未设置备份文件夹，备份将在完成下载文件夹中创建。<br>可以在计划页面上配置定期备份。"
 
 #: sabnzbd/skintext.py
+msgid ""
+"Some security related settings will not be restored, in order to prevent "
+"abuse."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "清理列表"
 
@@ -3219,14 +3230,6 @@ msgstr "脚本文件夹"
 #: sabnzbd/skintext.py
 msgid "Folder containing user scripts."
 msgstr "包含用户脚本的文件夹。"
-
-#: sabnzbd/skintext.py
-msgid "Email Templates Folder"
-msgstr "邮件模板文件夹"
-
-#: sabnzbd/skintext.py
-msgid "Folder containing user-defined email templates."
-msgstr "包含用户定义的电子邮件模板的文件夹。"
 
 #: sabnzbd/skintext.py
 msgid "Password file"
@@ -4001,6 +4004,12 @@ msgid ""
 "If only the <em>Default</em> category is selected, notifications are enabled"
 " for jobs in all categories."
 msgstr "如果仅选择<em>默认</em>类别，则为所有类别的作业启用通知。"
+
+#: sabnzbd/skintext.py
+msgid ""
+"User-defined email template folder can be set in your configuration file "
+"using <code>email_dir</code>."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"

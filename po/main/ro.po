@@ -413,6 +413,18 @@ msgstr "Coada nu este goală, nu pot schimba dosar."
 
 #: sabnzbd/cfg.py
 msgid ""
+"Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr ""
+"Directorul de categorii nu poate fi un subdirector al directorului de "
+"descărcări temporare."
+
+#. Error message
+#: sabnzbd/cfg.py, sabnzbd/postproc.py
+msgid "Folder %s is inside the program folder, this is not allowed"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
@@ -858,13 +870,6 @@ msgstr "dezactivat"
 #: sabnzbd/interface.py
 msgid "Undefined server!"
 msgstr "Server nedefinit!"
-
-#: sabnzbd/interface.py
-msgid ""
-"Category folder cannot be a subfolder of the Temporary Download Folder."
-msgstr ""
-"Directorul de categorii nu poate fi un subdirector al directorului de "
-"descărcări temporare."
 
 #. Warning message
 #: sabnzbd/internetspeed.py
@@ -3042,6 +3047,12 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid ""
+"Some security related settings will not be restored, in order to prevent "
+"abuse."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Listă Curăţenie"
 
@@ -3283,14 +3294,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Folder containing user scripts."
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Email Templates Folder"
-msgstr "Dosar Şabloane Email"
-
-#: sabnzbd/skintext.py
-msgid "Folder containing user-defined email templates."
-msgstr "Dosar ce conţine şabloane email utilizator."
 
 #: sabnzbd/skintext.py
 msgid "Password file"
@@ -4088,6 +4091,12 @@ msgstr "Citeşte Toate Fluxurile Acum"
 msgid ""
 "If only the <em>Default</em> category is selected, notifications are enabled"
 " for jobs in all categories."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"User-defined email template folder can be set in your configuration file "
+"using <code>email_dir</code>."
 msgstr ""
 
 #: sabnzbd/skintext.py

@@ -430,6 +430,16 @@ msgstr "Fronta není prázdná, nelze změnit složku."
 
 #: sabnzbd/cfg.py
 msgid ""
+"Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr "Složka kategorie nesmí být podsložkou složky pro dočasné stahování."
+
+#. Error message
+#: sabnzbd/cfg.py, sabnzbd/postproc.py
+msgid "Folder %s is inside the program folder, this is not allowed"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
@@ -885,11 +895,6 @@ msgstr "vypnuto"
 #: sabnzbd/interface.py
 msgid "Undefined server!"
 msgstr "Nedefinovaný server!"
-
-#: sabnzbd/interface.py
-msgid ""
-"Category folder cannot be a subfolder of the Temporary Download Folder."
-msgstr "Složka kategorie nesmí být podsložkou složky pro dočasné stahování."
 
 #. Warning message
 #: sabnzbd/internetspeed.py
@@ -3089,6 +3094,12 @@ msgstr ""
 "dokončených.<br>Opakované zálohy lze nastavit na stránce plánování."
 
 #: sabnzbd/skintext.py
+msgid ""
+"Some security related settings will not be restored, in order to prevent "
+"abuse."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Seznam pro vyčištění"
 
@@ -3339,14 +3350,6 @@ msgstr "Složka se skripty"
 #: sabnzbd/skintext.py
 msgid "Folder containing user scripts."
 msgstr "Složka obsahující uživatelské skripty."
-
-#: sabnzbd/skintext.py
-msgid "Email Templates Folder"
-msgstr "Složka e-mailových šablon"
-
-#: sabnzbd/skintext.py
-msgid "Folder containing user-defined email templates."
-msgstr "Složka obsahující uživatelsky definované e-mailové šablony."
 
 #: sabnzbd/skintext.py
 msgid "Password file"
@@ -4175,6 +4178,12 @@ msgid ""
 msgstr ""
 "Pokud je vybrána pouze <em>Výchozí</em> kategorie, oznámení jsou povolena "
 "pro úlohy ve všech kategoriích."
+
+#: sabnzbd/skintext.py
+msgid ""
+"User-defined email template folder can be set in your configuration file "
+"using <code>email_dir</code>."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"

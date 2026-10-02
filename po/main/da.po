@@ -422,6 +422,17 @@ msgstr "Køen er ikke tom, kan ikke skifte mappe."
 
 #: sabnzbd/cfg.py
 msgid ""
+"Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr ""
+"Kategorimappe kan ikke være en undermappe i den midlertidige download-mappe."
+
+#. Error message
+#: sabnzbd/cfg.py, sabnzbd/postproc.py
+msgid "Folder %s is inside the program folder, this is not allowed"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
@@ -876,12 +887,6 @@ msgstr "slået fra"
 #: sabnzbd/interface.py
 msgid "Undefined server!"
 msgstr "Udefineret server!"
-
-#: sabnzbd/interface.py
-msgid ""
-"Category folder cannot be a subfolder of the Temporary Download Folder."
-msgstr ""
-"Kategorimappe kan ikke være en undermappe i den midlertidige download-mappe."
 
 #. Warning message
 #: sabnzbd/internetspeed.py
@@ -3074,6 +3079,12 @@ msgstr ""
 "sikkerhedskopier kan konfigureres på planlægningssiden."
 
 #: sabnzbd/skintext.py
+msgid ""
+"Some security related settings will not be restored, in order to prevent "
+"abuse."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Rydningsliste"
 
@@ -3328,14 +3339,6 @@ msgstr "Scripts mappe"
 #: sabnzbd/skintext.py
 msgid "Folder containing user scripts."
 msgstr "Mappe, der indeholder bruger-scripts."
-
-#: sabnzbd/skintext.py
-msgid "Email Templates Folder"
-msgstr "E-mail-mappe skabeloner"
-
-#: sabnzbd/skintext.py
-msgid "Folder containing user-defined email templates."
-msgstr "Mappe, der indeholder brugerdefinerede e-mail-skabeloner."
 
 #: sabnzbd/skintext.py
 msgid "Password file"
@@ -4168,6 +4171,12 @@ msgid ""
 msgstr ""
 "Hvis kun kategorien <em>Standard</em> er valgt, er beskeder aktiveret for "
 "jobs i alle kategorier."
+
+#: sabnzbd/skintext.py
+msgid ""
+"User-defined email template folder can be set in your configuration file "
+"using <code>email_dir</code>."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"
