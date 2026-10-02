@@ -325,6 +325,9 @@ SKIN_TEXT = {
         "If the Backup Folder is not set, the backup will be created in the Completed Download Folder.<br>"
         "Recurring backups can be configured on the Scheduling page."
     ),
+    "explain-restore_backup_limits": TT(
+        "Some security related settings will not be restored, in order to prevent abuse."
+    ),
     "opt-cleanup_list": TT("Cleanup List"),
     "explain-cleanup_list": TT(
         "List of file extensions, filenames or patterns that should be deleted after download.<br />"
@@ -396,8 +399,6 @@ SKIN_TEXT = {
     "explain-dirscan_speed": TT("Number of seconds between scans for .nzb files."),
     "opt-script_dir": TT("Scripts Folder"),
     "explain-script_dir": TT("Folder containing user scripts."),
-    "opt-email_dir": TT("Email Templates Folder"),
-    "explain-email_dir": TT("Folder containing user-defined email templates."),
     "opt-password_file": TT("Password file"),
     "explain-password_file": TT("File containing all passwords to be tried on encrypted RAR files."),
     "systemFolders": TT("System Folders"),
@@ -650,6 +651,9 @@ SKIN_TEXT = {
     # Config->Notifications
     "defaultNotifiesAll": TT(
         "If only the <em>Default</em> category is selected, notifications are enabled for jobs in all categories."
+    ),
+    "explain-email_dir": TT(
+        "User-defined email template folder can be set in your configuration file using <code>email_dir</code>."
     ),
     "opt-email_endjob": TT("Email Notification On Job Completion"),
     "email-never": TT("Never"),  #: When to send email

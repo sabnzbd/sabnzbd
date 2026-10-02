@@ -66,7 +66,6 @@ from sabnzbd.filesystem import (
     globber,
     globber_full,
     clip_path,
-    same_directory,
     setname_from_path,
 )
 from sabnzbd.encoding import utob
@@ -835,7 +834,6 @@ LIST_DIRPAGE = (
     "dirscan_dir",
     "dirscan_speed",
     "script_dir",
-    "email_dir",
     "permissions",
     "log_dir",
     "backup_dir",
@@ -1922,15 +1920,8 @@ def config_categories_save(request: Request):
 
     if newname:
         cat_params = dict(request_params(request))
-        # Validate directory not under incomplete
-        if same_directory(
-            cfg.download_dir.get_path(),
-            real_path(cfg.complete_dir.get_path(), cat_params.get("dir", "")),
-        ):
-            return report(
-                request_params(request),
-                error=T("Category folder cannot be a subfolder of the Temporary Download Folder."),
-            )
+        if msg := cfg.validate_category_dir("", cat_params.get("dir", ""), "")[0]:
+            return report(request_params(request), error=msg)
 
         # Delete current one and replace with new one
         if name:

@@ -71,8 +71,9 @@ class Option:
         `default_val` : value returned when no value has been set
         `callback`    : procedure to call when value is successfully changed
         `public`      : if this value should be shown in API calls
-        `protect`     : do not allow setting via the API (specifically set_dict)
+        `protect`     : do not allow setting remotely, via the API (set_dict) or by restoring a backup
         """
+
         self.__section = section
         self.__keyword: str = keyword
         self.__default_val: Any = default_val
@@ -135,6 +136,10 @@ class Option:
     @property
     def default(self) -> Any:
         return self.__default_val
+
+    @property
+    def protected(self) -> bool:
+        return self.__protect
 
     def callback(self, callback: Callable):
         """Set callback function"""
@@ -607,7 +612,7 @@ class ConfigCat:
         self.order = OptionNumber(name, "order", 0, 0, 100, add=False)
         self.pp = OptionStr(name, "pp", add=False)
         self.script = OptionStr(name, "script", "Default", add=False)
-        self.dir = OptionDir(name, "dir", add=False, create=False)
+        self.dir = OptionDir(name, "dir", add=False, create=False, validation=sabnzbd.cfg.validate_category_dir)
         self.newzbin = OptionList(name, "newzbin", add=False, validation=sabnzbd.cfg.validate_single_tag)
         self.priority = OptionNumber(name, "priority", DEFAULT_PRIORITY, add=False)
 
@@ -1057,6 +1062,19 @@ class SABnzbdConfig(configobj.ConfigObj):
             logging.info("Failed to create backup: ", exc_info=True)
             return False
 
+    def remove_protected_options(self, ini_data: bytes) -> bytes:
+        """Remove settings that cannot be changed remotely from INI data"""
+        ini = configobj.ConfigObj(io.BytesIO(ini_data), default_encoding="utf-8", encoding="utf-8")
+        for section, options in self.database.items():
+            if section in self.SPECIAL_SECTIONS or section not in ini:
+                continue
+            for option in options.values():
+                if option.protected:
+                    ini[section].pop(option.keyword, None)
+        with io.BytesIO() as output:
+            ini.write(output)
+            return output.getvalue()
+
     @staticmethod
     def validate_config_backup(config_backup_data: bytes) -> bool:
         """Check that the zip file contains a sabnzbd.ini"""
@@ -1076,9 +1094,12 @@ class SABnzbdConfig(configobj.ConfigObj):
             with io.BytesIO(config_backup_data) as backup_ref:
                 with zipfile.ZipFile(backup_ref, "r") as zip_ref:
                     # Write config file first and read it
+                    # Protected settings cannot be changed remotely, so they keep their current values,
+                    # for example defaults provided by NAS packages
                     logging.debug("Writing backup of config-file to %s", self.filename)
+                    ini_data = self.remove_protected_options(zip_ref.read(DEF_INI_FILE))
                     with open(self.filename, "wb") as destination_ref:
-                        destination_ref.write(zip_ref.read(DEF_INI_FILE))
+                        destination_ref.write(ini_data)
                     logging.debug("Loading settings from backup config-file")
                     loaded, error = self.read_config(self.filename)
                     if not loaded:

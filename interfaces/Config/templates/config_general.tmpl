@@ -236,7 +236,10 @@
                     <div class="field-pair">
                         <label class="config" for="config_backup_file">$T('restore-backup')</label>
                         <input type="file" accept=".zip" name="config_backup_file" id="config_backup_file" />
-                        <span class="desc">$T('restartRequired')</span>
+                        <span class="desc">
+                            $T('restartRequired')<br>
+                            $T('explain-restore_backup_limits')
+                        </span>
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-open"></span> $T('restore-backup')</button>

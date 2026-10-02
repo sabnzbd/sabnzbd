@@ -54,7 +54,14 @@ from sabnzbd.constants import (
     DEF_HTTPS_KEY_FILE,
     DEF_DOWNLOAD_FREE,
 )
-from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_network_path
+from sabnzbd.filesystem import (
+    same_directory,
+    real_path,
+    is_valid_script,
+    is_network_path,
+    points_into_program_dir,
+    clip_path,
+)
 
 # Validators currently only are made for string/list-of-strings
 # and return those on success or an error message.
@@ -282,9 +289,24 @@ def validate_safedir(root: str, value: str, default: str) -> ValidateResult:
         return T("Queue not empty, cannot change folder."), None
 
 
+def validate_category_dir(root: str, value: str, default: str) -> ValidateResult:
+    """Category folders are relative to the Completed Download Folder"""
+    if value:
+        path = real_path(complete_dir.get_path(), value.removesuffix("*"))
+        if same_directory(download_dir.get_path(), path):
+            return T("Category folder cannot be a subfolder of the Temporary Download Folder."), None
+        if points_into_program_dir(path, without_job_folder=value.endswith("*")):
+            return T("Folder %s is inside the program folder, this is not allowed") % clip_path(path), None
+    return None, value
+
+
 def validate_download_vs_complete_dir(root: str, value: str, default: str):
     """Make sure download_dir and complete_dir are not identical
     or that download_dir is not a subfolder of complete_dir"""
+    # Downloads should never be able to overwrite code or templates
+    if points_into_program_dir(path := real_path(root, value or default)):
+        return T("Folder %s is inside the program folder, this is not allowed") % clip_path(path), None
+
     # Check what new value we are trying to set
     if default == DEF_COMPLETE_DIR:
         check_download_dir = download_dir.get_path()
@@ -570,7 +592,8 @@ email_account = OptionStr("misc", "email_account")
 email_pwd = OptionPassword("misc", "email_pwd")
 email_endjob = OptionNumber("misc", "email_endjob", 0, 0, 2)
 email_full = OptionBool("misc", "email_full", False)
-email_dir = OptionDir("misc", "email_dir")
+# Templates are executed by Cheetah, so only allow setting it through the INI file
+email_dir = OptionDir("misc", "email_dir", protect=True)
 email_rss = OptionBool("misc", "email_rss", False)
 email_cats = OptionList("misc", "email_cats", ["*"])
 

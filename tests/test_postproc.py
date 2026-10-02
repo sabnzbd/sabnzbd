@@ -125,6 +125,37 @@ class TestPostProc:
         # 0 files should have been renamed
         assert self._deobfuscate_dir(sourcedir, expected_filename_matches) == 0
 
+    @pytest.fixture
+    def category_in_program_dir(self, monkeypatch):
+        """Bypasses the validator, like a link that changed after the category folder was set"""
+        sabnzbd.config.read_config(os.devnull)
+        prog_dir = os.path.join(SAB_CACHE_DIR, "prog")
+        os.makedirs(os.path.join(prog_dir, "interfaces"), exist_ok=True)
+        monkeypatch.setattr(sabnzbd, "DIR_PROG", prog_dir)
+        category = mock.Mock()
+        category.dir.return_value = os.path.join(prog_dir, "interfaces*")
+        monkeypatch.setattr(postproc.config, "get_category", lambda cat="*": category)
+        return prog_dir
+
+    @pytest.mark.config({"complete_dir": os.path.join(SAB_CACHE_DIR, "complete")})
+    def test_prepare_extraction_path_not_in_program_dir(self, category_in_program_dir):
+        """A category folder that points into the program folder fails the job"""
+        with pytest.raises(IOError):
+            postproc.prepare_extraction_path(make_mock_nzo(cat="movies"))
+        assert os.listdir(os.path.join(category_in_program_dir, "interfaces")) == []
+
+    @pytest.mark.parametrize("has_jobdir", [True, False])
+    @pytest.mark.config({"complete_dir": os.path.join(SAB_CACHE_DIR, "complete")})
+    def test_prepare_extraction_path_parent_of_program_dir(self, category_in_program_dir, has_jobdir):
+        """Only without a job folder can files be written into the program folder from a folder above it"""
+        postproc.config.get_category().dir.return_value = SAB_CACHE_DIR + ("" if has_jobdir else "*")
+        if has_jobdir:
+            _, workdir_complete, _, _, _ = postproc.prepare_extraction_path(make_mock_nzo(cat="movies"))
+            assert os.path.dirname(clip_path(workdir_complete)) == SAB_CACHE_DIR
+        else:
+            with pytest.raises(IOError):
+                postproc.prepare_extraction_path(make_mock_nzo(cat="movies"))
+
     @pytest.mark.parametrize("category", ["testcat", "Default", None])
     @pytest.mark.parametrize("has_jobdir", [True, False])  # With or without a job dir
     @pytest.mark.parametrize("has_catdir", [True, False])  # Complete directory is defined at category level

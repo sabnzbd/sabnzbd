@@ -2540,6 +2540,11 @@ a:focus-visible {
     outline-offset: 2px !important;
 }
 
+code {
+    color: var(--clr-text);
+    background: var(--clr-surface-alt);
+}
+
 input[type="checkbox"] {
     color-scheme: light;
 }
