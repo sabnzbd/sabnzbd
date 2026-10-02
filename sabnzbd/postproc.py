@@ -571,8 +571,9 @@ def process_job(nzo: NzbObject) -> bool:
             script_ret = 0
             script_error = False
 
-            # Run deobfuscation only on verified jobs
-            if all_ok:
+            # Run deobfuscation only on verified jobs, including jobs that only failed on unwanted files,
+            # so extensions revealed by deobfuscation are still removed from the failed result
+            if all_ok or (unwanted_failed and not unpack_error):
                 # Use par2 files to deobfuscate unpacked file names
                 # Only if we also run cleanup, so not to process the "regular" par2 files
                 if nzo.delete and cfg.process_unpacked_par2():
