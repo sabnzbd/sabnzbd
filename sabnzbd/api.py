@@ -1425,22 +1425,22 @@ def _config_item_name(kwargs: QueryParams) -> Optional[str]:
 def handle_server_api(kwargs: QueryParams) -> Optional[str]:
     """Special handler for API-call 'set_config' [servers]"""
     if name := _config_item_name(kwargs):
-        existed = config.ConfigServer.update_or_create(name, kwargs)
-        sabnzbd.Downloader.update_server(name if existed else None, name)
+        name = config.ConfigServer.update_or_create(name, kwargs).name
+        sabnzbd.Downloader.update_server(name)
     return name
 
 
 def handle_sorter_api(kwargs: QueryParams) -> Optional[str]:
     """Special handler for API-call 'set_config' [sorters]"""
     if name := _config_item_name(kwargs):
-        config.ConfigSorter.update_or_create(name, kwargs)
+        name = config.ConfigSorter.update_or_create(name, kwargs).name
     return name
 
 
 def handle_indexer_api(kwargs: QueryParams) -> Optional[str]:
     """Special handler for API-call 'set_config' [indexers]"""
     if name := _config_item_name(kwargs):
-        config.ConfigIndexer.update_or_create(name, kwargs)
+        name = config.ConfigIndexer.update_or_create(name, kwargs).name
         sabnzbd.nzbsearch.invalidate_categories()
     return name
 
@@ -1450,7 +1450,7 @@ def handle_rss_api(kwargs: QueryParams) -> Optional[str]:
     if not (name := _config_item_name(kwargs)):
         return None
 
-    config.ConfigRSS.update_or_create(name, kwargs)
+    name = config.ConfigRSS.update_or_create(name, kwargs).name
 
     action = kwargs.get("filter_action")
     if action in ("add", "update"):
@@ -1470,7 +1470,7 @@ def handle_cat_api(kwargs: QueryParams) -> Optional[str]:
     """Special handler for API-call 'set_config' [categories]"""
     if name := _config_item_name(kwargs):
         name = name.lower()
-        config.ConfigCat.update_or_create(name, kwargs)
+        name = config.ConfigCat.update_or_create(name, kwargs).name
     return name
 
 
@@ -2287,7 +2287,7 @@ def del_from_section(kwargs: QueryParams) -> bool:
                 del item
                 config.save_config()
                 if section == "servers":
-                    sabnzbd.Downloader.update_server(keyword, None)
+                    sabnzbd.Downloader.update_server(keyword)
                 elif section == "indexers":
                     sabnzbd.nzbsearch.invalidate_categories()
         return True

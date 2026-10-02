@@ -353,7 +353,7 @@ class Scheduler:
                 value = servers[serv]
                 if bool(item.enable()) != bool(value):
                     item.enable.set(value)
-                    sabnzbd.Downloader.init_server(serv, serv)
+                    sabnzbd.Downloader.update_server(serv)
             except Exception:
                 pass
         config.save_config()
@@ -530,7 +530,7 @@ def enable_server(server):
         logging.warning(T("Trying to set status of non-existing server %s"), server)
         return
     config.save_config()
-    sabnzbd.Downloader.update_server(server, server)
+    sabnzbd.Downloader.update_server(server)
 
 
 def disable_server(server):
@@ -541,7 +541,7 @@ def disable_server(server):
         logging.warning(T("Trying to set status of non-existing server %s"), server)
         return
     config.save_config()
-    sabnzbd.Downloader.update_server(server, server)
+    sabnzbd.Downloader.update_server(server)
 
 
 def restart_program():
