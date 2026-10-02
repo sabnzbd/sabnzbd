@@ -588,7 +588,7 @@ def process_job(nzo: NzbObject) -> bool:
             # Check again for unwanted extensions, deobfuscation can reveal extensions the check after
             # unpack could not see. Must run before the folder gets its final (or failed) name.
             newfiles, deobfuscated_unwanted_failed = remove_unwanted_files(nzo, newfiles, tmp_workdir_complete)
-            if deobfuscated_unwanted_failed and all_ok:
+            if deobfuscated_unwanted_failed:
                 all_ok = False
                 unwanted_failed = True
 
