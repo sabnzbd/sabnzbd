@@ -19,6 +19,8 @@
 sabnzbd.config - Configuration Support
 """
 
+from __future__ import annotations
+
 import logging
 import os
 import re
@@ -74,13 +76,13 @@ class Option:
         `protect`     : do not allow setting remotely, via the API (set_dict) or by restoring a backup
         """
 
-        self.__section = section
+        self.__section: str = section
         self.__keyword: str = keyword
         self.__default_val: Any = default_val
         self.__value: Any = None
         self.__callback: Optional[Callable] = None
         self.__public: bool = public
-        self.__protect = protect
+        self.__protect: bool = protect
 
         # Add myself to the config dictionary
         if add:
@@ -126,11 +128,11 @@ class Option:
                     self.__callback()
 
     @property
-    def section(self) -> Any:
+    def section(self) -> str:
         return self.__section
 
     @property
-    def keyword(self) -> Any:
+    def keyword(self) -> str:
         return self.__keyword
 
     @property
@@ -441,259 +443,226 @@ class OptionPassword(Option):
         return self.get()
 
 
-class ConfigServer:
-    """Class defining a single server"""
+class ConfigSection:
+    """Base class for a single named item in one of the multi-item sections
+    (categories, rss, servers, sorters, indexers)"""
 
-    def __init__(self, name, values):
-        self.__name = clean_section_name(name)
-        name = "servers," + self.__name
+    # Name of the section in the INI and in the option database
+    SECTION: str
+    # Attribute names of the options that are set from and returned as a dictionary
+    KEYWORDS: tuple[str, ...]
 
-        self.displayname = OptionStr(name, "displayname", add=False)
-        self.host = OptionStr(name, "host", validation=sabnzbd.cfg.all_lowercase, add=False)
-        self.port = OptionNumber(name, "port", 119, 0, 2**16 - 1, add=False)
-        self.timeout = OptionNumber(name, "timeout", 60, 20, 240, add=False)
-        self.username = OptionStr(name, "username", add=False)
-        self.password = OptionPassword(name, "password", add=False)
-        self.connections = OptionNumber(name, "connections", 1, 0, 500, add=False)
-        self.ssl = OptionBool(name, "ssl", False, add=False)
-        # 0=No, 1=Minimal, 2=Medium, 3=Strict
-        self.ssl_verify = OptionNumber(name, "ssl_verify", 3, add=False)
-        self.ssl_ciphers = OptionStr(name, "ssl_ciphers", add=False)
-        self.enable = OptionBool(name, "enable", True, add=False)
-        self.required = OptionBool(name, "required", False, add=False)
-        self.optional = OptionBool(name, "optional", False, add=False)
-        self.pipelining_requests = OptionNumber(name, "pipelining_requests", DEF_PIPELINING_REQUESTS, 1, 20, add=False)
-        self.retention = OptionNumber(name, "retention", 0, add=False)
-        self.expire_date = OptionStr(name, "expire_date", add=False)
-        self.quota = OptionStr(name, "quota", add=False)
-        self.usage_at_start = OptionNumber(name, "usage_at_start", add=False)
-        self.priority = OptionNumber(name, "priority", 0, 0, 99, add=False)
-        self.notes = OptionStr(name, "notes", add=False)
-
+    def __init__(self, name: str, values: dict[str, Any]):
+        self._name = clean_section_name(name)
+        self.create_options(f"{self.SECTION},{self._name}")
         self.set_dict(values)
-        add_to_database("servers", self.__name, self)
+        add_to_database(self.SECTION, self._name, self)
+
+    def create_options(self, section: str):
+        """Create the options of this item, without adding them to the option database"""
+        raise NotImplementedError
+
+    @classmethod
+    def update_or_create(cls, name: str, values: dict[str, Any]) -> ConfigSection:
+        """Update the item if it exists, otherwise create it. Returns the item"""
+        name = clean_section_name(name)
+        if item := get_config(cls.SECTION, name):
+            item.set_dict(values)
+            return item
+        return cls(name, values)
+
+    @classmethod
+    def unique_name(cls, name: str) -> str:
+        """Return a variant of the name that is not yet used in this section"""
+        name = clean_section_name(name)
+        items = CONFIG.database.get(cls.SECTION, {})
+        new_name = name
+        num = 0
+        while new_name in items:
+            num += 1
+            new_name = f"{name}@{num}"
+        return new_name
+
+    @classmethod
+    def create(cls, name: str, values: dict[str, Any]) -> ConfigSection:
+        """Create an item under a name that is not yet used, so no existing item is overwritten"""
+        return cls(cls.unique_name(name), values)
+
+    @classmethod
+    def replace(cls, old_name: str, new_name: str, values: dict[str, Any]) -> ConfigSection:
+        """Delete the item with old_name (if any) and create a new one from values.
+        Options missing from values get their defaults, another item is never overwritten"""
+        # Validate the new name first, so an invalid one cannot leave us with the old item deleted
+        new_name = clean_section_name(new_name)
+        CONFIG.delete_config(cls.SECTION, old_name)
+        return cls.create(new_name, values)
+
+    @property
+    def name(self) -> str:
+        return self._name
 
     def set_dict(self, values: dict[str, Any]):
         """Set one or more fields, passed as dictionary"""
+        for kw in self.KEYWORDS:
+            try:
+                attr = getattr(self, kw)
+                attr.set(attr.get_from_dict(values, kw))
+            except KeyError:
+                continue
+
+    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
+        """Return a dictionary with all attributes"""
+        output_dict = {"name": self._name}
+        for kw in self.KEYWORDS:
+            attr = getattr(self, kw)
+            if for_public_api and isinstance(attr, OptionPassword):
+                output_dict[kw] = attr.get_stars()
+            else:
+                output_dict[kw] = attr()
+        return output_dict
+
+    def toggle(self, keyword: str = "enable"):
+        """Invert a boolean option"""
+        option = getattr(self, keyword)
+        option.set(not option())
+
+    def delete(self):
+        """Remove from database"""
+        delete_from_database(self.SECTION, self._name)
+
+    def rename(self, new_name: str) -> str:
+        """Give this item a new identifier, unless that one is already taken.
+        Returns the identifier in use afterwards"""
+        new_name = clean_section_name(new_name)
+        if new_name == self._name or new_name in CONFIG.database.get(self.SECTION, {}):
+            return self._name
+        delete_from_database(self.SECTION, self._name)
+        self._name = new_name
+        add_to_database(self.SECTION, self._name, self)
+        return self._name
+
+
+class ConfigServer(ConfigSection):
+    """Class defining a single server"""
+
+    SECTION = "servers"
+    KEYWORDS = (
+        "displayname",
+        "host",
+        "port",
+        "timeout",
+        "username",
+        "password",
+        "connections",
+        "ssl",
+        "ssl_verify",
+        "ssl_ciphers",
+        "enable",
+        "required",
+        "optional",
+        "pipelining_requests",
+        "retention",
+        "expire_date",
+        "quota",
+        "usage_at_start",
+        "priority",
+        "notes",
+    )
+
+    def create_options(self, section: str):
+        self.displayname = OptionStr(section, "displayname", add=False)
+        self.host = OptionStr(section, "host", validation=sabnzbd.cfg.all_lowercase, add=False)
+        self.port = OptionNumber(section, "port", 119, 0, 2**16 - 1, add=False)
+        self.timeout = OptionNumber(section, "timeout", 60, 20, 240, add=False)
+        self.username = OptionStr(section, "username", add=False)
+        self.password = OptionPassword(section, "password", add=False)
+        self.connections = OptionNumber(section, "connections", 1, 0, 500, add=False)
+        self.ssl = OptionBool(section, "ssl", False, add=False)
+        # 0=No, 1=Minimal, 2=Medium, 3=Strict
+        self.ssl_verify = OptionNumber(section, "ssl_verify", 3, add=False)
+        self.ssl_ciphers = OptionStr(section, "ssl_ciphers", add=False)
+        self.enable = OptionBool(section, "enable", True, add=False)
+        self.required = OptionBool(section, "required", False, add=False)
+        self.optional = OptionBool(section, "optional", False, add=False)
+        self.pipelining_requests = OptionNumber(
+            section, "pipelining_requests", DEF_PIPELINING_REQUESTS, 1, 20, add=False
+        )
+        self.retention = OptionNumber(section, "retention", 0, add=False)
+        self.expire_date = OptionStr(section, "expire_date", add=False)
+        self.quota = OptionStr(section, "quota", add=False)
+        self.usage_at_start = OptionNumber(section, "usage_at_start", add=False)
+        self.priority = OptionNumber(section, "priority", 0, 0, 99, add=False)
+        self.notes = OptionStr(section, "notes", add=False)
+
+    def set_dict(self, values: dict[str, Any]):
         # Replace usage_at_start value with most recent statistics if the user changes the quota value
         # Only when we are updating it from the Config
         if sabnzbd.WEBUI_READY and values.get("quota", "") != self.quota():
-            values["usage_at_start"] = sabnzbd.BPSMeter.grand_total.get(self.__name, 0)
+            values["usage_at_start"] = sabnzbd.BPSMeter.grand_total.get(self._name, 0)
 
-        # Store all values
-        for kw in (
-            "displayname",
-            "host",
-            "port",
-            "timeout",
-            "username",
-            "password",
-            "connections",
-            "ssl",
-            "ssl_verify",
-            "ssl_ciphers",
-            "enable",
-            "required",
-            "optional",
-            "pipelining_requests",
-            "retention",
-            "expire_date",
-            "quota",
-            "usage_at_start",
-            "priority",
-            "notes",
-        ):
-            try:
-                attr = getattr(self, kw)
-                attr.set(attr.get_from_dict(values, kw))
-            except KeyError:
-                continue
+        super().set_dict(values)
         if not self.displayname():
-            self.displayname.set(self.__name)
-
-    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
-        """Return a dictionary with all attributes"""
-        output_dict = {}
-        output_dict["name"] = self.__name
-        output_dict["displayname"] = self.displayname()
-        output_dict["host"] = self.host()
-        output_dict["port"] = self.port()
-        output_dict["timeout"] = self.timeout()
-        output_dict["username"] = self.username()
-        if for_public_api:
-            output_dict["password"] = self.password.get_stars()
-        else:
-            output_dict["password"] = self.password()
-        output_dict["connections"] = self.connections()
-        output_dict["ssl"] = self.ssl()
-        output_dict["ssl_verify"] = self.ssl_verify()
-        output_dict["ssl_ciphers"] = self.ssl_ciphers()
-        output_dict["enable"] = self.enable()
-        output_dict["required"] = self.required()
-        output_dict["optional"] = self.optional()
-        output_dict["pipelining_requests"] = self.pipelining_requests()
-        output_dict["retention"] = self.retention()
-        output_dict["expire_date"] = self.expire_date()
-        output_dict["quota"] = self.quota()
-        output_dict["usage_at_start"] = self.usage_at_start()
-        output_dict["priority"] = self.priority()
-        output_dict["notes"] = self.notes()
-        return output_dict
-
-    def delete(self):
-        """Remove from database"""
-        delete_from_database("servers", self.__name)
+            self.displayname.set(self._name)
 
     def rename(self, name: str):
-        """Give server new display name"""
+        """Give server new display name, the identifier stays the same"""
         self.displayname.set(name)
 
 
-class ConfigIndexer:
+class ConfigIndexer(ConfigSection):
     """Class defining a single newznab search indexer"""
 
-    def __init__(self, name, values):
-        self.__name = clean_section_name(name)
-        name = "indexers," + self.__name
+    SECTION = "indexers"
+    KEYWORDS = ("host", "api_key", "api_path", "enable", "notes")
 
-        self.host = OptionStr(name, "host", add=False)
+    def create_options(self, section: str):
+        self.host = OptionStr(section, "host", add=False)
         # "api_key", not "apikey": the latter collides with SABnzbd's own API auth parameter
-        self.api_key = OptionPassword(name, "api_key", add=False)
-        self.api_path = OptionStr(name, "api_path", "/api", add=False)
-        self.enable = OptionBool(name, "enable", True, add=False)
-        self.notes = OptionStr(name, "notes", add=False)
-
-        self.set_dict(values)
-        add_to_database("indexers", self.__name, self)
-
-    def set_dict(self, values: dict[str, Any]):
-        """Set one or more fields, passed as dictionary"""
-        for kw in ("host", "api_key", "api_path", "enable", "notes"):
-            try:
-                value = values[kw]
-                getattr(self, kw).set(value)
-            except KeyError:
-                continue
-
-    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
-        """Return a dictionary with all attributes"""
-        output_dict = {}
-        output_dict["name"] = self.__name
-        output_dict["host"] = self.host()
-        if for_public_api:
-            output_dict["api_key"] = self.api_key.get_stars()
-        else:
-            output_dict["api_key"] = self.api_key()
-        output_dict["api_path"] = self.api_path()
-        output_dict["enable"] = self.enable()
-        output_dict["notes"] = self.notes()
-        return output_dict
-
-    def delete(self):
-        """Remove from database"""
-        delete_from_database("indexers", self.__name)
-
-    def rename(self, new_name: str) -> str:
-        """Give this indexer a new identifier"""
-        new_name = clean_section_name(new_name)
-        delete_from_database("indexers", self.__name)
-        self.__name = new_name
-        add_to_database("indexers", self.__name, self)
-        return self.__name
+        self.api_key = OptionPassword(section, "api_key", add=False)
+        self.api_path = OptionStr(section, "api_path", "/api", add=False)
+        self.enable = OptionBool(section, "enable", True, add=False)
+        self.notes = OptionStr(section, "notes", add=False)
 
 
-class ConfigCat:
+class ConfigCat(ConfigSection):
     """Class defining a single category"""
 
-    def __init__(self, name: str, values: dict[str, Any]):
-        self.__name = clean_section_name(name)
-        name = "categories," + self.__name
+    SECTION = "categories"
+    KEYWORDS = ("order", "pp", "script", "dir", "newzbin", "priority")
 
-        self.order = OptionNumber(name, "order", 0, 0, 100, add=False)
-        self.pp = OptionStr(name, "pp", add=False)
-        self.script = OptionStr(name, "script", "Default", add=False)
-        self.dir = OptionDir(name, "dir", add=False, create=False, validation=sabnzbd.cfg.validate_category_dir)
-        self.newzbin = OptionList(name, "newzbin", add=False, validation=sabnzbd.cfg.validate_single_tag)
-        self.priority = OptionNumber(name, "priority", DEFAULT_PRIORITY, add=False)
-
-        self.set_dict(values)
-        add_to_database("categories", self.__name, self)
-
-    def set_dict(self, values: dict[str, Any]):
-        """Set one or more fields, passed as dictionary"""
-        for kw in ("order", "pp", "script", "dir", "newzbin", "priority"):
-            try:
-                attr = getattr(self, kw)
-                attr.set(attr.get_from_dict(values, kw))
-            except KeyError:
-                continue
+    def create_options(self, section: str):
+        self.order = OptionNumber(section, "order", 0, 0, 100, add=False)
+        self.pp = OptionStr(section, "pp", add=False)
+        self.script = OptionStr(section, "script", "Default", add=False)
+        self.dir = OptionDir(section, "dir", add=False, create=False, validation=sabnzbd.cfg.validate_category_dir)
+        self.newzbin = OptionList(section, "newzbin", add=False, validation=sabnzbd.cfg.validate_single_tag)
+        self.priority = OptionNumber(section, "priority", DEFAULT_PRIORITY, add=False)
 
     def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
-        """Return a dictionary with all attributes"""
-        output_dict = {}
-        output_dict["name"] = self.__name
-        output_dict["order"] = self.order()
-        output_dict["pp"] = self.pp()
-        output_dict["script"] = self.script()
-        output_dict["dir"] = self.dir()
+        output_dict = super().get_dict(for_public_api)
         output_dict["newzbin"] = self.newzbin.get_string()
-        output_dict["priority"] = self.priority()
         return output_dict
 
-    def delete(self):
-        """Remove from database"""
-        delete_from_database("categories", self.__name)
 
-
-class ConfigSorter:
+class ConfigSorter(ConfigSection):
     """Class defining a single Sorter"""
 
-    def __init__(self, name, values):
-        self.__name = clean_section_name(name)
-        name = "sorters," + self.__name
+    SECTION = "sorters"
+    KEYWORDS = ("order", "min_size", "multipart_label", "sort_string", "sort_cats", "sort_type", "is_active")
 
-        self.order = OptionNumber(name, "order", len(get_sorters()), 0, 100, add=False)
-        self.min_size = OptionStr(name, "min_size", DEF_SORTER_RENAME_SIZE, add=False)
-        self.multipart_label = OptionStr(name, "multipart_label", add=False)
-        self.sort_string = OptionStr(name, "sort_string", add=False)
-        self.sort_cats = OptionList(name, "sort_cats", add=False)
-        self.sort_type = OptionList(name, "sort_type", add=False)
-        self.is_active = OptionBool(name, "is_active", add=False)
-
-        self.set_dict(values)
-        add_to_database("sorters", self.__name, self)
-
-    def set_dict(self, values: dict[str, Any]):
-        """Set one or more fields, passed as dictionary"""
-        for kw in ("order", "min_size", "multipart_label", "sort_string", "sort_cats", "sort_type", "is_active"):
-            try:
-                attr = getattr(self, kw)
-                attr.set(attr.get_from_dict(values, kw))
-            except KeyError:
-                continue
+    def create_options(self, section: str):
+        self.order = OptionNumber(section, "order", len(get_sorters()), 0, 100, add=False)
+        self.min_size = OptionStr(section, "min_size", DEF_SORTER_RENAME_SIZE, add=False)
+        self.multipart_label = OptionStr(section, "multipart_label", add=False)
+        self.sort_string = OptionStr(section, "sort_string", add=False)
+        self.sort_cats = OptionList(section, "sort_cats", add=False)
+        self.sort_type = OptionList(section, "sort_type", add=False)
+        self.is_active = OptionBool(section, "is_active", add=False)
 
     def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
-        """Return a dictionary with all attributes"""
-        output_dict = {}
-        output_dict["name"] = self.__name
-        output_dict["order"] = self.order()
-        output_dict["min_size"] = self.min_size()
-        output_dict["multipart_label"] = self.multipart_label()
-        output_dict["sort_string"] = self.sort_string()
-        output_dict["sort_cats"] = self.sort_cats()
+        output_dict = super().get_dict(for_public_api)
         output_dict["sort_type"] = [int(num) for num in self.sort_type()]
-        output_dict["is_active"] = self.is_active()
         return output_dict
-
-    def delete(self):
-        """Remove from database"""
-        delete_from_database("sorters", self.__name)
-
-    def rename(self, new_name: str):
-        """Update the name and the saved entries"""
-        delete_from_database("sorters", self.__name)
-        self.__name = new_name
-        add_to_database("sorters", self.__name, self)
 
 
 class OptionFilters(Option):
@@ -756,68 +725,43 @@ class OptionFilters(Option):
         return self.get()
 
 
-class ConfigRSS:
+class ConfigRSS(ConfigSection):
     """Class defining a single Feed definition"""
 
-    def __init__(self, name, values):
-        self.__name = clean_section_name(name)
-        name = "rss," + self.__name
+    SECTION = "rss"
+    KEYWORDS = ("uri", "cat", "pp", "script", "enable", "priority")
 
-        self.uri = OptionList(name, "uri", add=False)
-        self.cat = OptionStr(name, "cat", add=False)
-        self.pp = OptionStr(name, "pp", add=False)
-        self.script = OptionStr(name, "script", add=False)
-        self.enable = OptionBool(name, "enable", add=False)
-        self.priority = OptionNumber(name, "priority", DEFAULT_PRIORITY, DEFAULT_PRIORITY, 2, add=False)
-        self.filters = OptionFilters(name, "filters", add=False)
+    def create_options(self, section: str):
+        self.uri = OptionList(section, "uri", add=False)
+        self.cat = OptionStr(section, "cat", add=False)
+        self.pp = OptionStr(section, "pp", add=False)
+        self.script = OptionStr(section, "script", add=False)
+        self.enable = OptionBool(section, "enable", add=False)
+        self.priority = OptionNumber(section, "priority", DEFAULT_PRIORITY, DEFAULT_PRIORITY, 2, add=False)
+        self.filters = OptionFilters(section, "filters", add=False)
         self.filters.set([["", "", "", "A", "*", DEFAULT_PRIORITY, "1"]])
 
-        self.set_dict(values)
-        add_to_database("rss", self.__name, self)
-
     def set_dict(self, values: dict[str, Any]):
-        """Set one or more fields, passed as dictionary"""
-        for kw in ("uri", "cat", "pp", "script", "priority", "enable"):
-            try:
-                attr = getattr(self, kw)
-                attr.set(attr.get_from_dict(values, kw))
-            except KeyError:
-                continue
+        super().set_dict(values)
         self.filters.set_dict(values)
 
     def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
-        """Return a dictionary with all attributes"""
-        output_dict = {}
-        output_dict["name"] = self.__name
-        output_dict["uri"] = self.uri()
-        output_dict["cat"] = self.cat()
-        output_dict["pp"] = self.pp()
-        output_dict["script"] = self.script()
-        output_dict["enable"] = self.enable()
-        output_dict["priority"] = self.priority()
-        filters = self.filters.get_dict()
-        for kw in filters:
-            output_dict[kw] = filters[kw]
+        output_dict = super().get_dict(for_public_api)
+        output_dict.update(self.filters.get_dict())
         return output_dict
-
-    def delete(self):
-        """Remove from database"""
-        delete_from_database("rss", self.__name)
 
     def rename(self, new_name: str) -> str:
         """Update the name and the saved entries"""
-        # Sanitize the name before using it
-        new_name = clean_section_name(new_name)
-        delete_from_database("rss", self.__name)
-        with sabnzbd.rss.rss_repository() as repo:
-            repo.rename(self.__name, new_name)
-        self.__name = new_name
-        add_to_database("rss", self.__name, self)
-        return self.__name
+        old_name = self._name
+        new_name = super().rename(new_name)
+        if new_name != old_name:
+            with sabnzbd.rss.rss_repository() as repo:
+                repo.rename(old_name, new_name)
+        return new_name
 
 
 # Add typing to the options database-dict
-AllConfigTypes: TypeAlias = Option | ConfigCat | ConfigSorter | ConfigRSS | ConfigServer | ConfigIndexer
+AllConfigTypes: TypeAlias = Option | ConfigSection
 
 
 class SABnzbdConfig(configobj.ConfigObj):
@@ -831,12 +775,9 @@ class SABnzbdConfig(configobj.ConfigObj):
 
     # INI sections that hold multiple named sub-sections, each backed by a Config* class.
     # Single source of truth for the "special" sections handled differently from flat options.
-    SPECIAL_SECTIONS: dict[str, type] = {
-        "categories": ConfigCat,
-        "rss": ConfigRSS,
-        "servers": ConfigServer,
-        "sorters": ConfigSorter,
-        "indexers": ConfigIndexer,
+    SPECIAL_SECTIONS: dict[str, type[ConfigSection]] = {
+        section_class.SECTION: section_class
+        for section_class in (ConfigCat, ConfigRSS, ConfigServer, ConfigSorter, ConfigIndexer)
     }
 
     def __init__(self, *args, **kwargs):
@@ -1214,24 +1155,15 @@ class SABnzbdConfig(configobj.ConfigObj):
 
     @synchronized()
     def get_servers(self) -> dict[str, ConfigServer]:
-        try:
-            return self.database["servers"]
-        except KeyError:
-            return {}
+        return self.database.get("servers", {})
 
     @synchronized()
     def get_sorters(self) -> dict[str, ConfigSorter]:
-        try:
-            return self.database["sorters"]
-        except KeyError:
-            return {}
+        return self.database.get("sorters", {})
 
     @synchronized()
     def get_indexers(self) -> dict[str, ConfigIndexer]:
-        try:
-            return self.database["indexers"]
-        except KeyError:
-            return {}
+        return self.database.get("indexers", {})
 
     @synchronized()
     def get_categories(self) -> dict[str, ConfigCat]:
