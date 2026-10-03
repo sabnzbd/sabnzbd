@@ -760,6 +760,9 @@ def bind_web_socket(host: str, port: int) -> socket.socket:
         # would make every bind succeed.
         if not sabnzbd.WINDOWS:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Listening on all IPv6 addresses also accepts IPv4
+        if host == "::" and socket.has_dualstack_ipv6():
+            sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
         sock.bind((host, port))
         # Binding alone does not reserve the port: another SO_REUSEADDR socket
         # can still bind it until someone listens. asyncio calls listen() again
