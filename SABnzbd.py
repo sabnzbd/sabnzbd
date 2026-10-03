@@ -607,7 +607,7 @@ def get_webhost(web_host, web_port, https_port):
         web_host = "0.0.0.0"
         browserhost = localhost
 
-    # :: will listen on all ipv6 interfaces (no ipv4 addresses)
+    # :: will listen on all ipv6 and ipv4 interfaces
     elif web_host in ("::", "[::]"):
         web_host = web_host_lookup
         # Assume '::1' == 'localhost'
@@ -1197,10 +1197,16 @@ def main():
     # Starting of the webserver
     # Determine if this system has multiple definitions for 'localhost'
     hosts = all_localhosts()
+    multilocal = len(hosts) > 1 and web_host in ("localhost", "0.0.0.0")
+
+    # 0.0.0.0 only covers IPv4, so make sure the secondary localhost is IPv6
+    if multilocal and web_host == "0.0.0.0" and hosts[1] == "127.0.0.1":
+        hosts[1] = "::1"
 
     # The Windows binary requires numeric localhost as primary address
     if web_host == "localhost":
         web_host = hosts[0]
+    web_hosts = [web_host, hosts[1]] if multilocal else [web_host]
 
     if enable_https and https_port:
         # Separate HTTPS port: switch the main server to the HTTPS port
@@ -1213,8 +1219,6 @@ def main():
     # Overwrite inet_exposure from command-line for VPS-setups
     if inet_exposure:
         sabnzbd.cfg.inet_exposure.set(inet_exposure)
-
-    logging.info("Starting web-interface on %s:%s", web_host, web_port)
 
     sabnzbd.cfg.log_level.callback(guard_loglevel)
 
@@ -1234,13 +1238,16 @@ def main():
     # Claim the port here rather than letting uvicorn do it, because this is the
     # first point where the host and port are final. Everything before this was
     # only picking a port, and anything could still have taken it since.
-    try:
-        web_socket = bind_web_socket(web_host, web_port)
-    except (PermissionError, HostNotAvailableError) as err:
-        abort_for_unusable_address(browserhost, web_port, err)
-    except OSError as err:
-        logging.error(T("Failed to start web-interface: "), exc_info=True)
-        abort_and_show_error(browserhost, web_port, err)
+    web_sockets = []
+    for host in web_hosts:
+        logging.info("Starting web-interface on %s:%s", host, web_port)
+        try:
+            web_sockets.append(bind_web_socket(host, web_port))
+        except (PermissionError, HostNotAvailableError) as err:
+            abort_for_unusable_address(browserhost, web_port, err)
+        except OSError as err:
+            logging.error(T("Failed to start web-interface: "), exc_info=True)
+            abort_and_show_error(browserhost, web_port, err)
 
     server_config = uvicorn.Config(
         sabnzbd.interface.create_app(),
@@ -1254,7 +1261,7 @@ def main():
         # peer address. Defaults to True, so it has to be turned off rather than left out.
         proxy_headers=False,
     )
-    sabnzbd.WEB_SERVER = sabnzbd.interface.ThreadedServer(config=server_config, sockets=[web_socket])
+    sabnzbd.WEB_SERVER = sabnzbd.interface.ThreadedServer(config=server_config, sockets=web_sockets)
     try:
         sabnzbd.WEB_SERVER.run_in_thread()
     except Exception:
