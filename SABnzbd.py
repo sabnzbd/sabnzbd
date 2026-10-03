@@ -1208,8 +1208,10 @@ def main():
         web_host = hosts[0]
     web_hosts = [web_host, hosts[1]] if multilocal else [web_host]
 
+    http_port = None
     if enable_https and https_port:
-        # Separate HTTPS port: switch the main server to the HTTPS port
+        # Separate HTTPS port: switch the main server to the HTTPS port, HTTP stays on its own port
+        http_port = web_port
         web_port = https_port
 
     if no_login:
@@ -1239,15 +1241,19 @@ def main():
     # first point where the host and port are final. Everything before this was
     # only picking a port, and anything could still have taken it since.
     web_sockets = []
-    for host in web_hosts:
-        logging.info("Starting web-interface on %s:%s", host, web_port)
+    http_sockets = []
+    listeners = [(host, web_port, web_sockets) for host in web_hosts]
+    if http_port:
+        listeners += [(host, http_port, http_sockets) for host in web_hosts]
+    for host, port, sockets in listeners:
+        logging.info("Starting web-interface on %s:%s", host, port)
         try:
-            web_sockets.append(bind_web_socket(host, web_port))
+            sockets.append(bind_web_socket(host, port))
         except (PermissionError, HostNotAvailableError) as err:
-            abort_for_unusable_address(browserhost, web_port, err)
+            abort_for_unusable_address(browserhost, port, err)
         except OSError as err:
             logging.error(T("Failed to start web-interface: "), exc_info=True)
-            abort_and_show_error(browserhost, web_port, err)
+            abort_and_show_error(browserhost, port, err)
 
     server_config = uvicorn.Config(
         sabnzbd.interface.create_app(),
@@ -1261,7 +1267,9 @@ def main():
         # peer address. Defaults to True, so it has to be turned off rather than left out.
         proxy_headers=False,
     )
-    sabnzbd.WEB_SERVER = sabnzbd.interface.ThreadedServer(config=server_config, sockets=web_sockets)
+    sabnzbd.WEB_SERVER = sabnzbd.interface.ThreadedServer(
+        config=server_config, sockets=web_sockets, http_sockets=http_sockets
+    )
     try:
         sabnzbd.WEB_SERVER.run_in_thread()
     except Exception:
