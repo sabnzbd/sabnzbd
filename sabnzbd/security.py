@@ -183,7 +183,7 @@ def client_address_info(request: Request) -> str:
 
 def use_secure_cookies(request: Request) -> bool:
     """Whether cookies for this request should carry the Secure attribute"""
-    return request.scope.get("scheme") == "https" or bool(cfg.enable_https())
+    return request.scope.get("scheme") == "https"
 
 
 def check_access(request: Request, access_type: int = 4, warn_user: bool = False) -> bool:

@@ -1344,6 +1344,16 @@ class TestPortIsFree:
         finally:
             sock.close()
 
+    @pytest.mark.skipif(not socket.has_dualstack_ipv6(), reason="No dual-stack IPv6 support")
+    def test_bind_web_socket_all_ipv6_accepts_ipv4(self):
+        sock = misc.bind_web_socket("::", 0)
+        try:
+            port = sock.getsockname()[1]
+            assert sock.getsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY) == 0
+            socket.create_connection(("127.0.0.1", port), timeout=2).close()
+        finally:
+            sock.close()
+
     def test_bind_web_socket_closes_socket_on_failure(self):
         """A failed bind must not leak the file descriptor."""
         with self._listener() as port:

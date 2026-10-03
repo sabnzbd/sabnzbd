@@ -19,6 +19,7 @@
 sabnzbd.interface - webinterface
 """
 
+import asyncio
 import os
 import re
 import secrets
@@ -2553,18 +2554,35 @@ class ThreadedServer(uvicorn.Server):
     # Give up on a server that has not reached the serving state by then
     STARTUP_TIMEOUT = 30.0
 
-    def __init__(self, *args, sockets: Optional[list[socket.socket]] = None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        sockets: Optional[list[socket.socket]] = None,
+        http_sockets: Optional[list[socket.socket]] = None,
+        **kwargs,
+    ):
         self.thread: Optional[threading.Thread] = None
         self._startup_exc: Optional[BaseException] = None
         # Pre-bound listening sockets, so the port cannot be taken between the
         # moment we claim it and the moment uvicorn starts serving on it
         self._sockets = sockets
+        # Served without TLS, next to the sockets above when those use HTTPS
+        self._http_sockets = http_sockets or []
         # Set once the server is either serving or done trying
         self._startup_done = threading.Event()
         super().__init__(*args, **kwargs)
 
     async def startup(self, sockets=None):
         await super().startup(sockets=sockets)
+        protocol = functools.partial(
+            self.config.http_protocol_class,
+            config=self.config,
+            server_state=self.server_state,
+            app_state=self.lifespan.state,
+        )
+        loop = asyncio.get_running_loop()
+        for sock in self._http_sockets:
+            self.servers.append(await loop.create_server(protocol, sock=sock, backlog=self.config.backlog))
         # Only signal here on success, a failure is signalled by _run() so that
         # the exception is always recorded before run_in_thread() wakes up
         self._startup_done.set()
@@ -2595,7 +2613,7 @@ class ThreadedServer(uvicorn.Server):
         if not self._startup_done.wait(self.STARTUP_TIMEOUT):
             raise RuntimeError("Web server did not start within %s seconds" % self.STARTUP_TIMEOUT)
 
-        if not self.started:
+        if not self.started or self._startup_exc is not None:
             raise RuntimeError("Web server failed to start") from self._startup_exc
 
     def stop(self):

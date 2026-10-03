@@ -22,6 +22,9 @@ tests.test_interface - Testing functions in interface.py
 import inspect
 import logging
 import logging.config
+import os
+import ssl
+import urllib.request
 from typing import Optional
 import pytest
 from unittest.mock import Mock, patch
@@ -48,7 +51,13 @@ from tests.test_security import (
     set_csrf_header,
     store_session,
 )
-from sabnzbd.misc import is_local_addr, is_loopback_addr, xff_trusted_networks
+from sabnzbd.misc import (
+    bind_web_socket,
+    create_https_certificates,
+    is_local_addr,
+    is_loopback_addr,
+    xff_trusted_networks,
+)
 
 from tests.testhelper import run_async
 
@@ -550,10 +559,11 @@ class TestUseSecureCookies:
     def test_follows_request_scheme(self, scheme, host, server, expected):
         assert security.use_secure_cookies(self.make_request(scheme, host, server)) is expected
 
-    @pytest.mark.config({"enable_https": True})
-    def test_https_enabled_always_secure(self):
-        """Serving https ourselves is enough, whatever the request looks like"""
-        assert security.use_secure_cookies(self.make_request("http")) is True
+    @pytest.mark.config({"enable_https": True, "https_port": "9090"})
+    def test_https_enabled_follows_request_scheme(self):
+        """HTTP stays available next to a separate HTTPS port, a Secure cookie would never be stored there"""
+        assert security.use_secure_cookies(self.make_request("http")) is False
+        assert security.use_secure_cookies(self.make_request("https")) is True
 
     @pytest.mark.config({"enable_https": False})
     def test_scheme_from_trusted_proxy(self):
@@ -947,3 +957,48 @@ class TestRenderedToken:
         rendered = self._rendered(None)
         request = page_post(None, csrf=rendered)
         assert config_save_middleware().denied_response(request) is None
+
+
+class TestThreadedServerHttpSockets:
+    def test_http_sockets_served_without_tls(self, tmp_path):
+        """One server can serve HTTPS and plain HTTP side by side, each request seeing its own scheme"""
+
+        async def app(scope, receive, send):
+            await send({"type": "http.response.start", "status": 200, "headers": []})
+            await send({"type": "http.response.body", "body": scope["scheme"].encode()})
+
+        cert, key = os.path.join(tmp_path, "server.cert"), os.path.join(tmp_path, "server.key")
+        create_https_certificates(cert, key)
+        https_socket = bind_web_socket("127.0.0.1", 0)
+        http_socket = bind_web_socket("127.0.0.1", 0)
+        https_port, http_port = https_socket.getsockname()[1], http_socket.getsockname()[1]
+
+        config = uvicorn.Config(app, lifespan="off", log_config=None, ssl_certfile=cert, ssl_keyfile=key)
+        server = interface.ThreadedServer(config=config, sockets=[https_socket], http_sockets=[http_socket])
+        try:
+            server.run_in_thread()
+            context = ssl._create_unverified_context()
+            with urllib.request.urlopen("https://127.0.0.1:%s/" % https_port, timeout=5, context=context) as response:
+                assert response.read() == b"https"
+            with urllib.request.urlopen("http://127.0.0.1:%s/" % http_port, timeout=5) as response:
+                assert response.read() == b"http"
+        finally:
+            server.stop()
+
+    def test_http_socket_failure_is_reported(self):
+        """The plain HTTP listeners are added after uvicorn marks itself started, so their failure must still count"""
+
+        async def app(scope, receive, send):
+            pass
+
+        web_socket = bind_web_socket("127.0.0.1", 0)
+        http_socket = bind_web_socket("127.0.0.1", 0)
+        http_socket.close()
+
+        config = uvicorn.Config(app, lifespan="off", log_config=None)
+        server = interface.ThreadedServer(config=config, sockets=[web_socket], http_sockets=[http_socket])
+        try:
+            with pytest.raises(RuntimeError):
+                server.run_in_thread()
+        finally:
+            server.stop()
