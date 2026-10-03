@@ -2613,7 +2613,7 @@ class ThreadedServer(uvicorn.Server):
         if not self._startup_done.wait(self.STARTUP_TIMEOUT):
             raise RuntimeError("Web server did not start within %s seconds" % self.STARTUP_TIMEOUT)
 
-        if not self.started:
+        if not self.started or self._startup_exc is not None:
             raise RuntimeError("Web server failed to start") from self._startup_exc
 
     def stop(self):

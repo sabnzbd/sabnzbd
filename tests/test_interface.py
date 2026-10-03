@@ -975,12 +975,30 @@ class TestThreadedServerHttpSockets:
 
         config = uvicorn.Config(app, lifespan="off", log_config=None, ssl_certfile=cert, ssl_keyfile=key)
         server = interface.ThreadedServer(config=config, sockets=[https_socket], http_sockets=[http_socket])
-        server.run_in_thread()
         try:
+            server.run_in_thread()
             context = ssl._create_unverified_context()
             with urllib.request.urlopen("https://127.0.0.1:%s/" % https_port, timeout=5, context=context) as response:
                 assert response.read() == b"https"
             with urllib.request.urlopen("http://127.0.0.1:%s/" % http_port, timeout=5) as response:
                 assert response.read() == b"http"
+        finally:
+            server.stop()
+
+    def test_http_socket_failure_is_reported(self):
+        """The plain HTTP listeners are added after uvicorn marks itself started, so their failure must still count"""
+
+        async def app(scope, receive, send):
+            pass
+
+        web_socket = bind_web_socket("127.0.0.1", 0)
+        http_socket = bind_web_socket("127.0.0.1", 0)
+        http_socket.close()
+
+        config = uvicorn.Config(app, lifespan="off", log_config=None)
+        server = interface.ThreadedServer(config=config, sockets=[web_socket], http_sockets=[http_socket])
+        try:
+            with pytest.raises(RuntimeError):
+                server.run_in_thread()
         finally:
             server.stop()
