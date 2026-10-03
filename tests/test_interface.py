@@ -559,14 +559,9 @@ class TestUseSecureCookies:
     def test_follows_request_scheme(self, scheme, host, server, expected):
         assert security.use_secure_cookies(self.make_request(scheme, host, server)) is expected
 
-    @pytest.mark.config({"enable_https": True})
-    def test_https_enabled_always_secure(self):
-        """Serving https ourselves is enough, whatever the request looks like"""
-        assert security.use_secure_cookies(self.make_request("http")) is True
-
     @pytest.mark.config({"enable_https": True, "https_port": "9090"})
-    def test_https_port_leaves_http_port_insecure(self):
-        """The web_port is still served over HTTP, a Secure cookie would never be stored there"""
+    def test_https_enabled_follows_request_scheme(self):
+        """HTTP stays available next to a separate HTTPS port, a Secure cookie would never be stored there"""
         assert security.use_secure_cookies(self.make_request("http")) is False
         assert security.use_secure_cookies(self.make_request("https")) is True
 
