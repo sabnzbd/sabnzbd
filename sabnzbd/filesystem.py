@@ -60,9 +60,13 @@ from sabnzbd.constants import (
     MEBI,
     DEF_DOWNLOAD_DIR,
     DEF_COMPLETE_DIR,
+    MOVE_WITHOUT_CACHE_CHUNK,
 )
 from sabnzbd.encoding import correct_unknown_encoding, unicode_nfc_normalize, utob, limit_encoded_length
 import rarfile
+
+# Copying file-to-file with sendfile() and dropping pages with posix_fadvise() needs Linux
+CAN_MOVE_WITHOUT_CACHE = sys.platform.startswith("linux")
 
 # For Windows: determine executable extensions
 if os.name == "nt":
@@ -952,7 +956,10 @@ def move_to_path(path: str, new_path: str, root: Optional[str] = None) -> tuple[
             # Cannot rename, try copying
             logging.debug("File could not be renamed (error: %s), trying copying: %s", err, path)
             try:
-                shutil.copyfile(path, new_path)
+                if move_without_cache():
+                    copy_file_without_cache(path, new_path)
+                else:
+                    shutil.copyfile(path, new_path)
                 os.remove(path)
             except Exception:
                 # Check if the old-file actually exists (possible delete-delays)
@@ -1004,6 +1011,47 @@ def remove_empty_parent_directories(base_dir: str, files: list[str]):
             except OSError:
                 break
             check_dir = os.path.dirname(check_dir)
+
+
+def move_without_cache() -> bool:
+    """Whether moves across filesystems should bypass the page cache"""
+    return CAN_MOVE_WITHOUT_CACHE and sabnzbd.cfg.move_without_cache()
+
+
+def copy_file_without_cache(src: str, dst: str):
+    """Copy the data of a file, flushing it to the destination and dropping it from the page
+    cache as it goes. A large move to slower or network storage otherwise fills the page cache
+    with data waiting to be written, which inside a memory limit (such as a container) stalls
+    every allocation of the process, including the downloader's, until the destination catches up"""
+    logging.debug("Copying %s to %s without the page cache", src, dst)
+    with open(src, "rb") as fsrc, open(dst, "wb") as fdst:
+        infd, outfd = fsrc.fileno(), fdst.fileno()
+        offset = 0
+        while True:
+            try:
+                sent = os.sendfile(outfd, infd, offset, MOVE_WITHOUT_CACHE_CHUNK)
+            except OSError as err:
+                if offset or err.errno not in (errno.EINVAL, errno.ENOSYS, errno.ENOTSUP):
+                    raise
+                # This filesystem cannot sendfile, nothing was written yet
+                logging.info("Cannot copy %s without the page cache (%s), copying regularly", dst, err)
+                shutil.copyfileobj(fsrc, fdst)
+                return
+            if not sent:
+                break
+            # Written pages are only released after the destination has them, for NFS that
+            # includes the COMMIT. Then drop both sides, they are not needed again.
+            os.fdatasync(outfd)
+            os.posix_fadvise(infd, offset, sent, os.POSIX_FADV_DONTNEED)
+            os.posix_fadvise(outfd, offset, sent, os.POSIX_FADV_DONTNEED)
+            offset += sent
+
+
+def copy2_without_cache(src: str, dst: str) -> str:
+    """Drop-in for shutil.copy2 as the copy_function of shutil.move"""
+    copy_file_without_cache(src, dst)
+    shutil.copystat(src, dst)
+    return dst
 
 
 def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
@@ -1072,7 +1120,8 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
                     raise
         raise OSError("Failed to rename (Winerr %s)" % hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2**32))
     else:
-        shutil.move(old, new)
+        # Across filesystems shutil.move falls back to copying
+        shutil.move(old, new, copy_function=copy2_without_cache if move_without_cache() else shutil.copy2)
         return new
 
 

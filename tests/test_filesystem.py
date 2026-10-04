@@ -22,6 +22,7 @@ tests.test_filesystem - Testing functions in filesystem.py
 import datetime
 import errno
 import io
+import logging
 import pickle
 import stat
 import sys
@@ -835,6 +836,143 @@ class TestMoveToPath:
         assert ok
         assert os.path.isfile(new_path)
         assert not os.path.isfile(source)
+
+
+def cross_device_rename(*args, **kwargs):
+    """Make every rename behave as if the paths are on different filesystems"""
+    raise OSError(errno.EXDEV, "Invalid cross-device link")
+
+
+class TestMoveWithoutCache:
+    @pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Copying without the page cache is Linux only")
+    @pytest.mark.parametrize("size", [0, 1, 1000, 3500, 4000])
+    def test_copy_is_identical_across_chunks(self, tmp_path, size):
+        source = tmp_path / "source.bin"
+        destination = tmp_path / "destination.bin"
+        data = os.urandom(size)
+        source.write_bytes(data)
+
+        with mock.patch.object(filesystem, "MOVE_WITHOUT_CACHE_CHUNK", 1000):
+            filesystem.copy_file_without_cache(str(source), str(destination))
+
+        assert destination.read_bytes() == data
+        assert source.read_bytes() == data
+
+    @pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Copying without the page cache is Linux only")
+    def test_every_chunk_is_flushed_and_dropped(self, tmp_path):
+        source = tmp_path / "source.bin"
+        source.write_bytes(os.urandom(2500))
+
+        with (
+            mock.patch.object(filesystem, "MOVE_WITHOUT_CACHE_CHUNK", 1000),
+            mock.patch("os.fdatasync", wraps=os.fdatasync) as fdatasync,
+            mock.patch("os.posix_fadvise", wraps=os.posix_fadvise) as fadvise,
+        ):
+            filesystem.copy_file_without_cache(str(source), str(tmp_path / "destination.bin"))
+
+        assert fdatasync.call_count == 3
+        assert [call.args[1:] for call in fadvise.call_args_list] == [
+            (offset, length, os.POSIX_FADV_DONTNEED)
+            for offset, length in ((0, 1000), (0, 1000), (1000, 1000), (1000, 1000), (2000, 500), (2000, 500))
+        ]
+
+    def test_falls_back_when_sendfile_is_not_supported(self, tmp_path, caplog):
+        source = tmp_path / "source.bin"
+        destination = tmp_path / "destination.bin"
+        source.write_bytes(b"some data")
+
+        with (
+            mock.patch("os.sendfile", side_effect=OSError(errno.EINVAL, "Invalid argument"), create=True),
+            caplog.at_level(logging.INFO),
+        ):
+            filesystem.copy_file_without_cache(str(source), str(destination))
+
+        assert destination.read_bytes() == b"some data"
+        assert "copying regularly" in caplog.text
+
+    def test_failure_after_writing_is_raised(self, tmp_path):
+        source = tmp_path / "source.bin"
+        source.write_bytes(b"some data")
+
+        with (
+            mock.patch("os.sendfile", side_effect=[4, OSError(errno.EINVAL, "Invalid argument")], create=True),
+            mock.patch("os.fdatasync", create=True),
+            mock.patch("os.posix_fadvise", create=True),
+            mock.patch("os.POSIX_FADV_DONTNEED", 4, create=True),
+            pytest.raises(OSError),
+        ):
+            filesystem.copy_file_without_cache(str(source), str(tmp_path / "destination.bin"))
+
+    @pytest.mark.skipif(sys.platform.startswith("win"), reason="Windows renames through its own retry loop")
+    @pytest.mark.parametrize("enabled, supported", [(True, True), (False, True), (True, False)])
+    def test_move_to_path_across_filesystems_through_renamer(self, tmp_path, enabled, supported):
+        """On POSIX the cross-filesystem copy already happens inside renamer's shutil.move"""
+        root = tmp_path / "complete"
+        root.mkdir()
+        source = tmp_path / "source.bin"
+        source.write_bytes(b"some data")
+        destination = root / "moved.bin"
+
+        with (
+            mock.patch.object(sabnzbd.cfg.move_without_cache, "get", return_value=enabled),
+            mock.patch.object(filesystem, "CAN_MOVE_WITHOUT_CACHE", supported),
+            mock.patch("os.rename", side_effect=cross_device_rename),
+            mock.patch.object(filesystem, "copy_file_without_cache", side_effect=shutil.copyfile) as uncached,
+        ):
+            assert filesystem.move_to_path(str(source), str(destination), root=str(root)) == (True, str(destination))
+
+        assert destination.read_bytes() == b"some data"
+        assert not source.exists()
+        if enabled and supported:
+            uncached.assert_called_once_with(str(source), str(destination))
+        else:
+            uncached.assert_not_called()
+
+    @pytest.mark.parametrize("enabled, supported", [(True, True), (False, True), (True, False)])
+    def test_move_to_path_copies_when_renamer_fails(self, tmp_path, enabled, supported):
+        """For example when shutil.move copied the data but could not copy the metadata"""
+        root = tmp_path / "complete"
+        root.mkdir()
+        source = tmp_path / "source.bin"
+        source.write_bytes(b"some data")
+        destination = root / "moved.bin"
+
+        with (
+            mock.patch.object(sabnzbd.cfg.move_without_cache, "get", return_value=enabled),
+            mock.patch.object(filesystem, "CAN_MOVE_WITHOUT_CACHE", supported),
+            mock.patch.object(filesystem, "renamer", side_effect=cross_device_rename),
+            mock.patch.object(filesystem, "copy_file_without_cache", side_effect=shutil.copyfile) as uncached,
+            mock.patch("shutil.copyfile", wraps=shutil.copyfile) as cached,
+        ):
+            assert filesystem.move_to_path(str(source), str(destination), root=str(root)) == (True, str(destination))
+
+        assert destination.read_bytes() == b"some data"
+        assert not source.exists()
+        if enabled and supported:
+            uncached.assert_called_once_with(str(source), str(destination))
+        else:
+            uncached.assert_not_called()
+            cached.assert_called_once_with(str(source), str(destination))
+
+    @pytest.mark.skipif(sys.platform.startswith("win"), reason="Windows renames through its own retry loop")
+    def test_renamer_keeps_metadata(self, tmp_path):
+        source = tmp_path / "source.bin"
+        source.write_bytes(b"some data")
+        os.utime(source, (1_000_000_000, 1_000_000_000))
+        destination = tmp_path / "moved.bin"
+
+        with (
+            mock.patch.object(sabnzbd.cfg.move_without_cache, "get", return_value=True),
+            mock.patch.object(filesystem, "CAN_MOVE_WITHOUT_CACHE", True),
+            mock.patch("os.rename", side_effect=cross_device_rename),
+            mock.patch.object(filesystem, "copy_file_without_cache", side_effect=shutil.copyfile) as uncached,
+        ):
+            assert filesystem.renamer(str(source), str(destination)) == str(destination)
+
+        uncached.assert_called_once()
+        assert destination.read_bytes() == b"some data"
+        assert destination.stat().st_mtime == 1_000_000_000
+        assert not source.exists()
 
 
 class TestFirstExistingPath:
