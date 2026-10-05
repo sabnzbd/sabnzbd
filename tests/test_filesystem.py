@@ -903,6 +903,17 @@ class TestMoveWithoutCache:
         ):
             filesystem.copy_file_without_cache(str(source), str(tmp_path / "destination.bin"))
 
+    def test_same_file_is_refused(self, tmp_path):
+        source = tmp_path / "source.bin"
+        destination = tmp_path / "destination.bin"
+        source.write_bytes(b"some data")
+        os.link(source, destination)
+
+        with pytest.raises(shutil.SameFileError):
+            filesystem.copy_file_without_cache(str(source), str(destination))
+
+        assert source.read_bytes() == b"some data"
+
     @pytest.mark.skipif(sys.platform.startswith("win"), reason="Windows renames through its own retry loop")
     @pytest.mark.parametrize("enabled, supported", [(True, True), (False, True), (True, False)])
     def test_move_to_path_across_filesystems_through_renamer(self, tmp_path, enabled, supported):

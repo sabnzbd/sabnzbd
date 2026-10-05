@@ -1023,6 +1023,12 @@ def copy_file_without_cache(src: str, dst: str):
     cache as it goes. A large move to slower or network storage otherwise fills the page cache
     with data waiting to be written, which inside a memory limit (such as a container) stalls
     every allocation of the process, including the downloader's, until the destination catches up"""
+    # Like shutil.copyfile, opening the destination would otherwise truncate the source
+    try:
+        if os.path.samefile(src, dst):
+            raise shutil.SameFileError("%s and %s are the same file" % (src, dst))
+    except FileNotFoundError:
+        pass
     logging.debug("Copying %s to %s without the page cache", src, dst)
     with open(src, "rb") as fsrc, open(dst, "wb") as fdst:
         infd, outfd = fsrc.fileno(), fdst.fileno()
