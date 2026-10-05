@@ -1,7 +1,7 @@
-Release Notes - SABnzbd 5.2.0 Beta 1
+Release Notes - SABnzbd 5.2.0 Beta 2
 =========================================================
 
-This is the first test release of version 5.2.0.
+This is the second test release of version 5.2.0.
 We are still working on several other features, but hope you will already enjoy
 the current improvements and give us feedback!
 
@@ -10,20 +10,30 @@ the current improvements and give us feedback!
 * Downloaded data will be written directly to disk (if your hardware supports it),
   which greatly reduces memory and CPU usage on systems with SSD's.
   Additionally, several other performance improvements were made.
-* Search your Indexers and Add downloads directly from within SABnzbd.
+* Search your Indexers and add downloads directly from within SABnzbd.
 * Post-Processing, Pre-Queue and Notification Scripts no longer receive
   command-line arguments. Use the `SAB_*` environment variables instead.
+  This prevents an attacker easy access to remote code execution.
+* Download directories can no longer be inside the program directory.
+  This is also to prevent an attacker easy access to remote code execution.
 * Changed the internal webserver from CherryPy to Starlette.
 * Overview of Active Sessions is available when username and password are enabled.
 * Only allow proxied requests from hosts configured in `xff_trusted_hosts`.
+* Removed the `scriptlog` link from the `script_log` history field.
+* Remove unused fields `completeness`, `meta`, `series`, `id`, and
+  `script_log` from `history`-API response.
+* Cache `Public IPv4 address` for 10 minutes to prevent abuse.
 
 ## Bug fixes in 5.2.0
 
-* Jobs with `Repair` priority would not always be at the top of the queue.
+* Downloads with `Repair` priority would not always be at the top of the queue.
 * Failure to read one RSS URL would stop the whole readout instead of continuing to the next.
 * Prevent potential XSS in the History from malicious Script output (GHSA-rpwc-qfxm-7h2v)
   or malicious NNTP responses (GHSA-c5x2-896f-g5g8).
 * Correct `articles_success` to `articles_failed` in Server statistics API-call.
+* Stalled Unrar could freeze the post-processing queue.
+* File handles could remain open after download completed.
+* Downloads with missing articles and no PAR2 would not be marked as failed.
 * macOS: Tray icon would not show on macOS 27.
 
 ## Upgrade notices
