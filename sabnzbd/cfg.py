@@ -339,6 +339,15 @@ def validate_scriptdir_not_appdir(root: str, value: str, default: str) -> tuple[
                 "Do not use a folder in the application folder as your Scripts Folder, it might be emptied during updates."
             )
         )
+    # A system bin folder holds executables like sh, which makes any of them a runnable "script"
+    if value and real_path(root, value).lower().endswith((f"{os.sep}bin", f"{os.sep}sbin")):
+        sabnzbd.misc.helpful_warning(
+            T(
+                "Your Scripts Folder is set to a system 'bin' folder. "
+                "This is unusual and usually indicates that someone used a recent exploit "
+                "to gain access to this system and run commands on it."
+            )
+        )
     return None, value
 
 
