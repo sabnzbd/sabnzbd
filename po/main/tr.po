@@ -440,7 +440,7 @@ msgstr "Kategori dizini Geçici İndirme Dizini'nin bir alt dizini olamaz."
 #. Error message
 #: sabnzbd/cfg.py, sabnzbd/postproc.py
 msgid "Folder %s is inside the program folder, this is not allowed"
-msgstr ""
+msgstr "%s dizini program dizininin içindedir, buna izin verilmez"
 
 #: sabnzbd/cfg.py
 msgid ""
@@ -3137,6 +3137,8 @@ msgid ""
 "Some security related settings will not be restored, in order to prevent "
 "abuse."
 msgstr ""
+"Suistimalleri önlemek amacıyla, bazı güvenlikle alakalı ayarlar geri "
+"getirilmeyecektir."
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
@@ -4243,6 +4245,8 @@ msgid ""
 "User-defined email template folder can be set in your configuration file "
 "using <code>email_dir</code>."
 msgstr ""
+"Kullanıcı tarafından belirlenen e-posta şablon dizini, "
+"<code>email_dir</code> kullanarak yapılandırma dosyanızda ayarlanabilir."
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"
