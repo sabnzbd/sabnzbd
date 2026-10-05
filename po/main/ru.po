@@ -424,7 +424,7 @@ msgstr ""
 msgid ""
 "Your Scripts Folder is set to a system 'bin' folder. This is unusual and "
 "usually indicates that someone used a recent exploit to gain access to this "
-"system and run commands on it."
+"system and run commands on it. See: https://sabnzbd.org/5-1-vulnerabilities"
 msgstr ""
 
 #. Warning message
