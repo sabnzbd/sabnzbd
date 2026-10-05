@@ -135,9 +135,9 @@ class TestConfigCategories(SABnzbdBaseTest):
         # Test if base page works
         self.open_page("http://%s:%s/config/categories" % (SAB_HOST, SAB_PORT))
 
-        # Add new category
+        # Add new category, the page reloads itself after saving
         self.page.locator("[name='newname']").nth(1).fill(self.category_name)
-        with self.page.expect_response(lambda r: r.request.method == "POST"):
+        with self.page.expect_navigation():
             self.page.locator("xpath=//button/text()[normalize-space(.)='Add']/parent::*").click()
         self.no_page_crash()
 
