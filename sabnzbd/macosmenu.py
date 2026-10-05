@@ -64,7 +64,7 @@ import sabnzbd.cfg
 
 from sabnzbd.filesystem import diskspace
 from sabnzbd.misc import to_units
-from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, MEBI, Status
+from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, MEBI, DEF_PORT, Status
 from sabnzbd.panic import launch_a_browser
 
 from sabnzbd.api import fast_queue
@@ -517,7 +517,7 @@ class SABnzbdDelegate(NSObject):
 
     def restartSafeHost_(self, sender):
         sabnzbd.cfg.web_host.set("127.0.0.1")
-        sabnzbd.cfg.web_port.set("8080")
+        sabnzbd.cfg.web_port.set(DEF_PORT)
         sabnzbd.cfg.enable_https.set(False)
         sabnzbd.config.save_config()
         self.setMenuTitle_(T("Stopping..."))

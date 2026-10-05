@@ -412,7 +412,7 @@ class OptionPassword(Option):
     def __init__(self, section: str, keyword: str, default_val: str = "", add: bool = True):
         super().__init__(section, keyword, default_val, add=add)
 
-    def get(self) -> Optional[str]:
+    def get(self) -> str:
         """Return decoded password"""
         return decode_password(super().get(), self.keyword)
 
@@ -433,10 +433,10 @@ class OptionPassword(Option):
         else:
             return {self.keyword: self.get()}
 
-    def set(self, pw: str):
+    def set(self, value: str):
         """Set password, encode it"""
-        if (pw is not None and pw == "") or (pw and pw.strip("*")):
-            super().set(encode_password(pw))
+        if (value is not None and value == "") or (value and value.strip("*")):
+            super().set(encode_password(value))
 
     def __call__(self) -> str:
         """get() replacement"""
@@ -604,9 +604,9 @@ class ConfigServer(ConfigSection):
         if not self.displayname():
             self.displayname.set(self._name)
 
-    def rename(self, name: str):
+    def rename(self, new_name: str):
         """Give server new display name, the identifier stays the same"""
-        self.displayname.set(name)
+        self.displayname.set(new_name)
 
 
 class ConfigIndexer(ConfigSection):

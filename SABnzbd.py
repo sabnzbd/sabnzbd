@@ -658,9 +658,9 @@ def get_webhost(web_host, web_port, https_port):
         browserhost = "localhost"
 
     if web_port is None:
-        web_port = sabnzbd.cfg.web_port.get_int()
+        web_port = sabnzbd.cfg.web_port()
     else:
-        sabnzbd.cfg.web_port.set(str(web_port))
+        sabnzbd.cfg.web_port.set(web_port)
 
     if https_port is None:
         https_port = sabnzbd.cfg.https_port.get_int()
