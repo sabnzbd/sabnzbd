@@ -657,10 +657,10 @@ def get_webhost(web_host, web_port, https_port):
         web_host = "127.0.0.1"
         browserhost = "localhost"
 
-    if web_port is None:
-        web_port = sabnzbd.cfg.web_port()
-    else:
+    if web_port is not None:
         sabnzbd.cfg.web_port.set(web_port)
+    # The Option validates the CLI port (range, numeric), so use its value to bind to what is saved
+    web_port = sabnzbd.cfg.web_port()
 
     if https_port is None:
         https_port = sabnzbd.cfg.https_port.get_int()
