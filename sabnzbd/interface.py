@@ -1253,18 +1253,16 @@ def handle_server(params, new_svr=False):
         ):
             return report(params, error=T('Server address "%s:%s" is not valid.') % (host, port))
 
-    # Default server name is just the host name
-    server = params.get("server")
-    if not (server and config.get_config("servers", server)):
-        server = host
-
-    if new_svr:
-        server = config.ConfigServer.unique_name(server)
-
     for kw in ("ssl", "enable", "required", "optional"):
         if kw not in params.keys():
             params[kw] = None
-    server = config.ConfigServer.update_or_create(server, params).name
+
+    if not new_svr and params.get("server"):
+        # An existing server always keeps its name, the BPSMeter and Downloader use it as key
+        server = config.ConfigServer.update_or_create(params.get("server"), params).name
+    else:
+        # A new server is named after its host
+        server = config.ConfigServer.create(host, params).name
 
     config.save_config()
     sabnzbd.Downloader.update_server(server)

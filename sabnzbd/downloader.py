@@ -354,8 +354,10 @@ class Downloader(Thread):
             if server.id == server_id:
                 # Server exists, do re-init later
                 create = False
-                server.restart = True
-                self.server_restarts += 1
+                # The loop decrements the counter once per restart, so don't count a pending restart again
+                if not server.restart:
+                    server.restart = True
+                    self.server_restarts += 1
                 break
 
         if create and enabled and host and port and threads:
