@@ -605,7 +605,11 @@ class ConfigServer(ConfigSection):
             self.displayname.set(self._name)
 
     def rename(self, new_name: str):
-        """Give server new display name, the identifier stays the same"""
+        """Give server new display name, the identifier stays the same.
+        Unlike ConfigSection.rename it must never change the identifier,
+        because the BPSMeter and the Downloader use it as the key for their bookkeeping
+        Method currently not used due to handle_server."""
+
         self.displayname.set(new_name)
 
 
