@@ -59,7 +59,7 @@ jobs:
         path: "*-win*-bin.zip"
         name: Windows standalone binary (${{ matrix.architecture }})
     - name: Sign Windows standalone binary
-      uses: signpath/github-action-submit-signing-request@v3
+      uses: signpath/github-action-submit-signing-request@v2
       if: contains(github.ref, 'refs/tags/')
       with:
         api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
@@ -91,7 +91,7 @@ jobs:
         name: Windows installer (${{ matrix.architecture }})
     - name: Sign Windows installer
       if: matrix.architecture == 'x64' && contains(github.ref, 'refs/tags/')
-      uses: signpath/github-action-submit-signing-request@v3
+      uses: signpath/github-action-submit-signing-request@v2
       with:
         api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
         organization-id: ${{ secrets.SIGNPATH_ORG_ID }}
