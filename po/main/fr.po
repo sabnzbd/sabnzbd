@@ -453,6 +453,8 @@ msgstr ""
 #: sabnzbd/cfg.py, sabnzbd/postproc.py
 msgid "Folder %s is inside the program folder, this is not allowed"
 msgstr ""
+"Le dossier %s est à l'intérieur du dossier de programme, ce n'est pas "
+"autorisé"
 
 #: sabnzbd/cfg.py
 msgid ""
@@ -478,6 +480,10 @@ msgid ""
 "usually indicates that someone used a recent exploit to gain access to this "
 "system and run commands on it. See: https://sabnzbd.org/5-1-vulnerabilities"
 msgstr ""
+"Votre dossier de scripts pointe vers un dossier système 'bin'. C'est "
+"inhabituel et cela indique généralement que quelqu'un a exploité une "
+"vulnérabilité récente pour accéder à cette machine et y exécuter des "
+"commandes. Voir : https://sabnzbd.org/5-1-vulnerabilities"
 
 #. Warning message
 #: sabnzbd/cfg.py
@@ -3106,7 +3112,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable Indexer Search"
-msgstr ""
+msgstr "Activer la recherche par l'indexeur"
 
 #: sabnzbd/skintext.py
 msgid "Indexer URL"
@@ -3178,6 +3184,8 @@ msgid ""
 "Some security related settings will not be restored, in order to prevent "
 "abuse."
 msgstr ""
+" Certains paramètres relatifs à la sécurité ne seront pas rétablis, afin "
+"d'éviter les abus."
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
@@ -4311,6 +4319,8 @@ msgid ""
 "User-defined email template folder can be set in your configuration file "
 "using <code>email_dir</code>."
 msgstr ""
+"Le dossier des modèles d'e-mail personnalisés peut être défini dans votre "
+"fichier de configuration via <code>email_dir</code>."
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"
