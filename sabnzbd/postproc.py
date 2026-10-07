@@ -392,6 +392,7 @@ def process_job(nzo: NzbObject) -> bool:
     nzb_list = []
     one_folder = False
     newfiles = []
+    unwanted_failed = False
     # These need to be initialized in case of a crash
     workdir_complete = ""
     tmp_workdir_complete = None
@@ -516,8 +517,11 @@ def process_job(nzo: NzbObject) -> bool:
                 # Sanitize the resulting files
                 newfiles = sanitize_files(filelist=newfiles)
 
-                # Check unpacked files for unwanted extensions, the download-time check can miss files hidden inside archives
-                newfiles = remove_unwanted_files(nzo, newfiles, tmp_workdir_complete)
+                # Check unpacked files for unwanted extensions, the download-time check can miss files
+                # hidden inside archives
+                newfiles, unwanted_failed = remove_unwanted_files(nzo, newfiles, tmp_workdir_complete)
+                if unwanted_failed:
+                    all_ok = False
                 logging.info("Finished unpack_magic on %s", filename)
 
             if cfg.safe_postproc():
@@ -566,6 +570,29 @@ def process_job(nzo: NzbObject) -> bool:
         if not nzb_list:
             script_ret = 0
             script_error = False
+
+            # Run deobfuscation only on verified jobs, including jobs that only failed on unwanted files,
+            # so extensions revealed by deobfuscation are still removed from the failed result
+            if all_ok or (unwanted_failed and not unpack_error):
+                # Use par2 files to deobfuscate unpacked file names
+                # Only if we also run cleanup, so not to process the "regular" par2 files
+                if nzo.delete and cfg.process_unpacked_par2():
+                    newfiles = deobfuscate.recover_par2_names(newfiles)
+
+                if cfg.deobfuscate_final_filenames():
+                    # Deobfuscate the filenames
+                    logging.info("Running deobfuscate")
+                    newfiles = deobfuscate.deobfuscate(nzo, newfiles, nzo.final_name)
+                    # Deobfuscate the subtitles
+                    deobfuscate.deobfuscate_subtitles(nzo, newfiles)
+
+            # Check again for unwanted extensions, deobfuscation can reveal extensions the check after
+            # unpack could not see. Must run before the folder gets its final (or failed) name.
+            newfiles, deobfuscated_unwanted_failed = remove_unwanted_files(nzo, newfiles, tmp_workdir_complete)
+            if deobfuscated_unwanted_failed:
+                all_ok = False
+                unwanted_failed = True
+
             # Give destination its final name
             if cfg.folder_rename() and tmp_workdir_complete and not one_folder:
                 if not all_ok:
@@ -585,7 +612,7 @@ def process_job(nzo: NzbObject) -> bool:
                     # Better disable sorting because filenames are all off now
                     file_sorter.sorter_active = False
 
-            if empty:
+            if empty or unwanted_failed:
                 job_result = -1
             else:
                 job_result = int(par_error) + int(bool(unpack_error)) * 2
@@ -601,20 +628,6 @@ def process_job(nzo: NzbObject) -> bool:
                         nzo.set_unpack_info("Unpack", T("Failed to move files"))
                         nzo.fail_msg = T("Failed to move files")
                         all_ok = False
-
-            # Run deobfuscation only on verified jobs
-            if all_ok:
-                # Use par2 files to deobfuscate unpacked file names
-                # Only if we also run cleanup, so not to process the "regular" par2 files
-                if nzo.delete and cfg.process_unpacked_par2():
-                    newfiles = deobfuscate.recover_par2_names(newfiles)
-
-                if cfg.deobfuscate_final_filenames():
-                    # Deobfuscate the filenames
-                    logging.info("Running deobfuscate")
-                    newfiles = deobfuscate.deobfuscate(nzo, newfiles, nzo.final_name)
-                    # Deobfuscate the subtitles
-                    deobfuscate.deobfuscate_subtitles(nzo, newfiles)
 
             # Always run the user script, even for failed jobs (see #3336)
             # The script receives job_result indicating success/failure
@@ -644,7 +657,9 @@ def process_job(nzo: NzbObject) -> bool:
 
             # Email the results
             if cfg.email_endjob():
-                if cfg.email_endjob() == 1 or (cfg.email_endjob() == 2 and (unpack_error or par_error or script_error)):
+                if cfg.email_endjob() == 1 or (
+                    cfg.email_endjob() == 2 and (unpack_error or par_error or script_error or unwanted_failed)
+                ):
                     emailer.endjob(
                         nzo.final_name,
                         nzo.cat,
@@ -1189,20 +1204,25 @@ def cleanup_list(filelist: list[str], base_dir: str, skip_nzb: bool) -> list[str
     return remaining_files
 
 
-def remove_unwanted_files(nzo: NzbObject, filelist: list[str], base_dir: str) -> list[str]:
+def remove_unwanted_files(nzo: NzbObject, filelist: list[str], base_dir: str) -> tuple[list[str], bool]:
     """Remove all files of the job that match the unwanted extensions.
-    The download-time check can be bypassed, for example by files
-    hidden inside nested archives, or within PAR2 repair data,
-    so the files produced by unpacking are verified again.
-    Only the tracked files are considered, so files of other jobs
-    in a shared folder are left alone. Returns the remaining files.
+    The download-time check can be bypassed, for example by files hidden
+    inside nested archives or PAR2 repair data, or by obfuscated files that
+    only get their real extension during deobfuscation, so the final files
+    are verified again. Only the tracked files are considered, so files of
+    other jobs in a shared folder are left alone.
+    The job can no longer be paused at this point, so unwanted files are
+    always removed. If the configured action is to fail the job, or if an
+    unwanted file could not be removed, the job is marked as failed.
+    Returns the remaining files and whether the job failed.
     """
     # Skip if not configured or after an explicit user override of the unwanted extension pause
     if not cfg.unwanted_extensions() or not cfg.action_on_unwanted_extensions() or nzo.unwanted_ext == 2:
-        return filelist
+        return filelist, False
 
     remaining_files = []
     removed_files = []
+    removal_failed = False
     for path in filelist:
         if os.path.isfile(path) and has_unwanted_extension(get_filename(path)):
             try:
@@ -1213,14 +1233,29 @@ def remove_unwanted_files(nzo: NzbObject, filelist: list[str], base_dir: str) ->
             except Exception:
                 logging.error(T("Removing %s failed"), clip_path(path))
                 logging.info("Traceback: ", exc_info=True)
+                removal_failed = True
         remaining_files.append(path)
 
+    job_failed = False
     if removed_files:
         nzo.set_unpack_info("Unpack", T("Removed %s files with unwanted extensions") % len(removed_files))
+    if removal_failed:
+        # The job can't complete with the unwanted files still in place, regardless of the configured action
+        logging.debug("Unwanted extension ... failing job, unable to remove unwanted files")
+        job_failed = True
+        # Keep the reason of an earlier failure
+        if not nzo.fail_msg:
+            nzo.fail_msg = T("Failed to remove files with unwanted extensions")
+    elif removed_files and cfg.action_on_unwanted_extensions() == 2:
+        logging.debug("Unwanted extension ... failing job")
+        job_failed = True
+        if not nzo.fail_msg:
+            nzo.fail_msg = T("Aborted, unwanted extension detected")
 
     # Remove the directories the removed files left behind, if they are now empty
-    remove_empty_parent_directories(base_dir, removed_files)
-    return remaining_files
+    if removed_files:
+        remove_empty_parent_directories(base_dir, removed_files)
+    return remaining_files, job_failed
 
 
 def prefix(path: str, pre: str) -> str:
