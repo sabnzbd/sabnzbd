@@ -564,6 +564,60 @@ class TestMisc:
         assert misc.is_sample(os.path.join(tmp_path, "regular-movie.mkv")) is False
 
     @pytest.mark.parametrize(
+        "name, ext",
+        [
+            ("Show.S01E01.proof", ".rar"),
+            ("Movie.2023.sample", ".zip"),
+            ("Release-sample", ".nzb"),
+            ("Release-proof", ".gz"),
+        ],
+    )
+    def test_is_sample_archive_or_nzb_skips_media_check(self, name, ext, tmp_path, monkeypatch):
+        """Archive and NZB files must be classified by name only; get_media_duration
+        must never be called for them (fixes AttributeError on proof rarsets, #3641).
+        We create the file on disk so that os.path.isfile() returns True, which would
+        otherwise trigger the media-duration path without the fix."""
+        path = os.path.join(tmp_path, name + ext)
+        with open(path, "wb") as fp:
+            fp.write(b"\x00" * 16)
+        called = []
+        monkeypatch.setattr(misc, "get_media_duration", lambda _: called.append(True) or None)
+        result = misc.is_sample(path)
+        assert result is True
+        assert not called, "get_media_duration should not be called for archive/NZB files"
+
+    def test_get_media_duration_metadata_none(self, tmp_path, monkeypatch):
+        """extractMetadata returning None must not raise AttributeError; the function
+        must return None gracefully and must NOT fall into the exception-handler path
+        (fixes #3641). Without the fix, None.get() raises AttributeError which is
+        caught by the broad except, leaving a 'Failed to read media duration' debug
+        log. With the fix the walrus short-circuits cleanly and no exception occurs."""
+        dummy = os.path.join(tmp_path, "proof.bin")
+        with open(dummy, "wb") as fp:
+            fp.write(b"\x00" * 16)
+
+        import hachoir.parser as _hp
+        import hachoir.metadata as _hm
+
+        fake_parser = mock.MagicMock()
+        fake_parser.__enter__ = lambda s: s
+        fake_parser.__exit__ = mock.MagicMock(return_value=False)
+        monkeypatch.setattr(_hp, "createParser", lambda _: fake_parser)
+        monkeypatch.setattr(_hm, "extractMetadata", lambda _: None)
+
+        # The function must return None without entering the except-handler path.
+        # Verify by ensuring the "Failed to read media duration" debug message is
+        # never emitted (it is only reached when an exception is caught).
+        with mock.patch.object(misc.logging, "debug") as mock_debug:
+            result = misc.get_media_duration(dummy)
+
+        assert result is None
+        failure_calls = [c for c in mock_debug.call_args_list if "Failed to read" in str(c)]
+        assert (
+            not failure_calls
+        ), "AttributeError was raised (extractMetadata returned None but .get() was called on it)"
+
+    @pytest.mark.parametrize(
         "test_input, expected_output",
         [
             (["cmd1", 9, "cmd3"], '"cmd1" "9" "cmd3"'),  # sending all commands as valid string
