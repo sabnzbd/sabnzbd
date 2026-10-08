@@ -55,12 +55,14 @@ from sabnzbd.constants import (
     REPAIR_REQUEST,
     GUESSIT_SORT_TYPES,
     PP_LOOKUP,
+    VALID_ARCHIVES,
+    VALID_NZB_FILES,
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.decorators import conditional_cache, synchronized
 from sabnzbd.encoding import ubtou, platform_btou
-from sabnzbd.filesystem import userxbit, make_script_path, remove_file, strip_extensions, safe_fnmatch
+from sabnzbd.filesystem import userxbit, make_script_path, remove_file, strip_extensions, safe_fnmatch, get_ext
 
 if sabnzbd.WINDOWS:
     try:
@@ -1233,6 +1235,10 @@ def is_sample(filename_or_filepath: str) -> bool:
     if not re.search(RE_SAMPLE, os.path.basename(filename_or_filepath)):
         return False
 
+    # Archives and NZB files are never media; skip the duration check entirely
+    if get_ext(filename_or_filepath) in VALID_ARCHIVES + VALID_NZB_FILES:
+        return True
+
     # Long media files are never a sample, no matter what its name suggests
     if os.path.isfile(filename_or_filepath):
         if duration := get_media_duration(filename_or_filepath):
@@ -1264,7 +1270,8 @@ def get_media_duration(filepath: str) -> Optional[float]:
         if not parser:
             return None
         with parser:
-            if duration := extractMetadata(parser).get("duration", 0):
+            metadata = extractMetadata(parser)
+            if metadata and (duration := metadata.get("duration", 0)):
                 return duration.total_seconds()
     except Exception:
         logging.debug("Failed to read media duration of %s", filepath, exc_info=True)
