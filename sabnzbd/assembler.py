@@ -39,7 +39,7 @@ from sabnzbd.filesystem import (
     set_permissions,
     clip_path,
     has_win_device,
-    diskspace,
+    diskspace_base,
     get_filename,
     has_unwanted_extension,
     get_basename,
@@ -395,16 +395,20 @@ class Assembler(Thread):
     def diskspace_check(nzo: NzbObject, nzf: NzbFile):
         """Check diskspace requirements.
         If not enough space left, pause downloader and send email"""
-        download_dir, complete_dir = diskspace(force=True, complete_dir=get_complete_directory(nzo)[0])
+        download_dir = diskspace_base(cfg.download_dir.get_path())
         full_dir: Optional[str] = None
         required_space = (cfg.download_free.get_float() + nzf.bytes) / GIGI
         if download_dir.free < required_space:
             full_dir = download_dir.path
 
-        # Enough space in download_dir, check complete_dir
+        # Enough space in download_dir, check complete_dir. Its free space is
+        # only needed once something is compared against it, so ask the
+        # device only then: on a network share every statvfs is a round trip,
+        # and a slow one stalls the assembler for every finished file.
         if not full_dir:
             complete_free = cfg.complete_free.get_float()
             required_space = 0
+            near_end = False
             if cfg.direct_unpack() and nzo.unpack:
                 # We unpack while we download, so we should check every time
                 # if the unpack maybe already filled up the drive
@@ -413,14 +417,18 @@ class Assembler(Thread):
                 # Since only at 100% unpack is started, continue
                 # downloading until 90% complete before checking
                 required_space = complete_free / GIGI
-                if nzo.unpack or not same_device(download_dir.path, complete_dir.path):
+                near_end = True
+
+            if required_space or near_end:
+                complete_dir = diskspace_base(get_complete_directory(nzo)[0])
+                if near_end and (nzo.unpack or not same_device(download_dir.path, complete_dir.path)):
                     # Unpacking writes a second copy of the data before the archives are removed
                     # and moving to another device copies it, so both need room for the whole job.
                     # Without unpacking on the same device the move is only a rename.
                     required_space += nzo.bytes / GIGI
 
-            if required_space and complete_dir.free < required_space:
-                full_dir = complete_dir.path
+                if required_space and complete_dir.free < required_space:
+                    full_dir = complete_dir.path
 
         if full_dir:
             logging.warning(T("Too little diskspace forcing PAUSE"))
