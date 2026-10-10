@@ -369,6 +369,7 @@ class TestDiskspaceCheck:
 
     @pytest.fixture(autouse=True)
     def setup_mocks(self):
+        """Mock the downloader, scheduler, notifier, emailer, config and disk helpers around each test"""
         self.nzo = make_mock_nzo(bytes=int(2 * GIGI), unpack=True)
 
         self.nzf = mock.Mock()
@@ -386,7 +387,7 @@ class TestDiskspaceCheck:
             sabnzbd.emailer = self.mock_emailer
 
             with (
-                mock.patch("sabnzbd.assembler.diskspace") as self.mock_diskspace,
+                mock.patch("sabnzbd.assembler.diskspace_base") as self.mock_diskspace,
                 mock.patch("sabnzbd.assembler.get_complete_directory") as self.mock_get_complete_dir,
                 mock.patch("sabnzbd.assembler.same_device", return_value=False) as self.mock_same_device,
                 mock.patch("sabnzbd.assembler.cfg") as self.mock_cfg,
@@ -406,10 +407,12 @@ class TestDiskspaceCheck:
             del sabnzbd.emailer
 
     def _set_diskspace(self, download_free_gb: float, complete_free_gb: float, complete_path: str = "/complete"):
-        self.mock_diskspace.return_value = (
-            Diskspace(path="/download", free=download_free_gb),
-            Diskspace(path=complete_path, free=complete_free_gb),
-        )
+        """Model the free space per folder that diskspace_base reports"""
+        spaces = {
+            "/download": Diskspace(path="/download", free=download_free_gb),
+            complete_path: Diskspace(path=complete_path, free=complete_free_gb),
+        }
+        self.mock_diskspace.side_effect = lambda path: spaces[path]
 
     def test_download_dir_full(self):
         """Pause when download_dir has insufficient space"""
@@ -453,6 +456,19 @@ class TestDiskspaceCheck:
 
         self.mock_downloader.pause.assert_not_called()
         self.mock_scheduler.plan_diskspace_resume.assert_not_called()
+        # The complete_dir is not even asked: on a network share that is a round trip per file
+        self.mock_diskspace.assert_called_once_with("/download")
+
+    def test_complete_dir_asked_near_completion(self):
+        """The complete_dir is asked once the download is >90% done"""
+        self.nzo.bytes_tried = int(self.nzo.bytes * 0.96)
+        self.nzo.bytes_par2 = 0
+        self._set_diskspace(download_free_gb=50.0, complete_free_gb=50.0)
+
+        Assembler.diskspace_check(self.nzo, self.nzf)
+
+        self.mock_diskspace.assert_any_call("/complete")
+        self.mock_downloader.pause.assert_not_called()
 
     def test_complete_dir_custom_path(self):
         """full_dir is the actual path when complete_dir differs from default"""
@@ -508,6 +524,7 @@ class TestDiskspaceCheckScenarios:
 
     @pytest.fixture(autouse=True)
     def setup_mocks(self):
+        """Mock the downloader, scheduler, config and disk helpers around each scenario"""
         self.mock_downloader = mock.Mock()
         self.mock_scheduler = mock.Mock()
 
@@ -518,7 +535,7 @@ class TestDiskspaceCheckScenarios:
             sabnzbd.emailer = mock.Mock()
 
             with (
-                mock.patch("sabnzbd.assembler.diskspace") as self.mock_diskspace,
+                mock.patch("sabnzbd.assembler.diskspace_base") as self.mock_diskspace,
                 mock.patch("sabnzbd.assembler.get_complete_directory") as self.mock_get_complete_dir,
                 mock.patch("sabnzbd.assembler.same_device") as self.mock_same_device,
                 mock.patch("sabnzbd.assembler.cfg") as self.mock_cfg,
@@ -565,10 +582,11 @@ class TestDiskspaceCheckScenarios:
         else:
             complete_dir_free = disk_free_gb if complete_disk_free_gb is None else complete_disk_free_gb
 
-        self.mock_diskspace.return_value = (
-            Diskspace(path="/download", free=download_dir_free),
-            Diskspace(path="/download" if same_device else "/complete", free=complete_dir_free),
-        )
+        self.spaces = {
+            "/download": Diskspace(path="/download", free=download_dir_free),
+            "/complete": Diskspace(path="/download" if same_device else "/complete", free=complete_dir_free),
+        }
+        self.mock_diskspace.side_effect = lambda path: self.spaces[path]
         self.mock_same_device.return_value = same_device
         self.mock_cfg.download_free.get_float.return_value = download_free_gb * GIGI
         self.mock_cfg.complete_free.get_float.return_value = complete_free_gb * GIGI
@@ -612,7 +630,7 @@ class TestDiskspaceCheckScenarios:
 
         assert result.paused is False
         # Free space is below the old requirement, but well above the reserve it now has to meet
-        assert 5.0 < self.mock_diskspace.return_value[1].free < 5.0 + 61.0
+        assert 5.0 < self.spaces["/complete"].free < 5.0 + 61.0
 
     @pytest.mark.parametrize(
         "scenario, expect_full_dir, expect_required",
