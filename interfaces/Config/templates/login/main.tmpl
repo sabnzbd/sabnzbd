@@ -58,6 +58,17 @@
                     localStorage.setItem("remember_me", jQuery(this).is(':checked'));
                 })
             } catch(err) { }
+            
+            document.querySelector('[name="username"]')
+              .addEventListener("blur", function () {
+                this.value = this.value.trim();
+              });
+
+            document.querySelector('[name="password"]')
+              .addEventListener("blur", function () {
+                this.value = this.value.trim();
+              });
+
         </script>
     </body>
 </html>
