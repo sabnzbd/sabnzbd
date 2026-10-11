@@ -224,6 +224,7 @@ def build_frames(group: SubscriptionGroup) -> list[tuple[str, dict[str, Any]]]:
             statuses=list(options.history_statuses) or None,
             failed_only=options.failed_only,
             archive=options.archive,
+            last_history_update=history_update,
         )
         slots = history.get("slots", [])
         order, changed, fingerprints = row_delta(slots, group.history_baseline)
