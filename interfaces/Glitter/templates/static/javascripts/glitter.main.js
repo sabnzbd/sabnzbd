@@ -1351,6 +1351,8 @@ function ViewModel() {
     self.eventWatchdog = null
     self.eventsLive = false
     self.resyncCount = 0
+    self.resyncWindow = 60 * 1000
+    self.lastResync = 0
     self.queueCache = null
     self.historyCache = null
 
@@ -1425,7 +1427,11 @@ function ViewModel() {
             // The server dropped what we were too slow to read, and it still holds the
             // baseline our next delta would be built against. Only a fresh subscription
             // gets a keyframe, and a client that keeps falling behind is better off
-            // polling, which never queues work it cannot finish.
+            // polling, which never queues work it cannot finish. Only resyncs that
+            // cluster count, so an isolated one does not retire the stream for good.
+            var now = Date.now()
+            if (now - self.lastResync > self.resyncWindow) self.resyncCount = 0
+            self.lastResync = now
             self.resyncCount++
             if (self.resyncCount > 3) {
                 self.stopEvents()
