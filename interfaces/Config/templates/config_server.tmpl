@@ -655,9 +655,11 @@
         });
 
         // Show text-ad if there is space
+        // Only invalidate the ad on minor releases (5.1.x -> 5.2.0), not on every release
+        var serverFrameKey = "server-frame-hide-" + "$version".split(".").slice(0, 2).join(".")
         if((jQuery("body").width() - jQuery("#content").width())/2 > (jQuery('.Servers .server-frame').width() + 40)) {
             // Do not show if dismissed previously
-            if(localStorage.getItem("server-frame-hide-$version") === null) {
+            if(localStorage.getItem(serverFrameKey) === null) {
                 // Let the page on the server tell us if we need to show
                 function receiveMessage(event) {
                     // Check origin of message for security reasons
@@ -665,14 +667,14 @@
                         if(event.data === 'show_server') {
                             jQuery('.Servers .server-frame').show()
                             jQuery('.Servers .server-frame a').click(function () {
-                                localStorage.setItem("server-frame-hide-$version", "hide")
+                                localStorage.setItem(serverFrameKey, "hide")
                                 jQuery('.Servers .server-frame').hide()
                             })
                         }
                         if(event.data === 'hide_server') {
-                            // Hide and don't load anymore until the next release
+                            // Hide and don't load anymore until the next minor release
                             jQuery('.Servers .server-frame').hide()
-                            localStorage.setItem("server-frame-hide-$version", "hide")
+                            localStorage.setItem(serverFrameKey, "hide")
                         }
                     }
                 }
