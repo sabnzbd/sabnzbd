@@ -748,7 +748,7 @@ async def login_index(request: Request):
             status_code = 429
             logging.warning(T("Login attempt refused, too many failures from %s"), client_address_info(request))
         else:
-            username = request_params(request).get("username")
+            username = Strip(request_params(request).get("username"))
             password = request_params(request).get("password")
             remember_me = bool(request_params(request).get("remember_me", False))
 

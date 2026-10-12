@@ -431,6 +431,26 @@ class TestLoginRateLimiting:
         run_async(interface.login_index(right))
         assert "127.0.0.1" not in security._login_attempts
 
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
+    def test_username_whitespace_is_trimmed(self, session_store):
+        with patch("sabnzbd.interface.create_session") as create_session:
+            run_async(interface.login_index(login_post(username="  user\t", password="pass")))
+        create_session.assert_called_once()
+
+    @pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
+    def test_username_sent_as_a_file_part_is_refused(self, session_store):
+        """A multipart file part has no .strip(), and must fail the login rather than raise"""
+        upload = UploadFile(file=io.BytesIO(b"user"), filename="part.txt")
+        request = mock_request(params={"username": upload, "password": "pass"}, method="POST")
+        with (
+            patch("sabnzbd.interface.build_header", return_value={}),
+            patch("sabnzbd.interface.template_filtered_response") as render,
+            patch("sabnzbd.interface.create_session") as create_session,
+        ):
+            run_async(interface.login_index(request))
+        create_session.assert_not_called()
+        assert render.call_args.kwargs["search_list"]["error"]
+
     def test_cooldown_remaining_counts_down_and_rounds_up(self):
         request = login_post()
         assert security.login_cooldown_remaining(request) == 0
