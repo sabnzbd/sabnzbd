@@ -1,5 +1,6 @@
 # Main requirements
-# Note that not all sub-dependencies are listed, but only ones we know could cause trouble
+# All sub-dependencies are listed in order to prevent any supply-chain attacks
+# Installation can (and should) be performed with "--no-deps" parameter
 apprise==2.0.0
 sabctools==9.7.1
 CT3==3.4.0.post5
