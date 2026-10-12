@@ -1138,6 +1138,15 @@ def str_conv(value: Any, default: str = "") -> str:
         return default
 
 
+def safe_strip(txt: Any, chars: Optional[str] = None, default: str = "") -> str:
+    """Return stripped string, can handle None and non-strings
+    Strips whitespace or the given chars, returns empty string or requested default value"""
+    try:
+        return txt.strip(chars)
+    except Exception:
+        return default
+
+
 def int_conv(value: Any, default: int = 0) -> int:
     """Safe conversion to int (can handle None)
     Returns 0 or requested default value"""

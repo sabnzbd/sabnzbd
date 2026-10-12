@@ -54,6 +54,7 @@ from sabnzbd.misc import (
     time_format,
     calc_age,
     int_conv,
+    safe_strip,
     get_base_url,
     is_ipv4_addr,
     is_ipv6_addr,
@@ -748,12 +749,12 @@ async def login_index(request: Request):
             status_code = 429
             logging.warning(T("Login attempt refused, too many failures from %s"), client_address_info(request))
         else:
-            username = Strip(request_params(request).get("username"))
+            username = safe_strip(request_params(request).get("username"))
             password = request_params(request).get("password")
             remember_me = bool(request_params(request).get("remember_me", False))
 
             # Both fields are always compared, so nothing leaks which one matched
-            username_ok = constant_time_equals(username or "", cfg.username())
+            username_ok = constant_time_equals(username, cfg.username())
             password_ok = constant_time_equals(password or "", cfg.password())
             if username_ok and password_ok:
                 # Proved it knows the password
@@ -1420,7 +1421,7 @@ def config_rss_upd_rss_feed(request: Request):
     if params.get("enable") is not None:
         del kwargs["enable"]
     cf = config.get_rss().get(params.get("feed"))
-    uri = Strip(params.get("uri"))
+    uri = safe_strip(params.get("uri"))
     if cf and uri:
         kwargs["uri"] = uri
         cf.set_dict(kwargs)
@@ -1438,13 +1439,13 @@ def config_rss_save_rss_feed(request: Request):
     cf = config.get_rss().get(feed_name)
     if "enable" not in kwargs:
         kwargs["enable"] = 0
-    uri = Strip(params.get("uri"))
+    uri = safe_strip(params.get("uri"))
     if cf and uri:
         kwargs["uri"] = uri
         cf.set_dict(kwargs)
 
         # Did we get a new name for this feed?
-        if new_name := Strip(params.get("feed_new_name", "")).strip("[]"):
+        if new_name := safe_strip(params.get("feed_new_name"), " []"):
             feed_name = cf.rename(new_name)
 
         config.save_config()
@@ -1471,8 +1472,8 @@ def config_rss_add_rss_feed(request: Request):
     """Add one new RSS feed definition"""
     params = request_params(request)
     kwargs = dict(params)
-    feed = Strip(params.get("feed", "")).strip("[]")
-    uri = Strip(params.get("uri"))
+    feed = safe_strip(params.get("feed"), " []")
+    uri = safe_strip(params.get("uri"))
     if feed and uri:
         kwargs["uri"] = uri
         feed = config.ConfigRSS.create(feed, kwargs).name
@@ -1607,14 +1608,6 @@ def ConvertSpecials(p):
     elif p.lower() == T("Default").lower():
         p = ""
     return p
-
-
-def Strip(txt):
-    """Return stripped string, can handle None"""
-    try:
-        return txt.strip()
-    except Exception:
-        return None
 
 
 ##############################################################################
@@ -1976,8 +1969,8 @@ def config_nzbsearch_index(request: Request):
 @secured_expose(route="/config/nzbsearch/add_indexer", check_configlock=True, methods=["POST"])
 def config_nzbsearch_add_indexer(request: Request):
     params = request_params(request)
-    host = Strip(params.get("host"))
-    name = Strip(params.get("name", "")).strip("[]")
+    host = safe_strip(params.get("host"))
+    name = safe_strip(params.get("name"), " []")
     if name and host:
         kwargs = dict(params)
         kwargs["host"] = host
@@ -1999,7 +1992,7 @@ def config_nzbsearch_save_indexer(request: Request):
         kwargs.setdefault("enable", 0)
         indexer.set_dict(kwargs)
 
-        if new_name := Strip(params.get("name", "")).strip("[]"):
+        if new_name := safe_strip(params.get("name"), " []"):
             indexer.rename(new_name)
 
         config.save_config()
