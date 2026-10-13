@@ -82,10 +82,6 @@ RAR_V3_RE = re.compile(r"\.(?P<ext>part\d*)$", re.I)
 RAR_EXTRACTFROM_RE = re.compile(r"^Extracting\sfrom\s(.+)")
 RAR_EXTRACTED_RE = re.compile(r"^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$")
 SEVENZIP_PATH_RE = re.compile("^Path = (.+)")
-PAR2_TARGET_RE = re.compile(r'^(?:File|Target): "(.+)" -')
-PAR2_BLOCK_FOUND_RE = re.compile(r'File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
-PAR2_IS_MATCH_FOR_RE = re.compile(r'File: "([^"]+)" - is a match for "([^"]+)"')
-PAR2_FILENAME_RE = re.compile(r'"([^"]+)"')
 
 # Constants
 SEVENZIP_ID = b"7z\xbc\xaf'\x1c"
