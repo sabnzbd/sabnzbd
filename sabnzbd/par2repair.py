@@ -95,11 +95,12 @@ class RepairSession:
             except sabctools.Par2Error:
                 logging.info("Could not load the other par2 files of %s", self.setname, exc_info=True)
             logging.info(
-                "Loaded par2 set %s: %s recoverable files, %s source blocks, %s recovery blocks",
+                "Loaded par2 set %s: %s recoverable files, %s source blocks, %s recovery blocks (%s)",
                 self.setname,
                 self.repairer.recoverable_file_count,
                 self.repairer.source_block_count,
                 self.repairer.recovery_block_count,
+                self.repairer.creator or "creator unknown",
             )
         return result
 
@@ -187,6 +188,8 @@ class RepairSession:
             elapsed = format_time_string(time.time() - self.stage_start)
             self.nzo.set_unpack_info("Repair", T("[%s] Repaired in %s") % (self.setname, elapsed))
             logging.info("Repaired %s in %s", self.setname, elapsed)
+            if in_place := self.repairer.in_place_files:
+                logging.debug("Repaired in place in %s: %s", self.setname, ", ".join(in_place))
         return result
 
     @property
