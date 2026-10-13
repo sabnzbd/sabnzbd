@@ -867,7 +867,6 @@ def config_folder_save(request: Request):
 # Page definitions - Config - Switches
 ##############################################################################
 SWITCH_LIST = (
-    "par_option",
     "top_only",
     "direct_unpack",
     "win_process_prio",

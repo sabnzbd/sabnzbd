@@ -470,7 +470,6 @@ SKIN_TEXT = {
     "explain-pre_script": TT("Used before an NZB enters the queue."),
     "opt-end_queue_script": TT("On queue finish script"),
     "explain-end_queue_script": TT("Executed after the queue finishes downloading."),
-    "opt-par_option": TT("Extra PAR2 Parameters"),
     "opt-nice": TT("Nice Parameters"),
     "opt-ionice": TT("IONice Parameters"),
     "opt-win_process_prio": TT("External process priority"),
