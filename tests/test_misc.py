@@ -29,9 +29,10 @@ import subprocess
 import sys
 import tempfile
 import wave
-from contextlib import contextmanager, nullcontext
+from contextlib import ExitStack, contextmanager, nullcontext
 from functools import cached_property
 from random import randint, sample
+from typing import Optional
 from unittest import mock
 
 import pytest
@@ -1626,6 +1627,20 @@ class TestSABRarFile:
                 assert zf.namelist() == expected_files
 
 
+def patched_cgroup_open(files: dict[str, str]):
+    """Present exactly the given files below /sys/fs/cgroup, leaving other opens alone"""
+    real_open = open
+
+    def _open(path, *args, **kwargs):
+        if str(path).startswith("/sys/fs/cgroup"):
+            if str(path) in files:
+                return mock.mock_open(read_data=files[str(path)])()
+            raise FileNotFoundError(path)
+        return real_open(path, *args, **kwargs)
+
+    return mock.patch("builtins.open", _open)
+
+
 @pytest.mark.platform("linux")
 class TestCgroupMemoryLimit:
     """Container memory detection, see _cgroup_memory_limit()"""
@@ -1636,16 +1651,7 @@ class TestCgroupMemoryLimit:
     V1_MAX = "/sys/fs/cgroup/memory/memory.limit_in_bytes"
 
     def patched_open(self, files: dict[str, str]):
-        real_open = open
-
-        def _open(path, *args, **kwargs):
-            if str(path).startswith("/sys/fs/cgroup"):
-                if str(path) in files:
-                    return mock.mock_open(read_data=files[str(path)])()
-                raise FileNotFoundError(path)
-            return real_open(path, *args, **kwargs)
-
-        return mock.patch("builtins.open", _open)
+        return patched_cgroup_open(files)
 
     def test_no_cgroup_files(self):
         with self.patched_open({}):
@@ -1701,3 +1707,87 @@ class TestCgroupMemoryLimit:
         with self.patched_open({}):
             with mock.patch("sabnzbd.misc._physical_memory", return_value=None):
                 assert misc.get_memory() == 0
+
+
+def patched_available_cpus(count: Optional[int]):
+    """Report count CPUs from whichever call get_cpus() makes, or fail every call when None"""
+    patches = ExitStack()
+    patches.enter_context(mock.patch("os.process_cpu_count", return_value=count, create=True))
+    if count:
+        patches.enter_context(mock.patch("os.sched_getaffinity", return_value=set(range(count)), create=True))
+    else:
+        patches.enter_context(mock.patch("os.sched_getaffinity", side_effect=OSError, create=True))
+    return patches
+
+
+@pytest.mark.platform("linux")
+class TestGetCpus:
+    """Container CPU detection in get_cpus()"""
+
+    HOST = 64
+    V2_MAX = "/sys/fs/cgroup/cpu.max"
+    V1_QUOTA = "/sys/fs/cgroup/cpu/cpu.cfs_quota_us"
+    V1_PERIOD = "/sys/fs/cgroup/cpu/cpu.cfs_period_us"
+
+    def cpus(self, files: dict[str, str], available: Optional[int] = HOST) -> int:
+        with patched_cgroup_open(files), patched_available_cpus(available):
+            return misc.get_cpus()
+
+    def test_no_cgroup_files(self):
+        assert self.cpus({}) == self.HOST
+
+    def test_v2_quota(self):
+        assert self.cpus({self.V2_MAX: "400000 100000"}) == 4
+
+    def test_v2_unlimited(self):
+        assert self.cpus({self.V2_MAX: "max 100000"}) == self.HOST
+
+    def test_v2_partial_cpu_rounds_up(self):
+        """1.5 CPUs is 2 threads: a pool sized to 1 wastes half the allowance"""
+        assert self.cpus({self.V2_MAX: "150000 100000"}) == 2
+
+    def test_v2_below_one_cpu_never_zero(self):
+        assert self.cpus({self.V2_MAX: "20000 100000"}) == 1
+
+    def test_v1_quota(self):
+        assert self.cpus({self.V1_QUOTA: "200000", self.V1_PERIOD: "100000"}) == 2
+
+    def test_v1_unlimited_sentinel(self):
+        """v1 spells unlimited as -1 rather than a keyword"""
+        assert self.cpus({self.V1_QUOTA: "-1", self.V1_PERIOD: "100000"}) == self.HOST
+
+    def test_garbage_is_ignored(self):
+        assert self.cpus({self.V2_MAX: "not-a-number 100000"}) == self.HOST
+
+    def test_unreadable_file_is_logged(self, caplog):
+        with caplog.at_level(logging.INFO):
+            self.cpus({self.V2_MAX: "not-a-number 100000"})
+        assert "cgroup v2 CPU quota" in caplog.text
+
+    def test_missing_files_are_not_logged(self, caplog):
+        with caplog.at_level(logging.INFO):
+            self.cpus({})
+        assert "cgroup" not in caplog.text
+
+    def test_keeps_available_when_lower(self):
+        """Affinity can be narrower than the quota, and it is the harder limit"""
+        assert self.cpus({self.V2_MAX: "3200000 100000"}, available=4) == 4
+
+    def test_uses_cgroup_when_available_unknown(self):
+        assert self.cpus({self.V2_MAX: "200000 100000"}, available=None) == 2
+
+    def test_zero_when_nothing_known(self):
+        assert self.cpus({}, available=None) == 0
+
+
+class TestAvailableCpus:
+    def test_returns_something_sane(self):
+        """Whatever route it takes, this machine has at least one CPU"""
+        assert misc.get_cpus() >= 1
+
+    def test_survives_a_broken_platform(self):
+        with mock.patch("os.cpu_count", side_effect=OSError):
+            with mock.patch("os.process_cpu_count", side_effect=OSError, create=True):
+                with mock.patch("os.sched_getaffinity", side_effect=OSError, create=True):
+                    with patched_cgroup_open({}):
+                        assert misc.get_cpus() == 0

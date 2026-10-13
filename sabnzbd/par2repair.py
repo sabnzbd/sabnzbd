@@ -21,16 +21,29 @@ sabnzbd.par2repair - verify and repair par2 sets in-process
 
 import logging
 import os
+import sys
 import time
 from typing import Optional
 
 import sabctools
 
 import sabnzbd
-from sabnzbd.constants import Status
+import sabnzbd.cfg as cfg
+from sabnzbd.constants import GIGI, MEBI, PAR2_MINIMUM_MEMORY, PAR2_RESERVED_MEMORY, Status
 from sabnzbd.filesystem import get_ext, globber, globber_full
-from sabnzbd.misc import format_time_string
+from sabnzbd.misc import format_time_string, get_cpus, get_memory
 from sabnzbd.nzb.object import NzbObject
+
+
+def memory_limit() -> int:
+    """Bytes par2 may use for its output buffers"""
+    memory = get_memory()
+    limit = (memory or int(512 * MEBI)) // 4
+    if memory:
+        limit = min(limit, max(0, memory - PAR2_RESERVED_MEMORY - cfg.cache_limit.get_int()))
+    if sys.maxsize <= 2**32:
+        limit = min(limit, int(GIGI))
+    return max(limit, PAR2_MINIMUM_MEMORY)
 
 
 class RepairSession:
@@ -71,10 +84,14 @@ class RepairSession:
             for path in candidates
             if os.path.isfile(path) and get_ext(path) != ".par2" and os.path.normcase(path) not in claimed
         ]
+
+        cpus = get_cpus()
         self.repairer = sabctools.Par2Repairer(
             self.parfile,
             extrafiles=extrafiles,
             basepath=basepath,
+            memory_limit=memory_limit(),
+            threads=max(1, cpus - 1) if cpus else 0,
         )
         self.repairer.progress_callback = self._on_progress
         self.repairer.file_done_callback = self._on_file_done

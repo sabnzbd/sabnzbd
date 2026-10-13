@@ -926,6 +926,57 @@ def _read_cgroup_limit(path: str) -> Optional[int]:
         return None
 
 
+def get_cpus() -> int:
+    """CPU threads this process may run on, clamped by any cgroup quota.
+    Returns 0 when neither could be determined."""
+    available = None
+    try:
+        # Python 3.13+
+        if hasattr(os, "process_cpu_count"):
+            available = os.process_cpu_count()
+        if not available and hasattr(os, "sched_getaffinity"):
+            available = len(os.sched_getaffinity(0))
+        if not available:
+            available = os.cpu_count()
+    except Exception:
+        pass
+
+    quota = period = None
+    if not sabnzbd.WINDOWS and not sabnzbd.MACOS:
+        try:
+            # cgroup v2: "<quota> <period>", or "max <period>" when unlimited
+            with open("/sys/fs/cgroup/cpu.max") as f:
+                values = f.read().split()
+            if values[0] != "max":
+                quota, period = int(values[0]), int(values[1])
+        except FileNotFoundError:
+            pass
+        except (OSError, ValueError, IndexError) as e:
+            logging.info("Could not read the cgroup v2 CPU quota: %s", e)
+
+        if quota is None:
+            # cgroup v1 keeps the two apart, and spells unlimited as -1
+            try:
+                with open("/sys/fs/cgroup/cpu/cpu.cfs_quota_us") as f:
+                    value = int(f.read().strip())
+                if value > 0:
+                    with open("/sys/fs/cgroup/cpu/cpu.cfs_period_us") as f:
+                        quota, period = value, int(f.read().strip())
+            except FileNotFoundError:
+                pass
+            except (OSError, ValueError) as e:
+                logging.info("Could not read the cgroup v1 CPU quota: %s", e)
+
+    # Whole CPUs the container may use, rounded up
+    limit = None
+    if quota and period and period > 0:
+        limit = max(1, -(-quota // period))
+
+    if available and limit:
+        return min(available, limit)
+    return available or limit or 0
+
+
 @conditional_cache(cache_time=3600)
 def get_cpu_name() -> Optional[str]:
     """Find the CPU name (which needs a different method per OS), and return it
