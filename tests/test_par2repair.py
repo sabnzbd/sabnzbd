@@ -21,6 +21,7 @@ tests.test_par2repair - par2 repair sessions
 
 import os
 import sys
+import zlib
 from unittest import mock
 
 import pytest
@@ -28,8 +29,339 @@ import sabctools
 
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import GIGI, MEBI, PAR2_MINIMUM_MEMORY, PAR2_RESERVED_MEMORY
-from sabnzbd.par2repair import RepairSession, memory_limit
+from sabnzbd.par2repair import RepairSession, _blocks_from_articles, article_backed_blocks, memory_limit
 from tests.testhelper import make_mock_nzo
+
+BLOCKSIZE = 64
+CONTENT = bytes(range(256)) * 4
+
+
+def piece_crcs(data: bytes, begin: int, blocksize: int) -> list[int]:
+    """The CRC of each piece of data between multiples of blocksize, as the decoder splits it"""
+    pieces = []
+    position = begin
+    while position < begin + len(data):
+        end = min((position // blocksize + 1) * blocksize, begin + len(data))
+        pieces.append(zlib.crc32(data[position - begin : end - begin]))
+        position = end
+    return pieces
+
+
+def par2_checksums(size: int, content: bytes = CONTENT) -> list[int]:
+    """The CRC32 par2 records for each block, the last one padded out with zeroes"""
+    blocks = [content[start : start + BLOCKSIZE] for start in range(0, size, BLOCKSIZE)]
+    blocks[-1] = blocks[-1][: size - (len(blocks) - 1) * BLOCKSIZE].ljust(BLOCKSIZE, b"\0")
+    return [zlib.crc32(block) for block in blocks]
+
+
+class FakeArticle:
+    def __init__(self, data_begin, data_size, good=True, on_disk=True, content=CONTENT, split=True):
+        self.data_begin = data_begin
+        self.data_size = data_size
+        self.decoded_size = data_size
+        self.on_disk = on_disk
+        self.crc32 = None
+        self.block_size = self.block_crcs = None
+        # crc32 is None when the decoded data did not match the yEnc trailer
+        if good and data_begin is not None:
+            data = content[data_begin : data_begin + data_size]
+            self.crc32 = zlib.crc32(data)
+            if split:
+                self.block_size = BLOCKSIZE
+                self.block_crcs = piece_crcs(data, data_begin, BLOCKSIZE)
+        elif good:
+            self.crc32 = 0
+
+
+class FakeNzf:
+    def __init__(self, articles, direct_written=True):
+        self.decodetable = articles
+        self.direct_written = direct_written
+        self.crc32 = 0
+        for article in articles:
+            if article.crc32 is None or article.data_size is None:
+                self.crc32 = None
+                break
+            self.crc32 = sabctools.crc32_combine(self.crc32, article.crc32, article.data_size)
+
+
+@pytest.fixture
+def datafile(tmp_path):
+    def _make(size):
+        path = tmp_path / "data.bin"
+        path.write_bytes(CONTENT[:size])
+        return str(path)
+
+    return _make
+
+
+def blocks_of(nzf, size, path):
+    return _blocks_from_articles(nzf, BLOCKSIZE, -(-size // BLOCKSIZE), path, size, par2_checksums(size))
+
+
+class TestBlocksFromArticles:
+    def test_all_articles_good(self, datafile):
+        # 4 articles of 160 bytes covering a 640 byte file, 10 blocks of 64
+        articles = [FakeArticle(offset, 160) for offset in (0, 160, 320, 480)]
+        blocks = blocks_of(FakeNzf(articles), 640, datafile(640))
+        assert blocks == [True] * 10
+
+    def test_missing_article_needs_no_size_guess(self, datafile):
+        """A missing article has no data_begin, and does not need one.
+
+        Offsets are absolute, so a gap between two good articles is simply uncovered
+        and every block overlapping it is left for par2 to check. Nothing has to be
+        inferred about the length of what is missing.
+        """
+        articles = [
+            FakeArticle(0, 160),
+            FakeArticle(None, None, good=False),  # never arrived
+            FakeArticle(320, 160),
+            FakeArticle(480, 160),
+        ]
+        blocks = blocks_of(FakeNzf(articles), 640, datafile(640))
+
+        # Blocks 0-1 sit inside the first article, 5-9 inside the last two.
+        # Blocks 2, 3 and 4 touch the hole at 160-320 and are not trusted.
+        assert blocks == [True, True, False, False, False, True, True, True, True, True]
+
+    def test_trailing_articles_missing(self, datafile):
+        """Nothing after the last good article is trusted, however long the file is."""
+        articles = [FakeArticle(0, 160), FakeArticle(160, 160), FakeArticle(None, None, good=False)]
+        blocks = blocks_of(FakeNzf(articles), 640, datafile(640))
+        assert blocks == [True] * 5 + [False] * 5
+
+    def test_article_present_but_checksum_failed(self, datafile):
+        """A decoded article whose CRC did not match is bad, not unknown."""
+        articles = [FakeArticle(0, 160), FakeArticle(160, 160, good=False), FakeArticle(320, 320)]
+        blocks = blocks_of(FakeNzf(articles), 640, datafile(640))
+        assert blocks == [True, True, False, False, False, True, True, True, True, True]
+
+    def test_article_not_on_disk(self, datafile):
+        """Decoded and checksummed, but never written out, so nothing is known of it."""
+        articles = [FakeArticle(0, 320), FakeArticle(320, 320, on_disk=False)]
+        blocks = blocks_of(FakeNzf(articles), 640, datafile(640))
+        assert blocks == [True] * 5 + [None] * 5
+
+    def test_good_article_without_an_offset(self, datafile):
+        articles = [FakeArticle(0, 160), FakeArticle(None, None), FakeArticle(320, 320)]
+        blocks = blocks_of(FakeNzf(articles), 640, datafile(640))
+        assert blocks == [True, True, None, None, None, True, True, True, True, True]
+
+    def test_a_gap_not_wholly_lost_is_unknown(self, datafile):
+        articles = [
+            FakeArticle(0, 160),
+            FakeArticle(None, None, good=False),
+            FakeArticle(None, None),
+            FakeArticle(480, 160),
+        ]
+        blocks = blocks_of(FakeNzf(articles), 640, datafile(640))
+        assert blocks == [True, True, None, None, None, None, None, None, True, True]
+
+    def test_block_spanning_two_articles(self, datafile):
+        """Consecutive articles are merged, so a block across the join still counts."""
+        # 96-byte articles against 64-byte blocks: every boundary is straddled
+        articles = [FakeArticle(offset, 96) for offset in range(0, 640, 96)]
+        articles[-1] = FakeArticle(576, 64)
+        blocks = blocks_of(FakeNzf(articles), 640, datafile(640))
+        assert blocks == [True] * 10
+
+    def test_short_final_block(self, datafile):
+        """par2 pads the last block, so only the bytes the file has need covering."""
+        # 600 bytes: 10 blocks, the last holding only 24 bytes
+        articles = [FakeArticle(0, 600)]
+        blocks = blocks_of(FakeNzf(articles), 600, datafile(600))
+        assert blocks == [True] * 10
+
+    def test_packed_file_is_skipped_entirely(self, datafile):
+        """One packed article poisons the file: the assembler clears the flag and the
+        whole file goes back to par2 for a full scan."""
+        articles = [FakeArticle(offset, 160) for offset in (0, 160, 320, 480)]
+        nzf = FakeNzf(articles, direct_written=False)
+        assert blocks_of(nzf, 640, datafile(640)) is None
+
+    def test_no_good_articles(self, datafile):
+        articles = [FakeArticle(None, None, good=False)]
+        assert blocks_of(FakeNzf(articles), 640, datafile(640)) == [False] * 10
+
+    def test_an_article_of_another_version_is_not_trusted(self, datafile):
+        """Its own yEnc check passes, but it is not what par2 describes"""
+        other = bytes(reversed(CONTENT))
+        articles = [FakeArticle(0, 160), FakeArticle(160, 160, content=other), FakeArticle(320, 320)]
+        blocks = blocks_of(FakeNzf(articles), 640, datafile(640))
+        assert blocks == [True, True, None, None, None, True, True, True, True, True]
+
+    def test_a_misplaced_article_is_not_trusted(self, datafile):
+        """The yEnc headers put it over another article, so neither is taken for the
+        blocks they share, and nothing vouches for where it should have been"""
+        articles = [FakeArticle(0, 320), FakeArticle(320, 320), FakeArticle(None, None, good=False)]
+        articles[1].data_begin = 0
+        blocks = blocks_of(FakeNzf(articles), 640, datafile(640))
+        assert blocks[:5] == [None] * 5
+
+    def test_an_article_whose_pieces_do_not_add_up_is_left_out_alone(self, datafile):
+        articles = [FakeArticle(0, 160), FakeArticle(160, 160), FakeArticle(320, 320, good=False)]
+        articles[1].block_crcs = articles[1].block_crcs[:-1]
+        blocks = blocks_of(FakeNzf(articles), 640, datafile(640))
+        assert blocks == [True, True, None, None, None] + [False] * 5
+
+    def test_pieces_split_at_another_block_size_are_not_used(self, datafile):
+        """A guess at the block size that turns out wrong costs nothing but the pieces"""
+        articles = [FakeArticle(0, 320), FakeArticle(320, 320, good=False)]
+        articles[0].block_size = BLOCKSIZE // 2
+        articles[0].block_crcs = piece_crcs(CONTENT[:320], 0, BLOCKSIZE // 2)
+        blocks = blocks_of(FakeNzf(articles), 640, datafile(640))
+        assert blocks == [None] * 5 + [False] * 5
+
+    def test_whole_file_crc_proves_every_block(self, datafile):
+        """Articles decoded before the par2 set was known carry no pieces, but when all
+        of them arrived the whole-file CRC32 still proves every block"""
+        articles = [FakeArticle(offset, 96, split=False) for offset in range(0, 576, 96)]
+        articles.append(FakeArticle(576, 64, split=False))
+        assert blocks_of(FakeNzf(articles), 640, datafile(640)) == [True] * 10
+
+    def test_without_pieces_a_damaged_file_is_left_to_par2(self, datafile):
+        articles = [FakeArticle(0, 320, split=False), FakeArticle(320, 320, good=False)]
+        blocks = blocks_of(FakeNzf(articles), 640, datafile(640))
+        assert blocks == [None] * 5 + [False] * 5
+
+    def test_whole_file_crc_needs_the_articles_in_place(self, datafile):
+        """The same articles in the same order, but one says it belongs elsewhere"""
+        articles = [FakeArticle(offset, 160, split=False) for offset in (0, 160, 320, 480)]
+        articles[3].data_begin = 470
+        assert blocks_of(FakeNzf(articles), 640, datafile(640)) != [True] * 10
+
+    def test_nothing_is_trusted_that_cannot_be_flushed(self, datafile):
+        articles = [FakeArticle(0, 640)]
+        with mock.patch("sabnzbd.par2repair.os.fsync", side_effect=OSError(5, "I/O error")):
+            assert blocks_of(FakeNzf(articles), 640, datafile(640)) is None
+
+    def test_the_file_is_flushed_before_it_is_trusted(self, datafile):
+        articles = [FakeArticle(0, 640)]
+        with mock.patch("sabnzbd.par2repair.os.fsync") as fsync:
+            assert blocks_of(FakeNzf(articles), 640, datafile(640)) == [True] * 10
+        fsync.assert_called_once()
+
+    def test_without_par2_checksums_nothing_is_known(self, datafile):
+        articles = [FakeArticle(0, 640)]
+        assert _blocks_from_articles(FakeNzf(articles), BLOCKSIZE, 10, datafile(640), 640, None) is None
+
+    def test_missing_file(self, tmp_path):
+        articles = [FakeArticle(0, 640)]
+        assert blocks_of(FakeNzf(articles), 640, str(tmp_path / "gone.bin")) is None
+
+
+class FakeRepairer:
+    def __init__(self, block_size, files):
+        self.block_size = block_size
+        self.files = files
+        self.recoverable_file_count = len(files)
+
+    def block_checksums(self, filename):
+        for entry in self.files:
+            if entry["name"] == filename:
+                return par2_checksums(entry["size"])
+        return None
+
+
+class FakeNzo:
+    def __init__(self, finished_files):
+        self.finished_files = finished_files
+        self.par2_rewritten = set()
+
+
+class TestArticleBackedBlocks:
+    @staticmethod
+    def _setup(tmp_path, size=640):
+        path = tmp_path / "alpha.bin"
+        path.write_bytes(CONTENT[:size])
+        nzf = FakeNzf([FakeArticle(0, size)])
+        nzf.filename = "alpha.bin"
+        repairer = FakeRepairer(
+            BLOCKSIZE,
+            [{"name": "alpha.bin", "target": str(path), "size": size, "blocks": size // BLOCKSIZE}],
+        )
+        return FakeNzo([nzf]), repairer
+
+    def test_maps_files_by_name(self, tmp_path):
+        nzo, repairer = self._setup(tmp_path)
+        with (
+            mock.patch.object(cfg.par2_quick_verify, "get", return_value=True),
+            mock.patch.object(cfg.direct_write, "get", return_value=True),
+        ):
+            assert article_backed_blocks(nzo, repairer) == {"alpha.bin": [True] * 10}
+
+    def test_maps_a_name_in_a_subdirectory_whichever_separator_it_has(self, tmp_path):
+        nzo, repairer = self._setup(tmp_path)
+        nzo.finished_files[0].filename = os.path.join("sub", "alpha.bin")
+        repairer.files[0]["name"] = "sub/alpha.bin"
+        with mock.patch.object(cfg.par2_quick_verify, "get", return_value=True):
+            assert article_backed_blocks(nzo, repairer) == {"sub/alpha.bin": [True] * 10}
+
+    def test_maps_a_name_the_set_records_in_a_code_page(self, tmp_path):
+        nzo, repairer = self._setup(tmp_path)
+        nzo.finished_files[0].filename = "café.bin"
+        recorded = b"caf\xe9.bin".decode("utf-8", "surrogateescape")
+        repairer.files[0]["name"] = recorded
+        with mock.patch.object(cfg.par2_quick_verify, "get", return_value=True):
+            assert article_backed_blocks(nzo, repairer) == {recorded: [True] * 10}
+
+    def test_disabled_by_config(self, tmp_path):
+        nzo, repairer = self._setup(tmp_path)
+        with (
+            mock.patch.object(cfg.par2_quick_verify, "get", return_value=False),
+            mock.patch.object(cfg.direct_write, "get", return_value=True),
+        ):
+            assert article_backed_blocks(nzo, repairer) == {}
+
+    def test_ignores_the_current_direct_write_setting(self, tmp_path):
+        """What matters is how the file was written, not how the setting reads now.
+
+        cfg.direct_write can be toggled at runtime and the assembler falls back per
+        file, so at post-processing time it says nothing about an already-assembled
+        file. The per-article direct_written flag is what decides.
+        """
+        nzo, repairer = self._setup(tmp_path)
+        with (
+            mock.patch.object(cfg.par2_quick_verify, "get", return_value=True),
+            mock.patch.object(cfg.direct_write, "get", return_value=False),
+        ):
+            assert article_backed_blocks(nzo, repairer) == {"alpha.bin": [True] * 10}
+
+    def test_a_file_a_repair_rewrote_is_not_vouched_for(self, tmp_path):
+        nzo, repairer = self._setup(tmp_path)
+        nzo.par2_rewritten.add(str(tmp_path / "alpha.bin"))
+        with mock.patch.object(cfg.par2_quick_verify, "get", return_value=True):
+            assert article_backed_blocks(nzo, repairer) == {}
+
+    def test_packed_files_are_not_trusted(self, tmp_path):
+        """A file the assembler packed sequentially is excluded even with the setting
+        on: its article offsets do not describe where the bytes landed."""
+        nzo, repairer = self._setup(tmp_path)
+        nzo.finished_files[0].direct_written = False
+        with (
+            mock.patch.object(cfg.par2_quick_verify, "get", return_value=True),
+            mock.patch.object(cfg.direct_write, "get", return_value=True),
+        ):
+            assert article_backed_blocks(nzo, repairer) == {}
+
+    def test_skips_files_not_in_the_job(self, tmp_path):
+        nzo, repairer = self._setup(tmp_path)
+        nzo.finished_files = []
+        with (
+            mock.patch.object(cfg.par2_quick_verify, "get", return_value=True),
+            mock.patch.object(cfg.direct_write, "get", return_value=True),
+        ):
+            assert article_backed_blocks(nzo, repairer) == {}
+
+    def test_skips_targets_not_on_disk(self, tmp_path):
+        nzo, repairer = self._setup(tmp_path)
+        os.unlink(repairer.files[0]["target"])
+        with (
+            mock.patch.object(cfg.par2_quick_verify, "get", return_value=True),
+            mock.patch.object(cfg.direct_write, "get", return_value=True),
+        ):
+            assert article_backed_blocks(nzo, repairer) == {}
 
 
 class TestPar2MemoryLimit:
@@ -128,7 +460,7 @@ class TestPar2Repaired:
     @staticmethod
     def repair(tmp_path, caplog, in_place_files):
         session = RepairSession(make_mock_nzo(download_path=str(tmp_path)), "test", str(tmp_path / "test.par2"))
-        session.repairer = mock.Mock(renames={}, in_place_files=in_place_files)
+        session.repairer = mock.Mock(renames={}, in_place_files=in_place_files, files=[])
         session.repairer.repair.return_value = sabctools.Par2Result.SUCCESS
         with caplog.at_level("DEBUG"):
             assert session.repair() == sabctools.Par2Result.SUCCESS
@@ -139,6 +471,14 @@ class TestPar2Repaired:
 
     def test_says_nothing_when_none_were(self, tmp_path, caplog):
         assert self.repair(tmp_path, caplog, []) == []
+
+    def test_remembers_the_files_it_rewrote(self, tmp_path, caplog):
+        session = RepairSession(make_mock_nzo(download_path=str(tmp_path)), "test", str(tmp_path / "test.par2"))
+        target = str(tmp_path / "a.rar")
+        session.repairer = mock.Mock(renames={}, in_place_files=[], files=[{"target": target}])
+        session.repairer.repair.return_value = sabctools.Par2Result.SUCCESS
+        session.repair()
+        assert session.nzo.par2_rewritten == {target}
 
 
 class TestPar2FileSizes:

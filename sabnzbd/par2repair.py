@@ -164,6 +164,24 @@ class RepairSession:
                 continue
             logging.debug("Truncated %s from %s to %s bytes, the size the par2 set records", path, size, wanted)
 
+    def apply_known_blocks(self):
+        """Hand par2 the blocks the download already vouched for, if enabled"""
+        try:
+            known = article_backed_blocks(self.nzo, self.repairer)
+            if not known:
+                return
+            self.repairer.set_known_blocks(known)
+        except Exception:
+            logging.info("Could not use article checksums for %s, verifying in full", self.setname, exc_info=True)
+            return
+
+        logging.info(
+            "Quick verify: %s of %s files in set %s covered by verified articles",
+            len(known),
+            self.repairer.recoverable_file_count,
+            self.setname,
+        )
+
     def verify(self) -> sabctools.Par2Result:
         self.nzo.status = Status.VERIFYING
         self.stage_start = time.time()
@@ -181,7 +199,12 @@ class RepairSession:
         elapsed = format_time_string(time.time() - self.stage_start)
         if result == sabctools.Par2Result.SUCCESS:
             self.nzo.set_unpack_info("Repair", T("[%s] Verified in %s, all files correct") % (self.setname, elapsed))
-            logging.info("Verified %s in %s, all files correct", self.setname, elapsed)
+            logging.info(
+                "Verified %s in %s, all files correct (%s file(s) taken from article checksums)",
+                self.setname,
+                elapsed,
+                self.repairer.quick_verified_files,
+            )
         else:
             self.nzo.set_unpack_info("Repair", T("[%s] Verified in %s, repair is required") % (self.setname, elapsed))
             logging.info(
@@ -205,6 +228,7 @@ class RepairSession:
 
         # repair() clears the renames
         renames = self.repairer.renames
+        targets = [entry["target"] for entry in self.repairer.files]
 
         result = self.repairer.repair()
 
@@ -213,6 +237,7 @@ class RepairSession:
             self.nzo.renamed_file({os.path.basename(new): os.path.basename(old) for old, new in renames.items()})
 
         if result == sabctools.Par2Result.SUCCESS:
+            self.nzo.par2_rewritten.update(targets)
             elapsed = format_time_string(time.time() - self.stage_start)
             self.nzo.set_unpack_info("Repair", T("[%s] Repaired in %s") % (self.setname, elapsed))
             logging.info("Repaired %s in %s", self.setname, elapsed)
@@ -315,6 +340,156 @@ def cancel(nzo: NzbObject):
         if repairer := session.repairer:
             logging.info("Cancelling par2 repair of %s", setname)
             repairer.cancel()
+
+
+def article_backed_blocks(nzo: NzbObject, repairer: sabctools.Par2Repairer) -> dict[str, list[Optional[bool]]]:
+    """What the articles say of each par2 block of the direct-written files: present, missing or unknown"""
+    if not cfg.par2_quick_verify():
+        return {}
+
+    blocksize = repairer.block_size
+    if not blocksize:
+        return {}
+
+    # A file in a subdirectory may be named with either separator
+    by_name = {os.path.normpath(nzf.filename): nzf for nzf in nzo.finished_files}
+    known = {}
+    for entry in repairer.files:
+        if entry["target"] in nzo.par2_rewritten:
+            continue
+        if nzf := by_name.get(os.path.normpath(correct_unknown_encoding(entry["name"]))):
+            checksums = repairer.block_checksums(entry["name"])
+            if blocks := _blocks_from_articles(
+                nzf, blocksize, entry["blocks"], entry["target"], entry["size"], checksums
+            ):
+                known[entry["name"]] = blocks
+    return known
+
+
+def _blocks_from_articles(
+    nzf, blocksize: int, blockcount: int, target: str, size: int, checksums: Optional[list[int]]
+) -> Optional[list[Optional[bool]]]:
+    """Mark each block of one file present where the articles covering it prove it holds what
+    par2 records for it, missing where it overlaps data known to be lost, and unknown otherwise"""
+    if not nzf.direct_written or not checksums or len(checksums) != blockcount:
+        return None
+
+    try:
+        filesize = os.path.getsize(target)
+    except OSError:
+        return None
+
+    # crc32 is None when the article failed its yEnc check or never arrived
+    good = []
+    lost = []
+    previous_end = 0
+    since_good = []
+    for article in nzf.decodetable:
+        placed = article.data_begin is not None and article.data_size
+        if article.crc32 is not None and article.on_disk and placed:
+            if since_good and all(other.crc32 is None for other in since_good):
+                lost.append((previous_end, article.data_begin))
+            since_good = []
+            previous_end = article.data_begin + article.data_size
+            good.append(article)
+            continue
+        if article.crc32 is None and placed:
+            lost.append((article.data_begin, article.data_begin + article.data_size))
+        since_good.append(article)
+    if since_good and all(other.crc32 is None for other in since_good):
+        lost.append((previous_end, filesize))
+    if not good and not lost:
+        return None
+
+    if filesize == size and _whole_file_matches(nzf, good, size, _par2_file_crc(checksums, blocksize, size)):
+        blocks = [True] * blockcount
+    else:
+        pieces = _pieces_by_block(good, blocksize)
+        blocks = []
+        for block in range(blockcount):
+            start = block * blocksize
+            # par2 pads the final block
+            end = min(start + blocksize, filesize)
+            if start >= filesize:
+                blocks.append(False)
+            elif _block_matches(pieces.get(block, []), start, end, blocksize, checksums[block]):
+                blocks.append(True)
+            elif any(lost_start < end and lost_end > start for lost_start, lost_end in lost):
+                blocks.append(False)
+            else:
+                blocks.append(None)
+
+    # Nothing is taken on trust that is not yet on the disk
+    if any(blocks):
+        try:
+            with open(target, "rb+") as handle:
+                os.fsync(handle.fileno())
+        except OSError:
+            logging.info("Could not flush %s to disk, so par2 checks it in full", target, exc_info=True)
+            return None
+
+    return blocks
+
+
+def _par2_file_crc(checksums: list[int], blocksize: int, size: int) -> int:
+    """The CRC32 of a whole file from the CRC32 par2 records for each of its blocks"""
+    crc = 0
+    full, tail = divmod(size, blocksize)
+    for checksum in checksums[:full]:
+        crc = sabctools.crc32_combine(crc, checksum, blocksize)
+    if tail:
+        crc = sabctools.crc32_combine(crc, sabctools.crc32_zero_unpad(checksums[full], blocksize - tail), tail)
+    return crc
+
+
+def _whole_file_matches(nzf, good: list, size: int, par2_crc: int) -> bool:
+    """Every article arrived intact, they lie end to end over the whole file, and together
+    they hold what par2 records for it"""
+    if nzf.crc32 is None or nzf.crc32 != par2_crc or len(good) != len(nzf.decodetable):
+        return False
+    # Articles lie end to end in decodetable order, the order nzf.crc32 is combined in
+    position = 0
+    for article in good:
+        if article.data_begin != position or article.decoded_size != article.data_size:
+            return False
+        position += article.data_size
+    return position == size
+
+
+def _pieces_by_block(good: list, blocksize: int) -> dict[int, list[tuple[int, int, int]]]:
+    """The (start, length, crc32) of each piece of the good articles, by the block it lies in"""
+    pieces: dict[int, list[tuple[int, int, int]]] = {}
+    for article in good:
+        if article.block_size != blocksize or article.block_crcs is None or article.decoded_size != article.data_size:
+            continue
+        position = article.data_begin
+        end = article.data_begin + article.data_size
+        article_pieces = []
+        for crc in article.block_crcs:
+            piece_end = min((position // blocksize + 1) * blocksize, end)
+            article_pieces.append((position // blocksize, (position, piece_end - position, crc)))
+            position = piece_end
+        # Pieces that do not add up to the article are not used
+        if position == end:
+            for block, piece in article_pieces:
+                pieces.setdefault(block, []).append(piece)
+    return pieces
+
+
+def _block_matches(pieces: list[tuple[int, int, int]], start: int, end: int, blocksize: int, checksum: int) -> bool:
+    """The pieces lie end to end over the block and together hold the CRC32 par2 records for it"""
+    crc = 0
+    position = start
+    for piece_start, length, piece_crc in sorted(pieces):
+        if piece_start != position:
+            return False
+        crc = sabctools.crc32_combine(crc, piece_crc, length)
+        position += length
+    if position != end:
+        return False
+    if end - start < blocksize:
+        checksum = sabctools.crc32_zero_unpad(checksum, blocksize - (end - start))
+    return crc == checksum
 
 
 def parfile_paths(nzo: NzbObject) -> list[str]:

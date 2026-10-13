@@ -981,6 +981,7 @@ SPECIAL_BOOL_LIST = (
     "verify_xff_header",
     "direct_write",
     "direct_decode",
+    "par2_quick_verify",
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",
