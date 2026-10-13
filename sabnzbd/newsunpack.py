@@ -31,10 +31,12 @@ import io
 import shutil
 import functools
 import rarfile
+import sabctools
 from typing import BinaryIO, Optional, Any
 from contextlib import suppress
 
 import sabnzbd
+import sabnzbd.par2repair as par2repair
 from sabnzbd.encoding import correct_unknown_encoding, ubtou
 from sabnzbd.misc import (
     format_time_string,
@@ -51,7 +53,6 @@ from sabnzbd.misc import (
 from sabnzbd.filesystem import (
     make_script_path,
     real_path,
-    globber,
     globber_full,
     renamer,
     clip_path,
@@ -87,13 +88,11 @@ PAR2_FILENAME_RE = re.compile(r'"([^"]+)"')
 
 # Constants
 SEVENZIP_ID = b"7z\xbc\xaf'\x1c"
-PAR2_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
 SEVENZIP_COMMAND = None
 IONICE_COMMAND = None
 RAR_PROBLEM = False
-PAR2_TURBO = True
 RAR_VERSION = 0
 SEVENZIP_VERSION = ""
 
@@ -116,24 +115,14 @@ def find_programs(curdir: str):
             # Regular x64 version
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "macos/unrar/unrar")
 
-        # The par2 and 7zip binary are universal2
-        sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "macos/par2/par2")
+        # The 7zip binary is universal2
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "macos/7zip/7zz")
 
     if sabnzbd.WINDOWS:
-        if sabnzbd.WINDOWSARM64:
-            # ARM64 version of par2
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/arm64/par2.exe")
-        else:
-            # Regular x64 version
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/par2.exe")
-
         # UnRAR has no arm64 version, so we skip it also for 7zip
         sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/UnRAR.exe")
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "win/7zip/7za.exe")
     else:
-        if not sabnzbd.newsunpack.PAR2_COMMAND:
-            sabnzbd.newsunpack.PAR2_COMMAND = find_on_path("par2")
         if not sabnzbd.newsunpack.RAR_COMMAND:
             sabnzbd.newsunpack.RAR_COMMAND = find_on_path(
                 (
@@ -174,9 +163,6 @@ def find_programs(curdir: str):
 
         # Run check on 7zip
         sabnzbd.newsunpack.SEVENZIP_VERSION = sevenzip_check(sabnzbd.newsunpack.SEVENZIP_COMMAND)
-
-        # Run check on par2-multicore
-        sabnzbd.newsunpack.PAR2_TURBO = par2_turbo_check(sabnzbd.newsunpack.PAR2_COMMAND)
 
     # Set the path for rarfile
     rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
@@ -1178,8 +1164,8 @@ def tar_extract(nzo: NzbObject, tar_path: str, extraction_path: str, one_folder:
 ##############################################################################
 def par2_repair(nzo: NzbObject, setname: str) -> tuple[bool, bool]:
     """Try to repair a set, return readd and correctness"""
-    # Check which of the files exists
-    for new_par in nzo.extrapars[setname]:
+    # Check which of the files exists, preferring those that finished downloading
+    for new_par in sorted(nzo.extrapars[setname], key=lambda nzf: not nzf.completed):
         test_parfile = os.path.join(nzo.download_path, new_par.filename)
         if os.path.exists(test_parfile):
             parfile_nzf = new_par
@@ -1228,7 +1214,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> tuple[bool, bool]:
 
             joinables, _, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
 
-            finished, readd, used_joinables, used_for_repair = par2cmdline_verify(parfile, nzo, setname, joinables)
+            finished, readd, used_joinables, used_for_repair = par2_verify_and_repair(parfile, nzo, setname, joinables)
 
             if finished:
                 result = True
@@ -1288,291 +1274,87 @@ def par2_repair(nzo: NzbObject, setname: str) -> tuple[bool, bool]:
     return readd, result
 
 
-def par2cmdline_verify(
+def par2_verify_and_repair(
     parfile: str, nzo: NzbObject, setname: str, joinables: list[str]
 ) -> tuple[bool, bool, list[str], list[str]]:
-    """Run par2 on par-set"""
-    used_joinables = []
-    used_for_repair = []
-    # set the current nzo status to "Verifying...". Used in History
-    nzo.status = Status.VERIFYING
-    start = time.time()
+    """Verify and repair a par2 set through sabctools.
+    Returns (finished, readd, used_joinables, used_for_repair).
+    """
+    session = par2repair.get_session(nzo, setname)
+    resuming = session is not None
 
-    # Build command and add extra options
-    command = [str(PAR2_COMMAND), "r", parfile]
-    if options := cfg.par_option().strip().split():
-        for option in options:
-            command.insert(2, option)
+    if not resuming:
+        session = par2repair.create_session(nzo, setname, parfile)
+        nzo.set_action_line(T("Repair"), T("Starting Repair"))
 
-    # Append the wildcard for this set
-    parfolder = os.path.split(parfile)[0]
-    if len(nzo.extrapars) == 1 or len(globber(parfolder, setname + "*")) < 2:
-        # Support bizarre naming conventions
-        wildcard = "*"
-    else:
-        # Normal case, everything is named after set
-        wildcard = setname + "*"
-    command.append(os.path.join(parfolder, wildcard))
-
-    # We need to check for the bad par2cmdline that skips blocks
-    # Or the one that complains about basepath
-    par2text = run_command([command[0], "-h"])
-    if "No data skipping" in par2text:
-        logging.info("Detected par2cmdline version that skips blocks, adding -N parameter")
-        command.insert(2, "-N")
-    if "Set the basepath" in par2text:
-        logging.info("Detected par2cmdline version that needs basepath, adding -B<path> parameter")
-        command.insert(2, "-B")
-        command.insert(3, parfolder)
-
-    # Run the external command
-    p = build_and_run_command(command)
-    sabnzbd.PostProcessor.external_process = p
-
-    # Set up our variables
-    lines = []
-    renames = {}
-    reconstructed = []
-
-    finished = False
-    readd = False
-
-    verifynum = 0
-    verifytotal = 0
-    verified = 0
-    perc = 0
-
-    in_verify = False
-    in_extra_files = False
-    in_verify_repaired = False
-
-    # Loop over the output, whee
-    while 1:
-        line = p.stdout.readline()
-        if not line:
-            break
-
-        # Skip empty lines
-        line = line.strip()
-        if not line:
-            continue
-
-        if not line.startswith(("Repairing:", "Scanning:", "Loading:", "Solving:", "Constructing:")):
-            lines.append(line)
-
-        if line.startswith(("Invalid option specified", "Invalid thread option", "Cannot specify recovery file count")):
-            msg = T("[%s] PAR2 received incorrect options, check your Config->Switches settings") % setname
-            nzo.set_unpack_info("Repair", msg)
-            nzo.status = Status.FAILED
-            logging.error(msg)
-
-        elif line.startswith("All files are correct"):
-            msg = T("[%s] Verified in %s, all files correct") % (setname, format_time_string(time.time() - start))
-            nzo.set_unpack_info("Repair", msg)
-            logging.info("Verified in %s, all files correct", format_time_string(time.time() - start))
-            finished = True
-
-        elif line.startswith("Repair is required"):
-            msg = T("[%s] Verified in %s, repair is required") % (setname, format_time_string(time.time() - start))
-            nzo.set_unpack_info("Repair", msg)
-            logging.info("Verified in %s, repair is required", format_time_string(time.time() - start))
-            start = time.time()
-            verified = 1
-            # Reset to use them again for verification of repair
-            verifytotal = 0
-            verifynum = 0
-
-        elif line.startswith("Main packet not found") or "The recovery file does not exist" in line:
-            # Initialparfile probably didn't decode properly or bad user parameters
-            # We will try to get another par2 file, but 99% of time it's user parameters
+        result = session.open()
+        if result in (sabctools.Par2Result.MEMORY_ERROR, sabctools.Par2Result.LOGIC_ERROR):
+            session.fail(result)
+            return False, False, [], []
+        if result != sabctools.Par2Result.SUCCESS:
             msg = T("Invalid par2 files or invalid PAR2 parameters, cannot verify or repair")
-            logging.info(msg)
-            logging.info("Extra pars = %s", nzo.extrapars[setname])
+            logging.info("%s (set %s)", msg, setname)
+            par2repair.discard(nzo, setname)
 
-            # Look for the smallest par2file
-            block_table = {}
-            for nzf in nzo.extrapars[setname]:
-                if not nzf.completed:
-                    block_table[nzf.blocks] = nzf
-
+            # Look for the smallest par2 file we have not tried yet
+            block_table = {nzf.blocks: nzf for nzf in nzo.extrapars[setname] if not nzf.completed}
             if block_table:
                 nzf = block_table[min(block_table)]
                 logging.info("Found new par2file %s", nzf.filename)
-
-                # Move from extrapar list to files to be downloaded
-                # and remove it from the extrapars list
                 nzo.add_parfile(nzf)
-                readd = True
-            else:
-                nzo.fail_msg = msg
-                nzo.set_unpack_info("Repair", msg, setname)
-                nzo.status = Status.FAILED
+                return False, True, [], []
 
-        elif line.startswith("You need"):
-            # We need more blocks, but are they available?
-            chunks = line.split()
-            needed_blocks = int(chunks[2])
-
-            # Check if we have enough blocks
-            added_blocks = nzo.get_extra_blocks(setname, needed_blocks)
-            if added_blocks:
-                msg = T("Fetching %s blocks...") % str(added_blocks)
-                nzo.set_action_line(T("Fetching"), msg)
-                readd = True
-            else:
-                # Failed
-                msg = T("Repair failed, not enough repair blocks (%s short)") % str(needed_blocks)
-                nzo.fail_msg = msg
-                nzo.set_unpack_info("Repair", msg, setname)
-                nzo.status = Status.FAILED
-
-        elif line.startswith("Repair is possible"):
-            start = time.time()
-            nzo.set_action_line(T("Repairing"), "%2d%%" % 0)
-
-        elif line.startswith(("Repairing:", "Processing:")):
-            # "Processing" is shown when it is only joining files without repairing
-            chunks = line.split()
-            new_perc = float(chunks[-1][:-1])
-            # Only send updates for whole-percentage updates
-            if new_perc - perc > 1:
-                perc = new_perc
-                nzo.set_action_line(T("Repairing"), "%2d%% %s" % (perc, add_time_left(perc, start)))
-                nzo.status = Status.REPAIRING
-
-        elif line.startswith("Repair complete"):
-            msg = T("[%s] Repaired in %s") % (setname, format_time_string(time.time() - start))
-            nzo.set_unpack_info("Repair", msg)
-            logging.info("Repaired in %s", format_time_string(time.time() - start))
-            finished = True
-
-        elif verified and line.endswith(("are missing.", "exist but are damaged.")):
-            # Files that will later be verified after repair
-            chunks = line.split()
-            verifytotal += int(chunks[0])
-
-        elif line.startswith("Verifying repaired files"):
-            in_verify_repaired = True
-
-        elif in_verify_repaired and line.startswith("Target"):
-            verifynum += 1
-            if verifynum <= verifytotal:
-                nzo.set_action_line(T("Verifying repair"), "%02d/%02d" % (verifynum, verifytotal))
-
-        elif "Could not write" in line and "at offset 0:" in line:
-            # If there are joinables, this error will only happen in case of 100% complete files
-            # We can just skip the retry, because par2cmdline will fail in those cases
-            # because it refuses to scan the ".001" file
-            if joinables:
-                finished = True
-                used_joinables = []
-
-        elif " cannot be renamed to " in line:
-            msg = line.strip()
             nzo.fail_msg = msg
             nzo.set_unpack_info("Repair", msg, setname)
             nzo.status = Status.FAILED
-
-        elif "There is not enough space on the disk" in line:
-            # Oops, disk is full!
-            msg = T("Repairing failed, %s") % T("Disk full")
+            return False, False, [], []
+    else:
+        # Back from fetching more recovery blocks
+        logging.info("Resuming repair of %s with additional par2 files", setname)
+        try:
+            session.add_parfiles(par2repair.parfile_paths(nzo))
+        except sabctools.Par2Error as error:
+            logging.info("Could not load the extra par2 files for %s", setname, exc_info=True)
+            msg = T("Repairing failed, %s") % error
             nzo.fail_msg = msg
             nzo.set_unpack_info("Repair", msg, setname)
             nzo.status = Status.FAILED
+            par2repair.discard(nzo, setname)
+            return False, False, [], []
 
-        elif "No details available for recoverable file" in line:
-            msg = line.strip()
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Repair", msg, setname)
-            nzo.status = Status.FAILED
+    if not session.verified:
+        session.verify()
 
-        elif line.startswith("Repair Failed."):
-            # Unknown repair problem
-            msg = T("Repairing failed, %s") % line
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Repair", msg, setname)
-            nzo.status = Status.FAILED
-            finished = False
+    if not session.repairer.repair_possible:
+        needed_blocks = max(0, session.repairer.missing_block_count - session.repairer.recovery_block_count)
+        if session.fetch_blocks(needed_blocks):
+            return False, True, [], []
 
-        elif not verified:
-            if line.startswith("Scanning:"):
-                pass
+        msg = T("Repair failed, not enough repair blocks (%s short)") % str(needed_blocks)
+        nzo.fail_msg = msg
+        nzo.set_unpack_info("Repair", msg, setname)
+        nzo.status = Status.FAILED
+        par2repair.discard(nzo, setname)
+        return False, False, [], []
 
-            if in_extra_files:
-                if "is a match for" in line or line.find("data blocks from") > 0:
-                    # Baldy named ones
-                    if m_rename := PAR2_IS_MATCH_FOR_RE.search(line):
-                        old_name = m_rename.group(1)
-                        new_name = m_rename.group(2)
-                        logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
-                        renames[new_name] = old_name
+    # repair() clears the state these are derived from
+    used_joinables, used_for_repair = session.files_used(joinables)
 
-                    # Obfuscated and also damaged
-                    if m_block := PAR2_BLOCK_FOUND_RE.search(line):
-                        workdir = os.path.split(parfile)[0]
-                        old_name = m_block.group(1)
-                        new_name = m_block.group(2)
-                        if joinables:
-                            # Find out if a joinable file has been used for joining
-                            for jn in joinables:
-                                if get_filename(jn) == old_name:
-                                    used_joinables.append(jn)
-                                    break
-                            # Special case of joined RAR files, the "of" and "from" must both be RAR files
-                            # This prevents the joined rars files from being seen as an extra rar-set
-                            if ".rar" in old_name.lower() and ".rar" in new_name.lower():
-                                used_joinables.append(os.path.join(workdir, old_name))
-                        else:
-                            logging.debug('PAR2 will reconstruct "%s" from "%s"', new_name, old_name)
-                            reconstructed.append(os.path.join(workdir, old_name))
-                            renames[new_name] = old_name
+    result = session.repair()
 
-                    if m_block or m_rename:
-                        # Show progress
-                        verifynum += 1
-                        nzo.set_action_line(T("Checking extra files"), "%02d" % verifynum)
+    if result == sabctools.Par2Result.SUCCESS:
+        par2repair.discard(nzo, setname)
+        return True, False, used_joinables, used_for_repair
 
-            elif not in_verify:
-                # Total number to verify
-                if m := re.match(r"There are (\d+) recoverable files", line):
-                    verifytotal = int(m.group(1))
+    error = session.last_error
+    if error and error["code"] == sabctools.Par2ErrorCode.RECOVERY_UNSOLVABLE and session.fetch_blocks(1):
+        logging.info("Recovery blocks of %s cannot rebuild the missing blocks, fetching more", setname)
+        # A failed repair needs verifying again before the next one
+        session.verified = False
+        return False, True, [], []
 
-                if line.startswith("Verifying source files:"):
-                    in_verify = True
-                    nzo.status = Status.VERIFYING
-            elif line.startswith("Scanning extra files:"):
-                in_verify = False
-                in_extra_files = True
-                verifynum = 0
-            else:
-                # Target files for verification
-                m = PAR2_TARGET_RE.match(line)
-                if m:
-                    verifynum += 1
-                    nzo.set_action_line(T("Verifying"), "%02d/%02d" % (verifynum, verifytotal))
-
-                    # Remove redundant extra files that are just duplicates of original ones
-                    if "duplicate data blocks" in line:
-                        used_for_repair.append(m.group(1))
-
-    p.wait()
-
-    # Also log what is shown to user in history
-    if nzo.fail_msg:
-        logging.info(nzo.fail_msg)
-
-    logging.debug("par2cmdline output was:\n%s", "\n".join(lines))
-
-    # If successful, add renamed files to the collection
-    if finished and renames:
-        nzo.renamed_file(renames)
-
-    # If successful and files were reconstructed, remove incomplete original files
-    if finished and reconstructed:
-        # Use 'used_joinables' as a vehicle to get rid of the files
-        used_joinables.extend(reconstructed)
-
-    return finished, readd, used_joinables, used_for_repair
+    session.fail(result)
+    return False, False, [], []
 
 
 def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: dict[str, Any] = {}) -> Optional[dict[str, Any]]:
@@ -1605,7 +1387,6 @@ def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: dict[str, Any]
             "program_dir": sabnzbd.DIR_PROG,
             "api_key": cfg.api_key(),
             "api_url": f"{sabnzbd.BROWSER_URL}/api",
-            "par2_command": sabnzbd.newsunpack.PAR2_COMMAND,
             "rar_command": sabnzbd.newsunpack.RAR_COMMAND,
             "7zip_command": sabnzbd.newsunpack.SEVENZIP_COMMAND,
             "version": sabnzbd.__version__,
@@ -1794,16 +1575,6 @@ def sevenzip_check(sevenzip: str) -> str:
         except Exception:
             pass
     return ""
-
-
-def par2_turbo_check(par2_path: str) -> bool:
-    """Detect if we have the turbo par2 variant"""
-    try:
-        if "par2cmdline-turbo" in run_command([par2_path, "-V"]):
-            return True
-    except Exception:
-        pass
-    return False
 
 
 def is_sfv_file(myfile: str) -> bool:
