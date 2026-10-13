@@ -1207,9 +1207,8 @@ def remove_unwanted_files(nzo: NzbObject, filelist: list[str], base_dir: str) ->
     are verified again. Only the tracked files are considered, so files of
     other jobs in a shared folder are left alone.
     The job can no longer be paused at this point, so unwanted files are
-    always removed. If the configured action is to fail the job, or if an
-    unwanted file could not be removed, the job is marked as failed.
-    Returns the remaining files and whether the job failed.
+    always removed. If the configured action is to fail the job, the job is
+    marked as failed. Returns the remaining files and whether the job failed.
     """
     # Skip if not configured or after an explicit user override of the unwanted extension pause
     if not cfg.unwanted_extensions() or not cfg.action_on_unwanted_extensions() or nzo.unwanted_ext == 2:
@@ -1217,7 +1216,6 @@ def remove_unwanted_files(nzo: NzbObject, filelist: list[str], base_dir: str) ->
 
     remaining_files = []
     removed_files = []
-    removal_failed = False
     for path in filelist:
         if os.path.isfile(path) and has_unwanted_extension(get_filename(path)):
             try:
@@ -1228,27 +1226,17 @@ def remove_unwanted_files(nzo: NzbObject, filelist: list[str], base_dir: str) ->
             except Exception:
                 logging.error(T("Removing %s failed"), clip_path(path))
                 logging.info("Traceback: ", exc_info=True)
-                removal_failed = True
         remaining_files.append(path)
 
     job_failed = False
     if removed_files:
         nzo.set_unpack_info("Unpack", T("Removed %s files with unwanted extensions") % len(removed_files))
-    if removal_failed:
-        # The job can't complete with the unwanted files still in place, regardless of the configured action
-        logging.debug("Unwanted extension ... failing job, unable to remove unwanted files")
-        job_failed = True
-        # Keep the reason of an earlier failure
-        if not nzo.fail_msg:
-            nzo.fail_msg = T("Failed to remove files with unwanted extensions")
-    elif removed_files and cfg.action_on_unwanted_extensions() == 2:
-        logging.debug("Unwanted extension ... failing job")
-        job_failed = True
-        if not nzo.fail_msg:
-            nzo.fail_msg = T("Aborted, unwanted extension detected")
-
-    # Remove the directories the removed files left behind, if they are now empty
-    if removed_files:
+        if cfg.action_on_unwanted_extensions() == 2:
+            logging.debug("Unwanted extension ... failing job")
+            job_failed = True
+            if not nzo.fail_msg:
+                nzo.fail_msg = T("Aborted, unwanted extension detected")
+        # Remove the directories the removed files left behind, if they are now empty
         remove_empty_parent_directories(base_dir, removed_files)
     return remaining_files, job_failed
 
