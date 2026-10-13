@@ -389,6 +389,8 @@ def make_mock_nzo(**overrides) -> mock.Mock:
     nzo.meta = {}
     nzo.extrapars = {}
     nzo.par2packs = {}
+    nzo.par2_sessions = {}
+    nzo.files = []
     nzo.repair = nzo.unpack = nzo.delete = False
     nzo.precheck = nzo.reuse = nzo.futuretype = nzo.pp_active = False
     nzo.direct_unpacker = None

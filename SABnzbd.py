@@ -414,13 +414,6 @@ def print_modules():
 
     logging.info("Cryptography module (v%s)... found!", cryptography.__version__)
 
-    if sabnzbd.newsunpack.PAR2_COMMAND:
-        logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
-    else:
-        logging.error(T("par2 binary... NOT found!"))
-        # Do not allow downloading
-        sabnzbd.NO_DOWNLOADING = True
-
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("UNRAR binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
 
