@@ -599,6 +599,9 @@ class Assembler(Thread):
         # available to provide there.
         written = writer.write(data, pos)
 
+        if offset is not None:
+            # Packed at a running offset rather than at article.data_begin
+            nzf.direct_written = False
         article.on_disk = True
         sabnzbd.Assembler.remove_ready_bytes(article)
         with nzf.lock:

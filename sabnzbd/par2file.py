@@ -51,6 +51,39 @@ class FilePar2Info:
     filesize: int
     filehash: Optional[int] = None
     has_duplicate: bool = False
+    blocksize: int = 0
+    blockcount: int = 0
+
+    def __setstate__(self, state):
+        # Jobs queued before the block geometry was recorded unpickle without it
+        self.blocksize = 0
+        self.blockcount = 0
+        for name, value in state[1].items():
+            setattr(self, name, value)
+
+
+def uncovered_blocks(ranges: list[tuple[int, int]], blocksize: int, blockcount: int, filesize: int) -> int:
+    """How many blocks of a file none of the byte ranges covers in full"""
+    merged: list[list[int]] = []
+    for start, end in sorted(ranges):
+        if merged and start <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+
+    uncovered = 0
+    index = 0
+    for block in range(blockcount):
+        start = block * blocksize
+        end = min(start + blocksize, filesize)
+        if start >= filesize:
+            uncovered += 1
+            continue
+        while index < len(merged) and merged[index][1] <= start:
+            index += 1
+        if not (index < len(merged) and merged[index][0] <= start and merged[index][1] >= end):
+            uncovered += 1
+    return uncovered
 
 
 def has_par2_in_filename(filename: str) -> bool:
@@ -223,6 +256,10 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
                         crc32, sabctools.crc32_zero_unpad(filecrc32[fileid][-1], slice_size - tail_size), tail_size
                     )
                 par2info.filehash = crc32
+                # Block geometry only where the checksums cover the file exactly
+                if len(filecrc32[fileid]) == -(-par2info.filesize // slice_size):
+                    par2info.blocksize = slice_size
+                    par2info.blockcount = len(filecrc32[fileid])
 
                 # We found hash data, add it to final table
                 table[par2info.filename] = par2info
