@@ -19,6 +19,7 @@
 sabnzbd.decoder - article decoder
 """
 
+import array
 import logging
 import hashlib
 import re
@@ -220,6 +221,8 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
     article.data_begin = response.part_begin
     article.data_size = response.part_size
     article.decoded_size = response.bytes_decoded
+    article.block_size = response.block_size
+    article.block_crcs = array.array("I", crcs) if (crcs := response.block_crcs) is not None else None
 
     nzf = article.nzf
     # Assume it is yenc
@@ -260,6 +263,7 @@ def decode_uu(article: Article, response: sabctools.NNTPResponse) -> bytearray:
 
     decoded_data = response.data
     article.decoded_size = response.bytes_decoded
+    article.block_size = article.block_crcs = None
     nzf = article.nzf
     nzf.type = "uu"
 

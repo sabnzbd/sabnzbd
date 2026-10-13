@@ -301,6 +301,8 @@ class NzbObject(TryList):
         self.direct_unpacker: Optional[sabnzbd.directunpacker.DirectUnpacker] = None  # The DirectUnpacker instance
         # Live par2 repair sessions per set name, not saved
         self.par2_sessions: dict[str, sabnzbd.par2repair.RepairSession] = {}
+        # Files a par2 repair rewrote, not saved
+        self.par2_rewritten: set[str] = set()
         self.bytes: int = 0  # Original bytesize
         self.bytes_par2: int = 0  # Bytes in par2 files
         self.bytes_downloaded: int = 0  # Downloaded byte
@@ -704,7 +706,8 @@ class NzbObject(TryList):
                 if setname in self.par2packs:
                     logging.debug("Found duplicate par2pack-setname: %s, using set ID: %s", setname, set_id)
                     setname = set_id
-                self.par2packs[setname] = pack
+                # Replaced whole and never changed in place, so readers need no lock
+                self.par2packs = {**self.par2packs, setname: pack}
                 # See if we need to postpone some pars
                 self.postpone_pars(setname)
             else:
@@ -786,10 +789,20 @@ class NzbObject(TryList):
 
     def par2_file_size(self, filename: str) -> Optional[int]:
         """The size a par2 set records for a file, when one describes it"""
-        for par2pack in list(self.par2packs.values()):
+        for par2pack in self.par2packs.values():
             if par2pack and (par2info := par2pack.get(filename)):
                 return par2info.filesize
         return None
+
+    def par2_block_size(self, filename: str) -> int:
+        """The block size of the par2 set that describes a file, otherwise the one every set
+        of the job shares, and 0 while there is none"""
+        shared = set()
+        for par2pack in self.par2packs.values():
+            if par2pack and (par2info := par2pack.get(filename)):
+                return par2info.blocksize
+            shared.update(par2info.blocksize for par2info in par2pack.values() if par2info.blocksize)
+        return shared.pop() if len(shared) == 1 else 0
 
     @synchronized()
     def blocks_beyond_recovery(self) -> bool:
@@ -1891,6 +1904,7 @@ class NzbObject(TryList):
         self.to_be_removed = False
         self.direct_unpacker = None
         self.par2_sessions = {}
+        self.par2_rewritten = set()
         self.filenames = set()
         for nzf in self.files_table.values():
             if nzf.filepath:

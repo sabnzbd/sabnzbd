@@ -1320,6 +1320,7 @@ def par2_verify_and_repair(
 
     if not session.verified:
         session.truncate_to_par2_sizes()
+        session.apply_known_blocks()
         session.verify()
 
     if not session.repairer.repair_possible:
