@@ -25,7 +25,7 @@ import os
 
 import pytest
 
-from sabnzbd.par2file import PAR_CREATOR_ID, PAR_PKT_ID, FilePar2Info, parse_par2_file
+from sabnzbd.par2file import PAR_CREATOR_ID, PAR_PKT_ID, FilePar2Info, parse_par2_file, uncovered_blocks
 from tests.testhelper import SAB_DATA_DIR
 
 # TODO: Add testing for edge cases, such as non-unique md5of16k or broken par files
@@ -77,6 +77,8 @@ class TestPar2Parsing:
                         hash16k=b"\xbf\xe0\xe4\x10\xa2#\xf5\xbeN\x7f2\xe5\x9e\xdd\t\x03",
                         filehash=787459617,
                         filesize=5120,
+                        blocksize=384000,
+                        blockcount=1,
                     )
                 },
             ) == parse_par2_file(os.path.join(SAB_DATA_DIR, "deobfuscate_filenames", "rename.par2"), {})
@@ -91,6 +93,8 @@ class TestPar2Parsing:
                         hash16k=b",F\x1f3\x83\xe7wa\xf4Q\xb0[\xd9\x9a\xc0\xa1",
                         filehash=13964116,
                         filesize=153,
+                        blocksize=156,
+                        blockcount=1,
                     )
                 },
             ) == parse_par2_file(
@@ -107,36 +111,48 @@ class TestPar2Parsing:
                         hash16k=b"\xe0\xab\xe9\x96\xfa\xdc\xba\x07?\xb1\xd4w\t2\xe5\x96",
                         filehash=2849562011,
                         filesize=20480,
+                        blocksize=52,
+                        blockcount=394,
                     ),
                     "我喜欢编程.part6.rar": FilePar2Info(
                         filename="我喜欢编程.part6.rar",
                         hash16k=b"\xb4\x86t\xf7B\x0bW+\xee-\xfd4z\x03\x05\xd2",
                         filehash=251711255,
                         filesize=1191,
+                        blocksize=52,
+                        blockcount=23,
                     ),
                     "我喜欢编程.part2.rar": FilePar2Info(
                         filename="我喜欢编程.part2.rar",
                         hash16k=b"\x1f\n\xc8\xf09@A&n\x17ah\xa4\x1dEi",
                         filehash=1866884676,
                         filesize=20480,
+                        blocksize=52,
+                        blockcount=394,
                     ),
                     "我喜欢编程.part1.rar": FilePar2Info(
                         filename="我喜欢编程.part1.rar",
                         hash16k=b"\x9b\x9cm\xd63\x15\x16\x923\xc9\xd7\x1c\x94\xd8\xd9#",
                         filehash=3178523720,
                         filesize=20480,
+                        blocksize=52,
+                        blockcount=394,
                     ),
                     "我喜欢编程.part5.rar": FilePar2Info(
                         filename="我喜欢编程.part5.rar",
                         hash16k=b"\x89fu\xd8\x10a\x01Ze\xcb\x04\x0b\ndjr",
                         filehash=4287933540,
                         filesize=20480,
+                        blocksize=52,
+                        blockcount=394,
                     ),
                     "我喜欢编程.part4.rar": FilePar2Info(
                         filename="我喜欢编程.part4.rar",
                         hash16k=b"8TA\x83\xeb\xc8\xbe\xf58\x95g\x87\n\xa2A\xa1",
                         filehash=3954002734,
                         filesize=20480,
+                        blocksize=52,
+                        blockcount=394,
                     ),
                 },
             ) == parse_par2_file(os.path.join(SAB_DATA_DIR, "unicode_rar", "我喜欢编程.par2"), {})
@@ -156,9 +172,65 @@ class TestPar2Parsing:
                         hash16k=b"'ky\xd7\xd1\xd3wF\xed\x9c\xf7\x9b\x90\x93\x106",
                         filehash=1157097199,
                         filesize=17803,
+                        blocksize=384000,
+                        blockcount=1,
                     )
                 },
             ) == parse_par2_file(os.path.join(SAB_DATA_DIR, "par2file", "basic_16k.par2"), md5of16k)
             assert md5of16k == {b"'ky\xd7\xd1\xd3wF\xed\x9c\xf7\x9b\x90\x93\x106": "rss_feed_test.xml"}
             assert "Par2-creator of basic_16k.par2 is: QuickPar 0.9" in caplog.text
             caplog.clear()
+
+    def test_checksums_that_do_not_cover_the_file_leave_no_block_geometry(self, tmp_path):
+        source_path = os.path.join(SAB_DATA_DIR, "par2file", "basic_16k.par2")
+        with open(source_path, "rb") as source:
+            packets = source.read()
+
+        # One checksum entry more than the file has blocks
+        start = packets.index(b"PAR 2.0\x00IFSC") - 48
+        length = int.from_bytes(packets[start + 8 : start + 16], "little")
+        data = packets[start + 32 : start + length] + b"\0" * 20
+        ifsc = PAR_PKT_ID + (32 + len(data)).to_bytes(8, "little") + hashlib.md5(data).digest() + data
+        extra_entry = tmp_path / "extra_entry.par2"
+        extra_entry.write_bytes(packets[:start] + ifsc + packets[start + length :])
+
+        _, table = parse_par2_file(str(extra_entry), {})
+        assert table["rss_feed_test.xml"].blocksize == 0
+        assert table["rss_feed_test.xml"].blockcount == 0
+
+
+class TestUncoveredBlocks:
+    """Tests for par2file.uncovered_blocks()."""
+
+    BLOCKSIZE = 1000
+    BLOCKCOUNT = 10
+    FILESIZE = 9500  # The last block is short and par2 pads it
+
+    def uncovered(self, ranges):
+        return uncovered_blocks(ranges, self.BLOCKSIZE, self.BLOCKCOUNT, self.FILESIZE)
+
+    def test_everything_covered(self):
+        assert self.uncovered([(0, 9500)]) == 0
+
+    def test_nothing_covered(self):
+        assert self.uncovered([]) == self.BLOCKCOUNT
+
+    def test_short_final_block_needs_only_the_bytes_the_file_has(self):
+        """Block 9 spans 9000-10000 but the file ends at 9500."""
+        assert self.uncovered([(0, 9500)]) == 0
+        assert self.uncovered([(0, 9499)]) == 1
+
+    def test_gap_inside_one_block(self):
+        assert self.uncovered([(0, 5000), (5100, 9500)]) == 1
+
+    def test_gap_straddling_a_boundary(self):
+        assert self.uncovered([(0, 4900), (5100, 9500)]) == 2
+
+    def test_abutting_ranges_merge(self):
+        assert self.uncovered([(0, 4000), (4000, 9500)]) == 0
+
+    def test_block_size_decides_the_damage(self):
+        """The same lost bytes cost a different number of blocks per geometry."""
+        arrived = [(0, 2500), (5000, 9500)]
+        assert uncovered_blocks(arrived, 1000, 10, 9500) == 3
+        assert uncovered_blocks(arrived, 5000, 2, 9500) == 1
