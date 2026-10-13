@@ -31,6 +31,7 @@ import rarfile
 from typing import Optional
 
 import sabnzbd
+import sabnzbd.par2repair
 from sabnzbd.newsunpack import (
     unpacker,
     par2_repair,
@@ -243,6 +244,7 @@ class PostProcessor(Thread):
         for nzo in self.history_queue:
             if nzo.nzo_id in nzo_ids:
                 nzo.abort_direct_unpacker()
+                sabnzbd.par2repair.cancel(nzo)
                 if nzo.pp_active:
                     nzo.pp_active = False
                     try:
@@ -387,6 +389,8 @@ def process_job(nzo: NzbObject) -> bool:
     all_ok = True
     # keep track of par problems
     par_error = False
+    # Signal the job went back to the queue for more par2 files
+    re_add = False
     # keep track of any unpacking errors
     unpack_error = False
     # Signal empty download
@@ -708,6 +712,10 @@ def process_job(nzo: NzbObject) -> bool:
                 "",
                 0,
             )
+
+    finally:
+        if not re_add:
+            sabnzbd.par2repair.discard(nzo)
 
     workdir_notifcation_action = workdir_complete
     if all_ok:

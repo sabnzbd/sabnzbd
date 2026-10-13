@@ -31,19 +31,6 @@
                     <th scope="row">OpenSSL:</th>
                     <td>$ssl_version</td>
                 </tr>
-                <!--#if not $windows and not $macos#-->
-                <tr>
-                    <th scope="row">Par2cmdline-turbo:</th>
-                    <td>
-                        <!--#if $have_par2_turbo#-->
-                        <span class="glyphicon glyphicon-ok"></span>
-                        <!--#else#-->
-                        <span class="label label-warning">$T('notAvailable')</span> $T('explain-getpar2turbo')<br>
-                        <a href="https://sabnzbd.org/wiki/installation/par2cmdline-turbo" target="_blank">https://sabnzbd.org/wiki/installation/par2cmdline-turbo</a>
-                        <!--#end if#-->
-                    </td>
-                </tr>
-                <!--#end if#-->
                 <!--#if not $have_7zip #-->
                 <tr>
                     <th scope="row">$T('opt-enable_7zip'):</th>
