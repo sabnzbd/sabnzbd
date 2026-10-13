@@ -390,6 +390,7 @@ def make_mock_nzo(**overrides) -> mock.Mock:
     nzo.extrapars = {}
     nzo.par2packs = {}
     nzo.par2_sessions = {}
+    nzo.par2_rewritten = set()
     nzo.files = []
     nzo.repair = nzo.unpack = nzo.delete = False
     nzo.precheck = nzo.reuse = nzo.futuretype = nzo.pp_active = False

@@ -327,6 +327,28 @@ class TestBlockAccounting:
         nzo = self._make_nzo()
         assert nzo.blocks_destroyed("myset") == 0
 
+    def test_block_size_of_a_described_file(self):
+        nzo = self._make_nzo()
+        assert nzo.par2_block_size("file1.rar") == self.BLOCKSIZE
+
+    def test_a_file_no_set_names_takes_the_block_size_every_set_shares(self):
+        """An obfuscated file before it is renamed"""
+        nzo = self._make_nzo()
+        assert nzo.par2_block_size("abc123.bin") == self.BLOCKSIZE
+
+    def test_no_block_size_where_the_sets_disagree(self):
+        nzo = self._make_nzo()
+        nzo.par2packs["other"] = {
+            "other.rar": FilePar2Info("other.rar", b"\0" * 16, self.FILESIZE, None, False, self.BLOCKSIZE * 2, 1)
+        }
+        assert nzo.par2_block_size("abc123.bin") == 0
+        assert nzo.par2_block_size("other.rar") == self.BLOCKSIZE * 2
+
+    def test_no_block_size_before_a_set_is_parsed(self):
+        nzo = self._make_nzo()
+        nzo.par2packs.clear()
+        assert nzo.par2_block_size("file1.rar") == 0
+
     def test_one_lost_article_destroys_every_block_it_touches(self):
         """A 2500-byte article covers part of blocks 2, 3 and 4."""
         nzo = self._make_nzo(failed_articles=(1,))
