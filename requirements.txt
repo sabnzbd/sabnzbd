@@ -2,7 +2,7 @@
 # All sub-dependencies are listed in order to prevent any supply-chain attacks
 # Installation can (and should) be performed with "--no-deps" parameter
 apprise==2.0.1
-sabctools==9.7.2
+sabctools @ git+https://github.com/mnightingale/sabctools@feature/par2
 CT3==3.4.0.post5
 cffi==2.1.1
 pycparser==3.11
