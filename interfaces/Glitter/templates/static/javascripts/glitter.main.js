@@ -755,6 +755,8 @@ function ViewModel() {
 
         // Show loading text for performance measures
         if (statusPerformance) {
+            // Hide tooltip first, otherwise it stays forever because the button gets hidden
+            $(event.currentTarget).tooltip('hide')
             self.hasPerformanceInfo(false)
         }
 
