@@ -80,9 +80,9 @@ class TestAssembler:
                 with mock.patch.object(Assembler, "write", wraps=Assembler.write) as mocked_assembler_write:
                     yield mocked_assembler_write
 
-                # All articles should be marked on_disk
+                # All articles should be marked on_disk, unless they were lost
                 for article in self.nzf.decodetable:
-                    assert article.on_disk is True
+                    assert article.on_disk is True or article.failed
 
                 # File should be marked assembled
                 assert self.nzf.assembled is True
@@ -277,6 +277,67 @@ class TestAssembler:
         self.nzf.decodetable[0].decoded = True
         Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
         self._assert_expected_content(self.nzf, expected)
+
+    def test_append_leaves_a_lost_article_as_a_gap(self, assembler):
+        """Sequential writes still put each article at its own offset"""
+        self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world"), decoded=False),
+                self._make_article(self.nzf, offset=10, data=bytearray(b"12345")),
+            ],
+        )
+        self.nzf.decodetable[1].failed = True
+        self.nzf.decodetable[1].crc32 = None
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
+        with open(self.nzf.filepath, "rb") as f:
+            assert f.read() == b"hello" + bytes(5) + b"12345"
+        assert self.nzf.direct_written
+
+    def test_append_extends_a_file_whose_last_article_was_lost(self, assembler):
+        self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world"), decoded=False),
+            ],
+        )
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=False, direct_write=False)
+        self.nzf.decodetable[1].failed = True
+        self.nzf.decodetable[1].crc32 = None
+        with mock.patch.object(sabnzbd.cfg.direct_write, "get", return_value=True):
+            Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
+        with open(self.nzf.filepath, "rb") as f:
+            assert f.read() == b"hello" + bytes(5)
+
+    def test_append_leaves_a_file_whose_last_article_was_lost_short_without_direct_write(self, assembler):
+        self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world"), decoded=False),
+            ],
+        )
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=False, direct_write=False)
+        self.nzf.decodetable[1].failed = True
+        self.nzf.decodetable[1].crc32 = None
+        with mock.patch.object(sabnzbd.cfg.direct_write, "get", return_value=False):
+            Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
+        with open(self.nzf.filepath, "rb") as f:
+            assert f.read() == b"hello"
+
+    def test_append_without_offsets_packs_at_a_running_offset(self, assembler):
+        _data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"abcd"), can_direct_write=False),
+                self._make_article(self.nzf, offset=0, data=bytearray(b"efg"), can_direct_write=False),
+            ],
+        )
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
+        self._assert_expected_content(self.nzf, expected)
+        assert not self.nzf.direct_written
 
     def test_force_append(self, assembler):
         """Force in direct_write mode, then fill in gaps in append mode"""

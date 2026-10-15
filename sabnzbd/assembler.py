@@ -518,7 +518,22 @@ class Assembler(Thread):
                     if direct_write and skipped and not file_done:
                         # If we have already skipped an article then need to abort, unless this is the final assemble
                         break
+                    # Still only forward, but past any missing article to where this one belongs
+                    if article.data_size and article.data_begin is not None and article.data_begin >= offset:
+                        offset = article.data_begin
                     offset += Assembler.write(writer, idx, nzf, article, data, offset)
+
+            # Lost articles at the end leave the file short of its full size
+            if file_done and cfg.direct_write():
+                file_size = next((a.file_size for a in decodetable if a.on_disk and a.data_size), 0)
+                if file_size:
+                    writer = writer or sabnzbd.Assembler.get_writer(nzf)
+                    if writer.size < file_size:
+                        try:
+                            writer.preallocate(file_size)
+                        except sabctools.SparseUnsupported:
+                            logging.debug("Sparse call failed for %s", nzf.filepath)
+                            cfg.direct_write.set(False)
 
         finally:
             # Deliberately not closed here. The next articles for this file are moments
@@ -599,7 +614,7 @@ class Assembler(Thread):
         # available to provide there.
         written = writer.write(data, pos)
 
-        if offset is not None:
+        if pos != article.data_begin:
             # Packed at a running offset rather than at article.data_begin
             nzf.direct_written = False
         article.on_disk = True
