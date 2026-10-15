@@ -64,11 +64,7 @@ from sabnzbd.misc import (
     get_cpu_name,
 )
 from sabnzbd.filesystem import (
-    real_path,
-    globber,
-    globber_full,
     clip_path,
-    setname_from_path,
 )
 from sabnzbd.encoding import utob
 import sabnzbd.config as config
@@ -78,7 +74,6 @@ import sabnzbd.nzbsearch
 import sabnzbd.utils.ssdp
 from sabnzbd.get_addrinfo import get_fastest_addrinfo
 from sabnzbd.constants import (
-    DEF_STD_CONFIG,
     DEFAULT_PRIORITY,
     CHEETAH_DIRECTIVES,
     EXCLUDED_GUESSIT_PROPERTIES,
@@ -1069,6 +1064,7 @@ GENERAL_LIST = (
     "check_new_rel",
     "bandwidth_max",
     "bandwidth_perc",
+    "web_color",
 )
 
 
@@ -1076,30 +1072,15 @@ GENERAL_LIST = (
 def index_config_general(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG, request=request)
 
-    web_list = []
-    for interface_dir in globber_full(sabnzbd.DIR_INTERFACES):
-        # Ignore the config
-        if not interface_dir.endswith(DEF_STD_CONFIG):
-            # Check the available templates
-            for colorscheme in globber(
-                os.path.join(interface_dir, "templates", "static", "stylesheets", "colorschemes")
-            ):
-                web_list.append("%s - %s" % (setname_from_path(interface_dir), setname_from_path(colorscheme)))
-
-    conf["web_list"] = web_list
-    conf["web_dir"] = "%s - %s" % (cfg.web_dir(), cfg.web_color())
-    conf["password"] = cfg.password.get_stars()
-
-    conf["language"] = cfg.language()
+    conf["web_list"] = cfg.list_color_schemes()
     conf["lang_list"] = list_languages()
     conf["def_https_cert_file"] = DEF_HTTPS_CERT_FILE
 
     for kw in GENERAL_LIST:
         conf[kw] = config.get_config("misc", kw)()
 
+    conf["password"] = cfg.password.get_stars()
     conf["nzb_key"] = cfg.nzb_key()
-
-    # The one page that displays the apikey, which is no longer part of build_header
     conf["apikey"] = cfg.api_key()
 
     return template_filtered_response(
@@ -1117,10 +1098,6 @@ def config_general_save(request: Request):
 
     # Handle special options
     cfg.password.set(request_params(request).get("password"))
-
-    if web_dir := request_params(request).get("web_dir"):
-        if msg := change_web_dir(web_dir):
-            return report(request_params(request), error=msg)
 
     config.save_config()
     return report(request_params(request), data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
@@ -1140,19 +1117,6 @@ async def config_upload_backup(request: Request):
     except Exception:
         pass
     return report(request_params(request), error=T("Invalid backup archive"))
-
-
-def change_web_dir(web_dir: str) -> Optional[str]:
-    web_dir, web_color = web_dir.split(" - ")
-    web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
-
-    if not os.path.exists(web_dir_path):
-        logging.info("Cannot find web template: %s", web_dir_path)
-        return "Cannot find web template: %s" % web_dir_path
-    else:
-        cfg.web_dir.set(web_dir)
-        cfg.web_color.set(web_color)
-        return None
 
 
 ##############################################################################

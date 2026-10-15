@@ -204,7 +204,6 @@ def print_help():
     print("Options:")
     print("  -f  --config-file <ini>     Location of config file")
     print("  -s  --server <srv:port>     Listen on server:port [*]")
-    print("  -t  --templates <templ>     Template directory [*]")
     print()
     print("  -l  --logging <-1..2>       Set logging level (-1=off, 0=least,2= most) [*]")
     print("  -w  --weblogging            Enable uvicorn access logging")
@@ -328,62 +327,16 @@ def find_free_port_or_abort(host, currentport, browserhost):
         abort_for_unusable_address(browserhost, currentport, err)
 
 
-def identify_web_template(key, defweb, wdir):
-    """Determine a correct web template set, return full template path"""
-    if wdir is None:
-        try:
-            wdir = fix_webname(key())
-        except Exception:
-            wdir = ""
-    if not wdir:
-        wdir = defweb
-    if key:
-        key.set(wdir)
-    if not wdir:
-        # No default value defined, accept empty path
-        return ""
+def identify_web_template(name):
+    """Return the full template path of an interface, exit if it cannot be found"""
+    full_dir = real_path(sabnzbd.DIR_INTERFACES, name)
+    if not os.path.exists(real_path(full_dir, DEF_MAIN_TMPL)):
+        logging.error("Cannot find template: %s", full_dir)
+        panic_tmpl(full_dir)
+        exit_sab(1)
 
-    full_dir = real_path(sabnzbd.DIR_INTERFACES, wdir)
-    full_main = real_path(full_dir, DEF_MAIN_TMPL)
-
-    if not os.path.exists(full_main):
-        helpful_warning(T("Cannot find web template: %s, trying standard template"), full_main)
-        full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STD_WEB_DIR)
-        full_main = real_path(full_dir, DEF_MAIN_TMPL)
-        if not os.path.exists(full_main):
-            logging.exception("Cannot find standard template: %s", full_dir)
-            panic_tmpl(full_dir)
-            exit_sab(1)
-
-    logging.info("Template location for %s is %s", defweb, full_dir)
+    logging.info("Template location for %s is %s", name, full_dir)
     return real_path(full_dir, "templates")
-
-
-def check_template_scheme(color, web_dir):
-    """Check existence of color-scheme"""
-    if color and os.path.exists(os.path.join(web_dir, "static", "stylesheets", "colorschemes", color + ".css")):
-        return color
-    elif color and os.path.exists(os.path.join(web_dir, "static", "stylesheets", "colorschemes", color)):
-        return color
-    else:
-        return ""
-
-
-def fix_webname(name):
-    if name:
-        xname = name.title()
-    else:
-        xname = ""
-    if xname in ("Default",):
-        return "Glitter"
-    elif xname in ("Glitter",):
-        return xname
-    elif xname in ("Wizard",):
-        return name.lower()
-    elif xname in ("Config",):
-        return "Glitter"
-    else:
-        return name
 
 
 def get_user_profile_paths():
@@ -746,7 +699,7 @@ def commandline_handler():
     try:
         opts, args = getopt.getopt(
             sys.argv[1:],
-            "phdvncwl:s:f:t:b:2:",
+            "phdvncwl:s:f:b:2:",
             [
                 "pause",
                 "help",
@@ -756,7 +709,6 @@ def commandline_handler():
                 "logging=",
                 "weblogging",
                 "server=",
-                "templates",
                 "ipv6_hosting=",
                 "inet_exposure=",
                 "browser=",
@@ -841,7 +793,6 @@ def main():
     logging_level = None
     console_logging = False
     no_file_log = False
-    web_dir = None
     repair = 0
     no_login = False
     sabnzbd.RESTART_ARGS = [sys.argv[0]]
@@ -869,8 +820,6 @@ def main():
         elif opt in ("-h", "--help"):
             print_help()
             exit_sab(0)
-        elif opt in ("-t", "--templates"):
-            web_dir = arg
         elif opt in ("-s", "--server"):
             web_host, web_port = split_host(arg)
         elif opt in ("-n", "--nobrowser"):
@@ -1139,12 +1088,11 @@ def main():
 
     os.chdir(sabnzbd.DIR_PROG)
 
-    sabnzbd.WEB_DIR = identify_web_template(sabnzbd.cfg.web_dir, DEF_STD_WEB_DIR, fix_webname(web_dir))
-    sabnzbd.WEB_DIR_CONFIG = identify_web_template(None, DEF_STD_CONFIG, "")
+    sabnzbd.WEB_DIR = identify_web_template(DEF_STD_WEB_DIR)
+    sabnzbd.WEB_DIR_CONFIG = identify_web_template(DEF_STD_CONFIG)
     sabnzbd.WIZARD_DIR = os.path.join(sabnzbd.DIR_INTERFACES, "wizard")
 
-    sabnzbd.WEB_COLOR = check_template_scheme(sabnzbd.cfg.web_color(), sabnzbd.WEB_DIR)
-    sabnzbd.cfg.web_color.set(sabnzbd.WEB_COLOR)
+    sabnzbd.WEB_COLOR = sabnzbd.cfg.web_color()
 
     # Handle the several tray icons
     if sabnzbd.cfg.tray_icon() and not sabnzbd.DAEMON and not sabnzbd.WIN_SERVICE:

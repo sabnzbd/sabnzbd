@@ -4,7 +4,7 @@ _sabnzbd()
 {
     local cur prev words cword split
     # list all options here
-    local all_options="-f --config-file --pidfile -t --templates --pid -l --logging -w --weblogging -d --daemon -h
+    local all_options="-f --config-file --pidfile --pid -l --logging -w --weblogging -d --daemon -h
                        --help -v --version -c --clean -p --pause --repair --repair-all --no-login --log-all --console
                        --disable-file-log --new -b --browser --ipv6_hosting --inet_exposure --https -s --server"
     _init_completion -s || return
@@ -27,7 +27,7 @@ _sabnzbd()
             return
             ;;
         # directory path
-        --templates|--pid|-!(-*)[t])
+        --pid)
             compopt +o nospace
             _filedir -d
             return

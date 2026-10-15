@@ -258,7 +258,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.download_dir.callback(cfg.new_storage_dir)
     cfg.web_host.callback(cfg.guard_restart)
     cfg.web_port.callback(cfg.guard_restart)
-    cfg.web_dir.callback(cfg.guard_restart)
     cfg.web_color.callback(cfg.guard_restart)
     cfg.url_base.callback(trigger_restart)
     cfg.username.callback(cfg.guard_restart)

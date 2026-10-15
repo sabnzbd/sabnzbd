@@ -42,7 +42,6 @@ from sabnzbd.config import (
 from sabnzbd.constants import (
     DEF_HOST,
     DEF_PORT,
-    DEF_STD_WEB_DIR,
     DEF_ADMIN_DIR,
     DEF_DOWNLOAD_DIR,
     DEF_NZBBACK_DIR,
@@ -52,6 +51,7 @@ from sabnzbd.constants import (
     DEF_STD_WEB_COLOR,
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
+    DEF_STD_WEB_DIR,
     DEF_DOWNLOAD_FREE,
 )
 from sabnzbd.filesystem import (
@@ -61,6 +61,8 @@ from sabnzbd.filesystem import (
     is_network_path,
     points_into_program_dir,
     clip_path,
+    globber,
+    setname_from_path,
 )
 
 # Validators currently only are made for string/list-of-strings
@@ -248,6 +250,24 @@ def validate_host(value: str) -> ValidateResult:
     return T("Invalid server address."), None
 
 
+def list_color_schemes() -> list[str]:
+    """Names of the color schemes available for the web interface"""
+    colorschemes_dir = os.path.join(
+        sabnzbd.DIR_INTERFACES, DEF_STD_WEB_DIR, "templates", "static", "stylesheets", "colorschemes"
+    )
+    return sorted(setname_from_path(colorscheme) for colorscheme in globber(colorschemes_dir))
+
+
+def validate_color_scheme(value: str) -> ValidateResult:
+    """Only accept color schemes that exist, return them with their exact name"""
+    if not sabnzbd.DIR_INTERFACES:
+        return None, value
+    for color_scheme in list_color_schemes():
+        if color_scheme.lower() == (value or "").lower():
+            return None, color_scheme
+    return T("Unknown color scheme"), None
+
+
 def validate_script(value: str) -> ValidateResult:
     """Check if value is a valid script"""
     if not sabnzbd.__INITIALIZED__ or (value and is_valid_script(value)):
@@ -406,8 +426,7 @@ username = OptionStr("misc", "username")
 password = OptionPassword("misc", "password")
 bandwidth_max = OptionStr("misc", "bandwidth_max")
 cache_limit = OptionStr("misc", "cache_limit")
-web_dir = OptionStr("misc", "web_dir", DEF_STD_WEB_DIR)
-web_color = OptionStr("misc", "web_color", DEF_STD_WEB_COLOR)
+web_color = OptionStr("misc", "web_color", DEF_STD_WEB_COLOR, validation=validate_color_scheme)
 https_cert = OptionDir("misc", "https_cert", DEF_HTTPS_CERT_FILE, create=False)
 https_key = OptionDir("misc", "https_key", DEF_HTTPS_KEY_FILE, create=False)
 https_chain = OptionDir("misc", "https_chain", create=False)
