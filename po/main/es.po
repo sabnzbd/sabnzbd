@@ -36,13 +36,6 @@ msgstr "Error al iniciar la interfaz web"
 
 #. Warning message
 #: SABnzbd.py
-msgid "Cannot find web template: %s, trying standard template"
-msgstr ""
-"No se puede encontrar la plantilla web: %s, intentando con la plantilla "
-"estandar"
-
-#. Warning message
-#: SABnzbd.py
 msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
@@ -407,6 +400,10 @@ msgstr "Se necesita la dirección del servidor"
 #: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Dirección del servidor no válida."
+
+#: sabnzbd/cfg.py
+msgid "Unknown color scheme"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"

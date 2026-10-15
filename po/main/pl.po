@@ -33,11 +33,6 @@ msgstr "Nie udało się uruchomić interfejsu WWW"
 
 #. Warning message
 #: SABnzbd.py
-msgid "Cannot find web template: %s, trying standard template"
-msgstr "Nie znaleziono szablonu: %s, próbuję użyć standardowego szablonu"
-
-#. Warning message
-#: SABnzbd.py
 msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
@@ -370,6 +365,10 @@ msgstr "Wymagane jest podanie adresu serwera"
 #: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Nieprawidłowy adres serwera."
+
+#: sabnzbd/cfg.py
+msgid "Unknown color scheme"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"

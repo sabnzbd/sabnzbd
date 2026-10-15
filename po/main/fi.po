@@ -33,11 +33,6 @@ msgstr "Web-käyttöliittymän käynnistys epäonnistui"
 
 #. Warning message
 #: SABnzbd.py
-msgid "Cannot find web template: %s, trying standard template"
-msgstr "Web-mallia %s ei löydy, yritetään käyttää oletusmallia"
-
-#. Warning message
-#: SABnzbd.py
 msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
@@ -375,6 +370,10 @@ msgstr "Palvelimen osoite vaaditaan"
 #: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Virheellinen palvelimen osoite."
+
+#: sabnzbd/cfg.py
+msgid "Unknown color scheme"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"

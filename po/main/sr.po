@@ -33,11 +33,6 @@ msgstr "Neuspešno pokretanje web interfejsa"
 
 #. Warning message
 #: SABnzbd.py
-msgid "Cannot find web template: %s, trying standard template"
-msgstr "Немогуће наћи веб модел: %s, програм покушава са стандардним моделом"
-
-#. Warning message
-#: SABnzbd.py
 msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
@@ -369,6 +364,10 @@ msgstr "Потребна је адреса сервера"
 #: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Погрешна адреса сервера."
+
+#: sabnzbd/cfg.py
+msgid "Unknown color scheme"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"

@@ -35,11 +35,6 @@ msgstr "Web arayüzünün başlatılması başarısız oldu"
 
 #. Warning message
 #: SABnzbd.py
-msgid "Cannot find web template: %s, trying standard template"
-msgstr "Web şablonu bulunamadı: %s, standart şablon denenecek"
-
-#. Warning message
-#: SABnzbd.py
 msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
@@ -405,6 +400,10 @@ msgstr "Sunucu adresine ihtiyaç var"
 #: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Geçersiz sunucu adresi."
+
+#: sabnzbd/cfg.py
+msgid "Unknown color scheme"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"

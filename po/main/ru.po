@@ -34,13 +34,6 @@ msgstr "Не удалось запустить веб-интерфейс"
 
 #. Warning message
 #: SABnzbd.py
-msgid "Cannot find web template: %s, trying standard template"
-msgstr ""
-"Не удаётся найти шаблон веб-интерфейса: %s. Выполняется попытка использовать"
-" стандартный шаблон"
-
-#. Warning message
-#: SABnzbd.py
 msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
@@ -371,6 +364,10 @@ msgstr "Требуется адрес сервера"
 #: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Недопустимый адрес сервера."
+
+#: sabnzbd/cfg.py
+msgid "Unknown color scheme"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"

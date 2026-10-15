@@ -34,11 +34,6 @@ msgstr "כישלון בהתחלת ממשק רשת"
 
 #. Warning message
 #: SABnzbd.py
-msgid "Cannot find web template: %s, trying standard template"
-msgstr "לא ניתן למצוא תבניות רשת: %s, מנסה תבנית תקנית"
-
-#. Warning message
-#: SABnzbd.py
 msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
@@ -380,6 +375,10 @@ msgstr "כתובת שרת דרושה"
 #: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "כתובת שרת בלתי תקפה."
+
+#: sabnzbd/cfg.py
+msgid "Unknown color scheme"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
