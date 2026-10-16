@@ -48,6 +48,7 @@ from sabnzbd.filesystem import (
 from sabnzbd.constants import (
     Status,
     GIGI,
+    ASSEMBLER_DELAY_FILL,
     ASSEMBLER_DRAIN_MARGIN,
     ASSEMBLER_MAX_DELAY,
     DOWNLOADER_TICK,
@@ -291,20 +292,26 @@ class Assembler(Thread):
     def delay(self) -> float:
         """How long the downloader should sleep before its next pass.
 
-        Whichever of two demands is greater, so either can throttle on its own.
+        Nothing until the backlog fills ASSEMBLER_DELAY_FILL of the cache. Beyond that,
+        whichever of two demands is greater, so either can throttle on its own.
         """
-        # Holds the download to the share of the cache still free. Without a cache
-        # there is no share to hold it to, and articles are going straight to disk.
-        crowded = 0.0
-        if self.cache_limit > 0:
-            fill = min(1.0, self.total_ready_bytes() / self.cache_limit)
-            crowded = DOWNLOADER_TICK * fill / max(1e-6, 1.0 - fill)
+        if (cache_limit := self.cache_limit) <= 0:
+            return 0.0
 
-        # Holds the download to what the disk drains
+        fill = min(1.0, self.total_ready_bytes() / cache_limit)
+        if fill <= ASSEMBLER_DELAY_FILL:
+            return 0.0
+
+        # Holds the download to the share of the cache still free
+        backlog = (fill - ASSEMBLER_DELAY_FILL) / (1.0 - ASSEMBLER_DELAY_FILL)
+        crowded = DOWNLOADER_TICK * backlog / max(1e-6, 1.0 - backlog)
+
+        # Holds the download to what the disk drains, which the write rate only shows
+        # while there is a backlog to drain, phased in as the backlog grows
         paced = 0.0
         if (write_rate := sabnzbd.WriteMonitor.throughput) and (download_rate := sabnzbd.BPSMeter.bps) > 0:
             target = write_rate * ASSEMBLER_DRAIN_MARGIN
-            paced = DOWNLOADER_TICK * max(0.0, download_rate / target - 1.0)
+            paced = DOWNLOADER_TICK * backlog * max(0.0, download_rate / target - 1.0)
 
         # A pass then takes tick + delay to fetch what it used to fetch in tick
         return min(ASSEMBLER_MAX_DELAY, max(crowded, paced))
