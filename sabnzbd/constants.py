@@ -108,6 +108,8 @@ CONFIG_BACKUP_HTTPS = {  # "basename": "associated setting"
 
 # How often the downloader updates its meters and reconsiders the delay
 DOWNLOADER_TICK = 0.05
+# Share of the cache the backlog fills before the downloader is held back
+ASSEMBLER_DELAY_FILL = 0.5
 # Longest the downloader sleeps in one pass to let the disk catch up
 ASSEMBLER_MAX_DELAY = 0.5
 # Fraction of the measured write rate the downloader aims for, so the backlog shrinks
