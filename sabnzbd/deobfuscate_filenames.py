@@ -372,7 +372,8 @@ def deobfuscate_subtitles(nzo: "sabnzbd.nzb.NzbObject", filelist: list[str]):
         # now put that name after the base name of the biggestfile:
         new_full_name = f"{biggest_file_without_ext}.{filename_only}"  # put (renamed) srt behind that
         unique_filename = get_unique_filename(new_full_name)  # make sure it's really unique
-        renamer(srt_file, unique_filename)  # ... and rename actual file on disk
+        # ... rename actual file on disk and track the new path
+        filelist[filelist.index(srt_file)] = renamer(srt_file, unique_filename)
     if nr_files_renamed > 0:
         # and put it into history to be shown in GUI
         nzo.set_unpack_info("Deobfuscate", T("Deobfuscate renamed %d subtitle file(s)") % nr_files_renamed)
