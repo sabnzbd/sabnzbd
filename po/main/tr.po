@@ -403,7 +403,7 @@ msgstr "Geçersiz sunucu adresi."
 
 #: sabnzbd/cfg.py
 msgid "Unknown color scheme"
-msgstr ""
+msgstr "Bilinmeyen renk düzeni"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
