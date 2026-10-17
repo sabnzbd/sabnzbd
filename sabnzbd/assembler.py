@@ -401,10 +401,8 @@ class Assembler(Thread):
         if download_dir.free < required_space:
             full_dir = download_dir.path
 
-        # Enough space in download_dir, check complete_dir. Its free space is
-        # only needed once something is compared against it, so ask the
-        # device only then: on a network share every statvfs is a round trip,
-        # and a slow one stalls the assembler for every finished file.
+        # Enough space in download_dir, check complete_dir, but only ask when a requirement
+        # applies: a statvfs on a network share is slow
         if not full_dir:
             complete_free = cfg.complete_free.get_float()
             required_space = 0

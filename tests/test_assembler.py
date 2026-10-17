@@ -369,7 +369,6 @@ class TestDiskspaceCheck:
 
     @pytest.fixture(autouse=True)
     def setup_mocks(self):
-        """Mock the downloader, scheduler, notifier, emailer, config and disk helpers around each test"""
         self.nzo = make_mock_nzo(bytes=int(2 * GIGI), unpack=True)
 
         self.nzf = mock.Mock()
@@ -407,7 +406,6 @@ class TestDiskspaceCheck:
             del sabnzbd.emailer
 
     def _set_diskspace(self, download_free_gb: float, complete_free_gb: float, complete_path: str = "/complete"):
-        """Model the free space per folder that diskspace_base reports"""
         spaces = {
             "/download": Diskspace(path="/download", free=download_free_gb),
             complete_path: Diskspace(path=complete_path, free=complete_free_gb),
@@ -456,7 +454,7 @@ class TestDiskspaceCheck:
 
         self.mock_downloader.pause.assert_not_called()
         self.mock_scheduler.plan_diskspace_resume.assert_not_called()
-        # The complete_dir is not even asked: on a network share that is a round trip per file
+        # complete_dir is not asked below 90%
         self.mock_diskspace.assert_called_once_with("/download")
 
     def test_complete_dir_asked_near_completion(self):
@@ -524,7 +522,6 @@ class TestDiskspaceCheckScenarios:
 
     @pytest.fixture(autouse=True)
     def setup_mocks(self):
-        """Mock the downloader, scheduler, config and disk helpers around each scenario"""
         self.mock_downloader = mock.Mock()
         self.mock_scheduler = mock.Mock()
 
