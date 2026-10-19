@@ -17,6 +17,8 @@ extra_hiddenimports = ["Cheetah.DummyTransaction", "certifi"]
 extra_hiddenimports.extend(collect_submodules("apprise"))
 extra_hiddenimports.extend(collect_submodules("babelfish.converters"))
 extra_hiddenimports.extend(collect_submodules("guessit.data"))
+extra_hiddenimports.extend(collect_submodules("argon2"))
+extra_hiddenimports.extend(collect_submodules("nacl"))
 
 # Add platform specific stuff
 if sys.platform == "darwin":

@@ -19,14 +19,33 @@
 tests.test_nzbobject - Testing functions in nzbobject.py
 """
 
+import io
 import os
+from unittest import mock
+
 import pytest
+import sabnzbd
 from tests.testhelper import SAB_CACHE_DIR, create_and_read_nzb_fp
 
 from sabnzbd.nzb import NzbObject
 from sabnzbd.config import ConfigCat
 from sabnzbd.constants import NORMAL_PRIORITY, MAX_BAD_ARTICLES
+from sabnzbd.encryption import YEncEncryptionStructuralError
 from sabnzbd.filesystem import globber, sanitize_filename, create_all_dirs, long_path
+
+
+def _make_encrypted_nzb(meta_entries: list[tuple[str, str]]) -> io.BytesIO:
+    metas = "\n".join(f'  <meta type="{t}">{v}</meta>' for t, v in meta_entries)
+    xml = f"""<?xml version="1.0" encoding="utf-8"?>
+<nzb xmlns="http://www.newzbin.com/DTD/nzb/nzb-1.1.dtd">
+ <head>
+{metas}
+ </head>
+ <file poster="p@test.com" date="1600000000" subject="test.bin">
+  <segments><segment bytes="1000" number="1">s1@test</segment></segments>
+ </file>
+</nzb>"""
+    return io.BytesIO(xml.encode("utf-8"))
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
@@ -143,6 +162,92 @@ class TestNZO:
         assert os.sep not in nzo.work_name
         assert os.sep not in nzo.final_name
         assert os.path.dirname(os.path.normpath(nzo.download_path)) == os.path.normpath(long_path(SAB_CACHE_DIR))
+
+    @pytest.fixture(autouse=True)
+    def _mock_cache_globals(self):
+        sabnzbd.ArticleCache = mock.Mock()
+        sabnzbd.Assembler = mock.Mock()
+        yield
+        for attr in ("ArticleCache", "Assembler"):
+            if hasattr(sabnzbd, attr):
+                delattr(sabnzbd, attr)
+
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+    def test_reuse_api_password_job_no_exception_folder_and_password_kept(self):
+        """SAB13-02: API-password job rebuilt with reuse= and password=None keeps
+        folder/marker and restores the saved password (load_attribs), with no
+        MISSING_PASSWORD rejection during parsing."""
+        ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
+
+        # Original API-password job, saved so its attribs carry the password
+        original = NzbObject(
+            "api_job",
+            nzb_fp=_make_encrypted_nzb([("yenc_encrypted", "true"), ("password", "fixture-meta-value")]),
+            password="fixture-api-value",
+        )
+        original.save_attribs()
+        reuse_dir = original.download_path
+        marker = os.path.join(reuse_dir, "marker.txt")
+        with open(marker, "w") as fh:
+            fh.write("keep")
+
+        # Rebuilt as history retry / send_back would: reuse= set, password=None,
+        # NZB carries no password meta
+        rebuilt = NzbObject(
+            "api_job.nzb",
+            nzb_fp=_make_encrypted_nzb([("yenc_encrypted", "true")]),
+            password=None,
+            reuse=reuse_dir,
+        )
+        assert rebuilt.password == "fixture-api-value"
+        assert rebuilt.files
+        assert os.path.isdir(reuse_dir)
+        assert os.path.exists(marker)
+
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+    def test_reuse_structural_error_keeps_folder(self):
+        """SAB13-02: reuse= with yenc_version 1.3 raises the structural error but
+        must not purge_data() the reused folder."""
+        ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
+        reuse_dir = os.path.join(SAB_CACHE_DIR, "bad_job")
+        os.makedirs(reuse_dir, exist_ok=True)
+        marker = os.path.join(reuse_dir, "marker.txt")
+        with open(marker, "w") as fh:
+            fh.write("keep")
+
+        with pytest.raises(YEncEncryptionStructuralError):
+            NzbObject(
+                "bad_job.nzb",
+                nzb_fp=_make_encrypted_nzb([("yenc_encrypted", "true"), ("yenc_version", "1.3"), ("password", "fixture-meta-value")]),
+                reuse=reuse_dir,
+            )
+        assert os.path.isdir(reuse_dir)
+        assert os.path.exists(marker)
+
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+    def test_structural_error_without_reuse_purges_folder(self):
+        """SAB13-02 control: the same structural error without reuse still purges."""
+        ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
+        captured = {}
+        original_purge = NzbObject.purge_data
+
+        def spy(self, delete_all_data=True):
+            captured["path"] = self.download_path
+            return original_purge(self, delete_all_data)
+
+        NzbObject.purge_data = spy
+        try:
+            with pytest.raises(YEncEncryptionStructuralError):
+                NzbObject(
+                    "bad2.nzb",
+                    nzb_fp=_make_encrypted_nzb(
+                        [("yenc_encrypted", "true"), ("yenc_version", "1.3"), ("password", "fixture-meta-value")]
+                    ),
+                )
+        finally:
+            NzbObject.purge_data = original_purge
+        assert captured.get("path")
+        assert not os.path.exists(captured["path"])
 
 
 class TestCheckAvailabilityRatio:

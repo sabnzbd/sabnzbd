@@ -52,6 +52,7 @@ from sabnzbd.filesystem import (
     remove_file,
 )
 from sabnzbd.misc import name_to_cat, cat_pp_script_sanitizer
+from sabnzbd.encryption import YEncEncryptionStructuralError
 from sabnzbd.constants import DEFAULT_PRIORITY, VALID_ARCHIVES, AddNzbFileResult
 from sabnzbd.misc import SABRarFile
 import rarfile
@@ -171,6 +172,7 @@ def process_nzb_archive_file(
     """
     nzo_ids = []
     added_nzos: list[NzbObject] = []
+    structural_failure = False
     if catdir is None:
         catdir = cat
     filename, cat = name_to_cat(filename, catdir)
@@ -239,6 +241,11 @@ def process_nzb_archive_file(
                         # Duplicate or unwanted extension directed to history
                         sabnzbd.NzbQueue.fail_to_history(err.nzo)
                         nzo_ids.append(err.nzo.nzo_id)
+                    except YEncEncryptionStructuralError as err:
+                        # Structural yEnc-encryption metadata failure (e.g. encrypted NZB without password):
+                        # rejects ingestion before contacting any NNTP server
+                        logging.error(T("Structural yEnc-encryption failure in %s: %s"), name, err)
+                        structural_failure = True
                     except Exception:
                         # Something else is wrong, show error
                         logging.error(T("Error while adding %s, removing"), name, exc_info=True)
@@ -269,7 +276,7 @@ def process_nzb_archive_file(
 
     # If all were rejected/empty/etc, update status
     if not nzo_ids:
-        status = AddNzbFileResult.NO_FILES_FOUND
+        status = AddNzbFileResult.ERROR if structural_failure else AddNzbFileResult.NO_FILES_FOUND
 
     return status, nzo_ids
 
@@ -357,6 +364,11 @@ def process_single_nzb(
         # Duplicate or unwanted extension directed to history
         sabnzbd.NzbQueue.fail_to_history(err.nzo)
         nzo_ids.append(err.nzo.nzo_id)
+    except YEncEncryptionStructuralError as err:
+        # Structural yEnc-encryption metadata failure (e.g. encrypted NZB without password):
+        # rejects ingestion before contacting any NNTP server
+        logging.error(T("Structural yEnc-encryption failure in %s: %s"), filename, err)
+        result = AddNzbFileResult.ERROR
     except Exception:
         # Something else is wrong, show error
         logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
@@ -376,6 +388,15 @@ def process_single_nzb(
         logging.info("Traceback: ", exc_info=True)
 
     return result, nzo_ids
+
+
+def _meta_ascii_equal(value: str, expected: str) -> bool:
+    """Compare a trimmed NZB meta value with an expected token, ASCII case-insensitively (Body Std v1.2 §8).
+
+    Only the comparison is trimmed; the stored password is never passed through here.
+    """
+    trimmed = value.strip()
+    return trimmed.isascii() and trimmed.lower() == expected.lower()
 
 
 def nzbfile_parser(full_nzb_path: str, nzo):
@@ -408,11 +429,19 @@ def nzbfile_parser(full_nzb_path: str, nzo):
             if element.tag.lower() == "head":
                 for meta in element.iter("meta"):
                     meta_type = meta.attrib.get("type")
-                    if meta_type and meta.text:
-                        # Meta tags can occur multiple times
-                        if meta_type not in nzo.meta:
-                            nzo.meta[meta_type] = []
-                        nzo.meta[meta_type].append(meta.text)
+                    if meta_type:
+                        # Body Standard v1.2 §8: an empty yenc_version or yenc_cipher entry counts as a
+                        # non-matching value (failing closed), not as absent. Narrowly retain None text
+                        # as empty for recognized version/cipher fields so validation can reject them.
+                        if meta_type in ("yenc_version", "yenc_cipher"):
+                            if meta_type not in nzo.meta:
+                                nzo.meta[meta_type] = []
+                            nzo.meta[meta_type].append(meta.text or "")
+                        elif meta.text:
+                            # Meta tags can occur multiple times
+                            if meta_type not in nzo.meta:
+                                nzo.meta[meta_type] = []
+                            nzo.meta[meta_type].append(meta.text)
                 element.clear()
                 logging.debug("NZB file meta-data = %s", nzo.meta)
                 continue
@@ -503,3 +532,35 @@ def nzbfile_parser(full_nzb_path: str, nzo):
 
     if skipped_files:
         logging.warning(T("Failed to import %s files from %s"), skipped_files, nzo.filename)
+
+    # Metadata values are trimmed before matching; ASCII case-insensitive where the standard says so
+    # (Body Standard v1.2 §8). Undefined tags such as yenc_mode are ignored (no mode metadata exists).
+    if any(_meta_ascii_equal(v, "true") for v in nzo.meta.get("yenc_encrypted", [])):
+        nzo.yenc_encrypted = True
+
+        # Forward-Compatibility Metadata Gating (Body Standard v1.2 §8)
+        for ver in nzo.meta.get("yenc_version", []):
+            if ver.strip() != "1.2":
+                raise YEncEncryptionStructuralError(
+                    f"UNSUPPORTED_VERSION: NZB declares yenc_version '{ver}', only '1.2' is supported"
+                )
+
+        for cipher in nzo.meta.get("yenc_cipher", []):
+            if not _meta_ascii_equal(cipher, "XChaCha20-Poly1305"):
+                raise YEncEncryptionStructuralError(
+                    f"UNSUPPORTED_CIPHER: NZB declares yenc_cipher '{cipher}', only 'XChaCha20-Poly1305' is supported"
+                )
+
+        raw_meta_passwords = nzo.meta.get("password") or []
+        meta_pws = [p for p in raw_meta_passwords if isinstance(p, str) and p.strip()]
+
+        attr_pw = getattr(nzo, "password", None)
+        has_attr_pw = isinstance(attr_pw, str) and bool(attr_pw.strip())
+
+        # On reuse (retry/repair/send_back) the saved password is restored only after
+        # parsing (load_attribs), so a missing password here must not reject: the job
+        # still fails closed at first-article decode if no password is ever available.
+        if not getattr(nzo, "reuse", None) and not (meta_pws or has_attr_pw):
+            raise YEncEncryptionStructuralError(
+                "MISSING_PASSWORD: NZB declares yenc_encrypted=true but no password meta was supplied"
+            )

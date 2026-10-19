@@ -20,10 +20,13 @@ tests.test_nzbfile - Testing functions in nzb/file.py
 """
 
 from datetime import datetime
+import pickle
+from unittest import mock
 
 import pytest
 
 from sabnzbd.nzb import NzbFile, NzbObject
+from sabnzbd.nzb.object import NzbObjectSaver
 from tests.testhelper import SAB_CACHE_DIR
 
 
@@ -85,3 +88,19 @@ class TestNzbFile:
         files2.sort()
 
         assert [f.filename for f in files1] == [f.filename for f in files2]
+
+    def test_nzo_saver_and_pickle_preserve_yenc_encrypted(self):
+        """NzbObjectSaver and pickle round trips preserve the declared-encrypted flag."""
+        import sabnzbd
+
+        assert "yenc_encrypted" in NzbObjectSaver
+
+        nzo = NzbObject("test_yenc_encrypted_persistence")
+        nzo.yenc_encrypted = True
+
+        with mock.patch.object(sabnzbd, "Downloader", mock.MagicMock(servers=[]), create=True):
+            nzo_restored: NzbObject = pickle.loads(pickle.dumps(nzo))
+            assert nzo_restored.yenc_encrypted is True
+
+            plain_restored: NzbObject = pickle.loads(pickle.dumps(NzbObject("test_plain")))
+            assert plain_restored.yenc_encrypted is False
