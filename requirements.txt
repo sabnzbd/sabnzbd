@@ -1,7 +1,7 @@
 # Main requirements
 # All sub-dependencies are listed in order to prevent any supply-chain attacks
 # Installation can (and should) be performed with "--no-deps" parameter
-apprise==2.0.0
+apprise==2.0.1
 sabctools==9.7.1
 CT3==3.4.0.post5
 cffi==2.1.1
@@ -68,12 +68,12 @@ markdown==3.11; python_version > '3.10'
 paho-mqtt==2.1.0
 
 # Requests Requirements
-charset_normalizer==3.5.1
+charset_normalizer==3.5.2
 idna==3.20
 urllib3==2.8.0
 certifi==2026.7.22
 oauthlib==4.0.0
-PyJWT==2.15.0
+PyJWT==2.15.1
 blinker==1.9.0
 
 # Optional support for *nix tray icon.
