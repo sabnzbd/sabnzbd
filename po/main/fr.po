@@ -411,7 +411,7 @@ msgstr "Adresse du serveur erronée"
 
 #: sabnzbd/cfg.py
 msgid "Unknown color scheme"
-msgstr ""
+msgstr "Jeu de couleurs inconnu"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
