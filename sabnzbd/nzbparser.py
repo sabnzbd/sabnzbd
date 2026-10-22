@@ -368,7 +368,7 @@ def process_single_nzb(
         nzo_ids.append(sabnzbd.NzbQueue.add(nzo, quiet=bool(reuse)))
 
     try:
-        if not keep and result in {AddNzbFileResult.ERROR, AddNzbFileResult.OK}:
+        if not keep and result in {AddNzbFileResult.ERROR, AddNzbFileResult.OK, AddNzbFileResult.DUPLICATE}:
             remove_file(path)
     except OSError:
         # Job was still added to the queue, so throw error but don't report failed add
