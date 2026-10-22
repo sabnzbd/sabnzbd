@@ -76,6 +76,7 @@ class TestNzbParser:
 
         assert result is AddNzbFileResult.DUPLICATE
         assert nzo_ids == []
+        assert not nzb_path.exists()
 
     @pytest.mark.xfail(reason="These tests should be added")
     def test_nzbparser_bad_stuff(self):
