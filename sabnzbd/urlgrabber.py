@@ -288,6 +288,9 @@ class URLGrabber(Thread):
                     elif res is AddNzbFileResult.ERROR:
                         # Error already thrown
                         self.fail_to_history(future_nzo, url)
+                    elif res is AddNzbFileResult.DUPLICATE:
+                        # Duplicate was intentionally discarded after the NZB was fetched
+                        logging.info("Discarded duplicate NZB from %s", url)
                     elif res is AddNzbFileResult.PREQUEUE_REJECTED:
                         # Pre-queue script rejected the NZB - silently discard (normal behavior)
                         logging.info("Pre-queue script rejected NZB from %s", url)
