@@ -282,21 +282,7 @@ class URLGrabber(Thread):
                             dup_check=dup_check,
                         )
 
-                    if res is AddNzbFileResult.RETRY:
-                        logging.info("Incomplete NZB, retry after 5 min %s", url)
-                        self.add(url, future_nzo, when=300)
-                    elif res is AddNzbFileResult.ERROR:
-                        # Error already thrown
-                        self.fail_to_history(future_nzo, url)
-                    elif res is AddNzbFileResult.DUPLICATE:
-                        # Duplicate was intentionally discarded after the NZB was fetched
-                        logging.info("Discarded duplicate NZB from %s", url)
-                    elif res is AddNzbFileResult.PREQUEUE_REJECTED:
-                        # Pre-queue script rejected the NZB - silently discard (normal behavior)
-                        logging.info("Pre-queue script rejected NZB from %s", url)
-                    elif res is AddNzbFileResult.NO_FILES_FOUND:
-                        # No NZB-files inside archive
-                        self.fail_to_history(future_nzo, url, T("Empty NZB file %s") % filename)
+                    self._handle_add_result(res, future_nzo, url, filename)
                 else:
                     logging.info("Unknown filetype when fetching NZB, retry after 30s %s", url)
                     self.add(url, future_nzo, 30)
@@ -309,6 +295,26 @@ class URLGrabber(Thread):
             except Exception:
                 logging.error(T("URLGRABBER CRASHED"), exc_info=True)
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
+
+    def _handle_add_result(
+        self, res: AddNzbFileResult, future_nzo: NzbObject, url: str, filename: str
+    ) -> None:
+        """Handle the result of parsing a fetched NZB URL."""
+        if res is AddNzbFileResult.RETRY:
+            logging.info("Incomplete NZB, retry after 5 min %s", url)
+            self.add(url, future_nzo, when=300)
+        elif res is AddNzbFileResult.ERROR:
+            # Error already thrown
+            self.fail_to_history(future_nzo, url)
+        elif res is AddNzbFileResult.DUPLICATE:
+            # Duplicate was intentionally discarded after the NZB was fetched
+            logging.info("Discarded duplicate NZB from %s", url)
+        elif res is AddNzbFileResult.PREQUEUE_REJECTED:
+            # Pre-queue script rejected the NZB - silently discard (normal behavior)
+            logging.info("Pre-queue script rejected NZB from %s", url)
+        elif res is AddNzbFileResult.NO_FILES_FOUND:
+            # No NZB-files inside archive
+            self.fail_to_history(future_nzo, url, T("Empty NZB file %s") % filename)
 
     @staticmethod
     def fail_to_history(nzo: NzbObject, url: str, msg="", content=False):
