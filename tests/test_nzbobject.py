@@ -84,6 +84,7 @@ class TestNZO:
             nzo.duplicate = DuplicateStatus.DUPLICATE
 
         mocker.patch("sabnzbd.nzb.object.cfg.no_dupes", return_value=1)
+        mocker.patch.object(NzbObject, "purge_data")
         duplicate_check = mocker.patch.object(NzbObject, "duplicate_check", autospec=True, side_effect=mark_duplicate)
 
         # RSS entries are URL placeholders first. The duplicate is detected, but the
