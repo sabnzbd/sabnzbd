@@ -349,7 +349,7 @@ def process_single_nzb(
         result = AddNzbFileResult.NO_FILES_FOUND
     except NzbRejected:
         # Rejected as duplicate
-        result = AddNzbFileResult.ERROR
+        result = AddNzbFileResult.DUPLICATE
     except NzbPreQueueRejected:
         # Rejected by pre-queue script - should be silently ignored for URL fetches
         result = AddNzbFileResult.PREQUEUE_REJECTED
