@@ -1726,6 +1726,12 @@ class NzbObject(TryList):
         if self.priority == FORCE_PRIORITY:
             self.duplicate = None
 
+        # RSS URL entries must fetch the NZB before acting on duplicates.
+        # Some indexers use the NZB request itself to remove an item from a cart/feed.
+        # The fetched NZB is duplicate-checked again when its contents are parsed.
+        if self.futuretype and self.nzo_info.get("RSS"):
+            return
+
         # Take a direct action
         #  1 = Discard
         #  2 = Pause

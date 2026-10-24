@@ -41,6 +41,7 @@ from werkzeug import Request, Response
 
 import sabnzbd
 import sabnzbd.urlgrabber as urlgrabber
+from sabnzbd.constants import AddNzbFileResult
 
 
 def _json_response(payload, status: int = 200) -> Response:
@@ -154,6 +155,28 @@ def local_https_server(request, tmp_path_factory):
     ssl._create_default_https_context = original_factory
     urllib.request._opener = None
     server.stop()
+
+
+class TestFetchedNzbResult:
+    def test_duplicate_is_silently_discarded(self, mocker):
+        grabber = urlgrabber.URLGrabber()
+        future_nzo = mocker.Mock()
+        fail_to_history = mocker.patch.object(grabber, "fail_to_history")
+        retry = mocker.patch.object(grabber, "add")
+
+        grabber._handle_add_result(AddNzbFileResult.DUPLICATE, future_nzo, "https://example.test/item.nzb", "item.nzb")
+
+        fail_to_history.assert_not_called()
+        retry.assert_not_called()
+
+    def test_error_still_fails_to_history(self, mocker):
+        grabber = urlgrabber.URLGrabber()
+        future_nzo = mocker.Mock()
+        fail_to_history = mocker.patch.object(grabber, "fail_to_history")
+
+        grabber._handle_add_result(AddNzbFileResult.ERROR, future_nzo, "https://example.test/item.nzb", "item.nzb")
+
+        fail_to_history.assert_called_once_with(future_nzo, "https://example.test/item.nzb")
 
 
 @pytest.mark.usefixtures("local_server", "local_https_server")
