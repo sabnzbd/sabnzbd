@@ -784,6 +784,13 @@ class NzbObject(TryList):
                 destroyed += uncovered_blocks(ranges, par2info.blocksize, par2info.blockcount, par2info.filesize)
         return destroyed
 
+    def par2_file_size(self, filename: str) -> Optional[int]:
+        """The size a par2 set records for a file, when one describes it"""
+        for par2pack in list(self.par2packs.values()):
+            if par2pack and (par2info := par2pack.get(filename)):
+                return par2info.filesize
+        return None
+
     @synchronized()
     def blocks_beyond_recovery(self) -> bool:
         """Whether a set has lost more blocks than all of its recovery blocks could rebuild"""

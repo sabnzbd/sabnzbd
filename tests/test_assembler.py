@@ -34,6 +34,7 @@ from sabnzbd.constants import ASSEMBLER_MAX_OPEN_WRITERS, GIGI, Status
 from sabnzbd.filesystem import Diskspace
 from sabnzbd.misc import pp_to_opts
 from sabnzbd.nzb import Article, NzbFile, NzbObject
+from sabnzbd.par2file import FilePar2Info
 from tests.testhelper import make_mock_nzo
 
 
@@ -326,6 +327,22 @@ class TestAssembler:
             Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
         with open(self.nzf.filepath, "rb") as f:
             assert f.read() == b"hello"
+
+    def test_direct_write_allocates_the_size_par2_records(self, assembler):
+        self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world")),
+            ],
+        )
+        # The yEnc headers overstate the size, which par2 records correctly
+        for article in self.nzf.decodetable:
+            article.file_size = 16
+        self.nzo.par2packs = {"set": {self.nzf.filename: FilePar2Info(self.nzf.filename, b"", 10)}}
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
+        with open(self.nzf.filepath, "rb") as f:
+            assert f.read() == b"helloworld"
 
     def test_append_without_offsets_packs_at_a_running_offset(self, assembler):
         _data, expected = self._make_request(
