@@ -23,9 +23,9 @@ import os
 import pytest
 from tests.testhelper import SAB_CACHE_DIR, create_and_read_nzb_fp
 
-from sabnzbd.nzb import NzbObject
+from sabnzbd.nzb import NzbObject, NzbRejected
 from sabnzbd.config import ConfigCat
-from sabnzbd.constants import NORMAL_PRIORITY, MAX_BAD_ARTICLES
+from sabnzbd.constants import NORMAL_PRIORITY, MAX_BAD_ARTICLES, DuplicateStatus
 from sabnzbd.filesystem import globber, sanitize_filename, create_all_dirs
 
 
@@ -75,6 +75,38 @@ class TestNZO:
         assert nzo.repair and nzo.unpack and nzo.delete
 
         # TODO: More checks!
+
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+    def test_rss_url_duplicate_action_is_deferred_until_after_fetch(self, mocker):
+        """RSS URL jobs must fetch the NZB before duplicate handling can discard them."""
+
+        def mark_duplicate(nzo):
+            nzo.duplicate = DuplicateStatus.DUPLICATE
+
+        mocker.patch("sabnzbd.nzb.object.cfg.no_dupes", return_value=1)
+        mocker.patch.object(NzbObject, "purge_data")
+        duplicate_check = mocker.patch.object(NzbObject, "duplicate_check", autospec=True, side_effect=mark_duplicate)
+
+        # RSS entries are URL placeholders first. The duplicate is detected, but the
+        # configured action is deferred so URLGrabber can request the NZB endpoint.
+        placeholder = NzbObject(
+            "Trying to fetch RSS NZB",
+            futuretype=True,
+            nzbname="Duplicate.Release",
+            nzo_info={"RSS": "TestFeed"},
+        )
+        assert placeholder.duplicate == DuplicateStatus.DUPLICATE
+
+        # Once the actual NZB has been fetched, duplicate handling remains unchanged.
+        with pytest.raises(NzbRejected):
+            NzbObject(
+                "duplicate.nzb",
+                nzb_fp=create_and_read_nzb_fp("basic_rar5"),
+                nzbname="Duplicate.Release",
+                nzo_info={"RSS": "TestFeed"},
+            )
+
+        assert duplicate_check.call_count == 2
 
     @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     def test_get_unique_filepath_subdirs(self):
