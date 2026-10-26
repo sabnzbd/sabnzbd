@@ -11,7 +11,7 @@ env:
   PYTHONNODEBUGRANGES: 1
   # For macOS we download the official Python, because the GitHub one only support newer macOS 11+ versions
   # We also use the specific pin for Windows release, so Renovate can update it all at once
-  PYTHON_VERSION: "3.14.8"
+  PYTHON_VERSION: "3.15.1"
 
 jobs:
   build_windows:
@@ -125,7 +125,7 @@ jobs:
       # Only use this for the caching of pip packages!
       uses: actions/setup-python@v7
       with:
-        python-version: "3.14"
+        python-version: "3.15"
         cache: pip
         cache-dependency-path: "**/requirements.txt"
     - name: Cache Python download
@@ -193,7 +193,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.14"
+          python-version: "3.15"
           cache: pip
           cache-dependency-path: "builder/release-requirements.txt"
       - name: Download release artifacts
