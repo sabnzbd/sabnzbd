@@ -39,7 +39,7 @@ from sabnzbd.filesystem import (
     set_permissions,
     clip_path,
     has_win_device,
-    diskspace_base,
+    diskspace_single,
     get_filename,
     has_unwanted_extension,
     get_basename,
@@ -402,7 +402,7 @@ class Assembler(Thread):
     def diskspace_check(nzo: NzbObject, nzf: NzbFile):
         """Check diskspace requirements.
         If not enough space left, pause downloader and send email"""
-        download_dir = diskspace_base(cfg.download_dir.get_path())
+        download_dir = diskspace_single(cfg.download_dir.get_path())
         full_dir: Optional[str] = None
         required_space = (cfg.download_free.get_float() + nzf.bytes) / GIGI
         if download_dir.free < required_space:
@@ -425,7 +425,7 @@ class Assembler(Thread):
                 near_end = True
 
             if required_space or near_end:
-                complete_dir = diskspace_base(get_complete_directory(nzo)[0])
+                complete_dir = diskspace_single(get_complete_directory(nzo)[0])
                 if near_end and (nzo.unpack or not same_device(download_dir.path, complete_dir.path)):
                     # Unpacking writes a second copy of the data before the archives are removed
                     # and moving to another device copies it, so both need room for the whole job.

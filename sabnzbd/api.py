@@ -93,7 +93,7 @@ from sabnzbd.misc import (
     is_lan_addr,
 )
 from sabnzbd.filesystem import (
-    diskspace,
+    diskspace_all,
     get_ext,
     clip_path,
     remove_all,
@@ -2092,7 +2092,7 @@ def build_header(
     header["pause_int"] = sabnzbd.Scheduler.pause_int()
     header["paused_all"] = sabnzbd.PAUSED_ALL
 
-    download_dir, complete_dir = diskspace()
+    download_dir, complete_dir = diskspace_all()
     header["diskspace1"] = "%.2f" % download_dir.free
     header["diskspace2"] = "%.2f" % complete_dir.free
     header["diskspace1_norm"] = to_units(download_dir.free * GIGI)

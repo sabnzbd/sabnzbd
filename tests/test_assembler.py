@@ -386,7 +386,7 @@ class TestDiskspaceCheck:
             sabnzbd.emailer = self.mock_emailer
 
             with (
-                mock.patch("sabnzbd.assembler.diskspace_base") as self.mock_diskspace,
+                mock.patch("sabnzbd.assembler.diskspace_single") as self.mock_diskspace,
                 mock.patch("sabnzbd.assembler.get_complete_directory") as self.mock_get_complete_dir,
                 mock.patch("sabnzbd.assembler.same_device", return_value=False) as self.mock_same_device,
                 mock.patch("sabnzbd.assembler.cfg") as self.mock_cfg,
@@ -532,7 +532,7 @@ class TestDiskspaceCheckScenarios:
             sabnzbd.emailer = mock.Mock()
 
             with (
-                mock.patch("sabnzbd.assembler.diskspace_base") as self.mock_diskspace,
+                mock.patch("sabnzbd.assembler.diskspace_single") as self.mock_diskspace,
                 mock.patch("sabnzbd.assembler.get_complete_directory") as self.mock_get_complete_dir,
                 mock.patch("sabnzbd.assembler.same_device") as self.mock_same_device,
                 mock.patch("sabnzbd.assembler.cfg") as self.mock_cfg,

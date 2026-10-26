@@ -825,7 +825,7 @@ def renderable_header(monkeypatch):
     monkeypatch.setattr(sabnzbd.Downloader, "bandwidth_perc", 0, raising=False)
     monkeypatch.setattr(sabnzbd.Downloader, "bandwidth_limit", 0, raising=False)
     disk = Mock(free=1.0, size=2.0)
-    with patch("sabnzbd.api.diskspace", return_value=(disk, disk)):
+    with patch("sabnzbd.api.diskspace_all", return_value=(disk, disk)):
         yield
 
 

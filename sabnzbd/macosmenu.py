@@ -62,7 +62,7 @@ from AppKit import (
 import sabnzbd
 import sabnzbd.cfg
 
-from sabnzbd.filesystem import diskspace
+from sabnzbd.filesystem import diskspace_all
 from sabnzbd.misc import to_units
 from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, MEBI, DEF_PORT, Status
 from sabnzbd.panic import launch_a_browser
@@ -443,7 +443,7 @@ class SABnzbdDelegate(NSObject):
 
     def diskspaceUpdate(self):
         try:
-            download_dir, complete_dir = diskspace()
+            download_dir, complete_dir = diskspace_all()
             self.completefolder_menu_item.setTitle_("%s (%.2f GB)" % (T("Complete Folder"), complete_dir.free))
             self.incompletefolder_menu_item.setTitle_("%s (%.2f GB)" % (T("Incomplete Folder"), download_dir.free))
         except Exception:

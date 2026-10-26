@@ -1153,7 +1153,7 @@ def first_existing_path(path: str) -> str:
     return path
 
 
-def diskspace_base(dir_to_check: str) -> Diskspace:
+def diskspace_single(dir_to_check: str) -> Diskspace:
     """Return amount of free and used diskspace in GBytes"""
     # Find first folder level that exists in the path
     dir_to_check = first_existing_path(dir_to_check)
@@ -1185,10 +1185,10 @@ def diskspace_base(dir_to_check: str) -> Diskspace:
 
 
 @conditional_cache(cache_time=10)
-def diskspace(force: bool = False) -> tuple[Diskspace, Diskspace]:
+def diskspace_all(force: bool = False) -> tuple[Diskspace, Diskspace]:
     """Wrapper to keep results cached by conditional_cache
     If called with force=True, the wrapper will clear the results"""
-    return diskspace_base(sabnzbd.cfg.download_dir.get_path()), diskspace_base(sabnzbd.cfg.complete_dir.get_path())
+    return diskspace_single(sabnzbd.cfg.download_dir.get_path()), diskspace_single(sabnzbd.cfg.complete_dir.get_path())
 
 
 @lru_cache(maxsize=16)
