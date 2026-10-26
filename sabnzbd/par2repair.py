@@ -30,6 +30,7 @@ import sabctools
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import GIGI, MEBI, PAR2_MINIMUM_MEMORY, PAR2_RESERVED_MEMORY, Status
+from sabnzbd.encoding import correct_unknown_encoding
 from sabnzbd.filesystem import get_ext, globber_full
 from sabnzbd.misc import format_time_string, get_cpus, get_memory
 from sabnzbd.nzb.object import NzbObject
@@ -135,6 +136,33 @@ class RepairSession:
             self.repairer.progress_callback = None
             self.repairer.file_done_callback = None
             self.repairer = None
+
+    def truncate_to_par2_sizes(self):
+        """Cut the files this job downloaded back to the size the par2 set records"""
+        # A file in a subdirectory may be named with either separator
+        by_name = {os.path.normpath(nzf.filename): nzf for nzf in self.nzo.finished_files}
+        for entry in self.repairer.files:
+            nzf = by_name.get(os.path.normpath(correct_unknown_encoding(entry["name"])))
+            path = entry["target"]
+            if not nzf or not os.path.isfile(path):
+                continue
+            size, wanted = os.path.getsize(path), entry["size"]
+            if size <= wanted:
+                continue
+            # Only what lies past the data of every article can be cut off
+            if any(
+                article.on_disk
+                and article.data_begin is not None
+                and article.data_begin + (article.data_size or 0) > wanted
+                for article in nzf.decodetable
+            ):
+                continue
+            try:
+                os.truncate(path, wanted)
+            except OSError:
+                logging.debug("Could not truncate %s", path, exc_info=True)
+                continue
+            logging.debug("Truncated %s from %s to %s bytes, the size the par2 set records", path, size, wanted)
 
     def verify(self) -> sabctools.Par2Result:
         self.nzo.status = Status.VERIFYING

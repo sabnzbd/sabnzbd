@@ -1306,6 +1306,7 @@ def par2_verify_and_repair(
             return False, False, [], []
 
     if not session.verified:
+        session.truncate_to_par2_sizes()
         session.verify()
 
     if not session.repairer.repair_possible:

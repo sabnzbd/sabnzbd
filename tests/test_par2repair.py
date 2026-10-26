@@ -19,6 +19,7 @@
 tests.test_par2repair - par2 repair sessions
 """
 
+import os
 import sys
 from unittest import mock
 
@@ -138,3 +139,31 @@ class TestPar2Repaired:
 
     def test_says_nothing_when_none_were(self, tmp_path, caplog):
         assert self.repair(tmp_path, caplog, []) == []
+
+
+class TestPar2FileSizes:
+    @staticmethod
+    def resize(tmp_path, size, wanted, data_end, downloaded=True):
+        path = tmp_path / "test.rar"
+        path.write_bytes(b"x" * size)
+        nzf = mock.Mock(filename="test.rar", decodetable=[mock.Mock(on_disk=True, data_begin=0, data_size=data_end)])
+        session = RepairSession(
+            make_mock_nzo(download_path=str(tmp_path), finished_files=[nzf] if downloaded else []),
+            "test",
+            str(tmp_path / "test.par2"),
+        )
+        session.repairer = mock.Mock(files=[{"name": "test.rar", "target": str(path), "size": wanted}])
+        session.truncate_to_par2_sizes()
+        return os.path.getsize(path)
+
+    def test_a_short_file_is_not_extended(self, tmp_path):
+        assert self.resize(tmp_path, 100, 150, data_end=100) == 100
+
+    def test_a_long_file_is_cut_back_to_its_data(self, tmp_path):
+        assert self.resize(tmp_path, 150, 100, data_end=100) == 100
+
+    def test_article_data_past_the_recorded_size_is_kept(self, tmp_path):
+        assert self.resize(tmp_path, 150, 100, data_end=120) == 150
+
+    def test_a_file_this_job_did_not_download_is_left_alone(self, tmp_path):
+        assert self.resize(tmp_path, 150, 100, data_end=100, downloaded=False) == 150

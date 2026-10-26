@@ -782,6 +782,13 @@ class NzbObject(TryList):
                 destroyed += uncovered_blocks(ranges, par2info.blocksize, par2info.blockcount, par2info.filesize)
         return destroyed
 
+    def par2_file_size(self, filename: str) -> Optional[int]:
+        """The size a par2 set records for a file, when one describes it"""
+        for par2pack in list(self.par2packs.values()):
+            if par2pack and (par2info := par2pack.get(filename)):
+                return par2info.filesize
+        return None
+
     @synchronized()
     def unmapped_damage(self) -> bool:
         """Whether a finished file lost articles that no par2 set accounts for"""
