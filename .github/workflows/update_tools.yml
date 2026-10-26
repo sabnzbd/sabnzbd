@@ -23,10 +23,11 @@ jobs:
       - name: Determine latest unrar version
         id: version
         run: |
-          RAW_VERSION=$(curl -fsSL --retry 3 https://www.rarlab.com/download.htm -o- | sed -n 's%.*/rarmacos-x64-\([0-9]\+\)\.tar\.gz.*%\1%p' | head -1)
+          # Only match all-digit versions, so betas such as 730b1 are skipped
+          RAW_VERSION=$(curl -fsSL --retry 3 https://www.rarlab.com/download.htm -o- | sed -n 's%.*/winrar-x64-\([0-9]\+\)\.exe.*%\1%p' | head -1)
           if [ -z "$RAW_VERSION" ]; then
-            echo "Could not determine the latest unrar version from the rarlab download page"
-            exit 1
+            echo "::warning::No stable unrar version found on the rarlab download page, skipping update"
+            exit 0
           fi
           # Version is encoded without separator, e.g. 723 = 7.23
           VERSION="${RAW_VERSION%??}.${RAW_VERSION: -2}"
@@ -34,6 +35,7 @@ jobs:
           echo "raw_version=$RAW_VERSION" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Download and extract new binaries
+        if: steps.version.outputs.version
         env:
           RAW_VERSION: ${{ steps.version.outputs.raw_version }}
         run: |
@@ -49,11 +51,13 @@ jobs:
           # RAR archive that the preinstalled 7-Zip can read
           7z x -y -owindows "winrar-x64-$RAW_VERSION.exe" UnRAR.exe > /dev/null
       - name: Copy binaries into the repository
+        if: steps.version.outputs.version
         run: |
           install -m 755 "$RUNNER_TEMP/unrar/macos-x64/rar/unrar" macos/unrar/unrar
           install -m 755 "$RUNNER_TEMP/unrar/macos-arm64/rar/unrar" macos/unrar/arm64/unrar
           install -m 755 "$RUNNER_TEMP/unrar/windows/UnRAR.exe" win/unrar/UnRAR.exe
       - name: Create pull request
+        if: steps.version.outputs.version
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
