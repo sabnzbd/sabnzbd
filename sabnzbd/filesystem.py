@@ -1643,12 +1643,9 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
 
 
 def create_work_name(name: str) -> str:
-    """Remove ".nzb" and ".par(2)" and sanitize, skip URL's"""
-    if name.find("://") < 0:
-        # Invalid charters need to be removed before and after (see unit-tests)
-        return sanitize_foldername(strip_extensions(sanitize_foldername(name)))
-    else:
-        return name.strip()
+    """Remove ".nzb" and ".par(2)" and sanitize"""
+    # Invalid characters need to be removed before and after (see unit-tests)
+    return sanitize_foldername(strip_extensions(sanitize_foldername(name)))
 
 
 def is_sparse(path: str) -> bool:

@@ -26,7 +26,7 @@ from tests.testhelper import SAB_CACHE_DIR, create_and_read_nzb_fp
 from sabnzbd.nzb import NzbObject
 from sabnzbd.config import ConfigCat
 from sabnzbd.constants import NORMAL_PRIORITY, MAX_BAD_ARTICLES
-from sabnzbd.filesystem import globber, sanitize_filename, create_all_dirs
+from sabnzbd.filesystem import globber, sanitize_filename, create_all_dirs, long_path
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
@@ -132,6 +132,17 @@ class TestNZO:
             hostile_name,
             resolved,
         )
+
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+    @pytest.mark.parametrize("hostile_name", ["http://../../../escape", "https://../escape", "a://../escape"])
+    def test_url_nzbname_cannot_escape_download_dir(self, hostile_name):
+        """A job name that looks like a URL is not exempt from sanitizing"""
+        ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
+        nzo = NzbObject("test_url_name", nzb_fp=create_and_read_nzb_fp("basic_rar5"), nzbname=hostile_name)
+
+        assert os.sep not in nzo.work_name
+        assert os.sep not in nzo.final_name
+        assert os.path.dirname(os.path.normpath(nzo.download_path)) == os.path.normpath(long_path(SAB_CACHE_DIR))
 
 
 class TestCheckAvailabilityRatio:
