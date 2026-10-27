@@ -248,9 +248,11 @@ class NzbObject(TryList):
             if not self.password:
                 _, self.password = scan_password(get_basename(filename))
 
-        # Remove trailing .nzb/.par(2) and sanitize
+        # Remove trailing .nzb/.par(2) and sanitize, future NZB's keep their URL as name
+        self.final_name = self.work_name.strip()
         self.work_name = create_work_name(self.work_name)
-        self.final_name = self.work_name
+        if not futuretype:
+            self.final_name = self.work_name
 
         # Temporary store for custom job name for after URL-fetching
         self.custom_name = nzbname

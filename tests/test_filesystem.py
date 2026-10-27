@@ -1839,7 +1839,8 @@ class TestOtherFileSystemFunctions:
             ("with.extension.and.period.par2.", "with.extension.and.period"),
             ("nothing.in.here", "nothing.in.here"),
             ("  just.space  ", "just.space"),
-            ("http://test.par2  ", "http://test.par2"),
+            ("http://test.par2  ", "http___test"),
+            ("http://../../tmp", "http___.._.._tmp"),
         ],
     )
     def test_create_work_name(self, file_name, clean_file_name):
