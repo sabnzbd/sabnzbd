@@ -837,6 +837,13 @@ def guard_restart():
     sabnzbd.RESTART_REQ = True
 
 
+def guard_web_server_restart():
+    """Callback for config options that only the web server has to pick up. Handled
+    by the main loop on its next pass, so a save that changes several of them is
+    applied in one go, after the reply reached the browser."""
+    sabnzbd.WEB_SERVER_RESTART_REQ = True
+
+
 def guard_top_only():
     """Callback for change of top_only option"""
     sabnzbd.NzbQueue.set_top_only(top_only())

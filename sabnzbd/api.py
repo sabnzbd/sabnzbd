@@ -1138,7 +1138,7 @@ def _api_config_regenerate_certs(value: str, kwargs: QueryParams) -> Response:
         https_cert = sabnzbd.cfg.https_cert.get_path()
         https_key = sabnzbd.cfg.https_key.get_path()
         result = create_https_certificates(https_cert, https_key)
-        sabnzbd.RESTART_REQ = True
+        sabnzbd.WEB_SERVER_RESTART_REQ = True
     return report(kwargs, data=result)
 
 
@@ -2061,7 +2061,7 @@ def build_header(
             header["url"] = url_for
 
         header["uptime"] = calc_age(sabnzbd.START)
-        header["color_scheme"] = sabnzbd.WEB_COLOR or ""
+        header["color_scheme"] = cfg.web_color()
         header["confighelpuri"] = f"https://sabnzbd.org/wiki/configuration/{sabnzbd.__version__[:3]}/"
 
         if request:

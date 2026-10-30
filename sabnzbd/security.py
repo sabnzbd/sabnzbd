@@ -85,20 +85,28 @@ class ProxyTrustMiddleware:
     does the parsing, so the two cannot drift apart."""
 
     def __init__(self, app):
-        if cfg.verify_xff_header():
-            proxy_headers = ProxyHeadersMiddleware(app, trusted_hosts=xff_trusted_networks())
-            self.app = proxy_headers
-            self.trusted_hosts = proxy_headers.trusted_hosts
-        else:
-            self.app = app
-            self.trusted_hosts = None
+        self.app = app
+        self.settings: Optional[tuple] = None
+        self.proxy_app = None
+
+    def refresh(self):
+        """Rebuild the resolver when the configuration changed, so its address cache survives otherwise"""
+        settings = (cfg.verify_xff_header(), cfg.xff_trusted_hosts(), cfg.local_ranges())
+        if settings != self.settings:
+            self.settings = settings
+            self.proxy_app = (
+                ProxyHeadersMiddleware(self.app, trusted_hosts=xff_trusted_networks()) if settings[0] else None
+            )
 
     async def __call__(self, scope, receive, send):
-        if scope["type"] in ("http", "websocket"):
-            peer = scope.get("client")
-            scope[SCOPE_PEER] = peer
-            scope[SCOPE_PEER_TRUSTED] = bool(self.trusted_hosts is not None and peer and peer[0] in self.trusted_hosts)
-        await self.app(scope, receive, send)
+        if scope["type"] not in ("http", "websocket"):
+            return await self.app(scope, receive, send)
+
+        self.refresh()
+        peer = scope.get("client")
+        scope[SCOPE_PEER] = peer
+        scope[SCOPE_PEER_TRUSTED] = bool(self.proxy_app and peer and peer[0] in self.proxy_app.trusted_hosts)
+        await (self.proxy_app or self.app)(scope, receive, send)
 
 
 def client_address(request: Request) -> Address:
