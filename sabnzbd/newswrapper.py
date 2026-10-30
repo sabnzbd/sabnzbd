@@ -751,6 +751,9 @@ class NNTP:
             self.nw.server.warning = msg
             # No reset-warning needed, above logging is sufficient
             sabnzbd.Downloader.reset_nw(self.nw)
+            with DOWNLOADER_LOCK:
+                self.nw.server.bad_cons += 1
+                sabnzbd.Downloader.maybe_block_server(self.nw.server)
 
     @synchronized(DOWNLOADER_LOCK)
     def close(self, send_quit: bool):
