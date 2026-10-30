@@ -316,7 +316,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "Neželjena ekstenzija je u rar datoteci %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py, sabnzbd/postproc.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Prekinuto, detektovana neželjena ekstenzija"
 

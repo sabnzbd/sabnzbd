@@ -350,7 +350,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "İstenmeyen uzantı %s rar dosyasındadır"
 
-#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py, sabnzbd/postproc.py
 msgid "Aborted, unwanted extension detected"
 msgstr "İptal edildi, istenmeyen uzantı tespit edildi"
 

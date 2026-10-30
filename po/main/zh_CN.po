@@ -317,7 +317,7 @@ msgstr "RAR 文件“%s”中出现不需要的扩展名。不需要的文件名
 msgid "Unwanted extension is in rar file %s"
 msgstr "rar 文件中出现不需要的扩展名 %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py, sabnzbd/postproc.py
 msgid "Aborted, unwanted extension detected"
 msgstr "已中止，侦测到不需要的扩展名"
 

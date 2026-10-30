@@ -322,7 +322,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "Ei toivottu tiedostopääte on rar arkistossa %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py, sabnzbd/postproc.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Peruutettu, ei toivottu tiedostopääte havaittu"
 

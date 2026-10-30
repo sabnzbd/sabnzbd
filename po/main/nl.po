@@ -344,7 +344,7 @@ msgstr "Ongewenste extensie ontdekt in \"%s\". Het ongewenste bestand is \"%s\" 
 msgid "Unwanted extension is in rar file %s"
 msgstr "De ongewenste extensie zit in RAR-bestand %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py, sabnzbd/postproc.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Afgebroken, ongewenste extensie ontdekt"
 

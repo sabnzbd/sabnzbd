@@ -327,7 +327,7 @@ msgstr "בעבודה \"%s\" יש סיומת בלתי רצויה בתוך קוב�
 msgid "Unwanted extension is in rar file %s"
 msgstr "סיומת בלתי רצויה בקובץ rar %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py, sabnzbd/postproc.py
 msgid "Aborted, unwanted extension detected"
 msgstr "בוטל, סיומת בלתי רצויה התגלתה"
 
