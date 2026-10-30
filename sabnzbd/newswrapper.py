@@ -299,8 +299,15 @@ class NewsWrapper:
 
                 # Ditch this thread, we don't know what data we got now so the buffer can be bad
                 sabnzbd.Downloader.reset_nw(
-                    self, f"Server error or unknown status code: {response.status_code}", wait=False, article=article
+                    self,
+                    f"Server error or unknown status code: {response.message}",
+                    wait=False,
+                    count_article_try=False,
+                    article=article,
                 )
+                with DOWNLOADER_LOCK:
+                    server.bad_cons += 1
+                    sabnzbd.Downloader.maybe_block_server(server)
                 return
 
         if article_done:
