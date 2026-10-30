@@ -141,6 +141,10 @@ jobs:
       run: sudo installer -pkg ~/python.pkg -target /
     - name: Install Python dependencies
       # We have to manually compile some modules as they don't automatically fetch universal2 binaries
+      env:
+        # Argon2's SSE2-optimised source cannot compile for the arm64 half of a
+        # universal2 build, so use its portable reference source instead.
+        ARGON2_CFFI_USE_SSE2: "0"
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
