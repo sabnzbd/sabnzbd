@@ -29,7 +29,7 @@ from dataclasses import dataclass
 from typing import BinaryIO, Optional
 
 from sabnzbd.constants import MEBI
-from sabnzbd.encoding import correct_unknown_encoding
+from sabnzbd.encoding import correct_unknown_encoding, unicode_nfc_normalize
 from sabnzbd.filesystem import get_basename
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
@@ -38,9 +38,11 @@ PACKET_SEARCH_CHUNK = 2**16
 PAR_PKT_ID = b"PAR2\x00PKT"
 PAR_MAIN_ID = b"PAR 2.0\x00Main\x00\x00\x00\x00"
 PAR_FILE_ID = b"PAR 2.0\x00FileDesc"
+PAR_UNICODE_FILE_ID = b"PAR 2.0\x00UniFileN"
 PAR_CREATOR_ID = b"PAR 2.0\x00Creator\x00"
 PAR_SLICE_ID = b"PAR 2.0\x00IFSC\x00\x00\x00\x00"
 PAR_RECOVERY_ID = b"RecvSlic"
+PAR_RECOVERY_SLICE_ID = b"PAR 2.0\x00" + PAR_RECOVERY_ID
 
 
 @dataclass(slots=True)
@@ -168,6 +170,8 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
     set_id = slice_size = coeff = nr_files = None
     filepar2info = {}
     filecrc32 = {}
+    unicodenames = {}
+    seen_packets = set()
     table = {}
     duplicates16k = []
 
@@ -206,6 +210,16 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
                     f.seek(packet_start + len(PAR_PKT_ID))
                     continue
 
+                # On large files, we stop once we have all the listings and crc32 data and a packet comes
+                # round again, which ends the first copy of the critical packets
+                # Our unit-tests do not include large par2 files, so we cannot verify cases like #3164!
+                # On smaller files, we scan them fully to get the par2-creator
+                if md5sum in seen_packets:
+                    if total_size > SCAN_LIMIT and len(filepar2info) == nr_files == len(filecrc32):
+                        break
+                    continue
+                seen_packets.add(md5sum)
+
                 # See if it's any of the packages we care about
                 par2_packet_type = data[16:32]
 
@@ -229,6 +243,18 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
                     filesize = struct.unpack("<Q", data[80:88])[0]
                     filename = correct_unknown_encoding(data[88:].strip(b"\0"))
                     filepar2info[fileid] = FilePar2Info(filename, hash16k, filesize)
+                elif par2_packet_type == PAR_UNICODE_FILE_ID:
+                    # The Unicode Filename packet looks like:
+                    # 16 : "PAR 2.0\0UniFileN"
+                    # 16 : FileId
+                    # xx : Name in UTF-16LE (multiple of 4, padded with \0 if needed)
+                    fileid = data[32:48].hex()
+                    if fileid in unicodenames:
+                        continue
+                    try:
+                        unicodenames[fileid] = unicode_nfc_normalize(data[48:].decode("utf-16-le").rstrip("\0"))
+                    except UnicodeDecodeError:
+                        logging.debug("Discarding Unicode Filename packet that does not hold UTF-16")
                 elif par2_packet_type == PAR_CREATOR_ID:
                     # From here until the end is the creator-text
                     # Useful in case of bugs in the par2-creating software
@@ -253,16 +279,14 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
                         for i in range(48, pack_len - 32, 20):
                             filecrc32[fileid].append(struct.unpack("<I", data[i + 16 : i + 20])[0])
 
-                # On large files, we stop after seeing all the listings and have crc32 data for all listings
-                # Our unit-tests do not include large par2 files, so we cannot verify cases like #3164!
-                # On smaller files, we scan them fully to get the par2-creator
-                if total_size > SCAN_LIMIT and len(filepar2info) == nr_files == len(filecrc32):
-                    break
-
             # Process all the data
             for fileid in filepar2info.keys():
-                # Sanity check
                 par2info = filepar2info[fileid]
+                # The name in the Unicode Filename packet takes precedence
+                if unicodename := unicodenames.get(fileid):
+                    par2info.filename = unicodename
+
+                # Sanity check
                 if not filecrc32.get(fileid) or not nr_files or not slice_size:
                     logging.debug("Missing essential information for %s", par2info)
                     continue
