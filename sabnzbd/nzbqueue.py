@@ -992,7 +992,9 @@ class NzbQueue:
                     if (nzo.duplicate == DuplicateStatus.DUPLICATE_ALTERNATIVE and cfg.no_dupes() != 4) or (
                         nzo.duplicate == DuplicateStatus.SMART_DUPLICATE_ALTERNATIVE and cfg.no_smart_dupes() != 4
                     ):
-                        logging.info("Resuming duplicate alternative %s for ", nzo.final_name, finished_nzo.final_name)
+                        logging.info(
+                            "Resuming duplicate alternative %s for %s", nzo.final_name, finished_nzo.final_name
+                        )
                         nzo.resume()
                     nzo.duplicate = None
                     return
