@@ -21,6 +21,7 @@ sabnzbd.decoder - article decoder
 
 import logging
 import hashlib
+import re
 from typing import Optional
 
 import sabnzbd
@@ -70,6 +71,7 @@ class SinkFailed(Exception):
 
 
 def decode(article: Article, decoder: sabctools.NNTPResponse):
+    """Decode an article response, or register its availability during precheck."""
     decoded_data: Optional[bytearray] = None
     nzo = article.nzf.nzo
     art_id = article.article
@@ -150,9 +152,9 @@ def decode(article: Article, decoder: sabctools.NNTPResponse):
                     lline = line.lower()
                     if lline.startswith("message-id:"):
                         article_success = True
-                        # Removal words in an identifier do not indicate a removed article.
+                        # Ignore words inside the ID, but still scan any adjacent removal notice.
                         if nzo.precheck:
-                            continue
+                            lline = re.sub(r"^(message-id:[ \t]*)<[^<>\s]+>", r"\1", lline, count=1)
                     # Look for DMCA clues (while skipping "X-" headers)
                     if not lline.startswith("x-") and match_str(lline, ("dmca", "removed", "cancel", "blocked")):
                         article_success = False
