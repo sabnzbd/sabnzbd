@@ -218,7 +218,9 @@ class TestNZO:
         with pytest.raises(YEncEncryptionStructuralError):
             NzbObject(
                 "bad_job.nzb",
-                nzb_fp=_make_encrypted_nzb([("yenc_encrypted", "true"), ("yenc_version", "1.3"), ("password", "fixture-meta-value")]),
+                nzb_fp=_make_encrypted_nzb(
+                    [("yenc_encrypted", "true"), ("yenc_version", "1.3"), ("password", "fixture-meta-value")]
+                ),
                 reuse=reuse_dir,
             )
         assert os.path.isdir(reuse_dir)

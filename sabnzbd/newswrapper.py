@@ -700,11 +700,7 @@ class NewsWrapper:
         # encrypted/article responses always have a request in flight). Synthetic
         # unit-test decoders have no real request accounting, so only a real
         # sabctools decoder enforces this.
-        if (
-            not encrypted
-            and not self.decoder.expected
-            and isinstance(self.decoder, sabctools.Decoder)
-        ):
+        if not encrypted and not self.decoder.expected and isinstance(self.decoder, sabctools.Decoder):
             raise ConnectionError("Unsolicited data from server")
 
         # Success, move timeout

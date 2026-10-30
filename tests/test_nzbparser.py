@@ -282,8 +282,14 @@ class TestNzbParser:
         assert nzo.meta["password"] == ["  padded fixture  "]
 
         rejected = [
-            ([("yenc_encrypted", "true"), ("yenc_version", "1.3"), ("password", "fixture-meta-value")], "UNSUPPORTED_VERSION"),
-            ([("yenc_encrypted", "true"), ("yenc_cipher", "AES"), ("password", "fixture-meta-value")], "UNSUPPORTED_CIPHER"),
+            (
+                [("yenc_encrypted", "true"), ("yenc_version", "1.3"), ("password", "fixture-meta-value")],
+                "UNSUPPORTED_VERSION",
+            ),
+            (
+                [("yenc_encrypted", "true"), ("yenc_cipher", "AES"), ("password", "fixture-meta-value")],
+                "UNSUPPORTED_CIPHER",
+            ),
         ]
         for idx, (entries, token) in enumerate(rejected):
             with pytest.raises(YEncEncryptionStructuralError, match=token):
