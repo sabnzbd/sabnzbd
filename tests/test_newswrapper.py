@@ -81,18 +81,29 @@ class TestPrecheckResponses:
         return nw, article, downloader, queue, cache, receive
 
     @pytest.mark.parametrize(
-        "headers, expected_success",
+        "article_id, headers, expected_success",
         [
-            (b"Message-ID: <test@example.invalid>\r\nSubject: Test\r\n", True),
-            (b"Subject: Missing message ID\r\n", False),
-            (b"Message-ID: <test@example.invalid>\r\nSubject: Removed by DMCA\r\n", False),
+            ("test@example.invalid", b"Message-ID: <test@example.invalid>\r\nSubject: Test\r\n", True),
+            ("test@example.invalid", b"Subject: Missing message ID\r\n", False),
+            ("test@example.invalid", b"Message-ID: <test@example.invalid>\r\nSubject: Removed by DMCA\r\n", False),
+            ("test@example.invalid", b"Subject: Removed by DMCA\r\nMessage-ID: <test@example.invalid>\r\n", False),
+            ("blocked@example.invalid", b"Message-ID: <blocked@example.invalid>\r\nSubject: Test\r\n", True),
+            ("removed@example.invalid", b"Message-ID: <removed@example.invalid>\r\nSubject: Test\r\n", True),
+            ("cancel@example.invalid", b"Message-ID: <cancel@example.invalid>\r\nSubject: Test\r\n", True),
+            ("dmca@example.invalid", b"Message-ID: <dmca@example.invalid>\r\nSubject: Test\r\n", True),
+            ("test@blocked.example.invalid", b"Message-ID: <test@blocked.example.invalid>\r\n", True),
+            ("dmca@example.invalid", b"mEsSaGe-Id:\t<dmca@example.invalid>\r\nSubject: Test\r\n", True),
+            ("dmca@example.invalid", b"Message-ID: <dmca@example.invalid>\r\nSubject: Removed by DMCA\r\n", False),
+            # RFC 3977 Appendix A.2 permits the header ID to differ from the protocol ID.
+            ("45223423@example.com", b"Message-ID: <1234@example.net>\r\nSubject: Test\r\n", True),
         ],
     )
-    def test_head_fallback(self, precheck_connection, headers, expected_success):
+    def test_head_fallback(self, precheck_connection, article_id, headers, expected_success):
         nw, article, downloader, queue, cache, receive = precheck_connection
+        article.article = article_id
 
         nw.queue_article(article)
-        assert nw.next_request == (b"STAT <test@example.invalid>\r\n", article)
+        assert nw.next_request == (f"STAT <{article_id}>\r\n".encode(), article)
         nw.next_request = None
         nw.decoder.expect(article)
         receive(b"500 Command not recognized\r\n")
@@ -101,10 +112,10 @@ class TestPrecheckResponses:
         downloader.decode.assert_not_called()
 
         nw.queue_article(article)
-        assert nw.next_request == (b"HEAD <test@example.invalid>\r\n", article)
+        assert nw.next_request == (f"HEAD <{article_id}>\r\n".encode(), article)
         nw.next_request = None
         nw.decoder.expect(article)
-        receive(b"221 0 <test@example.invalid> headers follow\r\n" + headers)
+        receive(f"221 0 <{article_id}> headers follow\r\n".encode() + headers)
         queue.register_article.assert_not_called()
         receive(b".\r\n")
 
@@ -136,6 +147,16 @@ class TestPrecheckResponses:
         downloader.reset_nw.assert_called_once()
         downloader.decode.assert_not_called()
         queue.register_article.assert_not_called()
+
+    def test_removal_scan_during_download(self, precheck_connection, monkeypatch):
+        _, article, _, queue, _, _ = precheck_connection
+        article.nzf.nzo.precheck = False
+        monkeypatch.setattr(decoder, "decode_yenc", mock.Mock(side_effect=decoder.BadYenc))
+        response = mock.Mock(status_code=222, lines=["Message-ID: <blocked@example.invalid>"])
+
+        decoder.decode(article, response)
+
+        queue.register_article.assert_called_once_with(article, False)
 
 
 class IPProtocolVersion(Enum):

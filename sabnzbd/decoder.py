@@ -150,6 +150,9 @@ def decode(article: Article, decoder: sabctools.NNTPResponse):
                     lline = line.lower()
                     if lline.startswith("message-id:"):
                         article_success = True
+                        # Removal words in an identifier do not indicate a removed article.
+                        if nzo.precheck:
+                            continue
                     # Look for DMCA clues (while skipping "X-" headers)
                     if not lline.startswith("x-") and match_str(lline, ("dmca", "removed", "cancel", "blocked")):
                         article_success = False
