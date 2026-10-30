@@ -17,6 +17,8 @@ extra_hiddenimports = ["Cheetah.DummyTransaction", "certifi"]
 extra_hiddenimports.extend(collect_submodules("apprise"))
 extra_hiddenimports.extend(collect_submodules("babelfish.converters"))
 extra_hiddenimports.extend(collect_submodules("guessit.data"))
+extra_hiddenimports.extend(collect_submodules("argon2"))
+extra_hiddenimports.extend(collect_submodules("nacl"))
 
 # Add platform specific stuff
 if sys.platform == "darwin":
@@ -43,6 +45,20 @@ else:
     extra_hiddenimports.extend(["win32timezone", "winrt.windows.foundation.collections"])
     EXTRA_FOLDERS += ["win/par2/", "win/unrar/", "win/7zip/"]
     EXTRA_FILES += ["portable.cmd"]
+
+    # cryptography >= 50 ships an abi3t _rust extension linked against
+    # python3t.dll. CPython 3.15 ships that DLL in abi3t-compat next to
+    # python315.dll (or adjacent to it), and its loader looks in
+    # abi3t-compat relative to the bundled python DLL, so mirror that
+    # layout in the frozen app. PyInstaller's own dependency scan does
+    # not look in abi3t-compat, which is why this has to be added here.
+    for abi3t_candidate in (
+        os.path.join(sys.base_prefix, "abi3t-compat", "python3t.dll"),
+        os.path.join(sys.base_prefix, "python3t.dll"),
+    ):
+        if os.path.exists(abi3t_candidate):
+            extra_pyinstaller_files.append((abi3t_candidate, "abi3t-compat"))
+            break
 
     # Detailed instructions are in the PyInstaller documentation
     # We don't include the alpha/beta/rc in the counters

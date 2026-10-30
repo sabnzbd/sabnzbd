@@ -48,6 +48,10 @@ python3 tools/make_mo.py
 
 Our many other command line options are explained in depth [here](https://sabnzbd.org/wiki/advanced/command-line-parameters).
 
+## Encrypted downloads
+
+SABnzbd can also download releases that use the experimental yEnc encryption. If the NZB is marked as encrypted and includes the password, SABnzbd decrypts it automatically — there's no setting to enable. An encrypted NZB without a password will fail. A password on its own, without the encrypted marker, is still just the password for extracting archives.
+
 ## About Our Repo
 
 The workflow we use, is a simplified form of "GitFlow".

@@ -38,6 +38,17 @@ httptools==0.9.0
 # Using older versions can have security implications!
 cryptography>=3.0
 
+# yEnc encryption (experimental): required for encrypted downloads; imported at module
+# top level like the other dependencies above
+# argon2-cffi is kept for the Argon2id KDF instead of cryptography's
+# cryptography.hazmat.primitives.kdf.argon2.Argon2id: that class only landed in
+# cryptography 44.0 and requires OpenSSL >= 3.2, while SABnzbd supports
+# cryptography>=3.0 (see above). Switching would require raising the cryptography
+# floor to >=44.0 and dropping installs on older OpenSSL, so argon2-cffi stays.
+argon2-cffi==25.1.0
+argon2-cffi-bindings==25.1.0
+pynacl==1.6.2
+
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
 ujson==6.0.0

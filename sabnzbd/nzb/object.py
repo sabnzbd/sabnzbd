@@ -32,6 +32,7 @@ from collections import deque
 import sabnzbd
 from sabnzbd.nzb.article import TryList, Article
 from sabnzbd.nzb.file import NzbFile
+from sabnzbd.encryption import YEncEncryptionStructuralError
 from sabnzbd.constants import (
     GIGI,
     ATTRIB_FILE,
@@ -189,6 +190,7 @@ NzbObjectSaver = (
     "next_save",
     "save_timeout",
     "encrypted",
+    "yenc_encrypted",
     "bad_articles",
     "duplicate",
     "duplicate_key",
@@ -350,6 +352,7 @@ class NzbObject(TryList):
         self.next_save = None
         self.save_timeout = None
         self.encrypted = 0
+        self.yenc_encrypted: bool = False
         self.url_wait: Optional[float] = None
         self.url_tries = 0
         self.pp_active = False
@@ -411,6 +414,10 @@ class NzbObject(TryList):
             full_nzb_path = save_compressed(admin_dir, filename, nzb_fp)
             try:
                 sabnzbd.nzbparser.nzbfile_parser(full_nzb_path, self)
+            except YEncEncryptionStructuralError:
+                if not reuse:
+                    self.purge_data()
+                raise
             except Exception as err:
                 self.incomplete = True
                 logging.warning(T("Invalid NZB file %s, skipping (error: %s)"), filename, err)
