@@ -575,6 +575,7 @@ def mount_is_available(path: str) -> bool:
 
 
 RAR_RE = re.compile(r"\.(part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d?\d)$", re.I)
+RAR_FIRST_VOLUME_RE = re.compile(r"^(part0*1\.rar|rar)$")
 SPLITFILE_RE = re.compile(r"\.(\d\d\d?\d$)", re.I)
 SEVENZIP_RE = re.compile(r"\.(zip|7z)$", re.I)
 SEVENMULTI_RE = re.compile(r"\.7z\.\d+$", re.I)

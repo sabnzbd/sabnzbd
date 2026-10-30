@@ -126,6 +126,24 @@ class TestPostProc:
         # 0 files should have been renamed
         assert self._deobfuscate_dir(sourcedir, expected_filename_matches) == 0
 
+    @pytest.mark.parametrize(
+        "rars, expected",
+        [
+            ([], False),
+            (["a.rar", "a.r00", "a.r01"], False),
+            (["a.part01.rar", "a.part02.rar"], False),
+            (["a.part1.rar", "a.part2.rar"], False),
+            (["a.rar", "a.r00", "b.part01.rar", "b.part02.rar"], False),
+            (["a.part02.rar", "a.part03.rar"], True),
+            (["a.r00", "a.r01"], True),
+            # Every volume has its own name
+            (["aaa.rar", "bbb.r00", "ccc.r01"], True),
+            (["aaa.rar", "bbb.r00", "ccc.r01", "ddd.r02"], True),
+        ],
+    )
+    def test_rar_sets_missing_first_volume(self, rars, expected):
+        assert postproc.rar_sets_missing_first_volume([os.path.join("dir", rar) for rar in rars]) is expected
+
     @pytest.fixture
     def category_in_program_dir(self, monkeypatch):
         """Bypasses the validator, like a link that changed after the category folder was set"""

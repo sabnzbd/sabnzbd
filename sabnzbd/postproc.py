@@ -76,6 +76,8 @@ from sabnzbd.filesystem import (
     get_ext,
     get_filename,
     has_unwanted_extension,
+    RAR_RE,
+    RAR_FIRST_VOLUME_RE,
 )
 from sabnzbd.nzb import NzbObject
 from sabnzbd.sorting import Sorter
@@ -884,7 +886,7 @@ def parring(nzo: NzbObject) -> tuple[bool, bool]:
         # so that in the next section the try_rar_check can be used if no
         # par2 check was performed in the previous part
         _, rars, _, _, _ = build_filelists(nzo.download_path, check_rar=False, extra_dirs=nzo.sub_directories())
-        if not rars:
+        if not rars or rar_sets_missing_first_volume(rars):
             # Returns number of renamed RAR's
             rar_renamer(nzo)
 
@@ -1005,6 +1007,24 @@ def try_rar_check(nzo: NzbObject, rars: list[str]) -> bool:
     else:
         # No rar-files, so just continue
         return True
+
+
+def rar_sets_missing_first_volume(rars: list[str]) -> bool:
+    """Check if any RAR set, grouped by name, lacks its first volume (.rar or .part01.rar).
+    This happens when every volume has a different name, so each looks like a set of its own.
+    """
+    all_sets = set()
+    sets_with_first_volume = set()
+    for rar in rars:
+        rar = rar.lower()
+        match = RAR_RE.search(rar)
+        if not match:
+            continue
+        setname = rar[: match.start()]
+        all_sets.add(setname)
+        if RAR_FIRST_VOLUME_RE.match(match.group(1)):
+            sets_with_first_volume.add(setname)
+    return all_sets != sets_with_first_volume
 
 
 def rename_rar_file(filename: str, setname: str, download_path: str, extension: str) -> None:
