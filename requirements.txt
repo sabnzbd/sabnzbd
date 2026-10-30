@@ -46,6 +46,7 @@ cryptography>=3.0
 # cryptography>=3.0 (see above). Switching would require raising the cryptography
 # floor to >=44.0 and dropping installs on older OpenSSL, so argon2-cffi stays.
 argon2-cffi==25.1.0
+argon2-cffi-bindings==25.1.0
 pynacl==1.6.2
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
