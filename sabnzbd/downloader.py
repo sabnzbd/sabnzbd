@@ -1070,8 +1070,8 @@ def clues_too_many(text: str) -> bool:
     """Check for any "too many connections" clues in the response code"""
     text = text.lower()
     for clue in ("exceed", "connections", "too many", "threads", "limit"):
-        # Not 'download limit exceeded' error
-        if (clue in text) and ("download" not in text) and ("byte" not in text):
+        # Not 'download limit exceeded' or 'quota exceeded' error
+        if (clue in text) and ("download" not in text) and ("byte" not in text) and ("quota" not in text):
             return True
     return False
 
@@ -1088,7 +1088,7 @@ def clues_too_many_ip(text: str) -> bool:
 def clues_pay(text: str) -> bool:
     """Check for messages about payments"""
     text = text.lower()
-    for clue in ("credits", "paym", "expired", "exceeded"):
+    for clue in ("credits", "paym", "expired", "exceeded", "quota"):
         if clue in text:
             return True
     return False
