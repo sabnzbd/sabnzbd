@@ -261,7 +261,8 @@ class NewsWrapper:
                 if self.ready:
                     logging.info("Connecting %s@%s finished", self.thrdnum, server.host)
 
-            elif response.status_code == 223:
+            elif response.status_code == 223 or (response.status_code == 221 and article.nzf.nzo.precheck):
+                # STAT replies with 223; its HEAD fallback returns headers with 221.
                 article_done = True
                 logging.debug("Article <%s> is present on %s", article.article, server.host)
 
