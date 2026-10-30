@@ -633,15 +633,39 @@ def _api_history_default(value: str, kwargs: QueryParams) -> Response:
     if last_history_update == current_history_update:
         return report(kwargs, keyword="history", data=False)
 
+    history = build_history_payload(
+        start=start,
+        limit=limit,
+        # Only show archive if specifically requested
+        archive=bool(int_conv(kwargs.get("archive"))),
+        search=search,
+        categories=categories,
+        statuses=statuses,
+        nzo_ids=nzo_ids,
+        failed_only=failed_only,
+        last_history_update=current_history_update,
+    )
+    return report(kwargs, keyword="history", data=history)
+
+
+def build_history_payload(
+    start: int = 0,
+    limit: int = 0,
+    archive: bool = False,
+    search: Optional[str] = None,
+    categories: Optional[list[str]] = None,
+    statuses: Optional[list[str]] = None,
+    nzo_ids: Optional[list[str]] = None,
+    failed_only: bool = False,
+    last_history_update: Optional[int] = None,
+) -> dict[str, Any]:
+    """The history as the interface receives it, for both the API and the event stream"""
     if failed_only:
         # We ignore any other statuses, having both doesn't make sense
         statuses = [Status.FAILED]
 
     if not limit:
         limit = cfg.history_limit()
-
-    # Only show archive if specifically requested
-    archive = bool(int_conv(kwargs.get("archive")))
 
     history = {}
     grand, month, week, day = sabnzbd.BPSMeter.get_sums()
@@ -658,9 +682,9 @@ def _api_history_default(value: str, kwargs: QueryParams) -> Response:
         statuses=statuses,
         nzo_ids=nzo_ids,
     )
-    history["last_history_update"] = current_history_update
+    history["last_history_update"] = sabnzbd.LAST_HISTORY_UPDATE if last_history_update is None else last_history_update
     history["version"] = sabnzbd.__version__
-    return report(kwargs, keyword="history", data=history)
+    return history
 
 
 def _api_get_files(name: str, kwargs: QueryParams) -> Response:

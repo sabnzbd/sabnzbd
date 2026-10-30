@@ -203,51 +203,7 @@ function ViewModel() {
         }
 
         // Re-format the speed
-        var speedSplit = response.queue.speed.split(/\s/);
-        self.speed(parseFloat(speedSplit[0]));
-        self.speedMetric(speedSplit[1]);
-
-        // Update sparkline data
-        if (self.speedHistory.length >= 275) {
-            // Remove first one
-            self.speedHistory.shift();
-        }
-        // Add
-        self.speedHistory.push(parseInt(response.queue.kbpersec));
-
-        // Is sparkline visible? Not on small mobile devices..
-        if ($('.sparkline-container').css('display') !== 'none') {
-            // Make sparkline
-            if (self.speedHistory.length === 1) {
-                // We only use speedhistory from SAB if we use global settings
-                // Otherwise SAB doesn't know the refresh rate
-                if (!self.useGlobalOptions()) {
-                    sabSpeedHistory = [];
-                } else {
-                    // Update internally
-                    self.speedHistory = sabSpeedHistory;
-                }
-
-                // Create
-                $('.sparkline').peity("line", {
-                    width: 275,
-                    height: 32,
-                    fill: '#9DDB72',
-                    stroke: '#AAFFAA',
-                    values: sabSpeedHistory
-                })
-
-                // Add option to open the server details tab
-                $('.sparkline-container').click(function() {
-                    $('a[href="#modal-options"]').trigger('click')
-                    $('a[href="#options_connections"]').trigger('click')
-                })
-
-            } else {
-                // Update
-                $('.sparkline').text(self.speedHistory.join(",")).change()
-            }
-        }
+        self.applySpeed(response.queue.speed, response.queue.kbpersec);
 
         /***
             Speedlimit
@@ -315,6 +271,67 @@ function ViewModel() {
         self.queue.updateFromData(response.queue);
     }
 
+    // The sparkline is a time series, so it has to advance on the clock. Events only
+    // arrive when something changed, which would leave gaps whenever the speed held
+    // steady and nothing at all while the queue sat idle.
+    self.currentKbPerSec = 0;
+    self.sparklineTicker = null;
+
+    self.applySpeed = function(speed, kbpersec) {
+        var speedSplit = speed.split(/\s/);
+        self.speed(parseFloat(speedSplit[0]));
+        self.speedMetric(speedSplit[1]);
+        self.currentKbPerSec = parseInt(kbpersec);
+    }
+
+    self.updateSparkline = function() {
+        if (self.speedHistory.length >= 275) {
+            // Remove first one
+            self.speedHistory.shift();
+        }
+        // Add
+        self.speedHistory.push(self.currentKbPerSec);
+
+        // Is sparkline visible? Not on small mobile devices..
+        if ($('.sparkline-container').css('display') !== 'none') {
+            // Make sparkline
+            if (self.speedHistory.length === 1) {
+                // We only use speedhistory from SAB if we use global settings
+                // Otherwise SAB doesn't know the refresh rate
+                if (!self.useGlobalOptions()) {
+                    sabSpeedHistory = [];
+                } else {
+                    // Update internally
+                    self.speedHistory = sabSpeedHistory;
+                }
+
+                // Create
+                $('.sparkline').peity("line", {
+                    width: 275,
+                    height: 32,
+                    fill: '#9DDB72',
+                    stroke: '#AAFFAA',
+                    values: sabSpeedHistory
+                })
+
+                // Add option to open the server details tab
+                $('.sparkline-container').click(function() {
+                    $('a[href="#modal-options"]').trigger('click')
+                    $('a[href="#options_connections"]').trigger('click')
+                })
+
+            } else {
+                // Update
+                $('.sparkline').text(self.speedHistory.join(",")).change()
+            }
+        }
+    }
+
+    self.startSparkline = function() {
+        clearInterval(self.sparklineTicker);
+        self.sparklineTicker = setInterval(self.updateSparkline, parseInt(self.refreshRate()) * 1000);
+    }
+
     // Update history items
     self.updateHistory = function(response) {
         if (!response) return;
@@ -323,7 +340,9 @@ function ViewModel() {
 
     // Set new update timer
     self.setNextUpdate = function() {
-        self.interval = setTimeout(self.refresh, parseInt(self.refreshRate()) * 1000);
+        // While the stream is delivering, polling is only a safety net
+        var rate = self.eventsLive ? self.eventsIdleRate : parseInt(self.refreshRate());
+        self.interval = setTimeout(self.refresh, rate * 1000);
     }
 
     // Refresh function
@@ -605,6 +624,7 @@ function ViewModel() {
     self.refreshRate.subscribe(function(newValue) {
         // Refresh now
         self.refresh();
+        self.startSparkline();
 
         // Save in config if global-settings
         if (self.useGlobalOptions()) {
@@ -1324,6 +1344,146 @@ function ViewModel() {
     }, 60 * 1000)
 
     /***
+        Server-sent events
+    ***/
+    // Polling stays the fallback, and only steps back once the stream has actually
+    // delivered something. A buffering proxy hands us onopen and then silence.
+    self.eventsIdleRate = 30
+    self.eventSource = null
+    self.eventWatchdog = null
+    self.eventsLive = false
+    self.resyncCount = 0
+    self.resyncWindow = 60 * 1000
+    self.lastResync = 0
+    self.queueCache = null
+    self.historyCache = null
+
+    // The stream is built for one view, so paging, searching or filtering reconnects it
+    self.eventQuery = function() {
+        var args = {
+            start: self.queue.pagination.currentStart(),
+            limit: parseInt(self.queue.paginationLimit()),
+            history_start: self.history.pagination.currentStart(),
+            history_limit: parseInt(self.history.paginationLimit()),
+            failed_only: self.history.showFailed() * 1,
+            archive: self.history.showArchive() * 1
+        }
+        if (self.queue.searchTerm()) {
+            parseSearchQuery(args, self.queue.searchTerm(), ["cat", "category", "priority", "status"])
+        }
+        if (self.history.searchTerm()) {
+            var historyArgs = {}
+            parseSearchQuery(historyArgs, self.history.searchTerm(), ["cat", "category", "status"])
+            args.history_search = historyArgs.search
+            args.history_cat = historyArgs.cat || historyArgs.category
+            args.history_status = historyArgs.status
+        }
+        return $.param(args)
+    }
+
+    // Rebuild the full payload the models expect from the rows the server sent
+    self.applyFrame = function(cache, frame, key) {
+        var payload = frame[key]
+        if (frame.type === 'init' || !cache) return payload
+
+        var rows = {}
+        $.each(cache.slots || [], function() { rows[this.nzo_id] = this })
+        $.each(payload.slots || [], function() { rows[this.nzo_id] = this })
+
+        var order = frame.order || $.map(cache.slots || [], function(slot) { return slot.nzo_id })
+        var merged = $.extend({}, cache, payload)
+        merged.slots = $.map(order, function(id) { return rows[id] })
+        return merged
+    }
+
+    self.eventReceived = function() {
+        self.eventsLive = true
+        clearTimeout(self.eventWatchdog)
+        // Twice the server's heartbeat, so one missed beat is not a disconnect
+        self.eventWatchdog = setTimeout(self.eventsFailed, 35 * 1000)
+        clearTimeout(self.interval)
+        self.setNextUpdate()
+    }
+
+    self.eventsFailed = function() {
+        self.eventsLive = false
+        clearTimeout(self.eventWatchdog)
+        clearTimeout(self.interval)
+        self.setNextUpdate()
+    }
+
+    self.startEvents = function() {
+        if (!window.EventSource) return
+        self.stopEvents()
+
+        self.eventSource = new EventSource('./events?' + self.eventQuery())
+        self.eventSource.addEventListener('ping', self.eventReceived)
+        self.eventSource.addEventListener('status', function(message) {
+            var status = JSON.parse(message.data)
+            self.applySpeed(status.speed, status.kbpersec)
+            self.cacheSize(status.cache_size)
+            self.cacheArticles(status.cache_art)
+            self.eventReceived()
+        })
+        self.eventSource.addEventListener('resync', function() {
+            // The server dropped what we were too slow to read, and it still holds the
+            // baseline our next delta would be built against. Only a fresh subscription
+            // gets a keyframe, and a client that keeps falling behind is better off
+            // polling, which never queues work it cannot finish. Only resyncs that
+            // cluster count, so an isolated one does not retire the stream for good.
+            var now = Date.now()
+            if (now - self.lastResync > self.resyncWindow) self.resyncCount = 0
+            self.lastResync = now
+            self.resyncCount++
+            if (self.resyncCount > 3) {
+                self.stopEvents()
+                self.eventsFailed()
+                return
+            }
+            self.startEvents()
+            self.refresh(true)
+        })
+        self.eventSource.addEventListener('queue', function(message) {
+            var frame = JSON.parse(message.data)
+            self.queueCache = self.applyFrame(self.queueCache, frame, 'queue')
+            self.updateQueue({ queue: self.queueCache })
+            self.eventReceived()
+        })
+        self.eventSource.addEventListener('history', function(message) {
+            var frame = JSON.parse(message.data)
+            self.historyCache = self.applyFrame(self.historyCache, frame, 'history')
+            self.history.lastUpdate = self.historyCache.last_history_update
+            self.updateHistory({ history: self.historyCache })
+            self.eventReceived()
+        })
+        self.eventSource.onerror = function() {
+            if (self.eventSource && self.eventSource.readyState === EventSource.CLOSED) self.eventsFailed()
+        }
+    }
+
+    self.stopEvents = function() {
+        clearTimeout(self.eventWatchdog)
+        if (self.eventSource) {
+            self.eventSource.close()
+            self.eventSource = null
+        }
+        self.queueCache = self.historyCache = null
+    }
+
+    // Reconnect on anything that changes which rows the stream should carry
+    self.reconnectEvents = function() {
+        if (self.eventSource) self.startEvents()
+    }
+
+    ko.utils.arrayForEach([
+        self.queue.pagination.currentStart, self.queue.paginationLimit, self.queue.searchTerm,
+        self.history.pagination.currentStart, self.history.paginationLimit, self.history.searchTerm,
+        self.history.showFailed, self.history.showArchive
+    ], function(view) {
+        view.subscribe(self.reconnectEvents)
+    })
+
+    /***
         End of main functions, start of the fun!
     ***/
     // Trigger first refresh
@@ -1331,6 +1491,12 @@ function ViewModel() {
 
     // And refresh now!
     self.refresh()
+
+    // Take over from polling once the first rows arrive
+    self.startEvents()
+
+    // Keep the speed graph moving whichever way the numbers arrive
+    self.startSparkline()
 
     // Special options for (non) mobile
     if (isMobile) {
