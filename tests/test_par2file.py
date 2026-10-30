@@ -22,11 +22,23 @@ Testing SABnzbd par2 parsing
 import hashlib
 import logging
 import os
+import unicodedata
 from unittest import mock
 
 import pytest
 
-from sabnzbd.par2file import PAR_CREATOR_ID, PAR_PKT_ID, FilePar2Info, parse_par2_file, uncovered_blocks
+from sabnzbd.par2file import (
+    PAR_CREATOR_ID,
+    PAR_FILE_ID,
+    PAR_MAIN_ID,
+    PAR_PKT_ID,
+    PAR_RECOVERY_SLICE_ID,
+    PAR_SLICE_ID,
+    PAR_UNICODE_FILE_ID,
+    FilePar2Info,
+    parse_par2_file,
+    uncovered_blocks,
+)
 from tests.testhelper import SAB_DATA_DIR
 
 # TODO: Add testing for edge cases, such as non-unique md5of16k or broken par files
@@ -77,6 +89,62 @@ class TestPar2Parsing:
             packets[data[48:64]] = data[:length]
             data = data[length:]
         return packets
+
+    @staticmethod
+    def _packet(set_id: bytes, packet_type: bytes, body: bytes) -> bytes:
+        body += b"\0" * (-len(body) % 4)
+        data = set_id + packet_type + body
+        return PAR_PKT_ID + (32 + len(data)).to_bytes(8, "little") + hashlib.md5(data).digest() + data
+
+    def _unicode_filename_packet(self, name: bytes) -> bytes:
+        filedesc = self._fixture_packets()[PAR_FILE_ID]
+        return self._packet(filedesc[32:48], PAR_UNICODE_FILE_ID, filedesc[64:80] + name)
+
+    def _with_unicode_filename(self, tmp_path, name: bytes):
+        """basic_16k.par2 with a Unicode Filename packet for its file appended"""
+        unicode_path = tmp_path / "unicode.par2"
+        unicode_path.write_bytes(b"".join(self._fixture_packets().values()) + self._unicode_filename_packet(name))
+        return str(unicode_path)
+
+    def test_unicode_filename_packet_names_the_file(self, tmp_path):
+        md5of16k = {}
+        _, table = parse_par2_file(self._with_unicode_filename(tmp_path, "Café feed.xml".encode("utf-16-le")), md5of16k)
+        assert list(table) == ["Café feed.xml"]
+        assert list(md5of16k.values()) == ["Café feed.xml"]
+
+    def test_unicode_filename_is_nfc_normalized(self, tmp_path):
+        name = unicodedata.normalize("NFD", "Café feed.xml")
+        _, table = parse_par2_file(self._with_unicode_filename(tmp_path, name.encode("utf-16-le")), {})
+        assert list(table) == [unicodedata.normalize("NFC", name)]
+
+    def test_unicode_filename_packet_that_is_not_utf16_is_discarded(self, tmp_path):
+        # A lone surrogate
+        _, table = parse_par2_file(self._with_unicode_filename(tmp_path, b"\x00\xd8"), {})
+        assert list(table) == ["rss_feed_test.xml"]
+
+    def test_large_file_reads_the_unicode_filename_packets_before_stopping(self, tmp_path, caplog):
+        # As par2 lays out a volume: the critical packets sorted by type and spread among the
+        # recovery packets, then repeated
+        packets = self._fixture_packets()
+        filedesc = packets[PAR_FILE_ID]
+        recovery = self._packet(filedesc[32:48], PAR_RECOVERY_SLICE_ID, (0).to_bytes(4, "little") + b"\0" * 64)
+        volume = tmp_path / "large.vol0+1.par2"
+        volume.write_bytes(
+            filedesc
+            + packets[PAR_SLICE_ID]
+            + packets[PAR_MAIN_ID]
+            + recovery
+            + self._unicode_filename_packet("Café feed.xml".encode("utf-16-le"))
+            + filedesc
+            + packets[PAR_CREATOR_ID]
+        )
+
+        with mock.patch("sabnzbd.par2file.SCAN_LIMIT", 0), caplog.at_level(logging.DEBUG):
+            _, table = parse_par2_file(str(volume), {})
+
+        assert list(table) == ["Café feed.xml"]
+        # The scan stopped at the repeated packet
+        assert not any("Par2-creator" in record.getMessage() for record in caplog.records)
 
     @pytest.mark.parametrize("chunk", [8, 2**16])
     @pytest.mark.parametrize("garbage", range(1, 17))
