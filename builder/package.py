@@ -217,8 +217,11 @@ def test_sab_binary(binary_path: str):
             except Exception:
                 time.sleep(1)
         else:
-            # Print console output and give some time to print
-            print(sabnzbd_process.stdout.read())
+            # Print console output and give some time to print. The read must be
+            # bounded: a started-but-unresponsive binary would otherwise keep
+            # this script (and the whole build job) waiting forever.
+            sabnzbd_process.kill()
+            print(sabnzbd_process.communicate(timeout=30)[0])
             time.sleep(1)
             raise urllib.error.URLError("Could not connect to SABnzbd")
 
@@ -247,7 +250,14 @@ def test_sab_binary(binary_path: str):
         # Parse API-key so we can do a graceful shutdown
         sab_config = configobj.ConfigObj(os.path.join(config_dir, "sabnzbd.ini"))
         urllib.request.urlopen(base_url + "api?mode=shutdown&apikey=" + sab_config["misc"]["api_key"], timeout=10)
-        sabnzbd_process.wait()
+        try:
+            sabnzbd_process.wait(timeout=60)
+        except subprocess.TimeoutExpired:
+            # A binary that ignores its shutdown request must fail this build
+            # check quickly (with its output below), not hang the whole job.
+            sabnzbd_process.kill()
+            print(sabnzbd_process.communicate(timeout=30)[0])
+            raise
 
         # Print logs for verification
         with open(os.path.join(config_dir, "logs", "sabnzbd.log"), "r") as log_file:
