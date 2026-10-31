@@ -22,6 +22,7 @@ Testing SABnzbd par2 parsing
 import hashlib
 import logging
 import os
+from unittest import mock
 
 import pytest
 
@@ -64,6 +65,42 @@ class TestPar2Parsing:
         assert set_id == "69af2273e8fa0b4d811b56d02a9c4b59"
         assert list(table) == ["rss_feed_test.xml"]
         assert "Par2-creator of creator_64.par2 is: " in (record.getMessage() for record in caplog.records)
+
+    @staticmethod
+    def _fixture_packets() -> dict[bytes, bytes]:
+        """The packets of basic_16k.par2, by type"""
+        with open(os.path.join(SAB_DATA_DIR, "par2file", "basic_16k.par2"), "rb") as source:
+            data = source.read()
+        packets = {}
+        while data:
+            length = int.from_bytes(data[8:16], "little")
+            packets[data[48:64]] = data[:length]
+            data = data[length:]
+        return packets
+
+    @pytest.mark.parametrize("chunk", [8, 2**16])
+    @pytest.mark.parametrize("garbage", range(1, 17))
+    def test_packets_are_found_after_garbage_of_any_length(self, tmp_path, chunk, garbage):
+        shifted = tmp_path / "shifted.par2"
+        shifted.write_bytes(b"\xff" * garbage + b"".join(self._fixture_packets().values()))
+
+        with mock.patch("sabnzbd.par2file.PACKET_SEARCH_CHUNK", chunk):
+            set_id, table = parse_par2_file(str(shifted), {})
+
+        assert set_id == "69af2273e8fa0b4d811b56d02a9c4b59"
+        assert list(table) == ["rss_feed_test.xml"]
+
+    def test_a_damaged_packet_does_not_hide_the_packets_its_length_covers(self, tmp_path):
+        valid_packets = b"".join(self._fixture_packets().values())
+        # A header whose length takes in every packet after it, and whose checksum fails
+        damaged = PAR_PKT_ID + (64 + len(valid_packets)).to_bytes(8, "little") + b"\0" * 48
+        damaged_path = tmp_path / "damaged.par2"
+        damaged_path.write_bytes(damaged + valid_packets)
+
+        set_id, table = parse_par2_file(str(damaged_path), {})
+
+        assert set_id == "69af2273e8fa0b4d811b56d02a9c4b59"
+        assert list(table) == ["rss_feed_test.xml"]
 
     def test_parse_par2_file(self, caplog):
         # To capture the par2-creator, we need to capture the logging
