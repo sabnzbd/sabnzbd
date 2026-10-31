@@ -1048,6 +1048,38 @@ class TestRSS:
         # Shared link must only appear once
         assert links == {shared_link, a_only_link, b_only_link}
 
+    @pytest.mark.parametrize("fetch_duplicates", [False, True])
+    def test_multi_uri_duplicate_downloads(self, httpserver: HTTPServer, tmp_rss, mocker, fetch_duplicates):
+        """Opted-in feeds fetch distinct duplicate URLs, but only fetch each URL once per scan."""
+        repo, reader = tmp_rss
+        feed_name = "DuplicateURIs"
+        links = ["https://example.test/cart/first.nzb", "https://example.test/cart/second.nzb"]
+        uris = [httpserver.url_for("/first.xml"), httpserver.url_for("/second.xml")]
+        self.setup_rss(feed_name, " ".join(uris))
+        sabnzbd.config.get_rss()[feed_name].fetch_duplicates.set(fetch_duplicates)
+
+        for path, item_links in (("/first.xml", links[:1]), ("/second.xml", links)):
+            items = "".join(
+                f"<item><title>Duplicate.Release</title><link>{link}</link>"
+                f'<enclosure url="{link}" length="1000" type="application/x-nzb"/></item>'
+                for link in item_links
+            )
+            httpserver.expect_request(path).respond_with_data(
+                f'<rss version="2.0"><channel><title>Cart</title>{items}</channel></rss>',
+                content_type="application/rss+xml",
+            )
+
+        add_url = mocker.patch("sabnzbd.urlgrabber.add_url")
+        process_entry = mocker.spy(reader, "_process_entry")
+        assert reader.process_feed(feed_name, download=True) == []
+
+        expected_links = links if fetch_duplicates else links[:1]
+        assert [call.kwargs["feed_entry"].link for call in process_entry.call_args_list] == expected_links
+        assert [call.args[0] for call in add_url.call_args_list] == expected_links
+        assert {entry.link for entry in repo.get_feed_jobs(feed=feed_name)} == set(expected_links)
+        for call in add_url.call_args_list:
+            assert call.kwargs["nzo_info"] == {"RSS": feed_name, "rss_fetch_duplicates": fetch_duplicates}
+
     def test_rssreader_failing_uri_does_not_block_other_uris(self, httpserver: HTTPServer, tmp_rss):
         """An empty or failing URI must not stop the remaining URIs of the same feed."""
         repo, reader = tmp_rss

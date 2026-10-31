@@ -1001,7 +1001,9 @@ class RSSReader:
                     return []
 
                 # Skip duplicates across multiple feeds
-                if entry.link in new_links or (len(uris) > 1 and repo.is_duplicate(entry)):
+                if entry.link in new_links or (
+                    len(uris) > 1 and not feeds.fetch_duplicates() and repo.is_duplicate(entry)
+                ):
                     logging.info("Ignoring job %s from other feed", entry.title)
                     continue
 
