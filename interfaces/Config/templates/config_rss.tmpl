@@ -116,6 +116,14 @@
             <form action="$url('config/rss/upd_rss_feed')" method="post">
                 <input type="hidden" name="feed" value="$active_feed" />
                 <input type="hidden" name="uri" value="$rss[$feed]['uris']" />
+                <div class="form-group">
+                    <label for="fetch_duplicates">$T('Fetch duplicate NZBs')</label>
+                    <select name="fetch_duplicates" id="fetch_duplicates" class="form-control">
+                        <option value="0" <!--#if not int($rss[$feed]['fetch_duplicates']) then 'selected="selected"' else ''#-->>$T('Disabled')</option>
+                        <option value="1" <!--#if int($rss[$feed]['fetch_duplicates']) then 'selected="selected"' else ''#-->>$T('Enabled')</option>
+                    </select>
+                    <span class="help-block">$T('Enable only for feeds that remove items when their NZB is fetched. Duplicate handling is applied after fetching. This uses additional indexer grabs.')</span>
+                </div>
                 <table class="catTable">
                     <thead>
                         <tr>

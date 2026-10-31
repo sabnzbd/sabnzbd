@@ -24,8 +24,9 @@ import pytest
 from tests.testhelper import SAB_CACHE_DIR, create_and_read_nzb_fp
 
 from sabnzbd.nzb import NzbObject, NzbRejected
+from sabnzbd.nzb.object import NzbRejectToHistory
 from sabnzbd.config import ConfigCat
-from sabnzbd.constants import NORMAL_PRIORITY, MAX_BAD_ARTICLES, DuplicateStatus
+from sabnzbd.constants import NORMAL_PRIORITY, MAX_BAD_ARTICLES, DuplicateStatus, Status
 from sabnzbd.filesystem import globber, sanitize_filename, create_all_dirs
 
 
@@ -77,36 +78,56 @@ class TestNZO:
         # TODO: More checks!
 
     @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
-    def test_rss_url_duplicate_action_is_deferred_until_after_fetch(self, mocker):
-        """RSS URL jobs must fetch the NZB before duplicate handling can discard them."""
+    @pytest.mark.parametrize("action", [0, 1, 2, 3, 4])
+    @pytest.mark.parametrize("fetch_duplicates", [False, True])
+    @pytest.mark.parametrize("smart", [False, True])
+    def test_rss_url_duplicate_actions(self, mocker, action, fetch_duplicates, smart):
+        """Only opted-in placeholders bypass checks; fetched payloads use every configured action."""
+        duplicate = DuplicateStatus.SMART_DUPLICATE if smart else DuplicateStatus.DUPLICATE
+
+        def mark_duplicate(nzo):
+            if action:
+                nzo.duplicate = duplicate
+
+        mocker.patch(
+            "sabnzbd.nzb.object.cfg.no_smart_dupes" if smart else "sabnzbd.nzb.object.cfg.no_dupes", return_value=action
+        )
+        purge = mocker.patch.object(NzbObject, "purge_data")
+        duplicate_check = mocker.patch.object(NzbObject, "duplicate_check", autospec=True, side_effect=mark_duplicate)
+        info = {"RSS": "TestFeed", "rss_fetch_duplicates": fetch_duplicates}
+
+        def create(fetched):
+            return NzbObject(
+                "duplicate.nzb",
+                futuretype=not fetched,
+                nzb_fp=create_and_read_nzb_fp("basic_rar5") if fetched else None,
+                nzbname="Duplicate.Release",
+                nzo_info=info,
+            )
+
+        for fetched in (False, True):
+            deferred = fetch_duplicates and not fetched
+            if action in (1, 3) and not deferred:
+                with pytest.raises(NzbRejected if action == 1 else NzbRejectToHistory):
+                    create(fetched)
+            else:
+                nzo = create(fetched)
+                assert nzo.duplicate == (duplicate if action and not deferred else None)
+                assert (nzo.status == Status.PAUSED) == (action == 2 and not deferred)
+        assert duplicate_check.call_count >= (1 if fetch_duplicates else 2)
+        assert purge.called == (action == 1)
+
+    def test_existing_rss_url_still_rejects_duplicates(self, mocker):
+        """Queued entries and existing feeds without the new flag retain early rejection."""
+        mocker.patch("sabnzbd.nzb.object.cfg.no_dupes", return_value=1)
+        mocker.patch.object(NzbObject, "purge_data")
 
         def mark_duplicate(nzo):
             nzo.duplicate = DuplicateStatus.DUPLICATE
 
-        mocker.patch("sabnzbd.nzb.object.cfg.no_dupes", return_value=1)
-        mocker.patch.object(NzbObject, "purge_data")
-        duplicate_check = mocker.patch.object(NzbObject, "duplicate_check", autospec=True, side_effect=mark_duplicate)
-
-        # RSS entries are URL placeholders first. The duplicate is detected, but the
-        # configured action is deferred so URLGrabber can request the NZB endpoint.
-        placeholder = NzbObject(
-            "Trying to fetch RSS NZB",
-            futuretype=True,
-            nzbname="Duplicate.Release",
-            nzo_info={"RSS": "TestFeed"},
-        )
-        assert placeholder.duplicate == DuplicateStatus.DUPLICATE
-
-        # Once the actual NZB has been fetched, duplicate handling remains unchanged.
+        mocker.patch.object(NzbObject, "duplicate_check", autospec=True, side_effect=mark_duplicate)
         with pytest.raises(NzbRejected):
-            NzbObject(
-                "duplicate.nzb",
-                nzb_fp=create_and_read_nzb_fp("basic_rar5"),
-                nzbname="Duplicate.Release",
-                nzo_info={"RSS": "TestFeed"},
-            )
-
-        assert duplicate_check.call_count == 2
+            NzbObject("URL", futuretype=True, nzbname="Duplicate.Release", nzo_info={"RSS": "CategoryFeed"})
 
     @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     def test_get_unique_filepath_subdirs(self):

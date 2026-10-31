@@ -1213,3 +1213,32 @@ class TestRSS:
         # And it must not be picked up as a new job on the next scans
         assert reader.process_feed(feed_name, download=True) == []
         assert add_url.call_count == 1
+
+
+@pytest.mark.parametrize("fetch_duplicates", [False, True])
+@pytest.mark.parametrize("link", ["https://example.test/api?t=get&id=123", "https://example.test/cart/item/123.nzb"])
+def test_enqueue_fetch_duplicates_is_per_feed(tmp_rss, mocker, fetch_duplicates, link):
+    repo, reader = tmp_rss
+    feed = sabnzbd.config.ConfigRSS("ExplicitCart", {"uri": [link]})
+    assert not feed.fetch_duplicates()
+    feed.set_dict({"fetch_duplicates": "1" if fetch_duplicates else "0"})
+    assert bool(feed.get_dict()["fetch_duplicates"]) == fetch_duplicates
+    add_url = mocker.patch("sabnzbd.urlgrabber.add_url")
+    entry = ResolvedEntry(
+        feed="ExplicitCart",
+        link=link,
+        title="Duplicate.Release",
+        state=RSSState.DOWNLOADED,
+        infourl=None,
+        category=None,
+        size=0,
+        age=None,
+        season=None,
+        episode=None,
+    )
+    repo.upsert(entry)
+    reader.enqueue_download(repo, entry)
+    assert add_url.call_args.kwargs["nzo_info"] == {"RSS": "ExplicitCart", "rss_fetch_duplicates": fetch_duplicates}
+    # Older config dictionaries round-trip with the opt-in disabled.
+    old_feed = sabnzbd.config.ConfigRSS("CategoryFeed", {"uri": [link], "cat": "tv"})
+    assert not old_feed.fetch_duplicates()

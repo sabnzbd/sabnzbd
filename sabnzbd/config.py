@@ -733,7 +733,7 @@ class ConfigRSS(ConfigSection):
     """Class defining a single Feed definition"""
 
     SECTION = "rss"
-    KEYWORDS = ("uri", "cat", "pp", "script", "enable", "priority")
+    KEYWORDS = ("uri", "cat", "pp", "script", "enable", "priority", "fetch_duplicates")
 
     def create_options(self, section: str):
         self.uri = OptionList(section, "uri", add=False)
@@ -742,6 +742,7 @@ class ConfigRSS(ConfigSection):
         self.script = OptionStr(section, "script", add=False)
         self.enable = OptionBool(section, "enable", add=False)
         self.priority = OptionNumber(section, "priority", DEFAULT_PRIORITY, DEFAULT_PRIORITY, 2, add=False)
+        self.fetch_duplicates = OptionBool(section, "fetch_duplicates", False, add=False)
         self.filters = OptionFilters(section, "filters", add=False)
         self.filters.set([["", "", "", "A", "*", DEFAULT_PRIORITY, "1"]])
 
