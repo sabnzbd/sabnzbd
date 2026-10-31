@@ -146,6 +146,19 @@ class TestPar2Parsing:
         # The scan stopped at the repeated packet
         assert not any("Par2-creator" in record.getMessage() for record in caplog.records)
 
+    def test_recovery_packets_are_not_hashed(self, tmp_path):
+        packets = self._fixture_packets()
+        filedesc = packets[PAR_FILE_ID]
+        recovery = self._packet(filedesc[32:48], PAR_RECOVERY_SLICE_ID, (0).to_bytes(4, "little") + b"\0" * 64)
+        volume = tmp_path / "set.vol0+1.par2"
+        volume.write_bytes(recovery + b"".join(packets.values()) + recovery)
+
+        with mock.patch("sabnzbd.par2file.hashlib.md5", wraps=hashlib.md5) as md5:
+            _, table = parse_par2_file(str(volume), {})
+
+        assert list(table) == ["rss_feed_test.xml"]
+        assert md5.call_count == len(packets)
+
     @pytest.mark.parametrize("chunk", [8, 2**16])
     @pytest.mark.parametrize("garbage", range(1, 17))
     def test_packets_are_found_after_garbage_of_any_length(self, tmp_path, chunk, garbage):
