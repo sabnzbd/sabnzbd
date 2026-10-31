@@ -203,9 +203,15 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
                 # Next 16 bytes is md5sum of this packet
                 md5sum = f.read(16)
 
+                # Recovery packets are skipped over unread
+                set_and_type = f.read(32)
+                if set_and_type[16:32] == PAR_RECOVERY_SLICE_ID:
+                    f.seek(pack_len - 64, os.SEEK_CUR)
+                    continue
+
                 # Read and check the data
-                # Subtract 32 because we already read these bytes of the header
-                data = f.read(pack_len - 32)
+                # Subtract 64 because we already read these bytes of the header
+                data = set_and_type + f.read(pack_len - 64)
                 if md5sum != hashlib.md5(data).digest():
                     f.seek(packet_start + len(PAR_PKT_ID))
                     continue
