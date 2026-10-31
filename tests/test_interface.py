@@ -1002,3 +1002,17 @@ class TestThreadedServerHttpSockets:
                 server.run_in_thread()
         finally:
             server.stop()
+
+
+@pytest.mark.parametrize("enabled", ["1", "0"])
+def test_rss_fetch_duplicates_save_route(mocker, enabled):
+    feed = sabnzbd.config.ConfigRSS("Cart", {"uri": ["https://example.test/feed"]})
+    saved = mocker.patch("sabnzbd.config.save_config")
+    request = mock_request(
+        method="POST", params={"feed": "Cart", "uri": "https://example.test/feed", "fetch_duplicates": enabled}
+    )
+    response = interface.config_rss_upd_rss_feed(request)
+    assert response.status_code == 302
+    assert feed.fetch_duplicates() == bool(int(enabled))
+    assert feed.get_dict()["fetch_duplicates"] == int(enabled)
+    saved.assert_called_once()
