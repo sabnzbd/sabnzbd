@@ -304,10 +304,8 @@ class NewsWrapper:
                     wait=False,
                     count_article_try=False,
                     article=article,
+                    bad_connection=True,
                 )
-                with DOWNLOADER_LOCK:
-                    server.bad_cons += 1
-                    sabnzbd.Downloader.maybe_block_server(server)
                 return
 
         if article_done:
@@ -750,10 +748,7 @@ class NNTP:
                 logging.warning(msg)
             self.nw.server.warning = msg
             # No reset-warning needed, above logging is sufficient
-            sabnzbd.Downloader.reset_nw(self.nw)
-            with DOWNLOADER_LOCK:
-                self.nw.server.bad_cons += 1
-                sabnzbd.Downloader.maybe_block_server(self.nw.server)
+            sabnzbd.Downloader.reset_nw(self.nw, bad_connection=True)
 
     @synchronized(DOWNLOADER_LOCK)
     def close(self, send_quit: bool):

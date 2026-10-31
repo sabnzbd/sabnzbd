@@ -612,11 +612,9 @@ class Downloader(Thread):
                             if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
                                 if nw.nntp and nw.nntp.error_msg:
                                     # Already showed error
-                                    self.reset_nw(nw)
+                                    self.reset_nw(nw, bad_connection=True)
                                 else:
-                                    self.reset_nw(nw, "Timed out", warn=True)
-                                server.bad_cons += 1
-                                self.maybe_block_server(server)
+                                    self.reset_nw(nw, "Timed out", warn=True, bad_connection=True)
 
                     if server.restart:
                         if not server.busy_threads:
@@ -939,6 +937,7 @@ class Downloader(Thread):
         count_article_try: bool = True,
         retry_article: bool = True,
         article: Optional["sabnzbd.nzb.Article"] = None,
+        bad_connection: bool = False,
     ):
         # Some warnings are errors, and not added as server.warning
         if warn and reset_msg:
@@ -955,6 +954,10 @@ class Downloader(Thread):
 
         # Empty SSL info, it might change on next connect
         nw.server.ssl_info = ""
+
+        if bad_connection:
+            nw.server.bad_cons += 1
+            self.maybe_block_server(nw.server)
 
     # ------------------------------------------------------------------------------
     # Timed restart of servers admin.
