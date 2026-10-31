@@ -19,11 +19,18 @@
 tests.test_nzbobject - Testing functions in nzbobject.py
 """
 
+import datetime
 import os
 import pytest
+from unittest import mock
+
+import sabnzbd
 from tests.testhelper import SAB_CACHE_DIR, create_and_read_nzb_fp
 
 from sabnzbd.nzb import NzbObject
+from sabnzbd.nzb.article import Article
+from sabnzbd.nzb.file import NzbFile
+from sabnzbd.par2file import FilePar2Info
 from sabnzbd.config import ConfigCat
 from sabnzbd.constants import NORMAL_PRIORITY, MAX_BAD_ARTICLES
 from sabnzbd.filesystem import globber, sanitize_filename, create_all_dirs, long_path
@@ -144,6 +151,20 @@ class TestNZO:
         assert os.sep not in nzo.final_name
         assert os.path.dirname(os.path.normpath(nzo.download_path)) == os.path.normpath(long_path(SAB_CACHE_DIR))
 
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+    def test_purge_releases_par2_sessions(self):
+        ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
+        nzo = NzbObject("test_purge_sessions")
+        session = mock.Mock()
+        nzo.par2_sessions = {"test": session}
+        with (
+            mock.patch.object(sabnzbd, "ArticleCache", create=True),
+            mock.patch.object(sabnzbd, "Assembler", create=True),
+        ):
+            nzo.purge_data()
+        session.close.assert_called_once()
+        assert nzo.par2_sessions == {}
+
 
 class TestCheckAvailabilityRatio:
     """Tests for NzbObject.check_availability_ratio().
@@ -243,3 +264,185 @@ class TestCheckAvailabilityRatio:
         result, ratio = nzo.check_availability_ratio()
         assert result is False
         assert ratio == pytest.approx(95.0)
+
+
+@pytest.mark.usefixtures("clean_cache_dir")
+@pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+class TestBlockAccounting:
+    """Tests for the block accounting NzbObject does during the download.
+
+    One set of two 10000-byte files at a 1000-byte block size, so 10 blocks each,
+    downloaded in 2500-byte articles.
+    """
+
+    BLOCKSIZE = 1000
+    BLOCKCOUNT = 10
+    FILESIZE = 10000
+    ARTICLE_SIZE = 2500
+
+    def _make_nzf(self, nzo: NzbObject, name: str, failed_articles=()) -> NzbFile:
+        nzf = NzbFile(datetime.datetime(2026, 1, 1), name, [], self.FILESIZE, nzo)
+        nzf.filename = name
+        for index, offset in enumerate(range(0, self.FILESIZE, self.ARTICLE_SIZE)):
+            article = Article("<a%d-%s>" % (index, name), self.ARTICLE_SIZE, nzf)
+            article.data_begin = offset
+            article.data_size = self.ARTICLE_SIZE
+            if index in failed_articles:
+                article.failed = True
+            else:
+                article.crc32 = 1
+                article.on_disk = True
+                nzf.bytes_left -= self.ARTICLE_SIZE
+            nzf.decodetable.append(article)
+        return nzf
+
+    def _make_parfile(self, nzo: NzbObject, name: str, blocks: int) -> NzbFile:
+        nzf = NzbFile(datetime.datetime(2026, 1, 1), name, [], 100, nzo)
+        nzf.filename = name
+        nzf.set_par2("myset", 1, blocks)
+        # An article left outstanding, so the file does not count as downloaded
+        article = Article("<p-%s>" % name, 100, nzf)
+        nzf.articles[article] = article
+        nzf.decodetable.append(article)
+        return nzf
+
+    def _make_nzo(self, failed_articles=()) -> NzbObject:
+        nzo = NzbObject("test_block_accounting")
+        nzo.par2packs["myset"] = {
+            name: FilePar2Info(name, b"\0" * 16, self.FILESIZE, None, False, self.BLOCKSIZE, self.BLOCKCOUNT)
+            for name in ("file1.rar", "file2.rar")
+        }
+        nzo.finished_files = [
+            self._make_nzf(nzo, "file1.rar", failed_articles),
+            self._make_nzf(nzo, "file2.rar"),
+        ]
+        nzo.extrapars["myset"] = [
+            self._make_parfile(nzo, "myset.vol00+01.par2", 1),
+            self._make_parfile(nzo, "myset.vol01+02.par2", 2),
+            self._make_parfile(nzo, "myset.vol03+04.par2", 4),
+        ]
+        return nzo
+
+    def test_undamaged(self):
+        nzo = self._make_nzo()
+        assert nzo.blocks_destroyed("myset") == 0
+
+    def test_block_size_of_a_described_file(self):
+        nzo = self._make_nzo()
+        assert nzo.par2_block_size("file1.rar") == self.BLOCKSIZE
+
+    def test_a_file_no_set_names_takes_the_block_size_every_set_shares(self):
+        """An obfuscated file before it is renamed"""
+        nzo = self._make_nzo()
+        assert nzo.par2_block_size("abc123.bin") == self.BLOCKSIZE
+
+    def test_no_block_size_where_the_sets_disagree(self):
+        nzo = self._make_nzo()
+        nzo.par2packs["other"] = {
+            "other.rar": FilePar2Info("other.rar", b"\0" * 16, self.FILESIZE, None, False, self.BLOCKSIZE * 2, 1)
+        }
+        assert nzo.par2_block_size("abc123.bin") == 0
+        assert nzo.par2_block_size("other.rar") == self.BLOCKSIZE * 2
+
+    def test_no_block_size_before_a_set_is_parsed(self):
+        nzo = self._make_nzo()
+        nzo.par2packs.clear()
+        assert nzo.par2_block_size("file1.rar") == 0
+
+    def test_one_lost_article_destroys_every_block_it_touches(self):
+        """A 2500-byte article covers part of blocks 2, 3 and 4."""
+        nzo = self._make_nzo(failed_articles=(1,))
+        assert nzo.blocks_destroyed("myset") == 3
+
+    def test_unknown_set(self):
+        nzo = self._make_nzo()
+        assert nzo.blocks_destroyed("other") is None
+
+    def test_no_block_geometry(self):
+        """Jobs queued before the geometry was recorded fall back to the heuristic."""
+        nzo = self._make_nzo(failed_articles=(1,))
+        nzo.par2packs["myset"]["file2.rar"].blocksize = 0
+        assert nzo.blocks_destroyed("myset") is None
+
+    def test_file_assembled_at_a_different_layout(self):
+        nzo = self._make_nzo(failed_articles=(1,))
+        nzo.finished_files[1].direct_written = False
+        assert nzo.blocks_destroyed("myset") is None
+
+    def test_only_finished_files_count(self):
+        """The count is a lower bound that grows as files complete."""
+        nzo = self._make_nzo(failed_articles=(1,))
+        nzo.finished_files = nzo.finished_files[:1]
+        assert nzo.blocks_destroyed("myset") == 3
+
+    def test_recovery_blocks(self):
+        nzo = self._make_nzo()
+        assert nzo.recovery_blocks("myset") == 7
+        assert nzo.recovery_blocks("otherset") == 0
+
+    def test_another_sets_recovery_blocks_do_not_count(self):
+        nzo = self._make_nzo(failed_articles=(1,))
+        nzo.extrapars["otherset"] = nzo.extrapars.pop("myset")
+        for nzf in nzo.extrapars["otherset"]:
+            nzf.setname = "otherset"
+        assert nzo.blocks_beyond_recovery() is True
+
+    def test_within_recovery(self):
+        nzo = self._make_nzo(failed_articles=(1,))
+        assert nzo.blocks_beyond_recovery() is False
+
+    def test_beyond_recovery(self):
+        nzo = self._make_nzo(failed_articles=(1,))
+        nzo.extrapars["myset"] = nzo.extrapars["myset"][:1]
+        assert nzo.blocks_beyond_recovery() is True
+
+    def test_beyond_recovery_needs_geometry(self):
+        """Without geometry there is no fact to state, whatever the damage."""
+        nzo = self._make_nzo(failed_articles=(0, 1, 2, 3))
+        nzo.par2packs.clear()
+        assert nzo.blocks_beyond_recovery() is False
+
+    def test_prospective_add_sizes_against_the_blocks_destroyed(self):
+        nzo = self._make_nzo(failed_articles=(1,))
+        nzo.prospective_add(nzo.finished_files[0])
+        assert sorted(nzf.blocks for nzf in nzo.files) == [1, 2]
+
+    def test_prospective_add_tops_up_rather_than_stacks(self):
+        nzo = self._make_nzo(failed_articles=(1,))
+        nzo.prospective_add(nzo.finished_files[0])
+        nzo.prospective_add(nzo.finished_files[0])
+        assert sorted(nzf.blocks for nzf in nzo.files) == [1, 2]
+
+    def test_damage_no_set_describes(self):
+        """A file the packs do not name is damage the accounting cannot locate."""
+        nzo = self._make_nzo()
+        assert nzo.unmapped_damage() is False
+
+        obfuscated = self._make_nzf(nzo, "abc123def.bin", failed_articles=(0, 1, 2, 3))
+        nzo.finished_files.append(obfuscated)
+        assert nzo.unmapped_damage() is True
+        # It counts against no set, so the exact number cannot see it
+        assert nzo.blocks_destroyed("myset") == 0
+
+    def test_prospective_add_covers_damage_no_set_describes(self):
+        """Regression: an unnamed file reads as undamaged and must not fetch nothing."""
+        nzo = self._make_nzo()
+        obfuscated = self._make_nzf(nzo, "abc123def.bin", failed_articles=(0, 1, 2, 3))
+        nzo.finished_files.append(obfuscated)
+        nzo.bad_articles = 4
+
+        nzo.prospective_add(obfuscated)
+        assert sorted(nzf.blocks for nzf in nzo.files) == [1, 2, 4]
+
+    def test_undamaged_file_the_packs_do_not_name(self):
+        """Only a file that lost articles leaves damage unaccounted for."""
+        nzo = self._make_nzo()
+        nzo.finished_files.append(self._make_nzf(nzo, "abc123def.bin"))
+        assert nzo.unmapped_damage() is False
+
+    def test_prospective_add_falls_back_to_bad_articles(self):
+        nzo = self._make_nzo(failed_articles=(1,))
+        nzo.par2packs.clear()
+        nzo.bad_articles = 5
+        nzo.prospective_add(nzo.finished_files[0])
+        assert sorted(nzf.blocks for nzf in nzo.files) == [1, 2, 4]

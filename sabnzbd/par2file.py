@@ -26,20 +26,23 @@ import re
 import struct
 import sabctools
 from dataclasses import dataclass
-from typing import Optional
+from typing import BinaryIO, Optional
 
 from sabnzbd.constants import MEBI
-from sabnzbd.encoding import correct_unknown_encoding
+from sabnzbd.encoding import correct_unknown_encoding, unicode_nfc_normalize
 from sabnzbd.filesystem import get_basename
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 SCAN_LIMIT = 10 * MEBI
+PACKET_SEARCH_CHUNK = 2**16
 PAR_PKT_ID = b"PAR2\x00PKT"
 PAR_MAIN_ID = b"PAR 2.0\x00Main\x00\x00\x00\x00"
 PAR_FILE_ID = b"PAR 2.0\x00FileDesc"
+PAR_UNICODE_FILE_ID = b"PAR 2.0\x00UniFileN"
 PAR_CREATOR_ID = b"PAR 2.0\x00Creator\x00"
 PAR_SLICE_ID = b"PAR 2.0\x00IFSC\x00\x00\x00\x00"
 PAR_RECOVERY_ID = b"RecvSlic"
+PAR_RECOVERY_SLICE_ID = b"PAR 2.0\x00" + PAR_RECOVERY_ID
 
 
 @dataclass(slots=True)
@@ -51,6 +54,39 @@ class FilePar2Info:
     filesize: int
     filehash: Optional[int] = None
     has_duplicate: bool = False
+    blocksize: int = 0
+    blockcount: int = 0
+
+    def __setstate__(self, state):
+        # Jobs queued before the block geometry was recorded unpickle without it
+        self.blocksize = 0
+        self.blockcount = 0
+        for name, value in state[1].items():
+            setattr(self, name, value)
+
+
+def uncovered_blocks(ranges: list[tuple[int, int]], blocksize: int, blockcount: int, filesize: int) -> int:
+    """How many blocks of a file none of the byte ranges covers in full"""
+    merged: list[list[int]] = []
+    for start, end in sorted(ranges):
+        if merged and start <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+
+    uncovered = 0
+    index = 0
+    for block in range(blockcount):
+        start = block * blocksize
+        end = min(start + blocksize, filesize)
+        if start >= filesize:
+            uncovered += 1
+            continue
+        while index < len(merged) and merged[index][1] <= start:
+            index += 1
+        if not (index < len(merged) and merged[index][0] <= start and merged[index][1] >= end):
+            uncovered += 1
+    return uncovered
 
 
 def has_par2_in_filename(filename: str) -> bool:
@@ -104,6 +140,22 @@ def analyse_par2(name: str, filepath: Optional[str] = None) -> tuple[str, int, i
     return setname, vol, block
 
 
+def find_packet(f: BinaryIO) -> bool:
+    """Move to the start of the next packet header, False when the file has none left"""
+    carried = f.read(len(PAR_PKT_ID))
+    if carried == PAR_PKT_ID:
+        f.seek(-len(PAR_PKT_ID), os.SEEK_CUR)
+        return True
+    while chunk := f.read(PACKET_SEARCH_CHUNK):
+        buf = carried + chunk
+        if (found := buf.find(PAR_PKT_ID)) >= 0:
+            f.seek(found - len(buf), os.SEEK_CUR)
+            return True
+        # A header split across two reads starts in the last bytes of the first
+        carried = buf[-(len(PAR_PKT_ID) - 1) :]
+    return False
+
+
 def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[str, FilePar2Info]]:
     """Get the hash table and the first-16k hash table from a PAR2 file
     Return as dictionary, indexed on names or hashes for the first-16 table
@@ -118,93 +170,129 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
     set_id = slice_size = coeff = nr_files = None
     filepar2info = {}
     filecrc32 = {}
+    unicodenames = {}
+    seen_packets = set()
     table = {}
     duplicates16k = []
 
     try:
         total_size = os.path.getsize(fname)
         with open(fname, "rb") as f:
-            while header := f.read(8):
-                if header == PAR_PKT_ID:
-                    # All packages start with a header before the body
-                    # 8	  : PAR2\x00PKT
-                    # 8	  : Length of the entire packet. Must be multiple of 4. (NB: Includes length of header.)
-                    # 16  : MD5 Hash of packet.
-                    # 16  : Recovery Set ID.
-                    # 16  : Type of packet.
-                    # ?*4 : Body of Packet. Must be a multiple of 4 bytes.
+            while find_packet(f):
+                packet_start = f.tell()
+                f.seek(len(PAR_PKT_ID), os.SEEK_CUR)
 
-                    # Length must be multiple of 4, at least 64 and fit in the file
-                    pack_len = struct.unpack("<Q", f.read(8))[0]
-                    if pack_len % 4 or not 64 <= pack_len <= total_size - f.tell() + 16:
-                        continue
+                # All packages start with a header before the body
+                # 8	  : PAR2\x00PKT
+                # 8	  : Length of the entire packet. Must be multiple of 4. (NB: Includes length of header.)
+                # 16  : MD5 Hash of packet.
+                # 16  : Recovery Set ID.
+                # 16  : Type of packet.
+                # ?*4 : Body of Packet. Must be a multiple of 4 bytes.
 
-                    # Next 16 bytes is md5sum of this packet
-                    md5sum = f.read(16)
+                # Length must be multiple of 4, at least 64 and fit in the file
+                length = f.read(8)
+                if len(length) < 8:
+                    break
+                pack_len = struct.unpack("<Q", length)[0]
+                if pack_len % 4 or not 64 <= pack_len <= total_size - f.tell() + 16:
+                    # The next packet may start anywhere after this header
+                    f.seek(packet_start + len(PAR_PKT_ID))
+                    continue
 
-                    # Read and check the data
-                    # Subtract 32 because we already read these bytes of the header
-                    data = f.read(pack_len - 32)
-                    if md5sum != hashlib.md5(data).digest():
-                        continue
+                # Next 16 bytes is md5sum of this packet
+                md5sum = f.read(16)
 
-                    # See if it's any of the packages we care about
-                    par2_packet_type = data[16:32]
+                # Recovery packets are skipped over unread
+                set_and_type = f.read(32)
+                if set_and_type[16:32] == PAR_RECOVERY_SLICE_ID:
+                    f.seek(pack_len - 64, os.SEEK_CUR)
+                    continue
 
-                    # Get the Recovery Set ID
-                    set_id = data[:16].hex()
+                # Read and check the data
+                # Subtract 64 because we already read these bytes of the header
+                data = set_and_type + f.read(pack_len - 64)
+                if md5sum != hashlib.md5(data).digest():
+                    f.seek(packet_start + len(PAR_PKT_ID))
+                    continue
 
-                    if par2_packet_type == PAR_FILE_ID:
-                        # The FileDesc packet looks like:
-                        # 16 : "PAR 2.0\0FileDesc"
-                        # 16 : FileId
-                        # 16 : Hash for full file
-                        # 16 : Hash for first 16K
-                        #  8 : File length
-                        # xx : Name (multiple of 4, padded with \0 if needed)
-
-                        fileid = data[32:48].hex()
-                        if filepar2info.get(fileid):
-                            # Already have data
-                            continue
-                        hash16k = data[64:80]
-                        filesize = struct.unpack("<Q", data[80:88])[0]
-                        filename = correct_unknown_encoding(data[88:].strip(b"\0"))
-                        filepar2info[fileid] = FilePar2Info(filename, hash16k, filesize)
-                    elif par2_packet_type == PAR_CREATOR_ID:
-                        # From here until the end is the creator-text
-                        # Useful in case of bugs in the par2-creating software
-                        # "PAR 2.0\x00Creator\x00"
-                        par2creator = data[32:].strip(b"\0")  # Remove any trailing \0
-                        logging.debug(
-                            "Par2-creator of %s is: %s", os.path.basename(f.name), correct_unknown_encoding(par2creator)
-                        )
-                    elif par2_packet_type == PAR_MAIN_ID:
-                        # The Main packet looks like:
-                        # 16 : "PAR 2.0\0Main"
-                        # 8  : Slice size
-                        # 4  : Number of files in the recovery set
-                        slice_size = struct.unpack("<Q", data[32:40])[0]
-                        coeff = sabctools.crc32_xpow8n(slice_size)
-                        nr_files = struct.unpack("<I", data[40:44])[0]
-                    elif par2_packet_type == PAR_SLICE_ID:
-                        # "PAR 2.0\0IFSC\0\0\0\0"
-                        fileid = data[32:48].hex()
-                        if not filecrc32.get(fileid):
-                            filecrc32[fileid] = []
-                            for i in range(48, pack_len - 32, 20):
-                                filecrc32[fileid].append(struct.unpack("<I", data[i + 16 : i + 20])[0])
-
-                    # On large files, we stop after seeing all the listings and have crc32 data for all listings
-                    # Our unit-tests do not include large par2 files, so we cannot verify cases like #3164!
-                    # On smaller files, we scan them fully to get the par2-creator
+                # On large files, we stop once we have all the listings and crc32 data and a packet comes
+                # round again, which ends the first copy of the critical packets
+                # Our unit-tests do not include large par2 files, so we cannot verify cases like #3164!
+                # On smaller files, we scan them fully to get the par2-creator
+                if md5sum in seen_packets:
                     if total_size > SCAN_LIMIT and len(filepar2info) == nr_files == len(filecrc32):
                         break
+                    continue
+                seen_packets.add(md5sum)
+
+                # See if it's any of the packages we care about
+                par2_packet_type = data[16:32]
+
+                # Get the Recovery Set ID
+                set_id = data[:16].hex()
+
+                if par2_packet_type == PAR_FILE_ID:
+                    # The FileDesc packet looks like:
+                    # 16 : "PAR 2.0\0FileDesc"
+                    # 16 : FileId
+                    # 16 : Hash for full file
+                    # 16 : Hash for first 16K
+                    #  8 : File length
+                    # xx : Name (multiple of 4, padded with \0 if needed)
+
+                    fileid = data[32:48].hex()
+                    if filepar2info.get(fileid):
+                        # Already have data
+                        continue
+                    hash16k = data[64:80]
+                    filesize = struct.unpack("<Q", data[80:88])[0]
+                    filename = correct_unknown_encoding(data[88:].strip(b"\0"))
+                    filepar2info[fileid] = FilePar2Info(filename, hash16k, filesize)
+                elif par2_packet_type == PAR_UNICODE_FILE_ID:
+                    # The Unicode Filename packet looks like:
+                    # 16 : "PAR 2.0\0UniFileN"
+                    # 16 : FileId
+                    # xx : Name in UTF-16LE (multiple of 4, padded with \0 if needed)
+                    fileid = data[32:48].hex()
+                    if fileid in unicodenames:
+                        continue
+                    try:
+                        unicodenames[fileid] = unicode_nfc_normalize(data[48:].decode("utf-16-le").rstrip("\0"))
+                    except UnicodeDecodeError:
+                        logging.debug("Discarding Unicode Filename packet that does not hold UTF-16")
+                elif par2_packet_type == PAR_CREATOR_ID:
+                    # From here until the end is the creator-text
+                    # Useful in case of bugs in the par2-creating software
+                    # "PAR 2.0\x00Creator\x00"
+                    par2creator = data[32:].strip(b"\0")  # Remove any trailing \0
+                    logging.debug(
+                        "Par2-creator of %s is: %s", os.path.basename(f.name), correct_unknown_encoding(par2creator)
+                    )
+                elif par2_packet_type == PAR_MAIN_ID:
+                    # The Main packet looks like:
+                    # 16 : "PAR 2.0\0Main"
+                    # 8  : Slice size
+                    # 4  : Number of files in the recovery set
+                    slice_size = struct.unpack("<Q", data[32:40])[0]
+                    coeff = sabctools.crc32_xpow8n(slice_size)
+                    nr_files = struct.unpack("<I", data[40:44])[0]
+                elif par2_packet_type == PAR_SLICE_ID:
+                    # "PAR 2.0\0IFSC\0\0\0\0"
+                    fileid = data[32:48].hex()
+                    if not filecrc32.get(fileid):
+                        filecrc32[fileid] = []
+                        for i in range(48, pack_len - 32, 20):
+                            filecrc32[fileid].append(struct.unpack("<I", data[i + 16 : i + 20])[0])
 
             # Process all the data
             for fileid in filepar2info.keys():
-                # Sanity check
                 par2info = filepar2info[fileid]
+                # The name in the Unicode Filename packet takes precedence
+                if unicodename := unicodenames.get(fileid):
+                    par2info.filename = unicodename
+
+                # Sanity check
                 if not filecrc32.get(fileid) or not nr_files or not slice_size:
                     logging.debug("Missing essential information for %s", par2info)
                     continue
@@ -223,6 +311,10 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
                         crc32, sabctools.crc32_zero_unpad(filecrc32[fileid][-1], slice_size - tail_size), tail_size
                     )
                 par2info.filehash = crc32
+                # Block geometry only where the checksums cover the file exactly
+                if len(filecrc32[fileid]) == -(-par2info.filesize // slice_size):
+                    par2info.blocksize = slice_size
+                    par2info.blockcount = len(filecrc32[fileid])
 
                 # We found hash data, add it to final table
                 table[par2info.filename] = par2info

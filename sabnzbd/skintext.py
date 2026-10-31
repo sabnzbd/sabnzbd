@@ -261,7 +261,6 @@ SKIN_TEXT = {
     "confirmWithoutSavingPrompt": TT("Changes have not been saved, and will be lost."),
     "explain-sessionExpire": TT("Stay logged in on this browser instead of being signed out when you close it."),
     "opt-enable_7zip": TT("Enable 7zip"),
-    "explain-getpar2turbo": TT("Speed up repairs by installing par2cmdline-turbo, it is available for many platforms."),
     "version": TT("Version"),
     "uptime": TT("Uptime"),
     "backup": TT("Backup"),  #: Indicates that server is Backup server in Status page
@@ -471,7 +470,6 @@ SKIN_TEXT = {
     "explain-pre_script": TT("Used before an NZB enters the queue."),
     "opt-end_queue_script": TT("On queue finish script"),
     "explain-end_queue_script": TT("Executed after the queue finishes downloading."),
-    "opt-par_option": TT("Extra PAR2 Parameters"),
     "opt-nice": TT("Nice Parameters"),
     "opt-ionice": TT("IONice Parameters"),
     "opt-win_process_prio": TT("External process priority"),

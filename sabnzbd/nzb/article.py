@@ -19,6 +19,7 @@
 sabnzbd.article - Article and TryList classes for NZB downloading
 """
 
+import array
 import logging
 import threading
 from typing import Optional
@@ -98,6 +99,8 @@ ArticleSaver = (
     "nzf",
     "crc32",
     "decoded_size",
+    "block_size",
+    "block_crcs",
 )
 
 
@@ -124,6 +127,8 @@ class Article(TryList):
         self.on_disk: bool = False
         self.failed: bool = False  # Download failed, assembler should skip this article
         self.crc32: Optional[int] = None
+        self.block_size: Optional[int] = None  # The par2 block size block_crcs is split at
+        self.block_crcs: Optional[array.array] = None  # CRC of each piece between multiples of block_size
         self.nzf: sabnzbd.nzb.NzbFile = nzf  # NzbFile reference
         # Share NzbFile lock for file-wide atomicity of try-list ops
         self.lock: threading.RLock = nzf.lock

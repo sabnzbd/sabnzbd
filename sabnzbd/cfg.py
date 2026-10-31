@@ -479,7 +479,6 @@ sfv_check = OptionBool("misc", "sfv_check", True)
 script_can_fail = OptionBool("misc", "script_can_fail", False)
 enable_recursive = OptionBool("misc", "enable_recursive", True)
 flat_unpack = OptionBool("misc", "flat_unpack", False)
-par_option = OptionStr("misc", "par_option")
 pre_check = OptionBool("misc", "pre_check", False)
 nice = OptionStr("misc", "nice", validation=clean_nice_ionice_parameters)
 win_process_prio = OptionNumber("misc", "win_process_prio", 3)
@@ -581,6 +580,7 @@ enable_season_sorting = OptionBool("misc", "enable_season_sorting", True)
 verify_xff_header = OptionBool("misc", "verify_xff_header", True, protect=True)
 direct_write = OptionBool("misc", "direct_write", True)
 direct_decode = OptionBool("misc", "direct_decode", True)
+par2_quick_verify = OptionBool("misc", "par2_quick_verify", True)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
@@ -920,15 +920,9 @@ def config_conversions():
         logging.info("Config conversion set 2")
         config_conversion_version.set(2)
 
-    # Switch to par2cmdline-turbo on Windows
     if config_conversion_version() < 3:
+        # Only cleared par_option, which no longer exists
         logging.info("Config conversion set 3")
-        if sabnzbd.WINDOWS and par_option():
-            # Just empty it, so we don't pass the wrong parameters
-            logging.warning(T("The par2 application was switched, any custom par2 parameters were removed"))
-            par_option.set("")
-
-        # Done
         config_conversion_version.set(3)
 
     # Convert Certificate Validation

@@ -172,6 +172,13 @@ class NewsWrapper:
 
         self.timeout = time.time() + self.server.timeout
 
+    @staticmethod
+    def article_block_size(article: Optional["sabnzbd.nzb.Article"]) -> int:
+        """The par2 block size to split the article's CRC at, 0 while no par2 set describes its file"""
+        if not article:
+            return 0
+        return article.nzf.nzo.par2_block_size(article.nzf.filename)
+
     def article_sink(self, article: Optional["sabnzbd.nzb.Article"]) -> Optional[sabctools.FileWriter]:
         """Where this article's data should be written, or None to decode into memory.
 
@@ -476,7 +483,9 @@ class NewsWrapper:
                         logging.debug("%s@%s: Partial send", self.thrdnum, server.host)
                         self.nntp.write_buffer = command[sent:]
 
-                    self.decoder.expect(article, self.article_sink(article))
+                    self.decoder.expect(
+                        article, self.article_sink(article), block_size=self.article_block_size(article)
+                    )
                     self.next_request = None
                 else:
                     # Concurrency limit reached; wait until a response is read to prevent hot looping on EVENT_WRITE

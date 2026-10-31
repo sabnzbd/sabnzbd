@@ -94,7 +94,14 @@ from sabnzbd.filesystem import (
     same_directory,
     RAR_RE,
 )
-from sabnzbd.par2file import FilePar2Info, has_par2_in_filename, analyse_par2, parse_par2_file, is_par2_file
+from sabnzbd.par2file import (
+    FilePar2Info,
+    has_par2_in_filename,
+    analyse_par2,
+    parse_par2_file,
+    is_par2_file,
+    uncovered_blocks,
+)
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -292,6 +299,10 @@ class NzbObject(TryList):
         self.meta = {}
         self.servercount: dict[str, int] = {}  # Dict to keep bytes per server
         self.direct_unpacker: Optional[sabnzbd.directunpacker.DirectUnpacker] = None  # The DirectUnpacker instance
+        # Live par2 repair sessions per set name, not saved
+        self.par2_sessions: dict[str, sabnzbd.par2repair.RepairSession] = {}
+        # Files a par2 repair rewrote, not saved
+        self.par2_rewritten: set[str] = set()
         self.bytes: int = 0  # Original bytesize
         self.bytes_par2: int = 0  # Bytes in par2 files
         self.bytes_downloaded: int = 0  # Downloaded byte
@@ -744,6 +755,84 @@ class NzbObject(TryList):
                     return True
         return False
 
+    @synchronized()
+    def blocks_destroyed(self, setname: str) -> Optional[int]:
+        """Par2 blocks of a set that the failed articles have destroyed.
+        None when the set has no block geometry or a file was not direct-written.
+        """
+        par2pack = self.par2packs.get(setname)
+        if not par2pack:
+            return None
+
+        by_name = {nzf.filename: nzf for nzf in self.finished_files}
+        destroyed = 0
+        for filename, par2info in par2pack.items():
+            if not par2info.blocksize or not par2info.blockcount:
+                return None
+            if nzf := by_name.get(filename):
+                if not nzf.direct_written:
+                    return None
+                # crc32 is None when the article failed its yEnc check
+                ranges = [
+                    (article.data_begin, article.data_begin + article.data_size)
+                    for article in nzf.decodetable
+                    if article.crc32 is not None
+                    and article.on_disk
+                    and article.data_begin is not None
+                    and article.data_size
+                ]
+                destroyed += uncovered_blocks(ranges, par2info.blocksize, par2info.blockcount, par2info.filesize)
+        return destroyed
+
+    def par2_file_size(self, filename: str) -> Optional[int]:
+        """The size a par2 set records for a file, when one describes it"""
+        for par2pack in list(self.par2packs.values()):
+            if par2pack and (par2info := par2pack.get(filename)):
+                return par2info.filesize
+        return None
+
+    def par2_block_size(self, filename: str) -> int:
+        """The block size of the par2 set that describes a file, otherwise the one every set
+        of the job shares, and 0 while there is none"""
+        shared = set()
+        for par2pack in list(self.par2packs.values()):
+            if par2pack and (par2info := par2pack.get(filename)):
+                return par2info.blocksize
+            shared.update(par2info.blocksize for par2info in par2pack.values() if par2info.blocksize)
+        return shared.pop() if len(shared) == 1 else 0
+
+    @synchronized()
+    def unmapped_damage(self) -> bool:
+        """Whether a finished file lost articles that no par2 set accounts for"""
+        described = set()
+        for par2pack in self.par2packs.values():
+            described.update(par2pack)
+        return any(nzf.bytes_left and not nzf.is_par2 and nzf.filename not in described for nzf in self.finished_files)
+
+    @synchronized()
+    def recovery_blocks(self, setname: str) -> int:
+        """Recovery blocks the NZB holds for a set, downloaded or not"""
+        parfiles = {id(nzf): nzf for nzf in self.files + self.finished_files if nzf.is_par2 and nzf.setname == setname}
+        parfiles.update({id(nzf): nzf for nzf in self.extrapars.get(setname, [])})
+        return sum(nzf.blocks for nzf in parfiles.values())
+
+    @synchronized()
+    def blocks_beyond_recovery(self) -> bool:
+        """Whether a set has lost more blocks than all of its recovery blocks could rebuild"""
+        for setname in self.par2packs:
+            destroyed = self.blocks_destroyed(setname)
+            available = self.recovery_blocks(setname)
+            if destroyed is not None and destroyed > available:
+                logging.info(
+                    "Set %s lost %s blocks against %s recovery blocks in %s",
+                    setname,
+                    destroyed,
+                    available,
+                    self.final_name,
+                )
+                return True
+        return False
+
     def get_extra_blocks(self, setname: str, needed_blocks: int) -> int:
         """We want par2-files of all sets that are similar to this one
         So that we also can handle multi-sets with duplicate filenames
@@ -804,10 +893,6 @@ class NzbObject(TryList):
             if not nzf.is_par2:
                 self.bytes_missing += article.bytes
 
-            # Add extra parfiles when there was a damaged article and not pre-checking
-            if self.extrapars and not self.precheck:
-                self.prospective_add(nzf)
-
             # Sometimes a few CRC errors are still fine, abort otherwise
             if self.bad_articles > MAX_BAD_ARTICLES:
                 self.abort_direct_unpacker()
@@ -835,6 +920,13 @@ class NzbObject(TryList):
         # File completed, remove and do checks
         if file_done:
             self.remove_nzf(nzf)
+
+            # Add extra parfiles when the file lost articles and not pre-checking
+            if nzf.bytes_left and not nzf.is_par2 and not self.precheck:
+                if self.extrapars:
+                    self.prospective_add(nzf)
+                if job_can_succeed and not self.reuse and cfg.fail_hopeless_jobs():
+                    job_can_succeed = not self.blocks_beyond_recovery()
 
         # Check if we can succeed when we have missing articles
         # Skip check if retry or first articles already deemed it hopeless
@@ -1130,18 +1222,34 @@ class NzbObject(TryList):
         """Add par2 files to compensate for missing articles"""
         # Get some blocks!
         if not nzf.is_par2:
+            unmapped = self.unmapped_damage()
             for parset in self.extrapars:
                 # Due to strong obfuscation on article-level the parset could have a different name
                 # than the files. Because of that we just add the required number of par2-blocks
                 # from all the sets. This probably means we get too much par2, but it's worth it.
+                needed = self.blocks_destroyed(parset)
+                if needed is None:
+                    # No block geometry for this set, so fall back to counting articles
+                    needed = self.bad_articles
+                elif unmapped:
+                    # Some of the damage counts against no set
+                    needed = max(needed, self.bad_articles)
+                # Blocks already asked for
+                blocks_have = sum(
+                    parfile.blocks
+                    for parfile in self.extrapars[parset]
+                    if parfile.completed or parfile in self.files or parfile in self.finished_files
+                )
                 blocks_new = 0
                 for new_nzf in self.extrapars[parset]:
+                    # Enough now?
+                    if blocks_have >= needed:
+                        break
                     if self.add_parfile(new_nzf):
+                        blocks_have += new_nzf.blocks
                         blocks_new += new_nzf.blocks
-                        # Enough now?
-                        if blocks_new >= self.bad_articles:
-                            logging.info("Prospectively added %s repair blocks to %s", blocks_new, self.final_name)
-                            break
+                if blocks_new:
+                    logging.info("Prospectively added %s repair blocks to %s", blocks_new, self.final_name)
             # Reset NZO TryList
             self.reset_try_list()
 
@@ -1533,6 +1641,11 @@ class NzbObject(TryList):
         # Abort DirectUnpack and let it remove files
         self.abort_direct_unpacker()
 
+        # Release the par2 repairers
+        for session in self.par2_sessions.values():
+            session.close()
+        self.par2_sessions = {}
+
         # Remove all cached files
         sabnzbd.ArticleCache.purge_articles(self.saved_articles)
         sabnzbd.Assembler.clear_ready_bytes(*self.files_table.values())
@@ -1790,6 +1903,8 @@ class NzbObject(TryList):
         self.url_tries = 0
         self.to_be_removed = False
         self.direct_unpacker = None
+        self.par2_sessions = {}
+        self.par2_rewritten = set()
         self.filenames = set()
         for nzf in self.files_table.values():
             if nzf.filepath:

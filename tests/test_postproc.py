@@ -725,7 +725,9 @@ class TestProcessJobMissingArticles:
         return nzo
 
     @staticmethod
-    def _process_job(nzo: mock.Mock, rars: list[str] = (), unpack_error: int = 0) -> dict[str, mock.Mock]:
+    def _process_job(
+        nzo: mock.Mock, rars: list[str] = (), unpack_error: int = 0, re_add: bool = False
+    ) -> dict[str, mock.Mock]:
         file_sorter = mock.Mock()
         file_sorter.sorter_active = False
         with (
@@ -757,7 +759,7 @@ class TestProcessJobMissingArticles:
             mock.patch.object(sabnzbd, "db_pool", create=True),
         ):
             mocks["globber"].return_value = ["file_one", "file_two"]
-            mocks["parring"].return_value = (False, False)
+            mocks["parring"].return_value = (False, re_add)
             mocks["build_filelists"].return_value = ([], list(rars), [], [], [])
             mocks["unpacker"].return_value = (unpack_error, [])
             mocks["remove_unwanted_files"].return_value = ([], False)
@@ -824,6 +826,22 @@ class TestProcessJobMissingArticles:
         self._process_job(nzo)
         assert nzo.status == Status.COMPLETED
         assert not nzo.fail_msg
+
+    def test_a_job_readded_for_more_par2_keeps_its_repair_session(self):
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={"test_job": []})
+        session = mock.Mock()
+        nzo.par2_sessions = {"test_job": session}
+        self._process_job(nzo, re_add=True)
+        assert nzo.par2_sessions == {"test_job": session}
+        session.close.assert_not_called()
+
+    def test_a_finished_job_releases_its_repair_session(self):
+        nzo = self._make_nzo(bytes_missing=1000, extrapars={"test_job": []})
+        session = mock.Mock()
+        nzo.par2_sessions = {"test_job": session}
+        self._process_job(nzo)
+        assert nzo.par2_sessions == {}
+        session.close.assert_called_once()
 
     def test_no_missing_articles_without_par2_is_completed(self):
         nzo = self._make_nzo(bytes_missing=0, extrapars={})

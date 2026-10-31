@@ -36,10 +36,12 @@ from unittest import mock
 from unittest.mock import call
 
 import pytest
+import sabctools
 
 import sabnzbd
 import sabnzbd.newsunpack as newsunpack
-from sabnzbd.constants import JOB_ADMIN
+import sabnzbd.par2repair as par2repair
+from sabnzbd.constants import JOB_ADMIN, Status
 from sabnzbd.par2file import FilePar2Info
 from tests.testhelper import SAB_CACHE_DIR, make_mock_nzo
 from sabnzbd.misc import format_time_string, SABRarFile
@@ -53,7 +55,6 @@ def _isolate_newsunpack_globals(monkeypatch):
     for name in (
         "NICE_COMMAND",
         "IONICE_COMMAND",
-        "PAR2_COMMAND",
         "RAR_COMMAND",
         "SEVENZIP_COMMAND",
     ):
@@ -175,6 +176,83 @@ class TestNewsUnpackFunctions:
             newsunpack.SevenZip("tests/data/basic_rar5/testfile.rar")
 
 
+class TestPar2MultipleSets:
+    @staticmethod
+    def _make_nzo(tmp_path):
+        for name in ("a.bin", "b.bin", "dupe.bin", "A.par2", "B.par2"):
+            (tmp_path / name).write_bytes(b"x")
+        info = FilePar2Info("", b"", 1)
+        return make_mock_nzo(
+            download_path=str(tmp_path),
+            extrapars={"A": [], "B": []},
+            par2packs={"A": {"a.bin": info}, "B": {"b.bin": info}},
+        )
+
+    def test_another_sets_files_are_not_scanned_as_extras(self, tmp_path):
+        nzo = self._make_nzo(tmp_path)
+        extras = newsunpack._par2_extra_files(str(tmp_path / "A.par2"), nzo, "A")
+        assert sorted(os.path.basename(path) for path in extras) == ["a.bin", "dupe.bin"]
+
+    def test_another_sets_files_are_not_deleted_as_consumed(self, tmp_path):
+        nzo = self._make_nzo(tmp_path)
+        session = mock.Mock()
+        session.repairer.files = [{"name": "a.bin", "target": str(tmp_path / "a.bin")}]
+        session.repairer.renames = {}
+        session.blocks_from = {str(tmp_path / "a.bin"): 1, str(tmp_path / "b.bin"): 1, str(tmp_path / "dupe.bin"): 1}
+        assert newsunpack._consumed_extra_files(session, nzo, "A", []) == [str(tmp_path / "dupe.bin")]
+
+    def test_an_extra_file_named_like_a_target_elsewhere_is_still_consumed(self, tmp_path):
+        nzo = self._make_nzo(tmp_path)
+        os.mkdir(tmp_path / "sub")
+        session = mock.Mock()
+        session.repairer.files = [{"name": "sub/c.bin", "target": str(tmp_path / "sub" / "c.bin")}]
+        session.repairer.renames = {}
+        session.blocks_from = {str(tmp_path / "c.bin"): 1}
+        assert newsunpack._consumed_extra_files(session, nzo, "A", []) == [str(tmp_path / "c.bin")]
+
+
+class TestPar2RepairFailures:
+    def test_running_out_of_memory_fails_without_fetching_another_par2(self, tmp_path):
+        nzo = make_mock_nzo(download_path=str(tmp_path), extrapars={"test": []})
+        session = mock.Mock(last_error=None)
+        session.open.return_value = sabctools.Par2Result.MEMORY_ERROR
+        with (
+            mock.patch.object(par2repair, "get_session", return_value=None),
+            mock.patch.object(par2repair, "create_session", return_value=session),
+        ):
+            result = newsunpack.par2_verify_and_repair(str(tmp_path / "test.par2"), nzo, "test", [])
+        assert result == (False, False, [], [])
+        assert "Out of memory" in nzo.fail_msg
+        nzo.add_parfile.assert_not_called()
+
+    def test_extra_par2_files_that_will_not_load_say_why(self, tmp_path):
+        nzo = make_mock_nzo(download_path=str(tmp_path), extrapars={"test": []})
+        session = mock.Mock()
+        session.add_parfiles.side_effect = sabctools.Par2Error("could not read vol01")
+        with mock.patch.object(par2repair, "get_session", return_value=session):
+            result = newsunpack.par2_verify_and_repair(str(tmp_path / "test.par2"), nzo, "test", [])
+        assert result == (False, False, [], [])
+        assert "could not read vol01" in nzo.fail_msg
+        assert nzo.status == Status.FAILED
+
+    @pytest.mark.parametrize(
+        "result, verified",
+        [
+            (sabctools.Par2Result.SUCCESS, True),
+            (sabctools.Par2Result.REPAIR_POSSIBLE, True),
+            (sabctools.Par2Result.REPAIR_NOT_POSSIBLE, True),
+            (sabctools.Par2Result.FILE_IO_ERROR, False),
+            (sabctools.Par2Result.MEMORY_ERROR, False),
+        ],
+    )
+    def test_only_a_verify_that_ran_to_its_end_counts(self, tmp_path, result, verified):
+        session = par2repair.RepairSession(make_mock_nzo(download_path=str(tmp_path)), "test", str(tmp_path / "t.par2"))
+        session.repairer = mock.Mock()
+        session.repairer.verify.return_value = result
+        session.verify()
+        assert session.verified is verified
+
+
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestPar2Repair:
     @staticmethod
@@ -213,6 +291,8 @@ class TestPar2Repair:
             admin_path=test_dir_admin,
             extrapars={"test": []},
             par2packs={"test": None},
+            par2_sessions={},
+            finished_files=[],
         )
 
         for file in glob.glob(test_dir + "/*.par2"):
@@ -268,45 +348,26 @@ class TestPar2Repair:
             "par2test.part6.rar",
         ]
 
-        # Verify renames
+        # The two badly named files par2 did match are renamed to their real names
         nzo.renamed_file.assert_has_calls(
             [
                 call(
                     {
                         "par2test.part3.rar": "foorbar.rar",
                         "par2test.part4.rar": "stillrarbutnotagoodname.txt",
-                        "par2test.part1.rar": "par2test.part1.11.rar",
                     }
                 )
             ]
         )
 
-        # par2cmdline output status updates
-        # Verify output in chunks, as it outputs every single % during repair
-        nzo.set_action_line.assert_has_calls(
-            [
-                call("Repair", "Quick Checking"),
-                call("Repair", "Starting Repair"),
-                call("Verifying", "01/06"),
-                call("Verifying", "02/06"),
-                call("Verifying", "03/06"),
-                call("Verifying", "04/06"),
-                call("Verifying", "05/06"),
-                call("Verifying", "06/06"),
-                call("Checking extra files", "01"),
-                call("Checking extra files", "02"),
-                call("Checking extra files", "03"),
-                call("Repairing", " 0%"),
-            ]
-        )
-        nzo.set_action_line.assert_has_calls(
-            [
-                call("Repairing", "100% "),
-                call("Verifying repair", "01/03"),
-                call("Verifying repair", "02/03"),
-                call("Verifying repair", "03/03"),
-            ]
-        )
+        # Progress reporting
+        actions = [c.args for c in nzo.set_action_line.call_args_list]
+        assert ("Repair", "Quick Checking") in actions
+        assert ("Repair", "Starting Repair") in actions
+        assert ("Verifying", "01/06") in actions
+        assert ("Verifying", "06/06") in actions
+        assert ("Repairing", "%2d%%" % 0) in actions
+        assert any(a[0] == "Verifying repair" for a in actions)
 
     def test_filejoin(self, caplog):
         # Run code
@@ -318,33 +379,13 @@ class TestPar2Repair:
         # There are no renames in case of filejoin by par2repair!
         nzo.renamed_file.assert_not_called()
 
-        # par2cmdline output status updates
-        # Verify output in chunks, as it outputs every single % during repair
-        nzo.set_action_line.assert_has_calls(
-            [
-                call("Repair", "Quick Checking"),
-                call("Repair", "Starting Repair"),
-                call("Verifying", "01/01"),
-                call("Checking extra files", "01"),
-                call("Checking extra files", "02"),
-                call("Checking extra files", "03"),
-                call("Checking extra files", "04"),
-                call("Checking extra files", "05"),
-                call("Checking extra files", "06"),
-                call("Checking extra files", "07"),
-                call("Checking extra files", "08"),
-                call("Checking extra files", "09"),
-                call("Checking extra files", "10"),
-                call("Checking extra files", "11"),
-                call("Repairing", " 0%"),
-            ]
-        )
-        nzo.set_action_line.assert_has_calls(
-            [
-                call("Repairing", "100% "),
-                call("Verifying repair", "01/01"),
-            ]
-        )
+        # Progress reporting
+        actions = [c.args for c in nzo.set_action_line.call_args_list]
+        assert ("Repair", "Quick Checking") in actions
+        assert ("Repair", "Starting Repair") in actions
+        assert ("Verifying", "01/01") in actions
+        assert ("Repairing", "%2d%%" % 0) in actions
+        assert any(a[0] == "Verifying repair" for a in actions)
 
     def test_broken_filejoin(self, caplog):
         # Run code
@@ -358,30 +399,227 @@ class TestPar2Repair:
         # All joinable files should be removed
         assert dir_contents == ["__ADMIN__", "par2test.bin"]
 
-        # Verify output in chunks, as it outputs every single % during repair
-        nzo.set_action_line.assert_has_calls(
-            [
-                call("Repair", "Quick Checking"),
-                call("Repair", "Starting Repair"),
-                call("Verifying", "01/01"),
-                call("Checking extra files", "01"),
-                call("Checking extra files", "02"),
-                call("Checking extra files", "03"),
-                call("Checking extra files", "04"),
-                call("Checking extra files", "05"),
-                call("Checking extra files", "06"),
-                call("Checking extra files", "07"),
-                call("Checking extra files", "08"),
-                call("Checking extra files", "09"),
-                call("Repairing", " 0%"),
-            ]
-        )
-        nzo.set_action_line.assert_has_calls(
-            [
-                call("Repairing", "100% "),
-                call("Verifying repair", "01/01"),
-            ]
-        )
+        # Progress reporting
+        actions = [c.args for c in nzo.set_action_line.call_args_list]
+        assert ("Repair", "Quick Checking") in actions
+        assert ("Repair", "Starting Repair") in actions
+        assert ("Verifying", "01/01") in actions
+        assert ("Repairing", "%2d%%" % 0) in actions
+        assert any(a[0] == "Verifying repair" for a in actions)
+
+
+class TestPar2RepairParfile:
+    def test_a_par2_file_still_downloading_is_not_picked_first(self, tmp_path):
+        pending = mock.Mock(filename="set.vol000+001.par2", completed=False)
+        done = mock.Mock(filename="set.par2", completed=True)
+        for nzf in (pending, done):
+            (tmp_path / nzf.filename).write_bytes(b"")
+        nzo = make_mock_nzo(download_path=str(tmp_path), extrapars={"set": [pending, done]})
+
+        with (
+            mock.patch.object(newsunpack, "quick_check_set", return_value=False),
+            mock.patch.object(newsunpack, "build_filelists", return_value=([], [], [], [], [])),
+            mock.patch.object(newsunpack, "par2_verify_and_repair", return_value=(False, False, [], [])) as repair,
+        ):
+            newsunpack.par2_repair(nzo, "set")
+
+        assert repair.call_args.args[0] == str(tmp_path / "set.par2")
+
+
+@pytest.mark.usefixtures("clean_cache_dir")
+class TestPar2RepairResume:
+    """The 'not enough recovery blocks, go and fetch more' path.
+
+    The repairer is kept alive on the NzbObject between the two attempts, so the second
+    one only loads the new par2 files and repairs - it must not verify again.
+    """
+
+    TEST_DIR = "tests/data/par2repair/basic"
+
+    def _stage(self, with_volumes: bool):
+        temp_test_dir = os.path.join(SAB_CACHE_DIR, "par2repair_resume")
+        os.makedirs(os.path.join(temp_test_dir, JOB_ADMIN), exist_ok=True)
+        for file in glob.glob(self.TEST_DIR + "/*"):
+            name = os.path.basename(file)
+            # Withhold everything carrying recovery blocks for the first attempt
+            if not with_volumes and name.endswith(".par2") and name != "par2test.par2":
+                continue
+            shutil.copy(file, temp_test_dir)
+        return temp_test_dir
+
+    def _make_nzo(self, temp_test_dir):
+        nzo = mock.Mock()
+        nzo.download_path = temp_test_dir
+        nzo.admin_path = os.path.join(temp_test_dir, JOB_ADMIN)
+        nzo.fail_msg = ""
+        nzo.extrapars = {"par2test": []}
+        nzo.par2packs = {"par2test": None}
+        nzo.par2_sessions = {}
+        nzo.files = []
+        nzo.finished_files = []
+        nzo.get_extra_blocks.return_value = 5
+        return nzo
+
+    def test_resume_reuses_the_verification(self, caplog):
+        temp_test_dir = self._stage(with_volumes=False)
+        nzo = self._make_nzo(temp_test_dir)
+        parfile = os.path.join(temp_test_dir, "par2test.par2")
+
+        try:
+            with caplog.at_level(logging.DEBUG):
+                finished, readd, _, _ = newsunpack.par2_verify_and_repair(parfile, nzo, "par2test", [])
+
+            # Nothing to repair with yet, so more blocks are requested
+            assert not finished
+            assert readd
+            nzo.get_extra_blocks.assert_called()
+
+            # The session survives, carrying the verification with it
+            session = nzo.par2_sessions["par2test"]
+            assert session.verified
+            assert session.repairer.recovery_block_count == 0
+
+            # The remaining par2 files arrive on disk, not in extrapars
+            self._stage(with_volumes=True)
+            assert not nzo.extrapars["par2test"]
+
+            stages = []
+            session.repairer.progress_callback = lambda stage, filename, percent: stages.append(stage)
+
+            with caplog.at_level(logging.DEBUG):
+                finished, readd, _, _ = newsunpack.par2_verify_and_repair(parfile, nzo, "par2test", [])
+
+            assert finished
+            assert not readd
+            # The expensive part must not have been repeated
+            assert "verifying" not in stages
+            assert "repairing" in stages
+            # And the session is released once the set is done
+            assert not nzo.par2_sessions
+        finally:
+            shutil.rmtree(temp_test_dir, ignore_errors=True)
+
+    def test_par2_files_still_downloading_are_read_once_complete(self, caplog):
+        temp_test_dir = self._stage(with_volumes=False)
+        nzo = self._make_nzo(temp_test_dir)
+        parfile = os.path.join(temp_test_dir, "par2test.par2")
+
+        # Preallocated volumes holding only their first article so far
+        pending = []
+        for file in glob.glob(self.TEST_DIR + "/par2test.vol*.par2"):
+            with open(file, "rb") as f:
+                data = f.read()
+            with open(os.path.join(temp_test_dir, os.path.basename(file)), "wb") as f:
+                f.write(data[: len(data) // 2] + bytes(len(data) - len(data) // 2))
+            nzf = mock.Mock(filename=os.path.basename(file), completed=False)
+            pending.append(nzf)
+        nzo.extrapars["par2test"] = pending
+
+        try:
+            finished, readd, _, _ = newsunpack.par2_verify_and_repair(parfile, nzo, "par2test", [])
+            assert not finished
+            assert readd
+            assert nzo.par2_sessions["par2test"].repairer.recovery_block_count == 0
+
+            self._stage(with_volumes=True)
+            for nzf in pending:
+                nzf.completed = True
+
+            finished, readd, _, _ = newsunpack.par2_verify_and_repair(parfile, nzo, "par2test", [])
+            assert finished
+            assert not readd
+        finally:
+            shutil.rmtree(temp_test_dir, ignore_errors=True)
+
+    def test_resume_from_a_different_parfile_of_the_same_set(self, caplog):
+        """par2_repair picks its parfile from extrapars, which shrinks as par2 files
+        finish downloading, so a resumed attempt often starts from a different member
+        of the set. That must reuse the session rather than verifying all over again.
+
+        Asserted by counting sessions: a discarded session is replaced by a new one,
+        which would quietly redo the verification.
+        """
+        temp_test_dir = self._stage(with_volumes=False)
+        nzo = self._make_nzo(temp_test_dir)
+
+        try:
+            with mock.patch.object(par2repair, "create_session", wraps=par2repair.create_session) as create_session:
+                with caplog.at_level(logging.DEBUG):
+                    finished, readd, _, _ = newsunpack.par2_verify_and_repair(
+                        os.path.join(temp_test_dir, "par2test.par2"), nzo, "par2test", []
+                    )
+                assert not finished and readd
+                assert create_session.call_count == 1
+                assert nzo.par2_sessions["par2test"].verified
+
+                self._stage(with_volumes=True)
+
+                # Resume naming a volume file rather than the one we started from
+                with caplog.at_level(logging.DEBUG):
+                    finished, readd, _, _ = newsunpack.par2_verify_and_repair(
+                        os.path.join(temp_test_dir, "par2test.vol1+2.par2"), nzo, "par2test", []
+                    )
+
+                assert finished
+                # Still one session: the first was reused, not thrown away
+                assert create_session.call_count == 1
+        finally:
+            shutil.rmtree(temp_test_dir, ignore_errors=True)
+
+    def _stage_unsolvable(self):
+        """Blocks 0 and 2 lost, which recovery blocks 0 and 21845 cannot rebuild together but 21846 can"""
+        temp_test_dir = os.path.join(SAB_CACHE_DIR, "par2repair_unsolvable")
+        os.makedirs(os.path.join(temp_test_dir, JOB_ADMIN), exist_ok=True)
+        for file in glob.glob("tests/data/par2repair/unsolvable/*"):
+            if not file.endswith("vol21846+1.par2"):
+                shutil.copy(file, temp_test_dir)
+
+        datafile = os.path.join(temp_test_dir, "unsolvable.bin")
+        with open(datafile, "rb") as f:
+            original = f.read()
+        with open(datafile, "wb") as f:
+            f.write(bytes(64) + original[64:128] + bytes(64))
+
+        nzo = self._make_nzo(temp_test_dir)
+        nzo.extrapars = {"unsolvable": []}
+        nzo.par2packs = {"unsolvable": None}
+        return temp_test_dir, nzo, datafile, original
+
+    def test_recovery_blocks_that_cannot_rebuild_the_missing_ones_fetch_a_spare(self):
+        temp_test_dir, nzo, datafile, original = self._stage_unsolvable()
+        parfile = os.path.join(temp_test_dir, "unsolvable.par2")
+
+        try:
+            finished, readd, _, _ = newsunpack.par2_verify_and_repair(parfile, nzo, "unsolvable", [])
+            assert not finished
+            assert readd
+            nzo.get_extra_blocks.assert_called_with("unsolvable", 1)
+            assert not nzo.par2_sessions["unsolvable"].verified
+
+            shutil.copy("tests/data/par2repair/unsolvable/unsolvable.vol21846+1.par2", temp_test_dir)
+
+            finished, readd, _, _ = newsunpack.par2_verify_and_repair(parfile, nzo, "unsolvable", [])
+            assert finished
+            assert not readd
+            with open(datafile, "rb") as f:
+                assert f.read() == original
+        finally:
+            shutil.rmtree(temp_test_dir, ignore_errors=True)
+
+    def test_recovery_blocks_that_cannot_rebuild_the_missing_ones_fail_without_a_spare(self):
+        temp_test_dir, nzo, _, _ = self._stage_unsolvable()
+        nzo.get_extra_blocks.return_value = 0
+
+        try:
+            finished, readd, _, _ = newsunpack.par2_verify_and_repair(
+                os.path.join(temp_test_dir, "unsolvable.par2"), nzo, "unsolvable", []
+            )
+            assert not finished
+            assert not readd
+            assert nzo.status == Status.FAILED
+            assert not nzo.par2_sessions
+        finally:
+            shutil.rmtree(temp_test_dir, ignore_errors=True)
 
 
 @pytest.mark.usefixtures("clean_cache_dir")

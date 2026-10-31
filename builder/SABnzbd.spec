@@ -22,7 +22,7 @@ extra_hiddenimports.extend(collect_submodules("guessit.data"))
 if sys.platform == "darwin":
     extra_hiddenimports.extend(["objc", "PyObjCTools"])
     # macOS folders
-    EXTRA_FOLDERS += ["macos/par2/", "macos/unrar/", "macos/7zip/"]
+    EXTRA_FOLDERS += ["macos/unrar/", "macos/7zip/"]
     # Add NZB-icon file
     extra_pyinstaller_files.append(("builder/macos/image/nzbfile.icns", "."))
     # Version information is set differently on macOS
@@ -41,7 +41,7 @@ else:
 
     # Windows
     extra_hiddenimports.extend(["win32timezone", "winrt.windows.foundation.collections"])
-    EXTRA_FOLDERS += ["win/par2/", "win/unrar/", "win/7zip/"]
+    EXTRA_FOLDERS += ["win/unrar/", "win/7zip/"]
     EXTRA_FILES += ["portable.cmd"]
 
     # Detailed instructions are in the PyInstaller documentation

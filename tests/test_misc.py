@@ -1626,6 +1626,20 @@ class TestSABRarFile:
                 assert zf.namelist() == expected_files
 
 
+def patched_cgroup_open(files: dict[str, str]):
+    """Present exactly the given files below /sys/fs/cgroup, leaving other opens alone"""
+    real_open = open
+
+    def _open(path, *args, **kwargs):
+        if str(path).startswith("/sys/fs/cgroup"):
+            if str(path) in files:
+                return mock.mock_open(read_data=files[str(path)])()
+            raise FileNotFoundError(path)
+        return real_open(path, *args, **kwargs)
+
+    return mock.patch("builtins.open", _open)
+
+
 @pytest.mark.platform("linux")
 class TestCgroupMemoryLimit:
     """Container memory detection, see _cgroup_memory_limit()"""
@@ -1636,16 +1650,7 @@ class TestCgroupMemoryLimit:
     V1_MAX = "/sys/fs/cgroup/memory/memory.limit_in_bytes"
 
     def patched_open(self, files: dict[str, str]):
-        real_open = open
-
-        def _open(path, *args, **kwargs):
-            if str(path).startswith("/sys/fs/cgroup"):
-                if str(path) in files:
-                    return mock.mock_open(read_data=files[str(path)])()
-                raise FileNotFoundError(path)
-            return real_open(path, *args, **kwargs)
-
-        return mock.patch("builtins.open", _open)
+        return patched_cgroup_open(files)
 
     def test_no_cgroup_files(self):
         with self.patched_open({}):
@@ -1701,3 +1706,82 @@ class TestCgroupMemoryLimit:
         with self.patched_open({}):
             with mock.patch("sabnzbd.misc._physical_memory", return_value=None):
                 assert misc.get_memory() == 0
+
+
+@pytest.mark.platform("linux")
+class TestCgroupCpus:
+    """Container CPU detection, see _cgroup_cpus()"""
+
+    V2_MAX = "/sys/fs/cgroup/cpu.max"
+    V1_QUOTA = "/sys/fs/cgroup/cpu/cpu.cfs_quota_us"
+    V1_PERIOD = "/sys/fs/cgroup/cpu/cpu.cfs_period_us"
+
+    def patched_open(self, files: dict[str, str]):
+        return patched_cgroup_open(files)
+
+    def test_no_cgroup_files(self):
+        with self.patched_open({}):
+            assert misc._cgroup_cpus() is None
+
+    def test_v2_quota(self):
+        with self.patched_open({self.V2_MAX: "400000 100000"}):
+            assert misc._cgroup_cpus() == 4
+
+    def test_v2_unlimited(self):
+        with self.patched_open({self.V2_MAX: "max 100000"}):
+            assert misc._cgroup_cpus() is None
+
+    def test_v2_partial_cpu_rounds_up(self):
+        """1.5 CPUs is 2 threads: a pool sized to 1 wastes half the allowance"""
+        with self.patched_open({self.V2_MAX: "150000 100000"}):
+            assert misc._cgroup_cpus() == 2
+
+    def test_v2_below_one_cpu_never_zero(self):
+        with self.patched_open({self.V2_MAX: "20000 100000"}):
+            assert misc._cgroup_cpus() == 1
+
+    def test_v1_quota(self):
+        with self.patched_open({self.V1_QUOTA: "200000", self.V1_PERIOD: "100000"}):
+            assert misc._cgroup_cpus() == 2
+
+    def test_v1_unlimited_sentinel(self):
+        """v1 spells unlimited as -1 rather than a keyword"""
+        with self.patched_open({self.V1_QUOTA: "-1", self.V1_PERIOD: "100000"}):
+            assert misc._cgroup_cpus() is None
+
+    def test_garbage_is_ignored(self):
+        with self.patched_open({self.V2_MAX: "not-a-number 100000"}):
+            assert misc._cgroup_cpus() is None
+
+    def test_get_cpus_clamps_to_cgroup(self):
+        with self.patched_open({self.V2_MAX: "200000 100000"}):
+            with mock.patch("sabnzbd.misc._available_cpus", return_value=32):
+                assert misc.get_cpus() == 2
+
+    def test_get_cpus_keeps_available_when_lower(self):
+        """Affinity can be narrower than the quota, and it is the harder limit"""
+        with self.patched_open({self.V2_MAX: "3200000 100000"}):
+            with mock.patch("sabnzbd.misc._available_cpus", return_value=4):
+                assert misc.get_cpus() == 4
+
+    def test_get_cpus_uses_cgroup_when_available_unknown(self):
+        with self.patched_open({self.V2_MAX: "200000 100000"}):
+            with mock.patch("sabnzbd.misc._available_cpus", return_value=None):
+                assert misc.get_cpus() == 2
+
+    def test_get_cpus_zero_when_nothing_known(self):
+        with self.patched_open({}):
+            with mock.patch("sabnzbd.misc._available_cpus", return_value=None):
+                assert misc.get_cpus() == 0
+
+
+class TestAvailableCpus:
+    def test_returns_something_sane(self):
+        """Whatever route it takes, this machine has at least one CPU"""
+        assert misc._available_cpus() >= 1
+
+    def test_survives_a_broken_platform(self):
+        with mock.patch("os.cpu_count", side_effect=OSError):
+            with mock.patch("os.process_cpu_count", side_effect=OSError, create=True):
+                with mock.patch("os.sched_getaffinity", side_effect=OSError, create=True):
+                    assert misc._available_cpus() is None

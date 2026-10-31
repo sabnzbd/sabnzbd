@@ -239,3 +239,40 @@ class TestUuDecoder:
             assert decoder.decode_uu(
                 article, self._response(bytearray(b"222 0 <foo@bar>\r\n" + filler + bad_data + b"\r\n.\r\n"))
             )
+
+
+class TestYencBlockCrcs:
+    @staticmethod
+    def _response(payload: bytes, begin: int, block_size: int) -> sabctools.NNTPResponse:
+        encoded, crc = sabctools.yenc_encode(payload)
+        raw_data = (
+            b"222 0 <foo@bar>\r\n"
+            + f"=ybegin part=1 line=128 size={begin + len(payload)} name=foo.bin\r\n".encode()
+            + f"=ypart begin={begin + 1} end={begin + len(payload)}\r\n".encode()
+            + encoded
+            + f"\r\n=yend size={len(payload)} part=1 pcrc32={crc:08x}\r\n.\r\n".encode()
+        )
+        dec = sabctools.Decoder(len(raw_data))
+        dec.expect(None, block_size=block_size)
+        BytesIO(raw_data).readinto(dec)
+        dec.process(len(raw_data))
+        return next(dec)
+
+    def test_the_pieces_are_kept_on_the_article(self):
+        payload = bytes(range(256)) * 4
+        article = Article("foo@bar", 1234, mock.Mock())
+        decoder.decode_yenc(article, self._response(payload, 100, 256))
+        assert article.block_size == 256
+        assert list(article.block_crcs) == [
+            binascii.crc32(payload[:156]),
+            binascii.crc32(payload[156:412]),
+            binascii.crc32(payload[412:668]),
+            binascii.crc32(payload[668:924]),
+            binascii.crc32(payload[924:]),
+        ]
+
+    def test_without_a_block_size_there_are_none(self):
+        article = Article("foo@bar", 1234, mock.Mock())
+        decoder.decode_yenc(article, self._response(b"\x01" * 100, 0, 0))
+        assert article.block_size == 0
+        assert article.block_crcs is None

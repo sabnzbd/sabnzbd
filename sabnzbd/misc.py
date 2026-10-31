@@ -926,6 +926,60 @@ def _read_cgroup_limit(path: str) -> Optional[int]:
         return None
 
 
+def get_cpus() -> int:
+    """CPU threads this process may run on, clamped by any cgroup quota.
+    Returns 0 when neither could be determined."""
+    available = _available_cpus()
+    quota = _cgroup_cpus()
+    if available and quota:
+        return min(available, quota)
+    return available or quota or 0
+
+
+def _available_cpus() -> Optional[int]:
+    """Threads this process may run on, or None if it could not be determined"""
+    try:
+        # Python 3.13+
+        if hasattr(os, "process_cpu_count") and (count := os.process_cpu_count()):
+            return count
+        if hasattr(os, "sched_getaffinity"):
+            return len(os.sched_getaffinity(0))
+        return os.cpu_count()
+    except Exception:
+        return None
+
+
+def _cgroup_cpus() -> Optional[int]:
+    """Whole CPUs this container may use, rounded up, or None if unlimited/absent"""
+    if sabnzbd.WINDOWS or sabnzbd.MACOS:
+        return None
+
+    quota = period = None
+    try:
+        # cgroup v2: "<quota> <period>", or "max <period>" when unlimited
+        with open("/sys/fs/cgroup/cpu.max") as f:
+            values = f.read().split()
+        if values[0] != "max":
+            quota, period = int(values[0]), int(values[1])
+    except (OSError, ValueError, IndexError):
+        pass
+
+    if quota is None:
+        # cgroup v1 keeps the two apart, and spells unlimited as -1
+        try:
+            with open("/sys/fs/cgroup/cpu/cpu.cfs_quota_us") as f:
+                value = int(f.read().strip())
+            if value > 0:
+                with open("/sys/fs/cgroup/cpu/cpu.cfs_period_us") as f:
+                    quota, period = value, int(f.read().strip())
+        except (OSError, ValueError):
+            return None
+
+    if not quota or not period or period < 0:
+        return None
+    return max(1, -(-quota // period))
+
+
 @conditional_cache(cache_time=3600)
 def get_cpu_name() -> Optional[str]:
     """Find the CPU name (which needs a different method per OS), and return it

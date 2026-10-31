@@ -129,6 +129,10 @@ DEF_PIPELINING_REQUESTS = 2
 ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE = 0.9
 # Memory left to the rest of the system when capping the article cache
 ARTICLE_CACHE_RESERVED_MEMORY = int(512 * MEBI)
+# Headroom left for the rest of SABnzbd when sizing par2's buffers
+PAR2_RESERVED_MEMORY = int(512 * MEBI)
+# Floor for par2's buffers
+PAR2_MINIMUM_MEMORY = int(32 * MEBI)
 
 REPAIR_PRIORITY = 3
 FORCE_PRIORITY = 2

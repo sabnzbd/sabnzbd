@@ -809,7 +809,6 @@ def config_general_index(request: Request):
 
     conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
     conf["have_sabctools"] = sabnzbd.decoder.SABCTOOLS_ENABLED
-    conf["have_par2_turbo"] = sabnzbd.newsunpack.PAR2_TURBO
     conf["ssl_version"] = ssl.OPENSSL_VERSION
 
     return template_filtered_response(
@@ -868,7 +867,6 @@ def config_folder_save(request: Request):
 # Page definitions - Config - Switches
 ##############################################################################
 SWITCH_LIST = (
-    "par_option",
     "top_only",
     "direct_unpack",
     "win_process_prio",
@@ -983,6 +981,7 @@ SPECIAL_BOOL_LIST = (
     "verify_xff_header",
     "direct_write",
     "direct_decode",
+    "par2_quick_verify",
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",
