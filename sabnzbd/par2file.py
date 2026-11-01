@@ -216,6 +216,12 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
                     f.seek(packet_start + len(PAR_PKT_ID))
                     continue
 
+                # Only the recovery set of the first packet is read, as par2 does
+                if set_id is None:
+                    set_id = data[:16].hex()
+                elif data[:16].hex() != set_id:
+                    continue
+
                 # On large files, we stop once we have all the listings and crc32 data and a packet comes
                 # round again, which ends the first copy of the critical packets
                 # Our unit-tests do not include large par2 files, so we cannot verify cases like #3164!
@@ -228,9 +234,6 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
 
                 # See if it's any of the packages we care about
                 par2_packet_type = data[16:32]
-
-                # Get the Recovery Set ID
-                set_id = data[:16].hex()
 
                 if par2_packet_type == PAR_FILE_ID:
                     # The FileDesc packet looks like:
