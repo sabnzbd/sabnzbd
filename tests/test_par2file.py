@@ -183,6 +183,19 @@ class TestPar2Parsing:
         assert set_id == "69af2273e8fa0b4d811b56d02a9c4b59"
         assert list(table) == ["rss_feed_test.xml"]
 
+    def test_packets_of_another_recovery_set_are_ignored(self, tmp_path):
+        packets = self._fixture_packets()
+        main = packets[PAR_MAIN_ID]
+        # The same Main packet in another set, with a block size of its own
+        other_main = self._packet(b"\x11" * 16, PAR_MAIN_ID, (4096).to_bytes(8, "little") + main[72:])
+        mixed = tmp_path / "mixed.par2"
+        mixed.write_bytes(b"".join(packets.values()) + other_main)
+
+        set_id, table = parse_par2_file(str(mixed), {})
+        expected_set_id, expected = parse_par2_file(os.path.join(SAB_DATA_DIR, "par2file", "basic_16k.par2"), {})
+        assert set_id == expected_set_id
+        assert table["rss_feed_test.xml"].blocksize == expected["rss_feed_test.xml"].blocksize
+
     def test_parse_par2_file(self, caplog):
         # To capture the par2-creator, we need to capture the logging
         with caplog.at_level(logging.DEBUG):
