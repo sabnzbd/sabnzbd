@@ -125,8 +125,8 @@ ASSEMBLER_WRITE_INTERVAL = 5.0
 NNTP_BUFFER_SIZE = int(256 * KIBI)
 NTTP_MAX_BUFFER_SIZE = int(10 * MEBI)
 DEF_PIPELINING_REQUESTS = 2
-# Article cache capacity factor to force a non-contiguous flush to disk
-ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE = 0.9
+# Article cache capacity factor to force a non-contiguous flush to disk, no later than the downloader is held back
+ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE = ASSEMBLER_DELAY_FILL
 # Memory left to the rest of the system when capping the article cache
 ARTICLE_CACHE_RESERVED_MEMORY = int(512 * MEBI)
 
