@@ -33,20 +33,139 @@ import time
 import warnings
 from enum import Enum
 from functools import cached_property
+from io import BytesIO
 from typing import Optional
 from unittest import mock
 
 import pytest
+import sabctools
 from flaky import flaky
 
 import sabnzbd
-from sabnzbd import misc, newswrapper
+from sabnzbd import decoder, misc, newswrapper
 from sabnzbd.get_addrinfo import AddrInfo
 
 TEST_HOST = "127.0.0.1"
 TEST_HOST_IPV6 = "::1"
 TEST_PORT = misc.find_free_port(TEST_HOST, 10000)
 TEST_DATA = b"connection_test"
+
+
+class TestPrecheckResponses:
+    @pytest.fixture
+    def precheck_connection(self, monkeypatch):
+        server = mock.Mock(active=False, ssl=False, timeout=10, have_stat=True, have_body=True)
+        nw = newswrapper.NewsWrapper(server, 0)
+        nw.ready = True
+        nw.decoder = sabctools.Decoder(4096)
+        nw.nntp = mock.Mock(write_buffer=b"")
+
+        article = mock.Mock(article="test@example.invalid", tries=0, decoded=False, on_disk=False)
+        article.nzf.nzo.precheck = True
+        article.nzf.nzo.removed_from_queue = False
+
+        downloader = mock.Mock()
+        downloader.decode.side_effect = decoder.decode
+        queue = mock.Mock()
+        cache = mock.Mock()
+        monkeypatch.setattr(sabnzbd, "Downloader", downloader, raising=False)
+        monkeypatch.setattr(sabnzbd, "NzbQueue", queue, raising=False)
+        monkeypatch.setattr(sabnzbd, "ArticleCache", cache, raising=False)
+        monkeypatch.setattr(decoder, "search_new_server", mock.Mock(return_value=False))
+
+        def receive(data):
+            stream = BytesIO(data)
+            nw.nntp.sock.recv_into.side_effect = lambda buffer, nbytes: stream.readinto(buffer)
+            nw.read()
+
+        return nw, article, downloader, queue, cache, receive
+
+    @pytest.mark.parametrize(
+        "article_id, headers, expected_success",
+        [
+            ("test@example.invalid", b"Message-ID: <test@example.invalid>\r\nSubject: Test\r\n", True),
+            ("test@example.invalid", b"Subject: Missing message ID\r\n", False),
+            ("test@example.invalid", b"Message-ID: <test@example.invalid>\r\nSubject: Removed by DMCA\r\n", False),
+            ("test@example.invalid", b"Subject: Removed by DMCA\r\nMessage-ID: <test@example.invalid>\r\n", False),
+            ("blocked@example.invalid", b"Message-ID: <blocked@example.invalid>\r\nSubject: Test\r\n", True),
+            ("removed@example.invalid", b"Message-ID: <removed@example.invalid>\r\nSubject: Test\r\n", True),
+            ("cancel@example.invalid", b"Message-ID: <cancel@example.invalid>\r\nSubject: Test\r\n", True),
+            ("dmca@example.invalid", b"Message-ID: <dmca@example.invalid>\r\nSubject: Test\r\n", True),
+            ("test@blocked.example.invalid", b"Message-ID: <test@blocked.example.invalid>\r\n", True),
+            ("dmca@example.invalid", b"mEsSaGe-Id:\t<dmca@example.invalid>\r\nSubject: Test\r\n", True),
+            ("dmca@example.invalid", b"Message-ID: <dmca@example.invalid>\r\nSubject: Removed by DMCA\r\n", False),
+            ("test@example.invalid", b"Message-ID: <test@example.invalid> (Removed by DMCA)\r\n", False),
+            ("blocked@example.invalid", b"Message-ID: <blocked@example.invalid> (Removed by DMCA)\r\n", False),
+            ("test@example.invalid", b"Message-ID: <test@example.invalid> (<removed>)\r\n", False),
+            ("test@example.invalid", b"Message-ID: (Removed by DMCA) <test@example.invalid>\r\n", False),
+            ("test@example.invalid", b"Message-ID: Removed by DMCA\r\n", False),
+            ("test@example.invalid", b"Message-ID: <test@example.invalid (Removed by DMCA)\r\n", False),
+            ("test@example.invalid", b"Message-ID: (<removed>) <test@example.invalid>\r\n", False),
+            ("dmca@example.invalid", b"Message-ID: <dmca@example.invalid> (metadata)\r\n", True),
+            ("dmca@example.invalid", b"Message-ID: <dmca@example.invalid>\r\n\t(Removed by DMCA)\r\n", False),
+            # RFC 3977 Appendix A.2 permits the header ID to differ from the protocol ID.
+            ("45223423@example.com", b"Message-ID: <1234@example.net>\r\nSubject: Test\r\n", True),
+        ],
+    )
+    def test_head_fallback(self, precheck_connection, article_id, headers, expected_success):
+        nw, article, downloader, queue, cache, receive = precheck_connection
+        article.article = article_id
+
+        nw.queue_article(article)
+        assert nw.next_request == (f"STAT <{article_id}>\r\n".encode(), article)
+        nw.next_request = None
+        nw.decoder.expect(article)
+        receive(b"500 Command not recognized\r\n")
+        assert nw.server.have_stat is False
+        article.allow_new_fetcher.assert_called_once_with()
+        downloader.decode.assert_not_called()
+
+        nw.queue_article(article)
+        assert nw.next_request == (f"HEAD <{article_id}>\r\n".encode(), article)
+        nw.next_request = None
+        nw.decoder.expect(article)
+        receive(f"221 0 <{article_id}> headers follow\r\n".encode() + headers)
+        queue.register_article.assert_not_called()
+        receive(b".\r\n")
+
+        downloader.reset_nw.assert_not_called()
+        downloader.decode.assert_called_once()
+        queue.register_article.assert_called_once_with(article, expected_success)
+        article.nzf.nzo.update_download_stats.assert_not_called()
+        cache.save_article.assert_not_called()
+        assert article.decoded is False
+        assert article.on_disk is False
+        assert nw.decoder.expected == 0
+
+    def test_stat_success(self, precheck_connection):
+        nw, article, downloader, queue, cache, receive = precheck_connection
+        nw.decoder.expect(article)
+        receive(b"223 0 <test@example.invalid> article exists\r\n")
+
+        downloader.reset_nw.assert_not_called()
+        queue.register_article.assert_called_once_with(article, True)
+        article.nzf.nzo.update_download_stats.assert_not_called()
+        cache.save_article.assert_not_called()
+
+    def test_head_response_during_download(self, precheck_connection):
+        nw, article, downloader, queue, _, receive = precheck_connection
+        article.nzf.nzo.precheck = False
+        nw.decoder.expect(article)
+        receive(b"221 0 <test@example.invalid> headers follow\r\nMessage-ID: <test@example.invalid>\r\n.\r\n")
+
+        downloader.reset_nw.assert_called_once()
+        downloader.decode.assert_not_called()
+        queue.register_article.assert_not_called()
+
+    def test_removal_scan_during_download(self, precheck_connection, monkeypatch):
+        _, article, _, queue, _, _ = precheck_connection
+        article.nzf.nzo.precheck = False
+        monkeypatch.setattr(decoder, "decode_yenc", mock.Mock(side_effect=decoder.BadYenc))
+        response = mock.Mock(status_code=222, lines=["Message-ID: <blocked@example.invalid>"])
+
+        decoder.decode(article, response)
+
+        queue.register_article.assert_called_once_with(article, False)
 
 
 class IPProtocolVersion(Enum):
