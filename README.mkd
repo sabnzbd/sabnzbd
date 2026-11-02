@@ -38,6 +38,7 @@ the current improvements and give us feedback!
 
 ## Upgrade notices
 
+* Python 3.10 support will be dropped in SABnzbd 5.3.
 * You can directly upgrade from version 3.0.0 and newer.
 * Upgrading from older versions will require performing a `Queue repair`.
 
