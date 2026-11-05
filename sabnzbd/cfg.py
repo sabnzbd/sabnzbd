@@ -581,6 +581,8 @@ verify_xff_header = OptionBool("misc", "verify_xff_header", True, protect=True)
 direct_write = OptionBool("misc", "direct_write", True)
 direct_decode = OptionBool("misc", "direct_decode", True)
 par2_quick_verify = OptionBool("misc", "par2_quick_verify", True)
+par2_threads = OptionNumber("misc", "par2_threads", 0, minval=0)
+par2_file_threads = OptionNumber("misc", "par2_file_threads", 0, minval=0)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])

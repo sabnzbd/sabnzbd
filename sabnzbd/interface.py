@@ -995,6 +995,8 @@ SPECIAL_VALUE_LIST = (
     "receive_threads",
     "switchinterval",
     "direct_unpack_threads",
+    "par2_threads",
+    "par2_file_threads",
     "selftest_host",
     "ssdp_broadcast_interval",
     "unrar_parameters",
