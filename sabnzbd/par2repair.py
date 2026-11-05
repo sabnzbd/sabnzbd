@@ -87,13 +87,17 @@ class RepairSession:
             if os.path.isfile(path) and get_ext(path) != ".par2" and os.path.normcase(path) not in claimed
         ]
 
+        threads = cfg.par2_threads()
         cpus = get_cpus()
+        if not threads and cpus:
+            threads = max(1, cpus - 1)
         self.repairer = sabctools.Par2Repairer(
             self.parfile,
             extrafiles=extrafiles,
             basepath=basepath,
             memory_limit=memory_limit(),
-            threads=max(1, cpus - 1) if cpus else 0,
+            threads=threads,
+            file_threads=cfg.par2_file_threads(),
         )
         self.repairer.progress_callback = self._on_progress
         self.repairer.file_done_callback = self._on_file_done

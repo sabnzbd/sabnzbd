@@ -452,7 +452,16 @@ class TestPar2Threads:
 
     def test_file_threads_are_left_to_par2(self, tmp_path):
         """This one is about I/O concurrency, not CPU count - par2's 2 stands"""
-        assert "file_threads" not in self.opened_with(tmp_path)
+        assert self.opened_with(tmp_path)["file_threads"] == 0
+
+    def test_configured_thread_counts(self, tmp_path):
+        with (
+            mock.patch.object(cfg.par2_threads, "get", return_value=6),
+            mock.patch.object(cfg.par2_file_threads, "get", return_value=4),
+        ):
+            kwargs = self.opened_with(tmp_path)
+        assert kwargs["threads"] == 6
+        assert kwargs["file_threads"] == 4
 
 
 class TestPar2SetLoaded:
