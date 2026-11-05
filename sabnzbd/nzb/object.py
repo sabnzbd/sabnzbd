@@ -120,6 +120,8 @@ class NzoInfo(TypedDict, total=False):
     password: str
     # RSS feed source name
     RSS: str
+    # Fetch RSS cart items before duplicate detection (snapshotted from feed settings).
+    rss_fetch_duplicates: bool
     # Download duration in seconds (set on completion)
     download_time: int
     # Article quality counters (incremented during download)
@@ -363,7 +365,9 @@ class NzbObject(TryList):
         if nzb_fp is None and not reuse:
             # For future NZB, check if we don't already have this in the queue or history
             # based on the custom name supplied by the user or the RSS feed
-            if self.custom_name and dup_check:
+            # Cart feeds may need the NZB request to remove items. Leave these placeholders
+            # untagged so queue alternative handling cannot act before the fetch.
+            if self.custom_name and dup_check and not (self.futuretype and self.nzo_info.get("rss_fetch_duplicates")):
                 self.duplicate_check()
                 self.handle_duplicate_action()
             return

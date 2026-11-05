@@ -110,7 +110,7 @@ jobs:
 
   build_macos:
     name: Build macOS binary
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 15
     env:
       # The deployment target is picked up by the Python build tools automatically
@@ -144,7 +144,8 @@ jobs:
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
-        pip3 install -r requirements.txt --no-binary cffi,CT3,PyYAML,httptools --no-dependencies
+        rustup target add x86_64-apple-darwin
+        pip3 install -r requirements.txt --no-binary cffi,CT3,PyYAML,httptools,orjson --no-dependencies
         pip3 install -r builder/requirements.txt --no-dependencies
     - name: Import macOS codesign certificates
       # Taken from https://github.com/Apple-Actions/import-codesign-certs/pull/27 (comments)

@@ -349,7 +349,7 @@ def process_single_nzb(
         result = AddNzbFileResult.NO_FILES_FOUND
     except NzbRejected:
         # Rejected as duplicate
-        result = AddNzbFileResult.ERROR
+        result = AddNzbFileResult.DUPLICATE
     except NzbPreQueueRejected:
         # Rejected by pre-queue script - should be silently ignored for URL fetches
         result = AddNzbFileResult.PREQUEUE_REJECTED
@@ -368,7 +368,7 @@ def process_single_nzb(
         nzo_ids.append(sabnzbd.NzbQueue.add(nzo, quiet=bool(reuse)))
 
     try:
-        if not keep and result in {AddNzbFileResult.ERROR, AddNzbFileResult.OK}:
+        if not keep and result in {AddNzbFileResult.ERROR, AddNzbFileResult.OK, AddNzbFileResult.DUPLICATE}:
             remove_file(path)
     except OSError:
         # Job was still added to the queue, so throw error but don't report failed add
