@@ -422,6 +422,41 @@ class TestCleanupList:
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
+class TestRemoveSamples:
+    @staticmethod
+    def _create_file(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            f.write("x")
+        return path
+
+    def test_remove_samples_removes_emptied_folder(self):
+        """The sample folder is removed once its sample files are gone"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_samples")
+        keep = self._create_file(os.path.join(base_dir, "movie.mkv"))
+        self._create_file(os.path.join(base_dir, "Sample", "movie-sample.mkv"))
+        other_empty = os.path.join(base_dir, "unrelated")
+        os.makedirs(other_empty)
+
+        postproc.remove_samples(base_dir)
+
+        assert os.path.exists(keep)
+        assert not os.path.exists(os.path.join(base_dir, "Sample"))
+        assert os.path.isdir(other_empty)
+
+    def test_remove_samples_keeps_folder_with_other_files(self):
+        """A folder that still has other files is kept"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_samples")
+        self._create_file(os.path.join(base_dir, "movie.mkv"))
+        self._create_file(os.path.join(base_dir, "Sample", "movie-sample.mkv"))
+        other = self._create_file(os.path.join(base_dir, "Sample", "readme.txt"))
+
+        postproc.remove_samples(base_dir)
+
+        assert os.path.exists(other)
+
+
+@pytest.mark.usefixtures("clean_cache_dir")
 class TestRemoveUnwantedFiles:
     @staticmethod
     def _create_file(path, content=b"data"):

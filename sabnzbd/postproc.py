@@ -1357,13 +1357,18 @@ def remove_samples(path: str):
 
     # Make sure we skip false-positives
     if len(files_to_delete) < nr_files:
-        for path in files_to_delete:
+        removed_files = []
+        for sample_path in files_to_delete:
             try:
-                logging.info("Removing unwanted sample file %s", path)
-                remove_file(path)
+                logging.info("Removing unwanted sample file %s", sample_path)
+                remove_file(sample_path)
+                removed_files.append(sample_path)
             except Exception:
-                logging.error(T("Removing %s failed"), clip_path(path))
+                logging.error(T("Removing %s failed"), clip_path(sample_path))
                 logging.info("Traceback: ", exc_info=True)
+
+        # Remove the folders the samples left behind, if they are now empty
+        remove_empty_parent_directories(path, removed_files)
     else:
         logging.info("Skipping sample-removal, false-positive")
 
