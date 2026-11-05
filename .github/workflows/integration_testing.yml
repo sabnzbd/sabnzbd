@@ -59,7 +59,7 @@ jobs:
         cache-dependency-path: "**/requirements.txt"
     - name: Install system dependencies
       if: runner.os == 'Linux'
-      run: sudo apt-get install unrar 7zip par2
+      run: sudo apt-get install unrar 7zip
     - name: Install Python dependencies
       run: |
         python --version
