@@ -950,5 +950,19 @@ def config_conversions():
         # Done
         config_conversion_version.set(5)
 
+    # Move the thread counts out of the removed par2 command line parameters
+    if config_conversion_version() < 6:
+        logging.info("Config conversion set 6")
+        par_option = sabnzbd.config.CONFIG.get("misc", {}).pop("par_option", "")
+        if isinstance(par_option, list):
+            par_option = " ".join(par_option)
+        if threads := re.search(r"(?:^|\s)-t\s*(\d+)", par_option):
+            par2_threads.set(int(threads.group(1)))
+        if file_threads := re.search(r"(?:^|\s)-T\s*(\d+)", par_option):
+            par2_file_threads.set(int(file_threads.group(1)))
+
+        # Done
+        config_conversion_version.set(6)
+
     # Make sure we store the new values
     save_config()

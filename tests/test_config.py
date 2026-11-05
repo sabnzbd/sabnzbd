@@ -213,6 +213,43 @@ class TestConfig:
         assert ini_on_disk["misc"].get("email_dir", "") == ""
         assert "0.0.0.0/0" not in ini_on_disk["misc"].get("local_ranges", [])
 
+    @pytest.mark.parametrize(
+        "par_option, threads, file_threads",
+        [
+            ("par_option = -t4 -T 2 -N", 4, 2),
+            ("par_option = -T8", 0, 8),
+            ("par_option = -N -v", 0, 0),
+            ("par_option = -t4, -T2", 4, 2),
+            ("par_option = -t3,", 3, 0),
+            ("par_option = ", 0, 0),
+            ("", 0, 0),
+        ],
+    )
+    def test_par_option_conversion(self, tmp_path, par_option, threads, file_threads):
+        ini_path = os.path.join(tmp_path, DEF_INI_FILE)
+        with open(ini_path, "w") as ini:
+            ini.write("[misc]\nconfig_conversion_version = 5\n%s\n" % par_option)
+        config.read_config(ini_path)
+        try:
+            sabnzbd.cfg.config_conversions()
+            assert sabnzbd.cfg.par2_threads() == threads
+            assert sabnzbd.cfg.par2_file_threads() == file_threads
+            assert sabnzbd.cfg.config_conversion_version() == 6
+            assert "par_option" not in configobj.ConfigObj(ini_path, encoding="utf-8")["misc"]
+        finally:
+            sabnzbd.cfg.par2_threads.set(0)
+            sabnzbd.cfg.par2_file_threads.set(0)
+
+    def test_par_option_conversion_without_misc_section(self, tmp_path):
+        ini_path = os.path.join(tmp_path, DEF_INI_FILE)
+        with open(ini_path, "w") as ini:
+            ini.write("[logging]\n")
+        config.read_config(ini_path)
+        sabnzbd.cfg.config_conversion_version.set(5)
+        sabnzbd.cfg.config_conversions()
+        assert sabnzbd.cfg.config_conversion_version() == 6
+        assert sabnzbd.cfg.par2_threads() == 0
+
     def test_remove_protected_options(self):
         ini_data = (
             b"__version__ = 19\n[misc]\nemail_dir = /tmp/templates\nlocal_ranges = 0.0.0.0/0,\n"
