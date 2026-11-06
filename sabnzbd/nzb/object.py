@@ -46,6 +46,7 @@ from sabnzbd.constants import (
     STOP_PRIORITY,
     RENAMES_FILE,
     MAX_BAD_ARTICLES,
+    PROSPECTIVE_ADD_INTERVAL,
     Status,
     DuplicateStatus,
     NZO_FILE,
@@ -303,6 +304,8 @@ class NzbObject(TryList):
         self.par2_sessions: dict[str, sabnzbd.par2repair.RepairSession] = {}
         # Files a par2 repair rewrote, not saved
         self.par2_rewritten: set[str] = set()
+        # When the failed articles of a file still downloading may next add par2, not saved
+        self.next_prospective_add: float = 0.0
         self.bytes: int = 0  # Original bytesize
         self.bytes_par2: int = 0  # Bytes in par2 files
         self.bytes_downloaded: int = 0  # Downloaded byte
@@ -920,7 +923,13 @@ class NzbObject(TryList):
                     self.prospective_add(nzf)
                 if job_can_succeed and not self.reuse and cfg.fail_hopeless_jobs():
                     job_can_succeed = not self.blocks_beyond_recovery()
-        elif not success and self.extrapars and not self.precheck:
+        elif (
+            not success
+            and self.extrapars
+            and not self.precheck
+            and (now := time.monotonic()) >= self.next_prospective_add
+        ):
+            self.next_prospective_add = now + PROSPECTIVE_ADD_INTERVAL
             self.prospective_add(nzf)
 
         # Check if we can succeed when we have missing articles
@@ -1919,6 +1928,7 @@ class NzbObject(TryList):
         self.direct_unpacker = None
         self.par2_sessions = {}
         self.par2_rewritten = set()
+        self.next_prospective_add = 0.0
         self.filenames = set()
         for nzf in self.files_table.values():
             if nzf.filepath:

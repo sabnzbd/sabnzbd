@@ -133,6 +133,8 @@ ARTICLE_CACHE_RESERVED_MEMORY = int(512 * MEBI)
 PAR2_RESERVED_MEMORY = int(512 * MEBI)
 # Floor for par2's buffers
 PAR2_MINIMUM_MEMORY = int(32 * MEBI)
+# Shortest time between adding par2 for the failed articles of a file still downloading
+PROSPECTIVE_ADD_INTERVAL = 1.0
 
 REPAIR_PRIORITY = 3
 FORCE_PRIORITY = 2
