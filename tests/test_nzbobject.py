@@ -484,6 +484,38 @@ class TestBlockAccounting:
             nzo.remove_article(failed, False)
         prospective_add.assert_called_once_with(downloading)
 
+    def test_failed_articles_add_par2_at_most_once_per_interval(self):
+        nzo = self._make_nzo()
+        downloading = self._make_nzf(nzo, "file1.rar")
+        nzo.finished_files.remove(nzo.finished_files[0])
+        nzo.files.append(downloading)
+        downloading.import_finished = True
+        downloading.articles = {article: article for article in downloading.decodetable}
+        first, second, third, _ = downloading.decodetable
+        with (
+            mock.patch.object(nzo, "prospective_add") as prospective_add,
+            mock.patch("sabnzbd.nzb.object.time.monotonic", side_effect=[100.0, 100.5, 101.0]),
+        ):
+            nzo.remove_article(first, False)
+            nzo.remove_article(second, False)
+            assert prospective_add.call_count == 1
+            nzo.remove_article(third, False)
+            assert prospective_add.call_count == 2
+
+    def test_a_file_that_finishes_adds_par2_whatever_the_interval(self):
+        nzo = self._make_nzo()
+        downloading = self._make_nzf(nzo, "file1.rar")
+        nzo.finished_files.remove(nzo.finished_files[0])
+        nzo.files.append(downloading)
+        downloading.import_finished = True
+        last = downloading.decodetable[-1]
+        downloading.articles = {last: last}
+        downloading.bytes_left = last.bytes
+        nzo.next_prospective_add = float("inf")
+        with mock.patch.object(nzo, "prospective_add") as prospective_add:
+            nzo.remove_article(last, False)
+        prospective_add.assert_called_once_with(downloading)
+
     def test_damage_no_set_describes(self):
         """A file the packs do not name is damage the accounting cannot locate."""
         nzo = self._make_nzo()
