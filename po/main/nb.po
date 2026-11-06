@@ -45,11 +45,6 @@ msgid ""
 msgstr ""
 "SABCTools deaktivert: Fant ikke korrekt versjon! (Fant v%s, forventet v%s)"
 
-#. Error message
-#: SABnzbd.py
-msgid "par2 binary... NOT found!"
-msgstr "par2-binærfil... IKKE funnet!"
-
 #. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
@@ -425,12 +420,6 @@ msgid ""
 "Your Scripts Folder is set to a system 'bin' folder. This is unusual and "
 "usually indicates that someone used a recent exploit to gain access to this "
 "system and run commands on it. See: https://sabnzbd.org/5-1-vulnerabilities"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/cfg.py
-msgid ""
-"The par2 application was switched, any custom par2 parameters were removed"
 msgstr ""
 
 #. Warning message
@@ -1171,7 +1160,7 @@ msgstr "[%s] Hurtigkontroll OK"
 msgid "Starting Repair"
 msgstr "Starter reparasjon"
 
-#: sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py, sabnzbd/par2repair.py
 msgid "Repairing failed, %s"
 msgstr "Reparasjon mislyktes, %s"
 
@@ -1186,30 +1175,8 @@ msgid "Error \"%s\" while running par2_repair on set %s"
 msgstr "Feil \"%s\" under kjøring av par2_repair på %s"
 
 #: sabnzbd/newsunpack.py
-msgid ""
-"[%s] PAR2 received incorrect options, check your Config->Switches settings"
-msgstr ""
-"[%s] PAR2 mottok feil kommandoer, undersøk brytere i Konfigurasjon->Brytere"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Verified in %s, all files correct"
-msgstr "[%s] Verifiseing tok %s, alle filer er ok"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Verified in %s, repair is required"
-msgstr "[%s] Verifisering tok %s, krever reparasjon"
-
-#: sabnzbd/newsunpack.py
 msgid "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
 msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "Fetching %s blocks..."
-msgstr "Henter %s blokker..."
-
-#: sabnzbd/newsunpack.py
-msgid "Fetching"
-msgstr "Henter"
 
 #: sabnzbd/newsunpack.py
 msgid "Repair failed, not enough repair blocks (%s short)"
@@ -1217,33 +1184,12 @@ msgstr ""
 "Mislykket reparasjon, finner ikke nødvendige reparasjonsblokker (%s mangler)"
 
 #: sabnzbd/newsunpack.py
-msgid "Repairing"
-msgstr "Reparerer"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Repaired in %s"
-msgstr "[%s] Reparert på %s"
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying repair"
-msgstr ""
-
-#. Notification
-#: sabnzbd/newsunpack.py, sabnzbd/notifier.py
-msgid "Disk full"
-msgstr "Harddisken er full"
-
-#: sabnzbd/newsunpack.py
-msgid "Checking extra files"
-msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying"
-msgstr "Verifiserer"
-
-#: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Prøver SFV-verifisering"
+
+#: sabnzbd/newsunpack.py, sabnzbd/par2repair.py
+msgid "Verifying"
+msgstr "Verifiserer"
 
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
@@ -1312,6 +1258,11 @@ msgstr "Jobb fullført"
 #: sabnzbd/notifier.py
 msgid "Job failed"
 msgstr "Jobb mislyktes"
+
+#. Notification
+#: sabnzbd/notifier.py, sabnzbd/par2repair.py
+msgid "Disk full"
+msgstr "Harddisken er full"
 
 #. Notification
 #: sabnzbd/notifier.py, sabnzbd/postproc.py
@@ -1678,6 +1629,38 @@ msgstr ""
 #: sabnzbd/panic.py
 msgid "Cannot launch the browser, probably not found"
 msgstr "Kan ikke starte webserveren, ble sannsynlig vis ikke funnet"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Verified in %s, all files correct"
+msgstr "[%s] Verifiseing tok %s, alle filer er ok"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Verified in %s, repair is required"
+msgstr "[%s] Verifisering tok %s, krever reparasjon"
+
+#: sabnzbd/par2repair.py
+msgid "Repairing"
+msgstr "Reparerer"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Repaired in %s"
+msgstr "[%s] Reparert på %s"
+
+#: sabnzbd/par2repair.py
+msgid "Out of memory"
+msgstr ""
+
+#: sabnzbd/par2repair.py
+msgid "Fetching"
+msgstr "Henter"
+
+#: sabnzbd/par2repair.py
+msgid "Fetching %s blocks..."
+msgstr "Henter %s blokker..."
+
+#: sabnzbd/par2repair.py
+msgid "Verifying repair"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -2796,12 +2779,6 @@ msgid "Enable 7zip"
 msgstr "Aktiver 7zip"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Speed up repairs by installing par2cmdline-turbo, it is available for many "
-"platforms."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Version"
 msgstr "Versjon"
 
@@ -3515,10 +3492,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Executed after the queue finishes downloading."
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Extra PAR2 Parameters"
-msgstr "Ekstra PAR2 parametere"
 
 #: sabnzbd/skintext.py
 msgid "Nice Parameters"

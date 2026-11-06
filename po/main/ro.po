@@ -47,11 +47,6 @@ msgstr ""
 "SABCTools dezactivat: nu s-a găsit o versiune corectă! (Găsită v%s, se "
 "așteaptă v%s)"
 
-#. Error message
-#: SABnzbd.py
-msgid "par2 binary... NOT found!"
-msgstr "binar par2 ... Negăsit!"
-
 #. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
@@ -443,12 +438,6 @@ msgid ""
 "Your Scripts Folder is set to a system 'bin' folder. This is unusual and "
 "usually indicates that someone used a recent exploit to gain access to this "
 "system and run commands on it. See: https://sabnzbd.org/5-1-vulnerabilities"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/cfg.py
-msgid ""
-"The par2 application was switched, any custom par2 parameters were removed"
 msgstr ""
 
 #. Warning message
@@ -1198,7 +1187,7 @@ msgstr "[%s] Verficare Rapidă OK"
 msgid "Starting Repair"
 msgstr "Pornire Reparare"
 
-#: sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py, sabnzbd/par2repair.py
 msgid "Repairing failed, %s"
 msgstr "Reparare nereuşită, %s"
 
@@ -1213,66 +1202,22 @@ msgid "Error \"%s\" while running par2_repair on set %s"
 msgstr "Eroare \"%s\" în timpul rulării par2_repair pe setul %s"
 
 #: sabnzbd/newsunpack.py
-msgid ""
-"[%s] PAR2 received incorrect options, check your Config->Switches settings"
-msgstr ""
-"[%s] PAR2 a primit opţiuni incorecte, verifică setările "
-"Configurare->Comutatoare"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Verified in %s, all files correct"
-msgstr "[%s] Verificat în %s, toate fişierele sunt corecte"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Verified in %s, repair is required"
-msgstr "[%s] Verificat în %s, reparare necesară"
-
-#: sabnzbd/newsunpack.py
 msgid "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
 msgstr ""
 "Fișiere par2 invalide sau parametri PAR2 invalizi, nu pot verifica sau "
 "repara"
 
 #: sabnzbd/newsunpack.py
-msgid "Fetching %s blocks..."
-msgstr "Descărcare %s blocuri..."
-
-#: sabnzbd/newsunpack.py
-msgid "Fetching"
-msgstr "Descărcare"
-
-#: sabnzbd/newsunpack.py
 msgid "Repair failed, not enough repair blocks (%s short)"
 msgstr "Reparare nereuşită, blocuri reparare insuficiente (%s mai puţin)"
 
 #: sabnzbd/newsunpack.py
-msgid "Repairing"
-msgstr "Se repară"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Repaired in %s"
-msgstr "[%s] Reparat în %s"
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying repair"
-msgstr "Se verifică repararea"
-
-#. Notification
-#: sabnzbd/newsunpack.py, sabnzbd/notifier.py
-msgid "Disk full"
-msgstr "Disc plin"
-
-#: sabnzbd/newsunpack.py
-msgid "Checking extra files"
-msgstr "Se verifică fișierele extra"
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying"
-msgstr "Se verifică"
-
-#: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Încerc verificare SFV"
+
+#: sabnzbd/newsunpack.py, sabnzbd/par2repair.py
+msgid "Verifying"
+msgstr "Se verifică"
 
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
@@ -1343,6 +1288,11 @@ msgstr "Sarcină terminată"
 #: sabnzbd/notifier.py
 msgid "Job failed"
 msgstr "Sarcină eșuată"
+
+#. Notification
+#: sabnzbd/notifier.py, sabnzbd/par2repair.py
+msgid "Disk full"
+msgstr "Disc plin"
 
 #. Notification
 #: sabnzbd/notifier.py, sabnzbd/postproc.py
@@ -1713,6 +1663,38 @@ msgstr ""
 #: sabnzbd/panic.py
 msgid "Cannot launch the browser, probably not found"
 msgstr "Nu pot porni navigatorul web, probabil nu a fost găsit"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Verified in %s, all files correct"
+msgstr "[%s] Verificat în %s, toate fişierele sunt corecte"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Verified in %s, repair is required"
+msgstr "[%s] Verificat în %s, reparare necesară"
+
+#: sabnzbd/par2repair.py
+msgid "Repairing"
+msgstr "Se repară"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Repaired in %s"
+msgstr "[%s] Reparat în %s"
+
+#: sabnzbd/par2repair.py
+msgid "Out of memory"
+msgstr ""
+
+#: sabnzbd/par2repair.py
+msgid "Fetching"
+msgstr "Descărcare"
+
+#: sabnzbd/par2repair.py
+msgid "Fetching %s blocks..."
+msgstr "Descărcare %s blocuri..."
+
+#: sabnzbd/par2repair.py
+msgid "Verifying repair"
+msgstr "Se verifică repararea"
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -2833,12 +2815,6 @@ msgid "Enable 7zip"
 msgstr "Activează  7zip"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Speed up repairs by installing par2cmdline-turbo, it is available for many "
-"platforms."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Version"
 msgstr "Versiune"
 
@@ -3551,10 +3527,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Executed after the queue finishes downloading."
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Extra PAR2 Parameters"
-msgstr "Parametri Extra PAR2"
 
 #: sabnzbd/skintext.py
 msgid "Nice Parameters"

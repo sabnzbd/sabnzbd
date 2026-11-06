@@ -50,11 +50,6 @@ msgstr ""
 "SABCTools devre dışı bırakıldı: hiçbir doğru sürüm bulunamadı! (v%s bulundu,"
 " v%s bekleniyordu)"
 
-#. Error message
-#: SABnzbd.py
-msgid "par2 binary... NOT found!"
-msgstr "par2 ikilisi... bulunamadı!"
-
 #. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
@@ -470,12 +465,6 @@ msgstr ""
 "açığı kullanarak bu sisteme erişim sağladığına ve üzerinde komut "
 "çalıştırdığına işaret eder. Şu sayfaya bakın: "
 "https://sabnzbd.org/5-1-vulnerabilities"
-
-#. Warning message
-#: sabnzbd/cfg.py
-msgid ""
-"The par2 application was switched, any custom par2 parameters were removed"
-msgstr "par2 uygulaması değiştirildi, tüm özel par2 parametreleri kaldırıldı"
 
 #. Warning message
 #: sabnzbd/config.py
@@ -1240,7 +1229,7 @@ msgstr "[%s] Hızlı Kontrol Tamam"
 msgid "Starting Repair"
 msgstr "Tamire Başlanıyor"
 
-#: sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py, sabnzbd/par2repair.py
 msgid "Repairing failed, %s"
 msgstr "Tamir başarısız oldu, %s"
 
@@ -1255,66 +1244,22 @@ msgid "Error \"%s\" while running par2_repair on set %s"
 msgstr "\"%s\" hatası, %s kümesi üzerinde par2_repair çalıştırılırken"
 
 #: sabnzbd/newsunpack.py
-msgid ""
-"[%s] PAR2 received incorrect options, check your Config->Switches settings"
-msgstr ""
-"[%s] PAR2 yanlış seçenekler aldı, Yapılandırma-> Anahtarlar ayarlarınızı "
-"kontrol edin"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Verified in %s, all files correct"
-msgstr "[%s] %s içinde kontrol edildi, tüm dosyalar doğru"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Verified in %s, repair is required"
-msgstr "[%s] %s içinde kontrol edildi, tamir gerekli"
-
-#: sabnzbd/newsunpack.py
 msgid "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
 msgstr ""
 "Geçersiz par2 dosyaları veya geçersiz PAR2 parametreleri, kontrol veya tamir"
 " edilemez"
 
 #: sabnzbd/newsunpack.py
-msgid "Fetching %s blocks..."
-msgstr "%s blok alınıyor..."
-
-#: sabnzbd/newsunpack.py
-msgid "Fetching"
-msgstr "Alınıyor"
-
-#: sabnzbd/newsunpack.py
 msgid "Repair failed, not enough repair blocks (%s short)"
 msgstr "Tamir başarısız oldu, kafi derecede tamir bloku yok (%s eksik)"
 
 #: sabnzbd/newsunpack.py
-msgid "Repairing"
-msgstr "Tamir ediliyor"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Repaired in %s"
-msgstr "[%s] %s içinde tamir edildi"
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying repair"
-msgstr "Tamir kontrol ediliyor"
-
-#. Notification
-#: sabnzbd/newsunpack.py, sabnzbd/notifier.py
-msgid "Disk full"
-msgstr "Disk dolu"
-
-#: sabnzbd/newsunpack.py
-msgid "Checking extra files"
-msgstr "Ekstra dosyalar kontrol ediliyor"
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying"
-msgstr "Kontrol ediliyor"
-
-#: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "SFV doğrulaması deneniyor"
+
+#: sabnzbd/newsunpack.py, sabnzbd/par2repair.py
+msgid "Verifying"
+msgstr "Kontrol ediliyor"
 
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
@@ -1389,6 +1334,11 @@ msgstr "İş tamamlandı"
 #: sabnzbd/notifier.py
 msgid "Job failed"
 msgstr "İş başarısız oldu"
+
+#. Notification
+#: sabnzbd/notifier.py, sabnzbd/par2repair.py
+msgid "Disk full"
+msgstr "Disk dolu"
 
 #. Notification
 #: sabnzbd/notifier.py, sabnzbd/postproc.py
@@ -1766,6 +1716,38 @@ msgstr ""
 #: sabnzbd/panic.py
 msgid "Cannot launch the browser, probably not found"
 msgstr "Tarayıcı başlatılamıyor, muhtemelen bulunamadı"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Verified in %s, all files correct"
+msgstr "[%s] %s içinde kontrol edildi, tüm dosyalar doğru"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Verified in %s, repair is required"
+msgstr "[%s] %s içinde kontrol edildi, tamir gerekli"
+
+#: sabnzbd/par2repair.py
+msgid "Repairing"
+msgstr "Tamir ediliyor"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Repaired in %s"
+msgstr "[%s] %s içinde tamir edildi"
+
+#: sabnzbd/par2repair.py
+msgid "Out of memory"
+msgstr ""
+
+#: sabnzbd/par2repair.py
+msgid "Fetching"
+msgstr "Alınıyor"
+
+#: sabnzbd/par2repair.py
+msgid "Fetching %s blocks..."
+msgstr "%s blok alınıyor..."
+
+#: sabnzbd/par2repair.py
+msgid "Verifying repair"
+msgstr "Tamir kontrol ediliyor"
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -2900,14 +2882,6 @@ msgid "Enable 7zip"
 msgstr "7zip'i Etkinleştir"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Speed up repairs by installing par2cmdline-turbo, it is available for many "
-"platforms."
-msgstr ""
-"Tamirleri süratlendirmek için par2cmdline-turbo'yu kurun, birçok platform "
-"için mevcuttur."
-
-#: sabnzbd/skintext.py
 msgid "Version"
 msgstr "Sürüm"
 
@@ -3674,10 +3648,6 @@ msgstr "Kuyruk sonu betiği"
 #: sabnzbd/skintext.py
 msgid "Executed after the queue finishes downloading."
 msgstr "Kuyruğun indirmesi tamamlandığında çalıştırılır."
-
-#: sabnzbd/skintext.py
-msgid "Extra PAR2 Parameters"
-msgstr "İlave PAR2 Parametreleri"
 
 #: sabnzbd/skintext.py
 msgid "Nice Parameters"

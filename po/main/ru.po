@@ -45,11 +45,6 @@ msgid ""
 "SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 
-#. Error message
-#: SABnzbd.py
-msgid "par2 binary... NOT found!"
-msgstr "Исполняемый файл par2... НЕ найден"
-
 #. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
@@ -422,12 +417,6 @@ msgid ""
 "Your Scripts Folder is set to a system 'bin' folder. This is unusual and "
 "usually indicates that someone used a recent exploit to gain access to this "
 "system and run commands on it. See: https://sabnzbd.org/5-1-vulnerabilities"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/cfg.py
-msgid ""
-"The par2 application was switched, any custom par2 parameters were removed"
 msgstr ""
 
 #. Warning message
@@ -1168,7 +1157,7 @@ msgstr "[%s] Быстрая проверка прошла успешно"
 msgid "Starting Repair"
 msgstr "запуск исправления"
 
-#: sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py, sabnzbd/par2repair.py
 msgid "Repairing failed, %s"
 msgstr "Не удалось исправить: %s"
 
@@ -1183,31 +1172,8 @@ msgid "Error \"%s\" while running par2_repair on set %s"
 msgstr "Ошибка «%s» выполнения par2_repair для набора %s"
 
 #: sabnzbd/newsunpack.py
-msgid ""
-"[%s] PAR2 received incorrect options, check your Config->Switches settings"
-msgstr ""
-"[%s] Программе PAR2 переданы неправильные параметры. Проверьте параметры в "
-"разделе «Настройка -> Переключатели»"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Verified in %s, all files correct"
-msgstr "[%s] Проверено за %s. Ошибок нет"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Verified in %s, repair is required"
-msgstr "[%s] Проверено за %s. Требуется исправление"
-
-#: sabnzbd/newsunpack.py
 msgid "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
 msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "Fetching %s blocks..."
-msgstr "загрузка %s блоков..."
-
-#: sabnzbd/newsunpack.py
-msgid "Fetching"
-msgstr "Загрузка"
 
 #: sabnzbd/newsunpack.py
 msgid "Repair failed, not enough repair blocks (%s short)"
@@ -1215,33 +1181,12 @@ msgstr ""
 "Ошибка исправления: недостаточно блоков восстановления (не хватает %s)"
 
 #: sabnzbd/newsunpack.py
-msgid "Repairing"
-msgstr "Исправление"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Repaired in %s"
-msgstr "[%s] Исправлено за %s"
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying repair"
-msgstr ""
-
-#. Notification
-#: sabnzbd/newsunpack.py, sabnzbd/notifier.py
-msgid "Disk full"
-msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "Checking extra files"
-msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying"
-msgstr "Проверка"
-
-#: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Проверка SFV-суммы"
+
+#: sabnzbd/newsunpack.py, sabnzbd/par2repair.py
+msgid "Verifying"
+msgstr "Проверка"
 
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
@@ -1309,6 +1254,11 @@ msgstr "Задание завершено"
 #. Notification
 #: sabnzbd/notifier.py
 msgid "Job failed"
+msgstr ""
+
+#. Notification
+#: sabnzbd/notifier.py, sabnzbd/par2repair.py
+msgid "Disk full"
 msgstr ""
 
 #. Notification
@@ -1678,6 +1628,38 @@ msgstr ""
 #: sabnzbd/panic.py
 msgid "Cannot launch the browser, probably not found"
 msgstr "Не удаётся запустить браузер. Возможно, он не было найден"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Verified in %s, all files correct"
+msgstr "[%s] Проверено за %s. Ошибок нет"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Verified in %s, repair is required"
+msgstr "[%s] Проверено за %s. Требуется исправление"
+
+#: sabnzbd/par2repair.py
+msgid "Repairing"
+msgstr "Исправление"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Repaired in %s"
+msgstr "[%s] Исправлено за %s"
+
+#: sabnzbd/par2repair.py
+msgid "Out of memory"
+msgstr ""
+
+#: sabnzbd/par2repair.py
+msgid "Fetching"
+msgstr "Загрузка"
+
+#: sabnzbd/par2repair.py
+msgid "Fetching %s blocks..."
+msgstr "загрузка %s блоков..."
+
+#: sabnzbd/par2repair.py
+msgid "Verifying repair"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -2795,12 +2777,6 @@ msgid "Enable 7zip"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid ""
-"Speed up repairs by installing par2cmdline-turbo, it is available for many "
-"platforms."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Version"
 msgstr "Версия"
 
@@ -3516,10 +3492,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Executed after the queue finishes downloading."
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Extra PAR2 Parameters"
-msgstr "Дополнительные параметры PAR2"
 
 #: sabnzbd/skintext.py
 msgid "Nice Parameters"

@@ -49,11 +49,6 @@ msgid ""
 msgstr ""
 "SABCTools vypnut: Nenalezena správná verze! (Nalezena v%s, očekávána v%s)"
 
-#. Error message
-#: SABnzbd.py
-msgid "par2 binary... NOT found!"
-msgstr "Program par2... nenalezen!"
-
 #. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
@@ -461,13 +456,6 @@ msgid ""
 "usually indicates that someone used a recent exploit to gain access to this "
 "system and run commands on it. See: https://sabnzbd.org/5-1-vulnerabilities"
 msgstr ""
-
-#. Warning message
-#: sabnzbd/cfg.py
-msgid ""
-"The par2 application was switched, any custom par2 parameters were removed"
-msgstr ""
-"Aplikace par2 byla přepnuta, veškeré vlastní parametry par2 byly odstraněny"
 
 #. Warning message
 #: sabnzbd/config.py
@@ -1228,7 +1216,7 @@ msgstr "[%s] Rychlá kontrola OK"
 msgid "Starting Repair"
 msgstr "Spouštím opravu"
 
-#: sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py, sabnzbd/par2repair.py
 msgid "Repairing failed, %s"
 msgstr "Oprava selhala, %s"
 
@@ -1243,65 +1231,22 @@ msgid "Error \"%s\" while running par2_repair on set %s"
 msgstr "Chyba \"%s\" při spoustění par2_repair na skupině %s"
 
 #: sabnzbd/newsunpack.py
-msgid ""
-"[%s] PAR2 received incorrect options, check your Config->Switches settings"
-msgstr ""
-"[%s] Špatné nastavení PAR2, zkontrolujte volby v Konfigurace->Přepínače"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Verified in %s, all files correct"
-msgstr "[%s] Zkontrolováno v %s, všechny soubory jsou spravné"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Verified in %s, repair is required"
-msgstr "[%s] Zkontrolováno v %s, je nutná oprava"
-
-#: sabnzbd/newsunpack.py
 msgid "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
 msgstr ""
 "Nesprávné par2 soubory nebo nesprávné parametry PAR2, nelze zkontrolovat ani"
 " opravit"
 
 #: sabnzbd/newsunpack.py
-msgid "Fetching %s blocks..."
-msgstr "Stahuji %s bloků..."
-
-#: sabnzbd/newsunpack.py
-msgid "Fetching"
-msgstr "Stahuji"
-
-#: sabnzbd/newsunpack.py
 msgid "Repair failed, not enough repair blocks (%s short)"
 msgstr "Oprava se nezdařila, nedostatek bloků k opravě (chybí %s)"
 
 #: sabnzbd/newsunpack.py
-msgid "Repairing"
-msgstr "Opravuji"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Repaired in %s"
-msgstr "[%s] opraveno v %s"
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying repair"
-msgstr "Ověřuji opravu"
-
-#. Notification
-#: sabnzbd/newsunpack.py, sabnzbd/notifier.py
-msgid "Disk full"
-msgstr "Plný disk"
-
-#: sabnzbd/newsunpack.py
-msgid "Checking extra files"
-msgstr "Kontroluji další soubory"
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying"
-msgstr "Ověřuji"
-
-#: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Zkouším SFV ověření"
+
+#: sabnzbd/newsunpack.py, sabnzbd/par2repair.py
+msgid "Verifying"
+msgstr "Ověřuji"
 
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
@@ -1376,6 +1321,11 @@ msgstr "Úkol dokončen"
 #: sabnzbd/notifier.py
 msgid "Job failed"
 msgstr "Úkol neuspěšný"
+
+#. Notification
+#: sabnzbd/notifier.py, sabnzbd/par2repair.py
+msgid "Disk full"
+msgstr "Plný disk"
 
 #. Notification
 #: sabnzbd/notifier.py, sabnzbd/postproc.py
@@ -1747,6 +1697,38 @@ msgstr ""
 #: sabnzbd/panic.py
 msgid "Cannot launch the browser, probably not found"
 msgstr "Nelze spustit webový prohlížeč, nejspíš nenalezen"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Verified in %s, all files correct"
+msgstr "[%s] Zkontrolováno v %s, všechny soubory jsou spravné"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Verified in %s, repair is required"
+msgstr "[%s] Zkontrolováno v %s, je nutná oprava"
+
+#: sabnzbd/par2repair.py
+msgid "Repairing"
+msgstr "Opravuji"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Repaired in %s"
+msgstr "[%s] opraveno v %s"
+
+#: sabnzbd/par2repair.py
+msgid "Out of memory"
+msgstr ""
+
+#: sabnzbd/par2repair.py
+msgid "Fetching"
+msgstr "Stahuji"
+
+#: sabnzbd/par2repair.py
+msgid "Fetching %s blocks..."
+msgstr "Stahuji %s bloků..."
+
+#: sabnzbd/par2repair.py
+msgid "Verifying repair"
+msgstr "Ověřuji opravu"
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -2869,14 +2851,6 @@ msgid "Enable 7zip"
 msgstr "Povolit 7zip"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Speed up repairs by installing par2cmdline-turbo, it is available for many "
-"platforms."
-msgstr ""
-"Zrychlete opravy instalací par2cmdline-turbo, je dostupný pro mnoho "
-"platforem."
-
-#: sabnzbd/skintext.py
 msgid "Version"
 msgstr "Verze"
 
@@ -3619,10 +3593,6 @@ msgstr "Skript po dokončení fronty"
 #: sabnzbd/skintext.py
 msgid "Executed after the queue finishes downloading."
 msgstr "Spuštěno po dokončení stahování fronty."
-
-#: sabnzbd/skintext.py
-msgid "Extra PAR2 Parameters"
-msgstr "Další parametry PAR2"
 
 #: sabnzbd/skintext.py
 msgid "Nice Parameters"

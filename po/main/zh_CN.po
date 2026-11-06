@@ -46,11 +46,6 @@ msgid ""
 "SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr "SABCTools 已禁用：未找到正确的版本！（找到 v%s，要求 v%s）"
 
-#. Error message
-#: SABnzbd.py
-msgid "par2 binary... NOT found!"
-msgstr "par2 可执行程序... *未* 找到!"
-
 #. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
@@ -424,12 +419,6 @@ msgid ""
 "usually indicates that someone used a recent exploit to gain access to this "
 "system and run commands on it. See: https://sabnzbd.org/5-1-vulnerabilities"
 msgstr ""
-
-#. Warning message
-#: sabnzbd/cfg.py
-msgid ""
-"The par2 application was switched, any custom par2 parameters were removed"
-msgstr "par2 应用程序已切换，所有自定义 par2 参数已被删除"
 
 #. Warning message
 #: sabnzbd/config.py
@@ -1167,7 +1156,7 @@ msgstr "[%s] 快速检查 OK"
 msgid "Starting Repair"
 msgstr "正在开始修复"
 
-#: sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py, sabnzbd/par2repair.py
 msgid "Repairing failed, %s"
 msgstr "修复失败，%s"
 
@@ -1182,62 +1171,20 @@ msgid "Error \"%s\" while running par2_repair on set %s"
 msgstr "\"%s\" 对集合 %s 执行 par2_repair 时出错"
 
 #: sabnzbd/newsunpack.py
-msgid ""
-"[%s] PAR2 received incorrect options, check your Config->Switches settings"
-msgstr "[%s] PAR2 收到的选项不正确，请检查您的“配置”->“参数”设置"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Verified in %s, all files correct"
-msgstr "[%s] 验证耗时 %s，所有文件均完好无损"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Verified in %s, repair is required"
-msgstr "[%s] 验证耗时 %s，需要修复"
-
-#: sabnzbd/newsunpack.py
 msgid "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
 msgstr "无效的 par2 文件或无效的 PAR2 参数，无法验证或修复"
-
-#: sabnzbd/newsunpack.py
-msgid "Fetching %s blocks..."
-msgstr "正在装取 %s 块..."
-
-#: sabnzbd/newsunpack.py
-msgid "Fetching"
-msgstr "正在装取"
 
 #: sabnzbd/newsunpack.py
 msgid "Repair failed, not enough repair blocks (%s short)"
 msgstr "修复失败，修复块不足 (缺 %s 块)"
 
 #: sabnzbd/newsunpack.py
-msgid "Repairing"
-msgstr "正在修复"
-
-#: sabnzbd/newsunpack.py
-msgid "[%s] Repaired in %s"
-msgstr "[%s] 已修复，耗时 %s"
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying repair"
-msgstr "验证修复"
-
-#. Notification
-#: sabnzbd/newsunpack.py, sabnzbd/notifier.py
-msgid "Disk full"
-msgstr "磁盘空间已满"
-
-#: sabnzbd/newsunpack.py
-msgid "Checking extra files"
-msgstr "检查额外文件"
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying"
-msgstr "正在验证"
-
-#: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "正在尝试  SFV 验证"
+
+#: sabnzbd/newsunpack.py, sabnzbd/par2repair.py
+msgid "Verifying"
+msgstr "正在验证"
 
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
@@ -1306,6 +1253,11 @@ msgstr "任务已完成"
 #: sabnzbd/notifier.py
 msgid "Job failed"
 msgstr "任务失败"
+
+#. Notification
+#: sabnzbd/notifier.py, sabnzbd/par2repair.py
+msgid "Disk full"
+msgstr "磁盘空间已满"
 
 #. Notification
 #: sabnzbd/notifier.py, sabnzbd/postproc.py
@@ -1672,6 +1624,38 @@ msgstr ""
 #: sabnzbd/panic.py
 msgid "Cannot launch the browser, probably not found"
 msgstr "无法启动浏览器，可能未找到"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Verified in %s, all files correct"
+msgstr "[%s] 验证耗时 %s，所有文件均完好无损"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Verified in %s, repair is required"
+msgstr "[%s] 验证耗时 %s，需要修复"
+
+#: sabnzbd/par2repair.py
+msgid "Repairing"
+msgstr "正在修复"
+
+#: sabnzbd/par2repair.py
+msgid "[%s] Repaired in %s"
+msgstr "[%s] 已修复，耗时 %s"
+
+#: sabnzbd/par2repair.py
+msgid "Out of memory"
+msgstr ""
+
+#: sabnzbd/par2repair.py
+msgid "Fetching"
+msgstr "正在装取"
+
+#: sabnzbd/par2repair.py
+msgid "Fetching %s blocks..."
+msgstr "正在装取 %s 块..."
+
+#: sabnzbd/par2repair.py
+msgid "Verifying repair"
+msgstr "验证修复"
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -2781,12 +2765,6 @@ msgid "Enable 7zip"
 msgstr "启用 7zip"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Speed up repairs by installing par2cmdline-turbo, it is available for many "
-"platforms."
-msgstr "通过安装 par2cmdline-turbo 加快修复速度，它适用于多个平台。"
-
-#: sabnzbd/skintext.py
 msgid "Version"
 msgstr "版本"
 
@@ -3474,10 +3452,6 @@ msgstr "队列完成脚本"
 #: sabnzbd/skintext.py
 msgid "Executed after the queue finishes downloading."
 msgstr "在队列完成下载后执行。"
-
-#: sabnzbd/skintext.py
-msgid "Extra PAR2 Parameters"
-msgstr "额外的 PAR2 参数"
 
 #: sabnzbd/skintext.py
 msgid "Nice Parameters"
