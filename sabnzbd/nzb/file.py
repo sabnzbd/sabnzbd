@@ -20,9 +20,11 @@ sabnzbd.nzb.file - NzbFile class for representing files in NZB downloads
 """
 
 import datetime
+import itertools
 import logging
 import os
 import threading
+from operator import attrgetter
 from typing import Optional, Any
 
 import sabctools
@@ -193,6 +195,42 @@ class NzbFile(TryList):
         self.setname = setname
         self.vol = vol
         self.blocks = int_conv(blocks)
+
+    @synchronized()
+    def lost_blocks(self, blocksize: int, blockcount: int, filesize: int) -> int:
+        """Par2 blocks the failed articles of a file still downloading may have destroyed.
+
+        Each article lies at its index times the part size when every article that arrived lies
+        there and the part count fits the file, otherwise each run of failed articles is sized from
+        its yEnc-encoded bytes, a little over the data it held, as the most blocks it could touch.
+        """
+        last = len(self.decodetable) - 1
+        part_size = 0
+        in_place = self.import_finished
+        failed_indexes = []
+        for index, article in enumerate(self.decodetable):
+            if article.failed:
+                failed_indexes.append(index)
+            elif in_place and (begin := article.data_begin) is not None and article.data_size:
+                if not part_size:
+                    part_size = article.data_size
+                in_place = begin == index * part_size and (
+                    article.data_size == part_size or (index == last and begin + article.data_size == filesize)
+                )
+
+        if in_place and part_size and -(-filesize // part_size) == len(self.decodetable):
+            lost = set()
+            for index in failed_indexes:
+                start = index * part_size
+                end = min(start + part_size, filesize)
+                lost.update(range(start // blocksize, (end - 1) // blocksize + 1))
+            return len(lost)
+
+        lost = 0
+        for failed, run in itertools.groupby(self.decodetable, key=attrgetter("failed")):
+            if failed:
+                lost += -(-sum(article.bytes for article in run) // blocksize) + 1
+        return min(lost, blockcount)
 
     @synchronized()
     def finalize_crc32(self) -> None:

@@ -424,6 +424,66 @@ class TestBlockAccounting:
         nzo.prospective_add(nzo.finished_files[0])
         assert sorted(nzf.blocks for nzf in nzo.files) == [1, 2]
 
+    def _added_for_downloading(self, failed_articles, change=None) -> int:
+        """Blocks prospective_add asks for when file1.rar is still downloading"""
+        nzo = self._make_nzo()
+        nzo.extrapars["myset"] = [self._make_parfile(nzo, "myset.vol%02d+01.par2" % i, 1) for i in range(12)]
+        downloading = self._make_nzf(nzo, "file1.rar", failed_articles)
+        if change:
+            change(downloading)
+        nzo.finished_files.remove(nzo.finished_files[0])
+        nzo.files.append(downloading)
+        nzo.prospective_add(downloading)
+        return len([nzf for nzf in nzo.files if nzf.is_par2])
+
+    @pytest.mark.parametrize(
+        "failed_articles, blocks",
+        [
+            # Each 2500-byte article lies across 3 of the 1000-byte blocks
+            ((0, 2), 6),
+            # Neighbours share the block at their boundary
+            ((1, 2), 6),
+            ((0, 1, 2, 3), 10),
+        ],
+    )
+    def test_prospective_add_places_failures_of_a_file_still_downloading(self, failed_articles, blocks):
+        assert self._added_for_downloading(failed_articles) == blocks
+
+    def test_an_article_out_of_place_falls_back_to_sizing_runs_from_their_bytes(self):
+        """Each run can then touch one block more than its bytes fill"""
+
+        def shift(nzf):
+            nzf.decodetable[3].data_begin += 100
+
+        assert self._added_for_downloading((0, 2), shift) == 8
+
+    def test_a_segment_missing_from_the_nzb_falls_back_to_sizing_runs_from_their_bytes(self):
+        def drop_last(nzf):
+            nzf.decodetable.pop()
+
+        assert self._added_for_downloading((0, 2), drop_last) == 8
+
+    def test_failures_of_a_file_still_downloading_do_not_make_it_hopeless(self):
+        """Only the exact count of a finished file can say the set is beyond recovery"""
+        nzo = self._make_nzo()
+        downloading = self._make_nzf(nzo, "file1.rar", failed_articles=(0, 1, 2, 3))
+        nzo.finished_files.remove(nzo.finished_files[0])
+        nzo.files.append(downloading)
+        nzo.extrapars["myset"] = nzo.extrapars["myset"][:1]
+        assert nzo.blocks_beyond_recovery() is False
+
+    def test_a_failed_article_adds_par2_before_its_file_finishes(self):
+        nzo = self._make_nzo()
+        downloading = self._make_nzf(nzo, "file1.rar")
+        nzo.finished_files.remove(nzo.finished_files[0])
+        nzo.files.append(downloading)
+        downloading.import_finished = True
+        failed, outstanding = downloading.decodetable[:2]
+        downloading.articles = {failed: failed, outstanding: outstanding}
+        with mock.patch.object(nzo, "prospective_add") as prospective_add:
+            nzo.remove_article(failed, False)
+        prospective_add.assert_called_once_with(downloading)
+
     def test_damage_no_set_describes(self):
         """A file the packs do not name is damage the accounting cannot locate."""
         nzo = self._make_nzo()
