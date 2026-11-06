@@ -100,7 +100,6 @@
         <div class="section">
             <div class="col2">
                 <h3>$T('security') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-                <p><b>$T('restartRequired')</b></p>
             </div><!-- /col2 -->
             <div class="col1">
                 <fieldset>
@@ -277,6 +276,10 @@ jQuery(document).ready(function(){
         jQuery(this).parents('form').attr('data-reload-on-save', '')
     })
     hideOrShowTranslate()
+    jQuery('#web_color').on('change', function() {
+        // Reload the page after saving, so the new colour scheme is applied
+        jQuery(this).parents('form').attr('data-reload-on-save', '')
+    })
 
     // Highlight in case user is not safe
     // So when exposed to internet and no password, no external limit or no username/password

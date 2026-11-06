@@ -168,7 +168,6 @@ NO_DOWNLOADING = False  # When essentials are missing (SABCTools/par2/unrar)
 WEB_DIR = None
 WEB_DIR_CONFIG = None
 WIZARD_DIR = None
-WEB_COLOR = None
 SABSTOP = False
 RESTART_REQ = False
 PAUSED_ALL = False
@@ -258,19 +257,13 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.download_dir.callback(cfg.new_storage_dir)
     cfg.web_host.callback(cfg.guard_restart)
     cfg.web_port.callback(cfg.guard_restart)
-    cfg.web_color.callback(cfg.guard_restart)
     cfg.url_base.callback(trigger_restart)
-    cfg.username.callback(cfg.guard_restart)
-    cfg.password.callback(cfg.guard_restart)
     cfg.log_dir.callback(cfg.guard_restart)
     cfg.https_port.callback(cfg.guard_restart)
     cfg.https_cert.callback(cfg.guard_restart)
     cfg.https_key.callback(cfg.guard_restart)
     cfg.https_chain.callback(cfg.guard_restart)
     cfg.enable_https.callback(cfg.guard_restart)
-    cfg.verify_xff_header.callback(cfg.guard_restart)
-    cfg.local_ranges.callback(cfg.guard_restart)
-    cfg.xff_trusted_hosts.callback(cfg.guard_restart)
     cfg.socks5_proxy_url.callback(cfg.guard_restart)
     cfg.top_only.callback(cfg.guard_top_only)
     cfg.pause_on_post_processing.callback(cfg.guard_pause_on_pp)
