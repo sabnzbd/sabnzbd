@@ -11,7 +11,7 @@ env:
   PYTHONNODEBUGRANGES: 1
   # For macOS we download the official Python, because the GitHub one only support newer macOS 11+ versions
   # We also use the specific pin for Windows release, so Renovate can update it all at once
-  PYTHON_VERSION: "3.15.1"
+  PYTHON_VERSION: "3.15.2"
 
 jobs:
   build_windows:
@@ -110,7 +110,7 @@ jobs:
 
   build_macos:
     name: Build macOS binary
-    runs-on: macos-14
+    runs-on: macos-latest
     timeout-minutes: 15
     env:
       # The deployment target is picked up by the Python build tools automatically
@@ -141,10 +141,12 @@ jobs:
       run: sudo installer -pkg ~/python.pkg -target /
     - name: Install Python dependencies
       # We have to manually compile some modules as they don't automatically fetch universal2 binaries
+      # orjson requires the x86 toolchain for compilation
       run: |
         python3 --version
+        rustup target add x86_64-apple-darwin
         pip3 install --upgrade pip wheel
-        pip3 install -r requirements.txt --no-binary cffi,CT3,PyYAML,httptools --no-dependencies
+        pip3 install -r requirements.txt --no-binary cffi,CT3,PyYAML,httptools,orjson --no-dependencies
         pip3 install -r builder/requirements.txt --no-dependencies
     - name: Import macOS codesign certificates
       # Taken from https://github.com/Apple-Actions/import-codesign-certs/pull/27 (comments)
