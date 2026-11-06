@@ -920,6 +920,8 @@ class NzbObject(TryList):
                     self.prospective_add(nzf)
                 if job_can_succeed and not self.reuse and cfg.fail_hopeless_jobs():
                     job_can_succeed = not self.blocks_beyond_recovery()
+        elif not success and self.extrapars and not self.precheck:
+            self.prospective_add(nzf)
 
         # Check if we can succeed when we have missing articles
         # Skip check if retry or first articles already deemed it hopeless
@@ -1222,6 +1224,11 @@ class NzbObject(TryList):
             unmapped = any(
                 finished.bytes_left and not finished.is_par2 and finished.filename not in described
                 for finished in self.finished_files
+            ) or any(
+                not downloading.is_par2
+                and downloading.filename not in described
+                and any(article.failed for article in downloading.decodetable)
+                for downloading in self.files
             )
             for parset in self.extrapars:
                 # Due to strong obfuscation on article-level the parset could have a different name
@@ -1231,9 +1238,16 @@ class NzbObject(TryList):
                 if needed is None:
                     # No block geometry for this set, so fall back to counting articles
                     needed = self.bad_articles
-                elif unmapped:
-                    # Some of the damage counts against no set
-                    needed = max(needed, self.bad_articles)
+                else:
+                    par2pack = self.par2packs[parset]
+                    for downloading in self.files:
+                        if par2info := par2pack.get(downloading.filename):
+                            needed += downloading.lost_blocks(
+                                par2info.blocksize, par2info.blockcount, par2info.filesize
+                            )
+                    if unmapped:
+                        # Some of the damage counts against no set
+                        needed = max(needed, self.bad_articles)
                 # Blocks already asked for
                 blocks_have = sum(
                     parfile.blocks
