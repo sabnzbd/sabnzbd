@@ -64,6 +64,7 @@ from sabnzbd.filesystem import (
     TS_RE,
     build_filelists,
     get_filename,
+    get_filepath,
     SEVENMULTI_RE,
     is_size,
     get_basename,
@@ -578,7 +579,7 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: li
         if workdir_complete and rarpath.startswith(nzo.download_path):
             extraction_path = workdir_complete
         else:
-            extraction_path = os.path.split(rarpath)[0]
+            extraction_path = get_filepath(rarpath)
 
         # Is the direct-unpacker still running? We wait for it
         wait_for_direct_unpacker(nzo)
@@ -803,7 +804,7 @@ def rar_extract_core(
                 logging.debug("unrar recovery result: %s" % line)
 
             elif line.startswith("Cannot find volume") and not inrecovery:
-                filename = os.path.basename(line[19:])
+                filename = get_filename(line[19:])
                 msg = T("Unpacking failed, unable to find %s") % filename
                 nzo.fail_msg = msg
                 nzo.set_unpack_info("Unpack", msg, setname)
@@ -896,7 +897,7 @@ def rar_extract_core(
                 # In case of flat-unpack, UnRar still prints the whole path (?!)
                 unpacked_file = m.group(2)
                 if cfg.flat_unpack():
-                    unpacked_file = os.path.basename(unpacked_file)
+                    unpacked_file = get_filename(unpacked_file)
                 extracted.append(real_path(extraction_path, unpacked_file))
         elif line.endswith("[R]etry, [A]bort "):
             fail = 1
@@ -967,7 +968,7 @@ def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: lis
         if workdir_complete and seven_path.startswith(nzo.download_path):
             extraction_path = workdir_complete
         else:
-            extraction_path = os.path.split(seven_path)[0]
+            extraction_path = get_filepath(seven_path)
 
         res, new_files_set = seven_extract(nzo, seven_path, seven_set, extraction_path, one_folder)
         if res:
@@ -1097,7 +1098,7 @@ def tar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, tars: li
             if workdir_complete and tar_path.startswith(nzo.download_path):
                 extraction_path = workdir_complete
             else:
-                extraction_path = os.path.split(tar_path)[0]
+                extraction_path = get_filepath(tar_path)
 
             res, new_files_set = tar_extract(nzo, tar_path, extraction_path, one_folder)
             if res:
@@ -1131,7 +1132,7 @@ def tar_extract(nzo: NzbObject, tar_path: str, extraction_path: str, one_folder:
         if member is not None and member.isreg():
             member = member.replace(mode=member.mode & ~UNWANTED_FILE_PERMISSIONS)
             if one_folder:
-                member = member.replace(name=os.path.basename(member.name))
+                member = member.replace(name=get_filename(member.name))
             if not cfg.overwrite_files():
                 member = member.replace(
                     name=os.path.relpath(get_unique_filename(os.path.join(path, member.name)), path)
@@ -1432,9 +1433,9 @@ def rar_volumelist(rarfile_path: str, password: str, known_volumes: list[str]) -
         zf_volumes = []
 
     # Remove duplicates
-    zf_volumes_base = [os.path.basename(vol) for vol in zf_volumes]
+    zf_volumes_base = [get_filename(vol) for vol in zf_volumes]
     for known_volume in known_volumes:
-        if os.path.basename(known_volume) not in zf_volumes_base:
+        if get_filename(known_volume) not in zf_volumes_base:
             # Long-path notation just to be sure
             zf_volumes.append(long_path(known_volume))
     return zf_volumes

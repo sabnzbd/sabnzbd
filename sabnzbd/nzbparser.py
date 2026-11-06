@@ -82,7 +82,7 @@ def add_nzbfile(
     if isinstance(nzbfile, str):
         # File coming from queue repair or local file-path
         path = nzbfile
-        filename = os.path.basename(path)
+        filename = get_filename(path)
         keep_default = True
         if not sabnzbd.WINDOWS:
             # If windows client sends file to Unix server backslashes may

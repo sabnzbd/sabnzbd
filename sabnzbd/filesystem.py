@@ -123,16 +123,24 @@ def has_unwanted_extension(filename: str) -> bool:
 
 
 def get_filename(path: str) -> str:
-    """Return path without the file extension"""
+    """Return the filename part of the path, without the directory"""
     try:
-        return os.path.split(path)[1]
+        return os.path.basename(path)
+    except Exception:
+        return ""
+
+
+def get_filepath(path: str) -> str:
+    """Return the directory part of the path, without the filename"""
+    try:
+        return os.path.dirname(path)
     except Exception:
         return ""
 
 
 def setname_from_path(path: str) -> str:
     """Get the setname from a path"""
-    return get_basename(os.path.basename(path))
+    return get_basename(get_filename(path))
 
 
 def is_writable(path: str) -> bool:
@@ -200,7 +208,7 @@ def has_win_device(filename: str) -> bool:
     """Return True if filename part contains forbidden name
     Before and after sanitizing
     """
-    filename = os.path.split(filename)[1].lower()
+    filename = get_filename(filename).lower()
     for dev in _DEVICES:
         if filename == dev or filename.startswith(dev + ".") or filename.startswith("_" + dev + "."):
             return True
@@ -700,9 +708,9 @@ def list_scripts(default: bool = False, none: bool = True) -> list[str]:
                         and not win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN
                     )
                     or script.endswith(".py")
-                    or (not sabnzbd.WINDOWS and userxbit(script) and not os.path.basename(script).startswith("."))
+                    or (not sabnzbd.WINDOWS and userxbit(script) and not get_filename(script).startswith("."))
                 ):
-                    lst.append(os.path.basename(script))
+                    lst.append(get_filename(script))
             # Make sure capitalization is ignored to avoid strange results
             lst = sorted(lst, key=str.casefold)
         if none:
@@ -1025,7 +1033,7 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
 
     # In case we want nonexistent directories to be created, check for directory escape (forbidden)
     if create_local_directories:
-        oldpath, _ = os.path.split(old)
+        oldpath = get_filepath(old)
         # Check not outside directory
         if points_outside(oldpath, new):
             # Outside current directory, this is most likely malicious
@@ -1626,7 +1634,7 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
         )
 
     # Sort results, folders first (using string value of the bool)
-    file_list = sorted(file_list, key=lambda x: str(not x["dir"]) + os.path.basename(x["name"]).lower())
+    file_list = sorted(file_list, key=lambda x: str(not x["dir"]) + get_filename(x["name"]).lower())
 
     # Add current path
     file_list.insert(0, {"current_path": clip_path(path)})

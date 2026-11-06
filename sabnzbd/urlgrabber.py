@@ -213,7 +213,7 @@ class URLGrabber(Thread):
                     continue
 
                 if not filename:
-                    filename = os.path.basename(urllib.parse.unquote(url))
+                    filename = sabnzbd.filesystem.get_filename(urllib.parse.unquote(url))
 
                     # URL was redirected, maybe the redirect has better filename?
                     # Check if the original URL has extension
@@ -221,7 +221,7 @@ class URLGrabber(Thread):
                         url != fetch_request.geturl()
                         and sabnzbd.filesystem.get_ext(filename) not in VALID_NZB_FILES + VALID_ARCHIVES
                     ):
-                        filename = os.path.basename(urllib.parse.unquote(fetch_request.geturl()))
+                        filename = sabnzbd.filesystem.get_filename(urllib.parse.unquote(fetch_request.geturl()))
                 elif "&nzbname=" in filename:
                     # Sometimes the filename contains the full URL, duh!
                     filename = filename[filename.find("&nzbname=") + 9 :]
@@ -405,7 +405,7 @@ def filename_from_content_disposition(content_disposition: str) -> Optional[str]
     """
     if filename := Message(f"Content-Disposition: attachment; {content_disposition}").get_filename():
         # Basic sanitation
-        if filename := os.path.basename(filename).lstrip(".").strip():
+        if filename := sabnzbd.filesystem.get_filename(filename).lstrip(".").strip():
             return filename
 
 

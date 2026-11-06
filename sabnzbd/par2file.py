@@ -30,7 +30,7 @@ from typing import BinaryIO, Optional
 
 from sabnzbd.constants import MEBI
 from sabnzbd.encoding import correct_unknown_encoding, unicode_nfc_normalize
-from sabnzbd.filesystem import get_basename
+from sabnzbd.filesystem import get_basename, get_filename
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 SCAN_LIMIT = 10 * MEBI
@@ -270,7 +270,7 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
                     # "PAR 2.0\x00Creator\x00"
                     par2creator = data[32:].strip(b"\0")  # Remove any trailing \0
                     logging.debug(
-                        "Par2-creator of %s is: %s", os.path.basename(f.name), correct_unknown_encoding(par2creator)
+                        "Par2-creator of %s is: %s", get_filename(f.name), correct_unknown_encoding(par2creator)
                     )
                 elif par2_packet_type == PAR_MAIN_ID:
                     # The Main packet looks like:

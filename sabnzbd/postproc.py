@@ -962,7 +962,7 @@ def try_sfv_check(nzo: NzbObject) -> Optional[bool]:
 
     result = sfv_check(sfvs, nzo)
     if not result:
-        print_sfv = [os.path.basename(sfv) for sfv in sfvs]
+        print_sfv = [get_filename(sfv) for sfv in sfvs]
         fail_msg = T('Some files failed to verify against "%s"') % "; ".join(print_sfv)
         nzo.set_unpack_info("Repair", fail_msg)
         nzo.status = Status.FAILED

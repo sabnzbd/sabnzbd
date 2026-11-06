@@ -411,7 +411,7 @@ class NzbObject(TryList):
         admin_dir = os.path.join(self.download_path, JOB_ADMIN)
         if not os.path.exists(admin_dir):
             create_all_dirs(admin_dir)
-        _, self.work_name = os.path.split(self.download_path)
+        self.work_name = get_filename(self.download_path)
 
         # When doing a retry or repair, remove old cache-files
         if reuse:
@@ -947,7 +947,7 @@ class NzbObject(TryList):
         existing_files = [
             os.path.relpath(path, wdir)
             for path in listdir_full(wdir)
-            if JOB_ADMIN not in path and "." in os.path.basename(path)
+            if JOB_ADMIN not in path and "." in get_filename(path)
         ]
 
         # Substitute renamed files

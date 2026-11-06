@@ -368,7 +368,7 @@ def deobfuscate_subtitles(nzo: "sabnzbd.nzb.NzbObject", filelist: list[str]):
             continue
         # not the same start, so rename the srt file
         nr_files_renamed += 1
-        filename_only = os.path.basename(srt_file)  # like "14_English.srt", so without path
+        filename_only = get_filename(srt_file)  # like "14_English.srt", so without path
         # now put that name after the base name of the biggestfile:
         new_full_name = f"{biggest_file_without_ext}.{filename_only}"  # put (renamed) srt behind that
         unique_filename = get_unique_filename(new_full_name)  # make sure it's really unique

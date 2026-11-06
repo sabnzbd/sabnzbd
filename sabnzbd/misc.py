@@ -62,7 +62,15 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.decorators import conditional_cache, synchronized
 from sabnzbd.encoding import ubtou, platform_btou
-from sabnzbd.filesystem import userxbit, make_script_path, remove_file, strip_extensions, safe_fnmatch, get_ext
+from sabnzbd.filesystem import (
+    userxbit,
+    make_script_path,
+    remove_file,
+    strip_extensions,
+    safe_fnmatch,
+    get_ext,
+    get_filename,
+)
 
 if sabnzbd.WINDOWS:
     try:
@@ -1292,7 +1300,7 @@ def is_sample(filename_or_filepath: str) -> bool:
     When given a path to an actual file on disk, the media duration is used
     to rule out false-positives on titles that merely contain "sample" or
     "proof" (e.g. "The.Moment.of.Proof.S01E01")."""
-    if not re.search(RE_SAMPLE, os.path.basename(filename_or_filepath)):
+    if not re.search(RE_SAMPLE, get_filename(filename_or_filepath)):
         return False
 
     # Archives and NZB files are never media; skip the duration check entirely

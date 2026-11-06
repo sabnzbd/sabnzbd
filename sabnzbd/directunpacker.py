@@ -30,7 +30,7 @@ from typing import Optional
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, format_time_string, build_and_run_command
-from sabnzbd.filesystem import remove_all, real_path, remove_file, get_basename, clip_path
+from sabnzbd.filesystem import remove_all, real_path, remove_file, get_basename, get_filename, clip_path
 from sabnzbd.nzb import NzbFile, NzbObject
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
@@ -295,7 +295,7 @@ class DirectUnpacker(threading.Thread):
                     # In case of flat-unpack, UnRar still prints the whole path (?!)
                     unpacked_file = m.group(2)
                     if cfg.flat_unpack():
-                        unpacked_file = os.path.basename(unpacked_file)
+                        unpacked_file = get_filename(unpacked_file)
                     extracted.append(real_path(self.unpack_dir_info[0], unpacked_file))
 
             if linebuf.endswith(b"[C]ontinue, [Q]uit "):
@@ -505,7 +505,7 @@ class DirectUnpacker(threading.Thread):
                         ).filelist()
                         for rm_file in rar_contents:
                             # Flat-unpack, so remove foldername from RarFile output
-                            f = os.path.join(extraction_path, os.path.basename(rm_file))
+                            f = os.path.join(extraction_path, get_filename(rm_file))
                             remove_file(f)
                     except Exception:
                         # The user will have to remove it themselves
@@ -541,7 +541,7 @@ def analyze_rar_filename(filename):
     The filename can name a sub-directory of the job, the setname is always just the name so
     it matches what rar_unpack() derives from the path on disk with setname_from_path()
     """
-    filename = os.path.basename(filename)
+    filename = get_filename(filename)
     if m := RAR_NR.search(filename):
         if m.group(4):
             # Special since starts with ".rar", ".r00"

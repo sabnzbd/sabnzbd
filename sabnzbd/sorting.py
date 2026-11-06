@@ -34,6 +34,7 @@ from sabnzbd.filesystem import (
     remove_empty_parent_directories,
     get_unique_filename,
     get_ext,
+    get_filename,
     globber,
     renamer,
     sanitize_foldername,
@@ -288,7 +289,7 @@ class Sorter:
                 sort_string = sort_string.removesuffix(".%ext")  # Strip '.%ext' off the end; other %ext may remain
             if self.is_season_pack:
                 # Create a record of the filename part of the sort_string
-                _, self.season_pack_setname = os.path.split(sort_string)
+                self.season_pack_setname = get_filename(sort_string)
                 if not any(
                     substring in self.season_pack_setname
                     for substring in ("%e", "%0e", "%GI<episode>", "%G.I<episode>", "%G_I<episode>")
@@ -422,7 +423,7 @@ class Sorter:
     def _rename_season_pack(self, files: list[str], base_path: str, all_job_files: list[str] = []) -> bool:
         success = False
         for f in files:
-            f_name, f_ext = os.path.splitext(os.path.basename(f))
+            f_name, f_ext = os.path.splitext(get_filename(f))
             if f_episode := guessit.api.guessit(f_name).get("episode"):
                 # Insert formatted episode number(s) into self.info
                 self.format_series_numbers(f_episode, "episode_num")
@@ -461,7 +462,7 @@ class Sorter:
                     # * that were created as part of this job,
                     # * and didn't qualify for processing in the own right.
                     if os.path.isfile(sim_filepath) and sim_filepath in all_job_files and sim_filepath not in files:
-                        sim_f_new = os.path.basename(sim_f).replace(f_name, f_name_new, 1)
+                        sim_f_new = get_filename(sim_f).replace(f_name, f_name_new, 1)
                         logging.debug("Renaming %s to %s (alongside season pack file %s)", sim_f, sim_f_new, f)
                         try:
                             sim_filepath_new = renamer(sim_filepath, self._to_filepath(sim_f_new, base_path))
@@ -485,7 +486,7 @@ class Sorter:
         success = False
         for index, f in sequential_files.items():
             filepath = self._to_filepath(f, base_path)
-            f_name, f_ext = os.path.splitext(os.path.split(f)[1])
+            f_name, f_ext = os.path.splitext(get_filename(f))
             new_filepath = os.path.join(
                 base_path,
                 to_lowercase(
@@ -573,7 +574,7 @@ class Sorter:
                 largest_file.update({"name": f, "size": f_size})
 
         # Rename it
-        f_name, f_ext = os.path.splitext(os.path.basename(largest_file.get("name")))
+        f_name, f_ext = os.path.splitext(get_filename(largest_file.get("name")))
         filepath = self._to_filepath(largest_file.get("name"), base_path)
         new_filepath = os.path.join(
             base_path,
@@ -886,10 +887,10 @@ def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: Optiona
             continue
         if skipped_files and path in skipped_files:
             continue
-        org, ext = os.path.splitext(os.path.basename(path))
+        org, ext = os.path.splitext(get_filename(path))
         if ext.lower() == skip_ext:
             # Move file, but do not rename
-            newpath = os.path.join(folder, os.path.basename(path))
+            newpath = os.path.join(folder, get_filename(path))
         else:
             # Move file and rename
             newname = "%s%s" % (name, ext)

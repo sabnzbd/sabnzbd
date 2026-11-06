@@ -31,7 +31,7 @@ import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import GIGI, MEBI, PAR2_MINIMUM_MEMORY, PAR2_RESERVED_MEMORY, Status
 from sabnzbd.encoding import correct_unknown_encoding
-from sabnzbd.filesystem import get_ext, globber, globber_full
+from sabnzbd.filesystem import get_ext, get_filename, globber, globber_full
 from sabnzbd.misc import format_time_string, get_cpus, get_memory
 from sabnzbd.nzb.file import NzbFile
 from sabnzbd.nzb.object import NzbObject
@@ -268,7 +268,7 @@ class RepairSession:
         of the extra files it took blocks from that are neither part of the finished set nor
         described by another set of the job. Must be called before repair().
         """
-        by_name = {os.path.basename(path): path for path in joinables}
+        by_name = {get_filename(path): path for path in joinables}
         kept = {os.path.normcase(entry["target"]) for entry in self.repairer.files}
         kept |= {os.path.normcase(path) for path in self.repairer.renames}
         kept |= {os.path.normcase(path) for path in joinables}
@@ -277,7 +277,7 @@ class RepairSession:
         used_joinables = []
         used_extras = []
         for filename in self.blocks_from:
-            if (path := by_name.get(os.path.basename(filename))) and path not in used_joinables:
+            if (path := by_name.get(get_filename(filename))) and path not in used_joinables:
                 used_joinables.append(path)
             path = os.path.join(self.nzo.download_path, filename)
             if os.path.normcase(path) not in kept and path not in used_extras:
@@ -588,5 +588,5 @@ def parfile_paths(nzo: NzbObject) -> list[str]:
     return [
         path
         for path in globber_full(nzo.download_path)
-        if get_ext(path) == ".par2" and os.path.basename(path) not in pending
+        if get_ext(path) == ".par2" and get_filename(path) not in pending
     ]

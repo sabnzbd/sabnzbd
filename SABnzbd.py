@@ -100,7 +100,7 @@ from sabnzbd.misc import (
     helpful_warning,
     set_https_verification,
 )
-from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
+from sabnzbd.filesystem import get_ext, get_filename, real_path, long_path, globber_full, remove_file
 from sabnzbd.panic import panic_tmpl, panic_port, panic_port_permission, panic_host, panic, launch_a_browser
 import sabnzbd.config as config
 import sabnzbd.cfg
@@ -672,8 +672,7 @@ def evaluate_inipath(path):
     elif os.path.isfile(path) or os.path.isfile(path + ".bak"):
         return path
     else:
-        _dirpart, name = os.path.split(path)
-        if name.find(".") < 1:
+        if get_filename(path).find(".") < 1:
             return inipath
         else:
             return path
@@ -774,7 +773,7 @@ def main():
     autobrowser = None
     autorestarted = False
     sabnzbd.MY_FULLNAME = __file__
-    sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
+    sabnzbd.MY_NAME = get_filename(sabnzbd.MY_FULLNAME)
     fork = False
     pause = False
     inifile = None
@@ -873,7 +872,7 @@ def main():
             inet_exposure = arg
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
-    sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
+    sabnzbd.MY_NAME = get_filename(sabnzbd.MY_FULLNAME)
     sabnzbd.DIR_PROG = os.path.dirname(sabnzbd.MY_FULLNAME)
     sabnzbd.DIR_INTERFACES = real_path(sabnzbd.DIR_PROG, DEF_INTERFACES)
     sabnzbd.DIR_LANGUAGE = real_path(sabnzbd.DIR_PROG, DEF_LANGUAGE)

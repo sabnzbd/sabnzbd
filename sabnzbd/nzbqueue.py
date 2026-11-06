@@ -33,7 +33,15 @@ from starlette.datastructures import UploadFile
 import sabnzbd
 from sabnzbd.nzb import Article, NzbObject
 from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, safe_lower, duplicate_warning
-from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file, is_valid_script, create_all_dirs
+from sabnzbd.filesystem import (
+    get_admin_path,
+    get_filename,
+    remove_all,
+    globber_full,
+    remove_file,
+    is_valid_script,
+    create_all_dirs,
+)
 from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.panic import panic_queue
 from sabnzbd.decorators import NzbQueueLocker
@@ -98,17 +106,17 @@ class NzbQueue:
         # First handle jobs in the queue file
         folders = []
         for nzo_id in nzo_ids:
-            folder, _id = os.path.split(nzo_id)
+            folder, id_file = os.path.split(nzo_id)
             normal_path = get_admin_path(folder, future=False)
             future_path = get_admin_path(folder, future=True)
 
             attempts = [
                 # Try as normal job
                 (normal_path, NZO_FILE, False),
-                (normal_path, _id, False),
+                (normal_path, id_file, False),
                 # Try as future job
-                (future_path, f"SABnzbd_nzo_{_id}", True),
-                (future_path, _id, True),
+                (future_path, f"SABnzbd_nzo_{id_file}", True),
+                (future_path, id_file, True),
             ]
 
             for path, filename, remove in attempts:
@@ -152,19 +160,19 @@ class NzbQueue:
 
         # Retryable folders from History
         with sabnzbd.db_pool.connection() as history_db:
-            registered.update(os.path.basename(job["path"]) for job in history_db.get_retryable_jobs())
+            registered.update(get_filename(job["path"]) for job in history_db.get_retryable_jobs())
 
         # Anything waiting or active in post-processing is also a known item
-        registered.update(os.path.basename(nzo.download_path) for nzo in sabnzbd.PostProcessor.get_queue())
+        registered.update(get_filename(nzo.download_path) for nzo in sabnzbd.PostProcessor.get_queue())
 
         # Repair unregistered folders
         for folder in globber_full(cfg.download_dir.get_path()):
-            name = os.path.basename(folder)
+            name = get_filename(folder)
             if os.path.isdir(folder) and name not in registered and name not in IGNORED_FILES_AND_FOLDERS:
                 if action:
                     logging.info("Repairing job %s", folder)
                     self.repair_job(folder)
-                result.append(os.path.basename(folder))
+                result.append(get_filename(folder))
             else:
                 if action:
                     logging.info("Skipping repair for job %s", folder)
@@ -178,7 +186,7 @@ class NzbQueue:
         if not repair_folder or not os.path.exists(repair_folder):
             return None
 
-        name = os.path.basename(repair_folder)
+        name = get_filename(repair_folder)
         admin_path = os.path.join(repair_folder, JOB_ADMIN)
 
         # If Retry was used and a new NZB was uploaded
