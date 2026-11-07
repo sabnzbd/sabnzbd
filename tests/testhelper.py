@@ -57,6 +57,7 @@ from sabnzbd.constants import (
 import sabnzbd.database as db
 from sabnzbd.misc import pp_to_opts
 import sabnzbd.filesystem as filesystem
+from sabnzbd.encoding import unicode_nfc_normalize
 
 import tests.sabnews
 
@@ -705,10 +706,10 @@ class DownloadFlowBasics(SABnzbdBaseTest):
         # Sometimes par2 can also be included, but we accept that. For example when small
         # par2 files get assembled in after the download already finished (see #1509)
         for i in range(100):
-            completed_files = filesystem.globber(completed_dir, "*")
+            completed_files = [unicode_nfc_normalize(f) for f in filesystem.globber(completed_dir, "*")]
             try:
                 for filename in file_output:
-                    assert filename in completed_files
+                    assert unicode_nfc_normalize(filename) in completed_files
                 # All filenames found
                 break
             except AssertionError:
