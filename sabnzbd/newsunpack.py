@@ -560,7 +560,7 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: li
     newfiles = extracted_files = []
     rar_sets = {}
     for rar in rars:
-        rar_set = unicode_nfc_normalize(setname_from_path(rar))
+        rar_set = setname_from_path(rar)
         if RAR_V3_RE.search(rar_set):
             # Remove the ".partXX" part
             rar_set = get_basename(rar_set)
@@ -585,11 +585,18 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: li
         wait_for_direct_unpacker(nzo)
 
         # Did we already direct-unpack it? Not when recursive-unpacking
-        if nzo.direct_unpacker and rar_set in nzo.direct_unpacker.success_sets:
+        direct_unpack_set = None
+        if nzo.direct_unpacker:
+            nfc_rar_set = unicode_nfc_normalize(rar_set)
+            direct_unpack_set = next(
+                (name for name in nzo.direct_unpacker.success_sets if unicode_nfc_normalize(name) == nfc_rar_set),
+                None,
+            )
+        if direct_unpack_set is not None:
             logging.info("Set %s completed by DirectUnpack", rar_set)
             fail = 0
             success = True
-            _volumes, newfiles = nzo.direct_unpacker.success_sets.pop(rar_set)
+            _volumes, newfiles = nzo.direct_unpacker.success_sets.pop(direct_unpack_set)
             # The volumes it listed can have been renamed since, so clean up what is there now
             rars = rar_sets[rar_set]
         else:
