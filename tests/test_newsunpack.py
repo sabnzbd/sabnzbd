@@ -1437,6 +1437,18 @@ class TestUnpackNestedRarSets:
         assert not direct_unpacker.success_sets
         assert os.listdir(complete_path) == []
 
+    def test_rar_unpack_keeps_sets_differing_only_in_normalization_apart(self, tmp_path):
+        """Two archives whose names differ only in NFC and NFD form are separate sets"""
+        nzo, complete_path = self._create_job(tmp_path)
+        nfc_path = os.path.join(nzo.download_path, unicodedata.normalize("NFC", "frènch_german_demö.rar"))
+        nfd_path = os.path.join(nzo.download_path, unicodedata.normalize("NFD", "frènch_german_demö.rar"))
+
+        with mock.patch.object(newsunpack, "rar_extract", return_value=(0, [], [])) as rar_extract:
+            fail, _newfiles = newsunpack.rar_unpack(nzo, complete_path, False, [nfc_path, nfd_path])
+
+        assert not fail
+        assert [(call.args[0], call.args[1]) for call in rar_extract.call_args_list] == [(nfc_path, 1), (nfd_path, 1)]
+
     def test_quick_check_rename_updates_setname_and_vol(self, tmp_path):
         """The rename is what puts the volumes in the subfolder, so the set and volume number
         derived from the obfuscated name go stale. A DirectUnpacker looks up the next volume by
