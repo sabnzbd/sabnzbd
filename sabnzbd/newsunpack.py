@@ -37,7 +37,7 @@ from contextlib import suppress
 
 import sabnzbd
 import sabnzbd.par2repair as par2repair
-from sabnzbd.encoding import correct_unknown_encoding, ubtou
+from sabnzbd.encoding import correct_unknown_encoding, ubtou, unicode_nfc_normalize
 from sabnzbd.misc import (
     format_time_string,
     find_on_path,
@@ -560,7 +560,7 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: li
     newfiles = extracted_files = []
     rar_sets = {}
     for rar in rars:
-        rar_set = setname_from_path(rar)
+        rar_set = unicode_nfc_normalize(setname_from_path(rar))
         if RAR_V3_RE.search(rar_set):
             # Remove the ".partXX" part
             rar_set = get_basename(rar_set)
