@@ -42,7 +42,6 @@ class TestDownloadFlow(DownloadFlowBasics):
     def test_download_passworded(self):
         self.download_nzb("test_passworded{{secret}}", ["My_Test_Download.bin"])
 
-    @pytest.mark.xfail(reason="Probably #1633")
     def test_download_unicode_made_on_windows(self):
         self.download_nzb("test_win_unicode", ["Frènch_German_Demö.bin"])
 
