@@ -31,6 +31,7 @@ import stat
 import sys
 import tarfile
 import threading
+import unicodedata
 from typing import Optional
 from unittest import mock
 from unittest.mock import call
@@ -1418,6 +1419,35 @@ class TestUnpackNestedRarSets:
         assert not error
         assert newfiles, "the rar set in the subfolder was never found, so nothing was unpacked"
         assert os.path.exists(os.path.join(complete_path, "testfile.bin"))
+
+    def test_rar_unpack_matches_direct_unpack_set_across_normalization(self, tmp_path):
+        """DirectUnpack keys the sets it finished by the NFC name from the NZB, while HFS+ lists
+        the volumes on disk in NFD"""
+        nzo, complete_path = self._create_job(tmp_path)
+        nfd_path = os.path.join(nzo.download_path, unicodedata.normalize("NFD", "frènch_german_demö.rar"))
+        os.rename(os.path.join(nzo.download_path, "testfile.rar"), nfd_path)
+        direct_unpacker = self._create_direct_unpacker()
+        direct_unpacker.success_sets["frènch_german_demö"] = ([nfd_path], ["extracted.bin"])
+        nzo.direct_unpacker = direct_unpacker
+
+        fail, newfiles = newsunpack.rar_unpack(nzo, complete_path, False, [nfd_path])
+
+        assert not fail
+        assert newfiles == ["extracted.bin"]
+        assert not direct_unpacker.success_sets
+        assert os.listdir(complete_path) == []
+
+    def test_rar_unpack_keeps_sets_differing_only_in_normalization_apart(self, tmp_path):
+        """Two archives whose names differ only in NFC and NFD form are separate sets"""
+        nzo, complete_path = self._create_job(tmp_path)
+        nfc_path = os.path.join(nzo.download_path, unicodedata.normalize("NFC", "frènch_german_demö.rar"))
+        nfd_path = os.path.join(nzo.download_path, unicodedata.normalize("NFD", "frènch_german_demö.rar"))
+
+        with mock.patch.object(newsunpack, "rar_extract", return_value=(0, [], [])) as rar_extract:
+            fail, _newfiles = newsunpack.rar_unpack(nzo, complete_path, False, [nfc_path, nfd_path])
+
+        assert not fail
+        assert [(call.args[0], call.args[1]) for call in rar_extract.call_args_list] == [(nfc_path, 1), (nfd_path, 1)]
 
     def test_quick_check_rename_updates_setname_and_vol(self, tmp_path):
         """The rename is what puts the volumes in the subfolder, so the set and volume number
