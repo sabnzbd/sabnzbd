@@ -108,16 +108,20 @@ jobs:
           mkdir -p "$RUNNER_TEMP/7zip"
           cd "$RUNNER_TEMP/7zip"
           gh release download "$VERSION" --repo ip7z/7zip \
-            --pattern "7z$RAW_VERSION-extra.7z" --pattern "7z$RAW_VERSION-mac.tar.xz"
-          mkdir macos windows
-          tar -xJf "7z$RAW_VERSION-mac.tar.xz" -C macos
+            --pattern "7z$RAW_VERSION-extra.7z" --pattern "7z$RAW_VERSION-mac.tar.xz" \
+            --pattern "7z$RAW_VERSION-mac-x64.tar.xz"
+          mkdir macos-x64 macos-arm64 windows
+          # The macOS release without suffix is arm64 only, the x64 has its own package
+          tar -xJf "7z$RAW_VERSION-mac-x64.tar.xz" -C macos-x64
+          tar -xJf "7z$RAW_VERSION-mac.tar.xz" -C macos-arm64
           # The preinstalled 7-Zip unpacks the extra package that contains
           # the standalone Windows console version
           7z x -y -owindows "7z$RAW_VERSION-extra.7z" 7za.exe > /dev/null
       - name: Copy binaries into the repository
         run: |
           install -m 644 "$RUNNER_TEMP/7zip/windows/7za.exe" win/7zip/7za.exe
-          install -m 755 "$RUNNER_TEMP/7zip/macos/7zz" macos/7zip/7zz
+          install -m 755 "$RUNNER_TEMP/7zip/macos-x64/7zz" macos/7zip/7zz
+          install -m 755 "$RUNNER_TEMP/7zip/macos-arm64/7zz" macos/7zip/arm64/7zz
       - name: Create pull request
         env:
           VERSION: ${{ steps.version.outputs.version }}

@@ -355,6 +355,7 @@ if __name__ == "__main__":
                 "macos/unrar/unrar",
                 "macos/unrar/arm64/unrar",
                 "macos/7zip/7zz",
+                "macos/7zip/arm64/7zz",
             ]
             for file_to_sign in files_to_sign:
                 # Make sure it supports the macOS versions we want first
