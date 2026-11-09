@@ -124,7 +124,6 @@ class TestNZO:
         assert duplicate_check.call_count >= (1 if fetch_duplicates else 2)
         assert purge.called == (action == 1)
 
-
     @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     @pytest.mark.parametrize("fetch_duplicates", [False, True])
     @pytest.mark.parametrize("smart", [False, True])

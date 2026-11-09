@@ -800,6 +800,7 @@ def test_rss_cart_fetch_discard_cleans_placeholder_and_payload(mocker, httpserve
     fail.assert_not_called()
     retry.assert_not_called()
 
+
 @pytest.mark.usefixtures("nzbqueue_env")
 @pytest.mark.parametrize("fetch_duplicates", [False, True])
 def test_rss_cart_placeholders_do_not_count_as_fetched_queue_duplicates(mocker, fetch_duplicates):
