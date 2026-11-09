@@ -1,28 +1,38 @@
-Release Notes - SABnzbd 5.2.0 Beta 2
+Release Notes - SABnzbd 5.2.0 Release Candidate 1
 =========================================================
 
-This is the second test release of version 5.2.0.
-We are still working on several other features, but hope you will already enjoy
-the current improvements and give us feedback!
+This is the first release candidate of version 5.2.0. Containing several major
+improvements to the core download and post-processing handling.
+Additionally, several vulnerabilities were fixed. This also requires extra
+restrictions and removal of some functionality just for security reasons.
 
 ## New features in 5.2.0
 
 * Downloaded data will be written directly to disk (if your hardware supports it),
   which greatly reduces memory and CPU usage on systems with SSD's.
-  Additionally, several other performance improvements were made.
+  Additionally, several other download performance improvements were made.
+* par2cmdline is now incorporated in SABnzbd, resulting in several improvements:
+    * Verification happens during download, reducing disk load.
+    * Repairs no longer write a copy of the whole file, but repair in-place.
+    * Multi-threading and memory usage is directly controlled by user limits.
+    * Improved support for unicode filenames.
 * Search your Indexers and add downloads directly from within SABnzbd.
 * Post-Processing, Pre-Queue and Notification Scripts no longer receive
   command-line arguments. Use the `SAB_*` environment variables instead.
   This prevents an attacker easy access to remote code execution.
 * Download directories can no longer be inside the program directory.
   This is also to prevent an attacker easy access to remote code execution.
+* Unwanted Extension check now also runs on completed downloads.
 * Changed the internal webserver from CherryPy to Starlette.
 * Overview of Active Sessions is available when username and password are enabled.
 * Only allow proxied requests from hosts configured in `xff_trusted_hosts`.
 * Removed the `scriptlog` link from the `script_log` history field.
+* Template folder can no longer be configured manually, preventing abuse.
 * Remove unused fields `completeness`, `meta`, `series`, `id`, and
   `script_log` from `history`-API response.
 * Cache `Public IPv4 address` for 10 minutes to prevent abuse.
+* Windows/macOS: Updated Python to 3.15.2 and 7-Zip to 26.07.
+* Snap: Several build and runtime improvements.
 
 ## Bug fixes in 5.2.0
 
@@ -30,11 +40,18 @@ the current improvements and give us feedback!
 * Failure to read one RSS URL would stop the whole readout instead of continuing to the next.
 * Prevent potential XSS in the History from malicious Script output (GHSA-rpwc-qfxm-7h2v)
   or malicious NNTP responses (GHSA-c5x2-896f-g5g8).
+* Download names that look like URL's could escape the Download-folder (GHSA-73q2-vw82-jr46).
 * Correct `articles_success` to `articles_failed` in Server statistics API-call.
+* Downloads could stall in case of unexpected server responses.
+* Remove empty folders left behind by deleted samples.
 * Stalled Unrar could freeze the post-processing queue.
 * File handles could remain open after download completed.
+* Correctly handle `HEAD` responses during availability checks.
+* Deobfuscation of some sets of RAR-files would be skipped.
+* Quota exceeded responses from news servers would be interpreted wrongly.
 * Downloads with missing articles and no PAR2 would not be marked as failed.
 * macOS: Tray icon would not show on macOS 27.
+* macOS: Downloads could be unpacked twice due to different unicode handling.
 
 ## Upgrade notices
 
