@@ -124,6 +124,43 @@ class TestNZO:
         assert duplicate_check.call_count >= (1 if fetch_duplicates else 2)
         assert purge.called == (action == 1)
 
+
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+    @pytest.mark.parametrize("fetch_duplicates", [False, True])
+    @pytest.mark.parametrize("smart", [False, True])
+    @pytest.mark.parametrize("action", [1, 2, 3, 4])
+    def test_fetched_rss_duplicate_does_not_overwrite_backup(self, mocker, fetch_duplicates, smart, action):
+        """An opted-in cart's discarded/failed duplicate must not replace the original backup."""
+        duplicate = DuplicateStatus.SMART_DUPLICATE if smart else DuplicateStatus.DUPLICATE
+        mocker.patch("sabnzbd.nzb.object.cfg.no_dupes", return_value=0 if smart else action)
+        mocker.patch("sabnzbd.nzb.object.cfg.no_smart_dupes", return_value=action if smart else 0)
+        mocker.patch.object(NzbObject, "purge_data")
+        mocker.patch.object(
+            NzbObject,
+            "duplicate_check",
+            autospec=True,
+            side_effect=lambda nzo: setattr(nzo, "duplicate", duplicate),
+        )
+        backup = mocker.patch("sabnzbd.nzb.object.backup_nzb")
+
+        def parse_fetched_nzb():
+            return NzbObject(
+                "duplicate.nzb",
+                nzb_fp=create_and_read_nzb_fp("basic_rar5"),
+                nzbname="Duplicate.Release",
+                nzo_info={"RSS": "Cart", "rss_fetch_duplicates": fetch_duplicates},
+            )
+
+        if action in (1, 3):
+            with pytest.raises(NzbRejected if action == 1 else NzbRejectToHistory):
+                parse_fetched_nzb()
+        else:
+            parse_fetched_nzb()
+
+        # Ordinary feeds retain their existing backup behavior. For cart feeds,
+        # Paused/Tagged NZBs can still be backed up; rejected duplicates cannot.
+        assert backup.call_count == (0 if fetch_duplicates and action in (1, 3) else 1)
+
     def test_existing_rss_url_still_rejects_duplicates(self, mocker):
         """Queued entries and existing feeds without the new flag retain early rejection."""
         mocker.patch("sabnzbd.nzb.object.cfg.no_dupes", return_value=1)

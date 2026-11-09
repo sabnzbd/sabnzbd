@@ -959,6 +959,9 @@ class NzbQueue:
         in the queue or the post-processing queue"""
         lname = name.lower()
         for nzo in chain(self.__nzo_list, sabnzbd.PostProcessor.get_queue()):
+            # Cart placeholders must be fetched before being considered duplicates.
+            if nzo.futuretype and nzo.nzo_info.get("rss_fetch_duplicates"):
+                continue
             # Skip any jobs already marked as duplicate, to prevent double-triggers
             # URL's do not have an MD5!
             if not nzo.duplicate and (
@@ -972,6 +975,9 @@ class NzbQueue:
         """Check whether this duplicate key is already
         in the queue or the post-processing queue"""
         for nzo in chain(self.__nzo_list, sabnzbd.PostProcessor.get_queue()):
+            # Cart placeholders must be fetched before being considered duplicates.
+            if nzo.futuretype and nzo.nzo_info.get("rss_fetch_duplicates"):
+                continue
             # Skip any jobs already marked as duplicate, to prevent double-triggers
             if not nzo.duplicate and nzo.duplicate_key == duplicate_key:
                 return True

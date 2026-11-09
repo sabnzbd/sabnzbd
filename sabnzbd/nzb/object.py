@@ -447,8 +447,19 @@ class NzbObject(TryList):
             if not reuse and dup_check and not self.duplicate and self.priority != REPAIR_PRIORITY:
                 self.duplicate_check()
 
-            # Copy to backup
-            backup_nzb(full_nzb_path)
+            # A fetched cart duplicate might have the same NZB filename but different
+            # contents. Do not overwrite the original backup if the configured
+            # duplicate action will discard it or move it to History.
+            rejecting_duplicate = (
+                self.nzo_info.get("rss_fetch_duplicates")
+                and self.priority != FORCE_PRIORITY
+                and (
+                    (self.duplicate == DuplicateStatus.DUPLICATE and cfg.no_dupes() in (1, 3))
+                    or (self.duplicate == DuplicateStatus.SMART_DUPLICATE and cfg.no_smart_dupes() in (1, 3))
+                )
+            )
+            if not rejecting_duplicate:
+                backup_nzb(full_nzb_path)
 
         if not self.files and not reuse:
             self.purge_data()

@@ -799,3 +799,26 @@ def test_rss_cart_fetch_discard_cleans_placeholder_and_payload(mocker, httpserve
     history.have_name_or_md5sum.assert_called()
     fail.assert_not_called()
     retry.assert_not_called()
+
+@pytest.mark.usefixtures("nzbqueue_env")
+@pytest.mark.parametrize("fetch_duplicates", [False, True])
+def test_rss_cart_placeholders_do_not_count_as_fetched_queue_duplicates(mocker, fetch_duplicates):
+    """Only opted-in, unfetched cart placeholders are ignored by queue duplicate lookups."""
+    mocker.patch.object(sabnzbd, "PostProcessor", create=True).get_queue.return_value = []
+    mocker.patch("sabnzbd.cfg.no_dupes", return_value=0)
+    mocker.patch("sabnzbd.cfg.no_smart_dupes", return_value=0)
+
+    placeholder = NzbObject(
+        "URL",
+        futuretype=True,
+        nzbname="Same.Release",
+        nzo_info={"RSS": "Cart", "rss_fetch_duplicates": fetch_duplicates},
+    )
+    placeholder.duplicate_key = "same/1/1"
+    sabnzbd.NzbQueue.add(placeholder, save=False, quiet=True)
+
+    # Ordinary placeholders still prevent duplicate grabs. Opted-in cart placeholders
+    # must not cause another fetched NZB to be paused as an alternative.
+    expected = not fetch_duplicates
+    assert sabnzbd.NzbQueue.have_name_or_md5sum("Same.Release", None) is expected
+    assert sabnzbd.NzbQueue.have_duplicate_key("same/1/1") is expected
