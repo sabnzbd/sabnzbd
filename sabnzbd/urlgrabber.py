@@ -296,9 +296,7 @@ class URLGrabber(Thread):
                 logging.error(T("URLGRABBER CRASHED"), exc_info=True)
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
 
-    def _handle_add_result(
-        self, res: AddNzbFileResult, future_nzo: NzbObject, url: str, filename: str
-    ) -> None:
+    def _handle_add_result(self, res: AddNzbFileResult, future_nzo: NzbObject, url: str, filename: str) -> None:
         """Handle the result of parsing a fetched NZB URL."""
         if res is AddNzbFileResult.RETRY:
             logging.info("Incomplete NZB, retry after 5 min %s", url)
