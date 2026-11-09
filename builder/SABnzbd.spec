@@ -1,6 +1,7 @@
 # -*- mode: python -*-
 import os
 import sys
+from fnmatch import fnmatch
 
 from PyInstaller.building.api import EXE, COLLECT, PYZ
 from PyInstaller.building.build_main import Analysis
@@ -102,7 +103,19 @@ pyi_analysis = Analysis(
     hiddenimports=extra_hiddenimports,
     excludes=["ujson", "FixTk", "tcl", "tk", "_tkinter", "tkinter", "Tkinter", "pydoc", "pydoc_data.topics"],
     module_collection_mode={"apprise.plugins": "py"},
+    optimize=1,
 )
+
+if sys.platform == "win32":
+    # Remove unwanted files from the bundle
+    # Patterns are matched against the destination path in the bundle (first item of each entry)
+    unwanted_files = ["Pythonwin/*", "api-ms-win*.dll", "ucrtbase.dll"]
+
+    def keep(entry):
+        return not any(fnmatch(entry[0], pattern) for pattern in unwanted_files)
+
+    pyi_analysis.binaries = list(filter(keep, pyi_analysis.binaries))
+    pyi_analysis.datas = list(filter(keep, pyi_analysis.datas))
 
 pyz = PYZ(pyi_analysis.pure)
 
@@ -128,9 +141,9 @@ exe = EXE(
     codesign_identity=codesign_identity,
 )
 
-coll = COLLECT(exe, pyi_analysis.binaries, pyi_analysis.datas, name="SABnzbd")
+exes = [exe]
 
-# We need to run again for the console-app
+# We need to run again for the console-app, both end up in the same folder
 if sys.platform == "win32":
     console_exe = EXE(
         pyz,
@@ -145,12 +158,9 @@ if sys.platform == "win32":
         version=version_info_console,
     )
 
-    console_coll = COLLECT(
-        console_exe,
-        pyi_analysis.binaries,
-        pyi_analysis.datas,
-        name="SABnzbd-console",
-    )
+    exes.append(console_exe)
+
+coll = COLLECT(*exes, pyi_analysis.binaries, pyi_analysis.datas, name="SABnzbd")
 
 # Build the APP on macOS
 if sys.platform == "darwin":

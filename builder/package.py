@@ -51,6 +51,10 @@ from common import (
     pe_has_authenticode_signature,
 )
 
+# Mach-O CPU types
+CPU_TYPE_X86_64 = 0x01000007
+CPU_TYPE_ARM64 = 0x0100000C
+
 
 # Support functions
 def safe_remove(path):
@@ -62,18 +66,6 @@ def safe_remove(path):
             shutil.rmtree(path)
         else:
             os.remove(path)
-
-
-def delete_files_glob(glob_pattern: str, allow_no_matches: bool = False):
-    """Delete one file or set of files from wild-card spec.
-    We expect to match at least 1 file, to force expected behavior"""
-    if files_to_remove := glob.glob(glob_pattern):
-        for path in files_to_remove:
-            if os.path.exists(path):
-                os.remove(path)
-    else:
-        if not allow_no_matches:
-            raise FileNotFoundError(f"No files found that match '{glob_pattern}'")
 
 
 def run_external_command(command: list[str], print_output: bool = True, **kwargs):
@@ -154,48 +146,41 @@ def build_readme_html(output_path: str):
 
 def test_macos_min_version(binary_path: str):
     # Skip check if nothing was set
-    if macos_min_version := os.environ.get("MACOSX_DEPLOYMENT_TARGET"):
-        # Skip any arm64 specific files
-        if "arm64" in binary_path:
-            print(f"Skipping arm64 binary {binary_path}")
-            return
-
-        # Check minimum macOS version is at least mac OS10.13
-        # We only check the x86_64 since for arm64 it's always macOS 11+
-        print(f"Checking if binary supports macOS {macos_min_version} and above: {binary_path}")
-        otool_output = run_external_command(
-            [
-                "otool",
-                "-arch",
-                "x86_64",
-                "-l",
-                binary_path,
-            ],
-            print_output=False,
-        )
-
-        # Parse the output for LC_BUILD_VERSION minos
-        # The output is very large, so that's why we enumerate over it
-        req_version = packaging.version.parse(macos_min_version)
-        bin_version = None
-        lines = otool_output.split("\n")
-        for line_nr, line in enumerate(lines):
-            if "LC_VERSION_MIN_MACOSX" in line:
-                # Display the version in the next lines
-                bin_version = packaging.version.parse(lines[line_nr + 2].split()[1])
-            elif "minos" in line:
-                bin_version = packaging.version.parse(line.split()[1])
-
-            if bin_version and bin_version > req_version:
-                raise ValueError(f"{binary_path} requires {bin_version}, we want {req_version}")
-            else:
-                # We got the information we need
-                break
-        else:
-            print(lines)
-            raise RuntimeError(f"Could not determine minimum macOS version for {binary_path}")
-    else:
+    if not (macos_min_version := os.environ.get("MACOSX_DEPLOYMENT_TARGET")):
         print("Skipping macOS version check, MACOSX_DEPLOYMENT_TARGET not set")
+        return
+
+    # Skip any arm64 specific files
+    if "arm64" in binary_path:
+        print(f"Skipping arm64 binary {binary_path}")
+        return
+
+    # Only available for macOS
+    from macholib.MachO import MachO
+    from macholib.mach_o import LC_BUILD_VERSION, LC_VERSION_MIN_MACOSX
+
+    # We only check the x86_64 since for arm64 it's always macOS 11+
+    print(f"Checking if binary supports macOS {macos_min_version} and above: {binary_path}")
+    for header in MachO(binary_path).headers:
+        if header.header.cputype != CPU_TYPE_X86_64:
+            continue
+        for load_command, command, _ in header.commands:
+            # Versions are stored as xxxx.yy.zz in a single 32-bit integer
+            if load_command.cmd == LC_BUILD_VERSION:
+                encoded_version = command.minos
+            elif load_command.cmd == LC_VERSION_MIN_MACOSX:
+                encoded_version = command.version
+            else:
+                continue
+
+            bin_version = packaging.version.Version(
+                f"{encoded_version >> 16}.{(encoded_version >> 8) & 0xFF}.{encoded_version & 0xFF}"
+            )
+            if bin_version > (req_version := packaging.version.parse(macos_min_version)):
+                raise ValueError(f"{binary_path} requires {bin_version}, we want {req_version}")
+            return
+        raise RuntimeError(f"Could not determine minimum macOS version for {binary_path}")
+    raise ValueError(f"{binary_path} has no x86_64 slice")
 
 
 def test_sab_binary(binary_path: str):
@@ -306,15 +291,7 @@ if __name__ == "__main__":
 
         # Run PyInstaller and check output
         shutil.copyfile("builder/SABnzbd.spec", "SABnzbd.spec")
-        run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
-
-        shutil.copytree("dist/SABnzbd-console", "dist/SABnzbd", dirs_exist_ok=True)
-        safe_remove("dist/SABnzbd-console")
-
-        # Remove unwanted DLL's
-        shutil.rmtree("dist/SABnzbd/Pythonwin")
-        delete_files_glob("dist/SABnzbd/api-ms-win*.dll", allow_no_matches=True)
-        delete_files_glob("dist/SABnzbd/ucrtbase.dll", allow_no_matches=True)
+        run_external_command([sys.executable, "-m", "PyInstaller", "SABnzbd.spec"])
 
         # Test the release
         test_sab_binary("dist/SABnzbd/SABnzbd.exe")
@@ -405,16 +382,18 @@ if __name__ == "__main__":
 
         # Run PyInstaller and check output
         shutil.copyfile("builder/SABnzbd.spec", "SABnzbd.spec")
-        run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
+        run_external_command([sys.executable, "-m", "PyInstaller", "SABnzbd.spec"])
 
         # Make sure we created a fully universal2 release when releasing or during CI
         # PyInstaller also includes a builtin check for this, but we double-check every executable
         if RELEASE_THIS or ON_GITHUB_ACTIONS:
+            from macholib.MachO import MachO
+
             for bin_to_check in glob.glob("dist/SABnzbd.app/**/*.so", recursive=True):
                 print("Checking if binary is universal2: %s" % bin_to_check)
-                file_output = run_external_command(["file", bin_to_check], print_output=False)
-                # Make sure we have both arm64 and x86
-                if not ("x86_64" in file_output and "arm64" in file_output):
+                # Make sure we have both arm64 and x86_64
+                cpu_types = {header.header.cputype for header in MachO(bin_to_check).headers}
+                if cpu_types != {CPU_TYPE_X86_64, CPU_TYPE_ARM64}:
                     raise RuntimeError("Non-universal2 binary found!")
 
                 # Make sure it supports the macOS versions we want
