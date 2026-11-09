@@ -41,7 +41,8 @@ from werkzeug import Request, Response
 
 import sabnzbd
 import sabnzbd.urlgrabber as urlgrabber
-from sabnzbd.constants import AddNzbFileResult
+from sabnzbd.constants import AddNzbFileResult, DuplicateStatus
+from sabnzbd.nzb import NzbObject
 
 
 def _json_response(payload, status: int = 200) -> Response:
@@ -177,6 +178,40 @@ class TestFetchedNzbResult:
         grabber._handle_add_result(AddNzbFileResult.ERROR, future_nzo, "https://example.test/item.nzb", "item.nzb")
 
         fail_to_history.assert_called_once_with(future_nzo, "https://example.test/item.nzb")
+
+
+@pytest.mark.parametrize("fetch_duplicates", [False, True])
+def test_add_url_forwards_rss_duplicate_option(mocker, fetch_duplicates):
+    """The real URL placeholder must receive the RSS flag before checking duplicates."""
+    mocker.patch("sabnzbd.nzb.object.cfg.no_dupes", return_value=1)
+    mocker.patch.object(NzbObject, "purge_data")
+
+    def mark_duplicate(nzo):
+        nzo.duplicate = DuplicateStatus.DUPLICATE
+
+    duplicate_check = mocker.patch.object(NzbObject, "duplicate_check", autospec=True, side_effect=mark_duplicate)
+    queue = mocker.patch.object(sabnzbd, "NzbQueue", create=True)
+    queue.add.return_value = "placeholder-id"
+    grabber = mocker.patch.object(sabnzbd, "URLGrabber", create=True)
+    url = "https://example.test/cart/item.nzb"
+    info = {"RSS": "CartFeed", "rss_fetch_duplicates": fetch_duplicates}
+
+    result, nzo_ids = urlgrabber.add_url(url, nzbname="Duplicate.Release", nzo_info=info)
+
+    if fetch_duplicates:
+        assert result is AddNzbFileResult.OK
+        assert nzo_ids == ["placeholder-id"]
+        placeholder = queue.add.call_args.args[0]
+        assert placeholder.futuretype
+        assert placeholder.nzo_info == info
+        grabber.add.assert_called_once_with(url, placeholder)
+        duplicate_check.assert_not_called()
+    else:
+        assert result is AddNzbFileResult.ERROR
+        assert nzo_ids == []
+        duplicate_check.assert_called_once()
+        queue.add.assert_not_called()
+        grabber.add.assert_not_called()
 
 
 @pytest.mark.usefixtures("local_server", "local_https_server")
