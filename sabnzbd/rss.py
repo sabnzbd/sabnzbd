@@ -1213,6 +1213,9 @@ class RSSReader:
         if not resolved_entry.downloaded_at:
             repo.flag_downloaded(resolved_entry.feed, resolved_entry.link)
 
+        feed_config = config.get_rss().get(resolved_entry.feed)
+        fetch_duplicates = bool(feed_config and feed_config.fetch_duplicates())
+
         logging.info("Adding %s (%s) to queue", resolved_entry.link, resolved_entry.title)
         sabnzbd.urlgrabber.add_url(
             resolved_entry.link,
@@ -1221,7 +1224,7 @@ class RSSReader:
             cat=resolved_entry.cat,
             priority=resolved_entry.priority,
             nzbname=resolved_entry.nzbname,
-            nzo_info=NzoInfo(RSS=resolved_entry.feed),
+            nzo_info=NzoInfo(RSS=resolved_entry.feed, rss_fetch_duplicates=fetch_duplicates),
         )
 
     def run(self):

@@ -723,3 +723,79 @@ class TestNzbQueue:
         queue.add(make_dummy_nzo("a"), save=False, quiet=True)
 
         queue.update_sort_order()
+
+
+@pytest.mark.usefixtures("nzbqueue_env")
+@pytest.mark.parametrize("success", [False, True])
+def test_rss_cart_placeholder_survives_alternative_handling(mocker, success, caplog):
+    # Existing resume log format has one placeholder for two arguments.
+    caplog.set_level("WARNING")
+    from sabnzbd.constants import DuplicateStatus
+
+    mocker.patch("sabnzbd.cfg.no_dupes", return_value=1)
+    check = mocker.patch.object(NzbObject, "duplicate_check")
+    cart = NzbObject(
+        "URL", futuretype=True, nzbname="Same.Release", nzo_info={"RSS": "Cart", "rss_fetch_duplicates": True}
+    )
+    sabnzbd.NzbQueue.add(cart, save=False, quiet=True)
+    check.assert_not_called()
+    finished = make_mock_nzo(final_name="Same.Release")
+    alternative = make_mock_nzo(final_name="Same.Release", duplicate=DuplicateStatus.DUPLICATE_ALTERNATIVE)
+    sabnzbd.NzbQueue.add(alternative, save=False, quiet=True)
+    sabnzbd.NzbQueue.handle_duplicate_alternatives(finished, success=success)
+    assert sabnzbd.NzbQueue.get_nzo(cart.nzo_id) is cart
+    assert cart.duplicate is None
+    assert cart.status != Status.PAUSED
+    if success:
+        assert sabnzbd.NzbQueue.get_nzo(alternative.nzo_id) is None
+    else:
+        assert alternative.duplicate is None
+
+
+@pytest.mark.usefixtures("nzbqueue_env")
+@pytest.mark.parametrize("endpoint", ["/api?t=get&id=123", "/cart/item.nzb"])
+def test_rss_cart_fetch_discard_cleans_placeholder_and_payload(mocker, httpserver, endpoint):
+    from sabnzbd.constants import AddNzbFileResult, FUTURE_Q_FOLDER
+    from sabnzbd.urlgrabber import URLGrabber
+
+    mocker.patch("sabnzbd.cfg.no_dupes", return_value=1)
+    mocker.patch("sabnzbd.cfg.no_smart_dupes", return_value=0)
+    history = mocker.MagicMock()
+    history.have_name_or_md5sum.return_value = True
+    pool = mocker.MagicMock()
+    pool.connection.return_value.__enter__.return_value = history
+    mocker.patch.object(sabnzbd, "db_pool", pool, create=True)
+    postprocessor = mocker.Mock()
+    postprocessor.get_queue.return_value = []
+    mocker.patch.object(sabnzbd, "PostProcessor", postprocessor, create=True)
+    nzb_fp = create_and_read_nzb_fp("basic_rar5")
+    httpserver.expect_request(endpoint.split("?")[0]).respond_with_data(
+        nzb_fp.read(), headers={"Content-Disposition": 'attachment; filename="item.nzb"'}
+    )
+    url = httpserver.url_for(endpoint)
+    cart = NzbObject(
+        url, url=url, futuretype=True, nzbname="Same.Release", nzo_info={"RSS": "Cart", "rss_fetch_duplicates": True}
+    )
+    os.makedirs(cart.admin_path, exist_ok=True)
+    sabnzbd.NzbQueue.add(cart, quiet=True)
+    assert os.path.exists(cart.admin_path)
+    grabber = URLGrabber()
+    fail = mocker.patch.object(grabber, "fail_to_history")
+    retry = mocker.patch.object(grabber, "add")
+    handle = grabber._handle_add_result
+    results = []
+
+    def handle_and_stop(result, *args):
+        results.append(result)
+        handle(result, *args)
+        grabber.stop()
+
+    mocker.patch.object(grabber, "_handle_add_result", side_effect=handle_and_stop)
+    grabber.run()
+    assert results == [AddNzbFileResult.DUPLICATE]
+    assert sabnzbd.NzbQueue.get_nzo(cart.nzo_id) is None
+    assert not os.path.exists(os.path.join(sabnzbd.cfg.admin_dir.get_path(), FUTURE_Q_FOLDER, "item.nzb"))
+    assert not os.path.exists(os.path.join(cart.admin_path, "SABnzbd_nzo_" + cart.nzo_id))
+    history.have_name_or_md5sum.assert_called()
+    fail.assert_not_called()
+    retry.assert_not_called()
