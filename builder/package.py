@@ -183,6 +183,15 @@ def test_macos_min_version(binary_path: str):
     raise ValueError(f"{binary_path} has no x86_64 slice")
 
 
+def get_codesign_info(file_path: str) -> str:
+    """Return the signature details of a file, or an empty string if it is unsigned or the signature is invalid"""
+    try:
+        run_external_command(["codesign", "--verify", "--deep", "--strict", file_path], print_output=False)
+        return run_external_command(["codesign", "-d", "--verbose=4", file_path], print_output=False)
+    except RuntimeError:
+        return ""
+
+
 def test_sab_binary(binary_path: str):
     """Wrapper to have a simple start-up test for the binary"""
     with tempfile.TemporaryDirectory() as config_dir:
@@ -361,6 +370,16 @@ if __name__ == "__main__":
                 # Make sure it supports the macOS versions we want first
                 test_macos_min_version(file_to_sign)
 
+                # Notarization accepts any valid Developer ID signature that has the
+                # hardened runtime and a secure timestamp, so no need to replace it
+                signature_info = get_codesign_info(file_to_sign)
+                if all(
+                    required in signature_info
+                    for required in ("Authority=Developer ID Application", "(runtime)", "Timestamp=")
+                ):
+                    print("Skipping %s, already has a valid signature with hardened runtime" % file_to_sign)
+                    continue
+
                 # Then sign in
                 print("Signing %s with hardened runtime" % file_to_sign)
                 run_external_command(
@@ -409,24 +428,8 @@ if __name__ == "__main__":
             ]
             for file_to_check in files_already_signed:
                 print("Checking signature of %s" % file_to_check)
-                sign_result = run_external_command(
-                    [
-                        "codesign",
-                        "-dv",
-                        "-r-",
-                        file_to_check,
-                    ],
-                    print_output=False,
-                ) + run_external_command(
-                    [
-                        "codesign",
-                        "--verify",
-                        "--deep",
-                        file_to_check,
-                    ],
-                    print_output=False,
-                )
-                if authority not in sign_result or "adhoc" in sign_result or "invalid" in sign_result:
+                sign_result = get_codesign_info(file_to_check)
+                if authority not in sign_result or "adhoc" in sign_result:
                     raise RuntimeError("Signature of %s seems invalid!" % file_to_check)
 
             # Always notarize, as newer macOS versions don't allow any code without it
