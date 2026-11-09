@@ -1735,7 +1735,7 @@ msgstr "[%s] %s içinde tamir edildi"
 
 #: sabnzbd/par2repair.py
 msgid "Out of memory"
-msgstr ""
+msgstr "Bellek yetersiz"
 
 #: sabnzbd/par2repair.py
 msgid "Fetching"
