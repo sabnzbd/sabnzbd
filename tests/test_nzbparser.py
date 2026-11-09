@@ -23,8 +23,9 @@ import os
 import pytest
 from tests.testhelper import SAB_CACHE_DIR, SAB_DATA_DIR, create_and_read_nzb_fp
 import sabnzbd.nzbparser as nzbparser
-from sabnzbd.nzb import NzbObject
+from sabnzbd.nzb import NzbObject, NzbRejected
 from sabnzbd.filesystem import save_compressed
+from sabnzbd.constants import AddNzbFileResult
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
@@ -65,6 +66,16 @@ class TestNzbParser:
         # Check meta-data
         for field in metadata:
             assert [metadata[field]] == nzo.meta[field]
+
+    def test_discarded_duplicate_has_distinct_result(self, tmp_path, mocker):
+        nzb_path = tmp_path / "duplicate.nzb"
+        nzb_path.write_bytes(b"<nzb></nzb>")
+        mocker.patch("sabnzbd.nzbparser.NzbObject", side_effect=NzbRejected)
+
+        result, nzo_ids = nzbparser.process_single_nzb("duplicate.nzb", str(nzb_path))
+
+        assert result is AddNzbFileResult.DUPLICATE
+        assert nzo_ids == []
 
     @pytest.mark.xfail(reason="These tests should be added")
     def test_nzbparser_bad_stuff(self):
