@@ -1,11 +1,11 @@
 # All sub-dependencies are listed below and installed with --no-dependencies for security
 pyinstaller==6.22.3
 packaging==26.3
-pyinstaller-hooks-contrib==2026.8
+pyinstaller-hooks-contrib==2026.9
 altgraph==0.17.5
 wrapt==2.5.1
-setuptools==84.0.0
-markdown==3.11.1
+setuptools==84.2.1
+markdown==3.11.2
 pefile==2024.8.26
 
 # For the Windows build
