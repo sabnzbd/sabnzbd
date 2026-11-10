@@ -164,7 +164,7 @@ function HistoryListModel(parent) {
         });
 
         $("#modal-retry-job").modal("hide");
-        $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
+        $('#modal-retry-job .btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
         form.reset()
     }
 

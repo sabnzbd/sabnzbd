@@ -1747,6 +1747,37 @@ tr.queue-item>td:first-child>a {
     max-width: 100px;
 }
 
+.nzb-dropzone {
+    text-align: center;
+    white-space: normal;
+    padding: 25px 10px;
+    margin-bottom: 10px;
+    border: 2px dashed var(--clr-border);
+}
+
+.nzb-dropzone .glyphicon {
+    display: inline-block;
+    font-size: 2.5em;
+    margin: 0 0 8px;
+}
+
+.nzb-dropzone em {
+    display: block;
+    max-width: 100%;
+    font-style: normal;
+    word-break: break-all;
+}
+
+#modal-add-nzb legend {
+    margin: 15px 0 8px;
+    font-size: 1.1em;
+}
+
+/* Opened from the indexer search, only the prefilled URL is relevant */
+#modal-add-nzb.nzbsearch-stacked .nzb-file-fieldset {
+    display: none;
+}
+
 .btn-file,
 input[name="nzbURL"] {
     transition : border 500ms ease-out;

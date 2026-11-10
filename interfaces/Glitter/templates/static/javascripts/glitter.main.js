@@ -625,15 +625,20 @@ function ViewModel() {
         // Get filename
         var fileName = $(event.target).val().replace(/\\/g, '/').replace(/.*\//, '');
         // Set label
-        if (fileName) $('.btn-file em').text(fileName)
+        if (fileName) $(event.target).closest('.btn-file').find('em').text(fileName)
+    }
+
+    // Add right away when files are picked in the Add NZB modal
+    self.addNZBFromBrowse = function(data, event) {
+        self.addNZB(event.target.form)
     }
 
     // Add NZB form
     self.addNZB = function(form) {
         // Anything?
         if (!$(form.nzbFile)[0].files[0] && !$(form.nzbURL).val()) {
-            $('.btn-file, input[name="nzbURL"]').attr('style', 'border-color: red !important')
-            setTimeout(function() { $('.btn-file, input[name="nzbURL"]').css('border-color', '') }, 2000)
+            $('#modal-add-nzb .btn-file, input[name="nzbURL"]').attr('style', 'border-color: red !important')
+            setTimeout(function() { $('#modal-add-nzb .btn-file, input[name="nzbURL"]').css('border-color', '') }, 2000)
             return false;
         }
 
@@ -643,9 +648,8 @@ function ViewModel() {
 
         // Upload file using the method we also use for drag-and-drop
         if ($(form.nzbFile)[0].files[0]) {
+            // Upload hides the modal and resets the form
             self.addNZBFromFile($(form.nzbFile)[0].files);
-            // Hide modal, upload will reset the form
-            $("#modal-add-nzb").modal("hide");
             // Re-enable the buttons
             submit_buttons.attr("disabled", false)
         } else if ($(form.nzbURL).val()) {
@@ -689,6 +693,8 @@ function ViewModel() {
         // First file
         if (fileindex === undefined) {
             fileindex = 0
+            // Settings are taken from the modal, so close it (also on drag-and-drop)
+            $("#modal-add-nzb").modal("hide")
         }
         var file = files[fileindex]
         fileindex++
@@ -731,7 +737,6 @@ function ViewModel() {
                 // Reset the form
                 $('#modal-add-nzb form').trigger('reset');
                 $('#nzbname').val('')
-                $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
             }
         }).fail(function(xhr, status, error) {
             // Update the uploading notification text to show error

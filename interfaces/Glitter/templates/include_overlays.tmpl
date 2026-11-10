@@ -496,35 +496,22 @@
                 <h4 class="modal-title" id="modal-add-nzb-title">$T('Glitter-addNZB')</h4>
             </div>
             <div class="modal-body form-horizontal">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <fieldset>
-                            <legend class="row-wrap-text">$T('Glitter-addFromURL')</legend>
-                            <div class="input-group" data-tooltip="true" data-placement="bottom" title="$file_exts">
-                                <input type="text" name="nzbURL" class="form-control" placeholder="$T('enterURL')" />
-                                <span class="input-group-btn">
-                                    <input type="submit" name="Add" value="$T('add')" class="btn btn-default" />
-                                </span>
-                            </div>
-                        </fieldset>
+                <fieldset class="nzb-file-fieldset">
+                    <label class="btn btn-default btn-file nzb-dropzone" data-tooltip="true" data-placement="bottom" title="$file_exts">
+                        <span class="glyphicon glyphicon-plus-sign"></span>
+                        <em>$T('Glitter-dropFiles')</em>
+                        <input type="file" multiple name="nzbFile" class="form-control" accept="$file_exts" data-bind="event : { change: addNZBFromBrowse }" />
+                    </label>
+                </fieldset>
+                <fieldset>
+                    <legend class="row-wrap-text">$T('Glitter-addFromURL')</legend>
+                    <div class="input-group">
+                        <input type="text" name="nzbURL" class="form-control" placeholder="$T('enterURL')" />
+                        <span class="input-group-btn">
+                            <input type="submit" name="Add" value="$T('add')" class="btn btn-default" />
+                        </span>
                     </div>
-                    <div class="col-sm-6">
-                        <fieldset>
-                            <legend class="row-wrap-text">$T('Glitter-addFromFile')</legend>
-                            <div class="input-group" data-tooltip="true" data-placement="bottom" title="$file_exts">
-                                <label class="btn btn-default btn-file">
-                                    <span class="glyphicon glyphicon-file"></span> <em>$T('Glitter-chooseFile')&hellip;</em>
-                                    <input type="file" multiple name="nzbFile" class="form-control" accept="$file_exts" data-bind="event : { change: updateBrowseLabel }" />
-                                </label>
-
-                                <span class="input-group-btn">
-                                     <input type="submit" name="Add" value="$T('add')" class="btn btn-default" />
-                                </span>
-                            </div>
-                        </fieldset>
-                    </div>
-                </div>
-                <div class="clearfix"></div>
+                </fieldset>
                 <hr />
                 <div class="form-group">
                     <label class="col-sm-4 control-label" for="nzbname">$T('name')</label>
