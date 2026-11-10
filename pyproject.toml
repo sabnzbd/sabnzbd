@@ -50,3 +50,5 @@ markers = [
     "platform",
     "fake_fs"
 ]
+addopts = ["-n", "auto", "--dist", "loadscope"]
+asyncio_default_fixture_loop_scope = "function"

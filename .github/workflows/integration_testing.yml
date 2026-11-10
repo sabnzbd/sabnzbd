@@ -69,4 +69,4 @@ jobs:
     - name: Install Playwright browser
       run: python -m playwright install chromium --with-deps
     - name: Test SABnzbd
-      run: pytest -n auto --dist loadscope
+      run: pytest
