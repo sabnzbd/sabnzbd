@@ -20,6 +20,7 @@ tests.test_nzbobject - Testing functions in nzbobject.py
 """
 
 import datetime
+import gzip
 import os
 import pytest
 from unittest import mock
@@ -33,7 +34,7 @@ from sabnzbd.nzb.article import Article
 from sabnzbd.nzb.file import NzbFile
 from sabnzbd.par2file import FilePar2Info
 from sabnzbd.config import ConfigCat
-from sabnzbd.constants import NORMAL_PRIORITY, MAX_BAD_ARTICLES, DuplicateStatus, Status
+from sabnzbd.constants import FORCE_PRIORITY, NORMAL_PRIORITY, MAX_BAD_ARTICLES, DuplicateStatus, Status
 from sabnzbd.filesystem import globber, sanitize_filename, create_all_dirs, long_path
 
 
@@ -159,6 +160,71 @@ class TestNZO:
         # Ordinary feeds retain their existing backup behavior. For cart feeds,
         # Paused/Tagged NZBs can still be backed up; rejected duplicates cannot.
         assert backup.call_count == (0 if fetch_duplicates and action in (1, 3) else 1)
+
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR, "backup_for_duplicates": False})
+    @pytest.mark.parametrize("fetch_duplicates", [False, True])
+    @pytest.mark.parametrize("smart", [False, True])
+    @pytest.mark.parametrize("action", [1, 2, 3, 4])
+    @pytest.mark.parametrize("force", [False, True])
+    def test_prequeue_renamed_rss_duplicate_preserves_backup(
+        self, mocker, tmp_path, fetch_duplicates, smart, action, force
+    ):
+        """Only accepted cart payloads may replace an existing same-basename backup."""
+        sabnzbd.cfg.nzb_backup_dir.set(str(tmp_path))
+        backup_path = tmp_path / "duplicate.nzb.gz"
+        original_backup = b"original NZB backup"
+        backup_path.write_bytes(original_backup)
+        mocker.patch.object(NzbObject, "purge_data")
+        mocker.patch("sabnzbd.nzb.object.cfg.no_dupes", return_value=0 if smart else action)
+        mocker.patch("sabnzbd.nzb.object.cfg.no_smart_dupes", return_value=action if smart else 0)
+        history = mocker.MagicMock()
+        history.have_name_or_md5sum.side_effect = lambda name, md5sum: name == "Existing.Release.S01E01"
+        history.have_duplicate_key.side_effect = lambda key: key == "Existing.Release.S01E01"
+        mocker.patch("sabnzbd.db_pool", create=True).connection.return_value.__enter__.return_value = history
+        mocker.patch("sabnzbd.NzbQueue", create=True).have_name_or_md5sum.return_value = False
+        sabnzbd.NzbQueue.have_duplicate_key.return_value = False
+        mocker.patch.object(
+            NzbObject,
+            "set_duplicate_key",
+            autospec=True,
+            side_effect=lambda nzo: setattr(nzo, "duplicate_key", nzo.final_name),
+        )
+        mocker.patch("sabnzbd.nzb.object.make_script_path", return_value="prequeue-script")
+
+        def rename(nzo, pp, cat):
+            assert nzo.duplicate is None
+            # The NZB remains available to scripts in the job's admin directory.
+            with gzip.open(os.path.join(nzo.admin_path, globber(nzo.admin_path, "*.nzb.gz")[0])) as nzb_file:
+                assert nzb_file.read() == payload
+            return [1, "Existing.Release.S01E01", pp, cat, None, FORCE_PRIORITY if force else nzo.priority, None]
+
+        mocker.patch("sabnzbd.newsunpack.pre_queue", side_effect=rename)
+        nzb_fp = create_and_read_nzb_fp("basic_rar5")
+        payload = nzb_fp.getvalue()
+
+        def parse_fetched_nzb():
+            return NzbObject(
+                "duplicate.nzb",
+                nzb_fp=nzb_fp,
+                nzbname="New.Release.S01E01",
+                nzo_info={"RSS": "Cart", "rss_fetch_duplicates": fetch_duplicates},
+            )
+
+        if action in (1, 3) and not force:
+            with pytest.raises(NzbRejected if action == 1 else NzbRejectToHistory):
+                parse_fetched_nzb()
+        else:
+            nzo = parse_fetched_nzb()
+            assert (nzo.status == Status.PAUSED) == (action == 2 and not force)
+            assert nzo.duplicate == (
+                None if force else DuplicateStatus.SMART_DUPLICATE if smart else DuplicateStatus.DUPLICATE
+            )
+
+        if fetch_duplicates and action in (1, 3) and not force:
+            assert backup_path.read_bytes() == original_backup
+        else:
+            with gzip.open(backup_path) as backup:
+                assert backup.read() == payload
 
     def test_existing_rss_url_still_rejects_duplicates(self, mocker):
         """Queued entries and existing feeds without the new flag retain early rejection."""

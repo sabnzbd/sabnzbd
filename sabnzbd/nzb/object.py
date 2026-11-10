@@ -425,6 +425,7 @@ class NzbObject(TryList):
             remove_all(admin_dir, "SABnzbd_nz?_*", keep_folder=True)
             remove_all(admin_dir, "SABnzbd_article_*", keep_folder=True)
 
+        deferred_backup = None
         if nzb_fp:
             full_nzb_path = save_compressed(admin_dir, filename, nzb_fp)
             try:
@@ -447,18 +448,12 @@ class NzbObject(TryList):
             if not reuse and dup_check and not self.duplicate and self.priority != REPAIR_PRIORITY:
                 self.duplicate_check()
 
-            # A fetched cart duplicate might have the same NZB filename but different
-            # contents. Do not overwrite the original backup if the configured
-            # duplicate action will discard it or move it to History.
-            rejecting_duplicate = (
-                self.nzo_info.get("rss_fetch_duplicates")
-                and self.priority != FORCE_PRIORITY
-                and (
-                    (self.duplicate == DuplicateStatus.DUPLICATE and cfg.no_dupes() in (1, 3))
-                    or (self.duplicate == DuplicateStatus.SMART_DUPLICATE and cfg.no_smart_dupes() in (1, 3))
-                )
-            )
-            if not rejecting_duplicate:
+            # A pre-queue rename can still turn a fetched cart job into a duplicate.
+            # Keep its NZB in the admin directory, but only replace the backup after
+            # the final duplicate action accepts it. Retries retain their usual backup.
+            if self.nzo_info.get("rss_fetch_duplicates") and not reuse:
+                deferred_backup = full_nzb_path
+            else:
                 backup_nzb(full_nzb_path)
 
         if not self.files and not reuse:
@@ -562,6 +557,8 @@ class NzbObject(TryList):
 
         # Take action on the duplicate status
         self.handle_duplicate_action()
+        if deferred_backup:
+            backup_nzb(deferred_backup)
 
         # Check if there is any unwanted extension in plain sight in the NZB itself
         if cfg.action_on_unwanted_extensions():
