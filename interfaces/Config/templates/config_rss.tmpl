@@ -57,7 +57,7 @@
                                 <td class="controls">
                                     <button type="button" class="btn btn-default testFeed" rel="$feed_item_html"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
                                     <input type="hidden" name="uri" value="$rss[$feed_item]['uris']" />
-                                    <button type="button" class="btn btn-default editFeed" rel="$feed_item_html"><span class="glyphicon glyphicon-pencil"></span> $T('rss-edit')</button>
+                                    <button type="button" class="btn btn-default editFeed" rel="$feed_item_html" data-fetch-duplicates="$rss[$feed_item]['fetch_duplicates']"><span class="glyphicon glyphicon-pencil"></span> $T('rss-edit')</button>
                                     <button type="button" class="btn btn-default delFeed" rel="$feed_item_html"><span class="glyphicon glyphicon-trash"></span></button>
                                 </td>
                             </tr>
@@ -116,14 +116,6 @@
             <form action="$url('config/rss/upd_rss_feed')" method="post">
                 <input type="hidden" name="feed" value="$active_feed" />
                 <input type="hidden" name="uri" value="$rss[$feed]['uris']" />
-                <div class="form-group">
-                    <label for="fetch_duplicates">$T('Fetch duplicate NZBs')</label>
-                    <select name="fetch_duplicates" id="fetch_duplicates" class="form-control">
-                        <option value="0" <!--#if not int($rss[$feed]['fetch_duplicates']) then 'selected="selected"' else ''#-->>$T('Disabled')</option>
-                        <option value="1" <!--#if int($rss[$feed]['fetch_duplicates']) then 'selected="selected"' else ''#-->>$T('Enabled')</option>
-                    </select>
-                    <span class="help-block">$T('Enable only for feeds that remove items when their NZB is fetched. Duplicate handling is applied after fetching. This uses additional indexer grabs.')</span>
-                </div>
                 <table class="catTable">
                     <thead>
                         <tr>
@@ -532,7 +524,14 @@
                     <input type="text" class="form-control" name="uri" id="feed_edit_url" placeholder="$T('feed') URLs" size="">
                     <span class="help-block">$T('addMultipleFeeds')</span>
                 </div>
+                <div class="form-group">
+                    <label for="feed_edit_fetch_duplicates">$T('Fetch duplicate NZBs')</label>
+                    <input type="checkbox" id="feed_edit_fetch_duplicates" aria-describedby="feed_edit_fetch_duplicates_help" />
+                    <span class="help-block" id="feed_edit_fetch_duplicates_help">$T('Fetch duplicates before applying duplicate handling. Use for feeds that remove items when fetched; this uses additional indexer grabs.')</span>
+                </div>
                 <input type="hidden" name="feed" id="feed_edit_old_name" />
+                <input type="hidden" name="enable" id="feed_edit_enabled" />
+                <input type="hidden" name="fetch_duplicates" id="feed_edit_fetch_duplicates_value" />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> $T('cancel')</button>
@@ -565,9 +564,15 @@ jQuery(document).ready(function(){
         jQuery('#feed_edit_old_name').val(whichFeed)
         jQuery('#feed_edit_new_name').val(whichFeed)
         jQuery('#feed_edit_url').val(oldURI)
+        jQuery('#feed_edit_enabled').val(jQuery(this).closest('tr').find('.toggleFeedCheckbox').prop('checked') ? '1' : '0')
+        jQuery('#feed_edit_fetch_duplicates').prop('checked', jQuery(this).attr('data-fetch-duplicates') === '1')
 
         // Show the modal
         jQuery('#rss_edit_modal').modal('show');
+    });
+
+    jQuery('#rss_edit_modal').submit(function() {
+        jQuery('#feed_edit_fetch_duplicates_value').val(jQuery('#feed_edit_fetch_duplicates').prop('checked') ? '1' : '0')
     });
 
     jQuery('.delFeed').click(function(e){
