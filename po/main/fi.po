@@ -4881,8 +4881,8 @@ msgid "Fetch NZB from URL"
 msgstr "Nouda NZB osoitteesta"
 
 #: sabnzbd/skintext.py
-msgid "Upload NZB"
-msgstr "Lähetä NZB"
+msgid "Drop NZB files here or click to browse"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Optionally specify a filename"

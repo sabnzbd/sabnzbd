@@ -5003,8 +5003,8 @@ msgid "Fetch NZB from URL"
 msgstr "Získat NZB z URL"
 
 #: sabnzbd/skintext.py
-msgid "Upload NZB"
-msgstr "Nahrát NZB"
+msgid "Drop NZB files here or click to browse"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Optionally specify a filename"
