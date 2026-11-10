@@ -15,9 +15,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import logging
 import os
 import platform
 import re
+import sys
 
 # Constants
 VERSION_FILE = "sabnzbd/version.py"
@@ -86,3 +88,13 @@ def pe_has_authenticode_signature(pe_file: str) -> bool:
     pe = pefile.PE(pe_file, fast_load=True)
     security = pe.OPTIONAL_HEADER.DATA_DIRECTORY[pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_SECURITY"]]
     return security.VirtualAddress != 0 and security.Size != 0
+
+
+def setup_logging():
+    """Log to stdout, including the function the message came from.
+    Debug messages are shown when GitHub Actions debug logging is enabled."""
+    logging.basicConfig(
+        level=logging.DEBUG if os.environ.get("RUNNER_DEBUG") == "1" else logging.INFO,
+        stream=sys.stdout,
+        format="%(asctime)s::%(levelname)s::[%(funcName)s:%(lineno)d] %(message)s",
+    )

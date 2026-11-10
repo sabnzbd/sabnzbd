@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import json
+import logging
 import os
 import re
 
@@ -35,9 +36,13 @@ from common import (
     RELEASE_THIS,
     RELEASE_TITLE,
     pe_has_authenticode_signature,
+    setup_logging,
 )
 
+setup_logging()
+
 # Verify we have all assets
+logging.info("Releasing SABnzbd %s (release tag: %s)", RELEASE_VERSION, RELEASE_THIS)
 files_to_check = (
     RELEASE_SRC,
     RELEASE_WIN_BIN_X64,
@@ -49,13 +54,13 @@ files_to_check = (
 for file_to_check in files_to_check:
     if not os.path.exists(file_to_check):
         raise RuntimeError("Release file %s is missing!" % file_to_check)
-print("All release files are present")
+logging.info("All release files are present")
 
 # When releasing, the Windows installer must be signed
 if RELEASE_THIS:
     if not pe_has_authenticode_signature(RELEASE_WIN_INSTALLER):
         raise RuntimeError("%s is not signed!" % RELEASE_WIN_INSTALLER)
-    print("%s has an Authenticode signature" % RELEASE_WIN_INSTALLER)
+    logging.info("%s has an Authenticode signature", RELEASE_WIN_INSTALLER)
 
 # Check if tagged as release and check for token
 gh_token = os.environ.get("AUTOMATION_GITHUB_TOKEN", "")
@@ -70,9 +75,9 @@ if RELEASE_THIS and gh_token:
     # Find the existing release for this tag, or create a fresh draft
     try:
         gh_release = gh_repo.get_release(RELEASE_VERSION)
-        print("Found existing release %s" % gh_release.name)
+        logging.info("Found existing release %s", gh_release.name)
     except github.UnknownObjectException:
-        print("Creating GitHub release SABnzbd %s" % RELEASE_VERSION)
+        logging.info("Creating GitHub release SABnzbd %s", RELEASE_VERSION)
         gh_release = gh_repo.create_git_release(
             tag=RELEASE_VERSION,
             name=RELEASE_TITLE,
@@ -85,15 +90,15 @@ if RELEASE_THIS and gh_token:
     existing_assets = {asset.name: asset for asset in gh_release.get_assets()}
     for file_to_upload in files_to_check:
         if file_to_upload in existing_assets:
-            print("Removing existing asset %s" % file_to_upload)
+            logging.info("Removing existing asset %s", file_to_upload)
             existing_assets[file_to_upload].delete_asset()
-        print("Uploading %s to release %s" % (file_to_upload, gh_release.name))
+        logging.info("Uploading %s to release %s", file_to_upload, gh_release.name)
         gh_release.upload_asset(file_to_upload)
 
     # Publish the release once all assets are attached
     uploaded_assets = {asset.name for asset in gh_release.get_assets()}
     if set(files_to_check).issubset(uploaded_assets):
-        print("All assets present, releasing %s" % RELEASE_VERSION)
+        logging.info("All assets present, releasing %s", RELEASE_VERSION)
         gh_release.update_release(
             tag_name=RELEASE_VERSION,
             name=RELEASE_TITLE,
@@ -101,19 +106,22 @@ if RELEASE_THIS and gh_token:
             draft=False,
             prerelease=PRERELEASE,
         )
+    else:
+        logging.warning("Not all assets are uploaded, %s stays a draft", RELEASE_VERSION)
 
     # Update the website
+    logging.info("Updating the website")
     gh_repo_web = gh_obj.get_repo("sabnzbd/sabnzbd.github.io")
     # Check if the branch already exists, only create one if it doesn't
     skip_website_update = False
     try:
         gh_repo_web.get_branch(RELEASE_VERSION)
-        print("Branch %s on sabnzbd/sabnzbd.github.io already exists, skipping update" % RELEASE_VERSION)
+        logging.info("Branch %s on sabnzbd/sabnzbd.github.io already exists, skipping update", RELEASE_VERSION)
         skip_website_update = True
     except github.GithubException:
         # Create a new branch to have the changes
         sb = gh_repo_web.get_branch("master")
-        print("Creating branch %s on sabnzbd/sabnzbd.github.io" % RELEASE_VERSION)
+        logging.info("Creating branch %s on sabnzbd/sabnzbd.github.io", RELEASE_VERSION)
         new_branch = gh_repo_web.create_git_ref(ref="refs/heads/" + RELEASE_VERSION, sha=sb.commit.sha)
 
     # Update the files
@@ -124,6 +132,7 @@ if RELEASE_THIS and gh_token:
         # Get all the version files
         latest_txt = gh_repo_web.get_contents("latest.txt")
         latest_txt_items = latest_txt.decoded_content.split()
+        logging.debug("Current latest.txt: %s", latest_txt_items)
         new_latest_txt_items = latest_txt_items[:2]
         config_yml = gh_repo_web.get_contents("_config.yml")
         if PRERELEASE:
@@ -157,7 +166,7 @@ if RELEASE_THIS and gh_token:
             )
 
         # Update the files
-        print("Updating latest.txt")
+        logging.info("Updating latest.txt")
         gh_repo_web.update_file(
             "latest.txt",
             "Release %s: latest.txt" % RELEASE_VERSION,
@@ -165,7 +174,7 @@ if RELEASE_THIS and gh_token:
             latest_txt.sha,
             RELEASE_VERSION,
         )
-        print("Updating _config.yml")
+        logging.info("Updating _config.yml")
         gh_repo_web.update_file(
             "_config.yml",
             "Release %s: _config.yml" % RELEASE_VERSION,
@@ -175,7 +184,7 @@ if RELEASE_THIS and gh_token:
         )
 
         # Create pull-request
-        print("Creating pull request in sabnzbd/sabnzbd.github.io for the update")
+        logging.info("Creating pull request in sabnzbd/sabnzbd.github.io for the update")
         update_pr = gh_repo_web.create_pull(
             title="Release %s" % RELEASE_VERSION,
             base="master",
@@ -184,14 +193,15 @@ if RELEASE_THIS and gh_token:
         )
 
         # Merge pull-request
-        print("Merging pull request in sabnzbd/sabnzbd.github.io for the update")
+        logging.info("Merging pull request in sabnzbd/sabnzbd.github.io for the update")
         update_pr.merge(merge_method="squash")
+        logging.info("Website update merged")
 
     # Trigger the Docker image build at linuxserver.io
     # Branch "develop" builds the pre-releases, "master" the stable releases
     if linuxserver_token := os.environ.get("LINUXSERVER_WEBHOOK_TOKEN", ""):
         linuxserver_branch = "develop" if PRERELEASE else "master"
-        print("Triggering linuxserver.io Docker build for branch %s" % linuxserver_branch)
+        logging.info("Triggering linuxserver.io Docker build for branch %s", linuxserver_branch)
         requests.post(
             "https://ci.linuxserver.io/generic-webhook-trigger/invoke?sabnzbd",
             headers={"Authorization": "Bearer %s" % linuxserver_token},
@@ -199,7 +209,7 @@ if RELEASE_THIS and gh_token:
             timeout=30,
         ).raise_for_status()
     else:
-        print("Missing LINUXSERVER_WEBHOOK_TOKEN")
+        logging.warning("Missing LINUXSERVER_WEBHOOK_TOKEN")
 
     # Only with GitHub success we proceed to Reddit
     if reddit_token := os.environ.get("REDDIT_TOKEN", ""):
@@ -226,14 +236,14 @@ if RELEASE_THIS and gh_token:
         # Use the header in the readme as title
         title = readme_lines[0]
         release_notes_text = "".join(readme_lines[2:])
-        print("Posting release notes to Reddit")
+        logging.info("Posting release notes to Reddit")
 
         # Only stable releases to r/usenet
         if not PRERELEASE:
             # Get correct flair-id (required by r/usenet)
             for flair in subreddit_usenet.flair.link_templates.user_selectable():
                 if flair["flair_text"] == "News":
-                    print("Posting to r/usenet")
+                    logging.info("Posting to r/usenet")
                     submission = subreddit_usenet.submit(
                         title, selftext=release_notes_text, flair_id=flair["flair_template_id"]
                     )
@@ -242,11 +252,11 @@ if RELEASE_THIS and gh_token:
                 raise ValueError("Could not locate flair_text for posting to r/usenet")
 
         # Post always to r/SABnzbd
-        print("Posting to r/sabnzbd")
+        logging.info("Posting to r/sabnzbd")
         subreddit_sabnzbd.submit(title, selftext=release_notes_text)
 
     else:
-        print("Missing REDDIT_TOKEN")
+        logging.warning("Missing REDDIT_TOKEN")
 
     # Push release notes to Discord via an incoming webhook
     # Separate channels for testing (pre-release) and stable, both are required
@@ -254,7 +264,7 @@ if RELEASE_THIS and gh_token:
     discord_webhook_stable = os.environ.get("DISCORD_WEBHOOK_STABLE", "")
     if discord_webhook_testing and discord_webhook_stable:
         discord_webhook = discord_webhook_testing if PRERELEASE else discord_webhook_stable
-        print("Posting release notes to Discord")
+        logging.info("Posting release notes to Discord")
         # Reuse the release notes read earlier: line 0 is the title header
         discord_lines = readme_data.splitlines(keepends=True)
         discord_title = discord_lines[0].lstrip("# ").strip()
@@ -274,8 +284,8 @@ if RELEASE_THIS and gh_token:
             timeout=30,
         ).raise_for_status()
     else:
-        print("Missing DISCORD_WEBHOOK_TESTING and/or DISCORD_WEBHOOK_STABLE")
+        logging.warning("Missing DISCORD_WEBHOOK_TESTING and/or DISCORD_WEBHOOK_STABLE")
 
 else:
-    print("To push release to GitHub, first tag the commit.")
-    print("Or missing the AUTOMATION_GITHUB_TOKEN, cannot push to GitHub without it.")
+    logging.warning("To push release to GitHub, first tag the commit.")
+    logging.warning("Or missing the AUTOMATION_GITHUB_TOKEN, cannot push to GitHub without it.")

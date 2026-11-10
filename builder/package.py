@@ -17,6 +17,7 @@
 
 import glob
 import importlib.util
+import logging
 import re
 import sys
 import os
@@ -49,11 +50,15 @@ from common import (
     APPDATA_FILE,
     RELEASE_VERSION_BASE,
     pe_has_authenticode_signature,
+    setup_logging,
 )
 
 # Mach-O CPU types
 CPU_TYPE_X86_64 = 0x01000007
 CPU_TYPE_ARM64 = 0x0100000C
+
+
+setup_logging()
 
 
 # Support functions
@@ -70,11 +75,13 @@ def safe_remove(path):
 
 def run_external_command(command: list[str], print_output: bool = True, **kwargs):
     """Wrapper to ease the use of calling external programs"""
+    # Only log the program, the arguments can contain secrets
+    logging.info("Running %s", command[0])
     process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)
     output, _ = process.communicate()
     ret = process.wait()
     if (output and print_output) or ret != 0:
-        print(output)
+        logging.info("Command output:\n%s", output.rstrip())
     if ret != 0:
         raise RuntimeError("Command returned non-zero exit code %s!" % ret)
     return output
@@ -97,6 +104,7 @@ def patch_version_file(release_name):
     else:
         raise TypeError("Commit hash not found")
 
+    logging.info("Patching %s with version %s and commit %s", VERSION_FILE, release_name, commit)
     with open(VERSION_FILE, "r") as ver:
         version_file = ver.read()
 
@@ -109,6 +117,7 @@ def patch_version_file(release_name):
 
 def verify_appdata():
     """Verify that appdata file is updated"""
+    logging.info("Verifying %s contains release %s", APPDATA_FILE, RELEASE_VERSION_BASE)
     if not isinstance(
         ET.parse(APPDATA_FILE).find(f"./releases/release[@version='{RELEASE_VERSION_BASE}']"),
         ET.Element,
@@ -119,11 +128,12 @@ def verify_appdata():
         elif ON_GITHUB_ACTIONS:
             print(f"::warning file={APPDATA_FILE},title=Missing release::{release_missing}")
         else:
-            print(release_missing)
+            logging.warning(release_missing)
 
 
 def build_readme_html(output_path: str):
     """Convert the release notes Markdown to a styled HTML file."""
+    logging.info("Converting %s to %s", RELEASE_README, output_path)
     with open(RELEASE_README, "r", encoding="utf-8") as f:
         readme_html = markdown.markdown(f.read(), extensions=["nl2br"])
 
@@ -147,12 +157,12 @@ def build_readme_html(output_path: str):
 def test_macos_min_version(binary_path: str):
     # Skip check if nothing was set
     if not (macos_min_version := os.environ.get("MACOSX_DEPLOYMENT_TARGET")):
-        print("Skipping macOS version check, MACOSX_DEPLOYMENT_TARGET not set")
+        logging.warning("Skipping macOS version check, MACOSX_DEPLOYMENT_TARGET not set")
         return
 
     # Skip any arm64 specific files
     if "arm64" in binary_path:
-        print(f"Skipping arm64 binary {binary_path}")
+        logging.info("Skipping macOS version check for arm64 binary: %s", binary_path)
         return
 
     # Only available for macOS
@@ -160,7 +170,7 @@ def test_macos_min_version(binary_path: str):
     from macholib.mach_o import LC_BUILD_VERSION, LC_VERSION_MIN_MACOSX
 
     # We only check the x86_64 since for arm64 it's always macOS 11+
-    print(f"Checking if binary supports macOS {macos_min_version} and above: {binary_path}")
+    logging.info("Checking if binary supports macOS %s and above: %s", macos_min_version, binary_path)
     for header in MachO(binary_path).headers:
         if header.header.cputype != CPU_TYPE_X86_64:
             continue
@@ -189,11 +199,13 @@ def get_codesign_info(file_path: str) -> str:
         run_external_command(["codesign", "--verify", "--deep", "--strict", file_path], print_output=False)
         return run_external_command(["codesign", "-d", "--verbose=4", file_path], print_output=False)
     except RuntimeError:
+        logging.debug("%s is not signed or has an invalid signature", file_path)
         return ""
 
 
 def test_sab_binary(binary_path: str):
     """Wrapper to have a simple start-up test for the binary"""
+    logging.info("Starting %s for the start-up test", binary_path)
     with tempfile.TemporaryDirectory() as config_dir:
         sabnzbd_process = subprocess.Popen(
             [binary_path, "--browser", "0", "--logging", "2", "--config", config_dir],
@@ -204,15 +216,16 @@ def test_sab_binary(binary_path: str):
 
         # Wait for SAB to respond
         base_url = "http://127.0.0.1:8080/"
-        for _ in range(30):
+        for attempt in range(30):
             try:
                 urllib.request.urlopen(base_url, timeout=1).read()
+                logging.debug("SABnzbd responded after %d attempts", attempt + 1)
                 break
             except Exception:
                 time.sleep(1)
         else:
-            # Print console output and give some time to print
-            print(sabnzbd_process.stdout.read())
+            # Log console output and give some time to print
+            logging.error("%s", sabnzbd_process.stdout.read().rstrip())
             time.sleep(1)
             raise urllib.error.URLError("Could not connect to SABnzbd")
 
@@ -234,19 +247,21 @@ def test_sab_binary(binary_path: str):
             "api?mode=version",
         ]
         for url in pages_to_test:
-            print("Testing: %s%s" % (base_url, url))
+            logging.info("Testing: %s%s", base_url, url)
             if b"500 Internal Server Error" in urllib.request.urlopen(base_url + url, timeout=1).read():
                 raise RuntimeError("Crash in %s" % url)
 
         # Parse API-key so we can do a graceful shutdown
+        logging.info("Shutting down SABnzbd")
         sab_config = configobj.ConfigObj(os.path.join(config_dir, "sabnzbd.ini"))
         urllib.request.urlopen(base_url + "api?mode=shutdown&apikey=" + sab_config["misc"]["api_key"], timeout=10)
         sabnzbd_process.wait()
 
-        # Print logs for verification
+        # Log the output for verification
         with open(os.path.join(config_dir, "logs", "sabnzbd.log"), "r") as log_file:
             # Wait after printing so the output is nicely displayed in case of problems
-            print(log_text := log_file.read())
+            log_text = log_file.read()
+            logging.info("%s", log_text.rstrip())
             time.sleep(5)
 
             # Make sure no extra errors/warnings were reported
@@ -267,6 +282,8 @@ if __name__ == "__main__":
     if importlib.util.find_spec("certifi") is None:
         raise FileNotFoundError("Need certifi module")
 
+    logging.info("Packaging SABnzbd %s: %s", RELEASE_VERSION, " ".join(sys.argv[1:]))
+
     # Check if we have correct appdata file
     verify_appdata()
 
@@ -279,6 +296,7 @@ if __name__ == "__main__":
 
     # Compile translations
     if not os.path.exists("locale"):
+        logging.info("Compiling translations")
         run_external_command([sys.executable, "tools/make_mo.py"])
 
         # Check again if translations exist, fail otherwise
@@ -291,6 +309,7 @@ if __name__ == "__main__":
             raise RuntimeError("Binary should be created on Windows")
 
         # Make sure we remove any existing build-folders
+        logging.info("Removing existing build folders and leftovers")
         safe_remove("build")
         safe_remove("dist")
 
@@ -299,6 +318,7 @@ if __name__ == "__main__":
         safe_remove(RELEASE_WIN_BIN)
 
         # Run PyInstaller and check output
+        logging.info("Running PyInstaller")
         shutil.copyfile("builder/SABnzbd.spec", "SABnzbd.spec")
         run_external_command([sys.executable, "-m", "PyInstaller", "SABnzbd.spec"])
 
@@ -306,6 +326,7 @@ if __name__ == "__main__":
         test_sab_binary("dist/SABnzbd/SABnzbd.exe")
 
         # Create the archive
+        logging.info("Creating archive %s", RELEASE_WIN_BIN)
         run_external_command(["win/7zip/7za.exe", "a", RELEASE_WIN_BIN, "SABnzbd"], cwd="dist")
         shutil.move(f"dist/{RELEASE_WIN_BIN}", RELEASE_WIN_BIN)
 
@@ -316,7 +337,7 @@ if __name__ == "__main__":
 
         # Check if we have a signed version
         if os.path.exists(f"signed/{RELEASE_WIN_BIN}"):
-            print("Using signed version of SABnzbd binaries")
+            logging.info("Using signed version of SABnzbd binaries")
             safe_remove("dist/SABnzbd")
             run_external_command(["win/7zip/7za.exe", "x", "-odist", f"signed/{RELEASE_WIN_BIN}"])
 
@@ -328,13 +349,14 @@ if __name__ == "__main__":
             for exe_to_check in ("dist/SABnzbd/SABnzbd.exe", "dist/SABnzbd/SABnzbd-console.exe"):
                 if not pe_has_authenticode_signature(exe_to_check):
                     raise RuntimeError("%s is not signed!" % exe_to_check)
-                print("%s has an Authenticode signature" % exe_to_check)
+                logging.info("%s has an Authenticode signature", exe_to_check)
         elif RELEASE_THIS:
             raise FileNotFoundError("Signed SABnzbd executable not found, required for release!")
         else:
-            print("Using unsigned version of SABnzbd binaries")
+            logging.info("Using unsigned version of SABnzbd binaries")
 
         # Run NSIS to build installer
+        logging.info("Building installer %s with NSIS", RELEASE_WIN_INSTALLER)
         run_external_command(
             [
                 "makensis.exe",
@@ -377,11 +399,11 @@ if __name__ == "__main__":
                     required in signature_info
                     for required in ("Authority=Developer ID Application", "(runtime)", "Timestamp=")
                 ):
-                    print("Skipping %s, already has a valid signature with hardened runtime" % file_to_sign)
+                    logging.info("Skipping %s, already has a valid signature with hardened runtime", file_to_sign)
                     continue
 
                 # Then sign in
-                print("Signing %s with hardened runtime" % file_to_sign)
+                logging.info("Signing %s with hardened runtime", file_to_sign)
                 run_external_command(
                     [
                         "codesign",
@@ -398,9 +420,10 @@ if __name__ == "__main__":
                     ],
                     print_output=False,
                 )
-                print("Signed %s!" % file_to_sign)
+                logging.info("Signed %s!", file_to_sign)
 
         # Run PyInstaller and check output
+        logging.info("Running PyInstaller")
         shutil.copyfile("builder/SABnzbd.spec", "SABnzbd.spec")
         run_external_command([sys.executable, "-m", "PyInstaller", "SABnzbd.spec"])
 
@@ -409,10 +432,12 @@ if __name__ == "__main__":
         if RELEASE_THIS or ON_GITHUB_ACTIONS:
             from macholib.MachO import MachO
 
+            logging.info("Checking if all binaries are universal2")
             for bin_to_check in glob.glob("dist/SABnzbd.app/**/*.so", recursive=True):
-                print("Checking if binary is universal2: %s" % bin_to_check)
+                logging.info("Checking if binary is universal2: %s", bin_to_check)
                 # Make sure we have both arm64 and x86_64
                 cpu_types = {header.header.cputype for header in MachO(bin_to_check).headers}
+                logging.debug("CPU types of %s: %s", bin_to_check, sorted(cpu_types))
                 if cpu_types != {CPU_TYPE_X86_64, CPU_TYPE_ARM64}:
                     raise RuntimeError("Non-universal2 binary found!")
 
@@ -427,7 +452,7 @@ if __name__ == "__main__":
                 "dist/SABnzbd.app",
             ]
             for file_to_check in files_already_signed:
-                print("Checking signature of %s" % file_to_check)
+                logging.info("Checking signature of %s", file_to_check)
                 sign_result = get_codesign_info(file_to_check)
                 if authority not in sign_result or "adhoc" in sign_result:
                     raise RuntimeError("Signature of %s seems invalid!" % file_to_check)
@@ -435,7 +460,7 @@ if __name__ == "__main__":
             # Always notarize, as newer macOS versions don't allow any code without it
             if notarization_user and notarization_pass:
                 # Prepare zip to upload to notarization service
-                print("Creating zip to send to Apple notarization service")
+                logging.info("Creating zip to send to Apple notarization service")
                 # We need to use ditto, otherwise the signature gets lost!
                 notarization_zip = RELEASE_NAME + ".zip"
                 run_external_command(
@@ -443,7 +468,7 @@ if __name__ == "__main__":
                 )
 
                 # Upload to Apple
-                print("Sending zip to Apple notarization service")
+                logging.info("Sending zip to Apple notarization service")
                 upload_result = run_external_command(
                     [
                         "xcrun",
@@ -465,12 +490,12 @@ if __name__ == "__main__":
                     raise RuntimeError("Failed to notarize..")
 
                 # Staple the notarization!
-                print("Approved! Stapling the result to the app")
+                logging.info("Approved! Stapling the result to the app")
                 run_external_command(["xcrun", "stapler", "staple", "dist/SABnzbd.app"])
             else:
-                print("Notarization skipped, NOTARIZATION_USER or NOTARIZATION_PASS missing.")
+                logging.warning("Notarization skipped, NOTARIZATION_USER or NOTARIZATION_PASS missing.")
         else:
-            print("Signing skipped, missing SIGNING_AUTH.")
+            logging.warning("Signing skipped, missing SIGNING_AUTH.")
 
         # Test the release, as the very last step to not mess with any release code
         test_sab_binary("dist/SABnzbd.app/Contents/MacOS/SABnzbd")
@@ -486,7 +511,7 @@ if __name__ == "__main__":
         apppath = "dist/SABnzbd.app"
         readmepath = os.path.join(apppath, "Contents/Resources/README.html")
 
-        print("Building DMG")
+        logging.info("Building DMG")
         dmgbuild.build_dmg(
             filename=RELEASE_MACOS,
             volume_name=RELEASE_NAME,
@@ -505,15 +530,15 @@ if __name__ == "__main__":
                 "grid_spacing": 50,
                 "icon_size": 64,
             },
-            callback=lambda info: print("dmgbuild", info),
+            callback=lambda info: logging.info("dmgbuild %s", info),
         )
 
         if authority := os.environ.get("SIGNING_AUTH"):
-            print("Signing DMG")
+            logging.info("Signing DMG")
             run_external_command(["codesign", "-f", "-i", "org.sabnzbd.sabnzbd", "-s", authority, RELEASE_MACOS])
-            print("Signed!")
+            logging.info("Signed!")
         else:
-            print("Signing skipped, missing SIGNING_AUTH.")
+            logging.warning("Signing skipped, missing SIGNING_AUTH.")
 
     if "source" in sys.argv:
         # Prepare Source distribution package.
@@ -531,6 +556,7 @@ if __name__ == "__main__":
         EXTRA_FILES.extend(["SABnzbd.py", "requirements.txt"])
 
         # Copy all folders and files to the new folder
+        logging.info("Copying source files to %s", src_folder)
         for source_folder in EXTRA_FOLDERS:
             shutil.copytree(source_folder, os.path.join(src_folder, source_folder), dirs_exist_ok=True)
 
@@ -546,7 +572,7 @@ if __name__ == "__main__":
             base, ext = os.path.splitext(input_filename)
             if ext.lower() not in (".py", ".txt", ".css", ".js", ".tmpl", ".sh", ".cmd"):
                 continue
-            print(input_filename)
+            logging.debug("Converting line endings of %s", input_filename)
 
             with open(input_filename, "rb") as input_data:
                 data = input_data.read()
@@ -555,6 +581,7 @@ if __name__ == "__main__":
                 output_data.write(data)
 
         # Create tar.gz file for source distro
+        logging.info("Creating %s", RELEASE_SRC)
         with tarfile.open(RELEASE_SRC, "w:gz") as tar_output:
             for root, dirs, files in os.walk(src_folder):
                 for _file in files:
@@ -579,5 +606,6 @@ if __name__ == "__main__":
         safe_remove(src_folder)
 
     # Reset!
+    logging.info("Resetting the git checkout")
     run_git_command(["reset", "--hard"])
     run_git_command(["clean", "-f"])
