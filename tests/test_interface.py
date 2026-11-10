@@ -1004,15 +1004,38 @@ class TestThreadedServerHttpSockets:
             server.stop()
 
 
-@pytest.mark.parametrize("enabled", ["1", "0"])
-def test_rss_fetch_duplicates_save_route(mocker, enabled):
+@pytest.mark.parametrize("fetch_duplicates", ["1", "0"])
+@pytest.mark.parametrize("enabled", ["1", "0", None])
+def test_rss_fetch_duplicates_save_route(mocker, enabled, fetch_duplicates):
     feed = sabnzbd.config.ConfigRSS("Cart", {"uri": ["https://example.test/feed"]})
     saved = mocker.patch("sabnzbd.config.save_config")
+    params = {"feed": "Cart", "uri": "https://example.test/feed", "fetch_duplicates": fetch_duplicates}
+    if enabled is not None:
+        params["enable"] = enabled
+    request = mock_request(method="POST", params=params)
+    response = interface.config_rss_save_rss_feed(request)
+    assert response.status_code == 302
+    assert feed.fetch_duplicates() == bool(int(fetch_duplicates))
+    assert feed.get_dict()["fetch_duplicates"] == int(fetch_duplicates)
+    assert feed.enable() == bool(int(enabled or 0))
+    saved.assert_called_once()
+
+
+@pytest.mark.parametrize("fetch_duplicates", ["1", "0"])
+def test_rss_fetch_duplicates_legacy_save_route(mocker, fetch_duplicates):
+    feed = sabnzbd.config.ConfigRSS("Cart", {"uri": ["https://example.test/feed"], "enable": "1"})
+    saved = mocker.patch("sabnzbd.config.save_config")
     request = mock_request(
-        method="POST", params={"feed": "Cart", "uri": "https://example.test/feed", "fetch_duplicates": enabled}
+        method="POST",
+        params={
+            "feed": "Cart",
+            "uri": "https://example.test/feed",
+            "enable": "0",
+            "fetch_duplicates": fetch_duplicates,
+        },
     )
     response = interface.config_rss_upd_rss_feed(request)
     assert response.status_code == 302
-    assert feed.fetch_duplicates() == bool(int(enabled))
-    assert feed.get_dict()["fetch_duplicates"] == int(enabled)
+    assert feed.fetch_duplicates() == bool(int(fetch_duplicates))
+    assert feed.enable()
     saved.assert_called_once()
