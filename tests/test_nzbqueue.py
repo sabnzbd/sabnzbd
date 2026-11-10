@@ -727,9 +727,7 @@ class TestNzbQueue:
 
 @pytest.mark.usefixtures("nzbqueue_env")
 @pytest.mark.parametrize("success", [False, True])
-def test_rss_cart_placeholder_survives_alternative_handling(mocker, success, caplog):
-    # Existing resume log format has one placeholder for two arguments.
-    caplog.set_level("WARNING")
+def test_rss_cart_placeholder_survives_alternative_handling(mocker, success):
     from sabnzbd.constants import DuplicateStatus
 
     mocker.patch("sabnzbd.cfg.no_dupes", return_value=1)
@@ -740,16 +738,21 @@ def test_rss_cart_placeholder_survives_alternative_handling(mocker, success, cap
     sabnzbd.NzbQueue.add(cart, save=False, quiet=True)
     check.assert_not_called()
     finished = make_mock_nzo(final_name="Same.Release")
-    alternative = make_mock_nzo(final_name="Same.Release", duplicate=DuplicateStatus.DUPLICATE_ALTERNATIVE)
+    alternative = make_mock_nzo(
+        final_name="Same.Release", duplicate=DuplicateStatus.DUPLICATE_ALTERNATIVE, files=[mocker.Mock()]
+    )
     sabnzbd.NzbQueue.add(alternative, save=False, quiet=True)
+    assert sabnzbd.NzbQueue.get_nzo(alternative.nzo_id) is alternative
     sabnzbd.NzbQueue.handle_duplicate_alternatives(finished, success=success)
     assert sabnzbd.NzbQueue.get_nzo(cart.nzo_id) is cart
     assert cart.duplicate is None
     assert cart.status != Status.PAUSED
     if success:
         assert sabnzbd.NzbQueue.get_nzo(alternative.nzo_id) is None
+        alternative.resume.assert_not_called()
     else:
         assert alternative.duplicate is None
+        alternative.resume.assert_called_once_with()
 
 
 @pytest.mark.usefixtures("nzbqueue_env")

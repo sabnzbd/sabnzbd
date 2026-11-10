@@ -55,6 +55,29 @@ def mock_sleep(create_mock_coroutine):
 
 class TestDirScanner:
     @pytest.mark.asyncio
+    async def test_reconsiders_replaced_duplicate(self, mock_sleep, fs, mocker):
+        # A duplicate can remain on disk if removing it fails.
+        add_nzbfile = mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(AddNzbFileResult.DUPLICATE, []))
+        mocker.patch("sabnzbd.config.save_config", return_value=True)
+        path = "file.nzb"
+        fs.create_file(path, contents="DUPLICATE")
+        scanner = sabnzbd.dirscanner.DirScanner()
+
+        await scanner.scan_async("")
+        add_nzbfile.assert_called_once()
+
+        # An unchanged duplicate should not be retried on every scan.
+        await scanner.scan_async("")
+        assert add_nzbfile.call_count == 1
+
+        os.remove(path)
+        fs.create_file(path, contents="A DIFFERENT NZB")
+        add_nzbfile.return_value = (AddNzbFileResult.OK, [])
+        await scanner.scan_async("")
+
+        assert add_nzbfile.call_count == 2
+
+    @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "path, catdir",
         [

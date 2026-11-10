@@ -211,8 +211,8 @@ class DirScanner(threading.Thread):
 
         # Add the NZB's
         res, _ = sabnzbd.nzbparser.add_nzbfile(path, catdir=catdir, keep=False)
-        if res is AddNzbFileResult.RETRY or res is AddNzbFileResult.ERROR:
-            # Retry later, for example when we can't read the file
+        if res in {AddNzbFileResult.RETRY, AddNzbFileResult.ERROR, AddNzbFileResult.DUPLICATE}:
+            # Reconsider changed files, including duplicates we couldn't remove.
             self.suspected[path] = stat_tuple
         elif res is AddNzbFileResult.OK:
             self.error_reported = False
