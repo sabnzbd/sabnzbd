@@ -631,6 +631,10 @@ SKIN_TEXT = {
     "rss-order": TT("Order"),  #: Config->RSS table column header
     "rss-type": TT("Type"),  #: Config->RSS table column header
     "rss-filter": TT("Filter"),  #: Config->RSS table column header
+    "rss-fetchDuplicates": TT("Fetch duplicates"),  #: Config->RSS feed option
+    "explain-rss-fetchDuplicates": TT(
+        "Fetch the NZB before checking for duplicates. Use for feeds that only remove items once they are fetched."
+    ),
     "rss-accept": TT("Accept"),  #: Config->RSS filter-type selection menu
     "rss-reject": TT("Reject"),  #: Config->RSS filter-type selection menu
     "rss-must": TT("Requires"),  #: Config->RSS filter-type selection menu

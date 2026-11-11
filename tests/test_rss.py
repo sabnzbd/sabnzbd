@@ -31,9 +31,11 @@ from xml.etree.ElementTree import Element, SubElement, tostring
 
 import sabnzbd.rss as rss
 import sabnzbd.config
+import sabnzbd.interface as interface
 from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY, PAUSED_PRIORITY
 from sabnzbd.database import HistoryDB
 from sabnzbd.rss import RSSState, ResolvedEntry, RSSReader, RSSRepository
+from tests.test_security import mock_request
 from tests.testhelper import httpserver_handler_data_dir
 
 
@@ -1213,3 +1215,39 @@ class TestRSS:
         # And it must not be picked up as a new job on the next scans
         assert reader.process_feed(feed_name, download=True) == []
         assert add_url.call_count == 1
+
+    @pytest.mark.parametrize("fetch_duplicates", [False, True])
+    def test_fetch_duplicates_skips_placeholder_dup_check(
+        self, httpserver: HTTPServer, tmp_rss, mocker, fetch_duplicates
+    ):
+        _, reader = tmp_rss
+        feed_name = "CartFeed"
+        feed_xml = """<?xml version="1.0" encoding="utf-8"?>
+        <rss version="2.0">
+          <channel>
+            <title>Cart</title>
+            <item>
+                <title>Show.S01E01.720p</title>
+                <link>http://example.test/cart-item</link>
+                <guid>http://example.test/info/cart-item</guid>
+                <category>tv</category>
+                <pubDate>Wed, 01 Jan 2025 00:00:00 GMT</pubDate>
+            </item>
+          </channel>
+        </rss>
+        """
+        httpserver.expect_request("/rss_cart.xml").respond_with_data(feed_xml, content_type="application/rss+xml")
+        self.setup_rss(feed_name, httpserver.url_for("/rss_cart.xml"))
+        sabnzbd.config.get_rss()[feed_name].fetch_duplicates.set(fetch_duplicates)
+
+        add_url = mocker.patch("sabnzbd.urlgrabber.add_url")
+        reader.process_feed(feed_name, download=True, force=True)
+        add_url.assert_called_once()
+        assert add_url.call_args.kwargs["dup_check"] is (not fetch_duplicates)
+
+        # Same for the manual Download button
+        add_url.reset_mock()
+        request = mock_request(method="POST", params={"feed": feed_name, "url": "http://example.test/cart-item"})
+        interface.config_rss_download(request)
+        add_url.assert_called_once()
+        assert add_url.call_args.kwargs["dup_check"] is (not fetch_duplicates)

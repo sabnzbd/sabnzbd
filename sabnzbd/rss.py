@@ -470,6 +470,7 @@ class FeedConfig:
     default_priority: Optional[int] = None
     default_pp: Optional[int] = None
     default_script: Optional[str] = None
+    fetch_duplicates: bool = False
     rules: list[FeedRule] = field(default_factory=list)
 
     def __post_init__(self):
@@ -506,6 +507,7 @@ class FeedConfig:
             default_priority=c.priority(),
             default_pp=c.pp(),
             default_script=c.script(),
+            fetch_duplicates=c.fetch_duplicates(),
             rules=rules,
         )
 
@@ -1203,11 +1205,11 @@ class RSSReader:
 
         with sabnzbd.rss.rss_repository() as repo:
             repo.upsert(resolved_entry)
-            self.enqueue_download(repo, resolved_entry)
+            self.enqueue_download(repo, resolved_entry, filters.fetch_duplicates)
 
         return bool(evaluation.matched and should_download)
 
-    def enqueue_download(self, repo: RSSRepository, resolved_entry: ResolvedEntry) -> None:
+    def enqueue_download(self, repo: RSSRepository, resolved_entry: ResolvedEntry, fetch_duplicates: bool) -> None:
         if not resolved_entry.is_downloaded:
             return
         if not resolved_entry.downloaded_at:
@@ -1222,6 +1224,8 @@ class RSSReader:
             priority=resolved_entry.priority,
             nzbname=resolved_entry.nzbname,
             nzo_info=NzoInfo(RSS=resolved_entry.feed),
+            # Cart feeds only drop an item once its NZB is fetched, so only check the fetched NZB
+            dup_check=not fetch_duplicates,
         )
 
     def run(self):
