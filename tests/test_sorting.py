@@ -158,6 +158,8 @@ class TestSortingFunctions:
             ("c:\\foo. .\\bar", "c:\\foo\\bar"),
             ("c:\\__\\foo\\bar", "c:\\foo\\bar"),  # No double \\\\ when an entire element is stripped
             ("c:\\...\\foobar", "c:\\foobar"),
+            ("foo\\..\\_.._\\bar", "foo\\bar"),  # Never climb up
+            ("..\\..\\foo", "foo"),
         ],
     )
     def test_strip_path_elements_win(self, path, result):
@@ -190,6 +192,9 @@ class TestSortingFunctions:
             ("foo. _/bar", "foo./bar"),
             ("/foo. ./bar", "/foo. ./bar"),
             ("/__/foo/bar", "/foo/bar"),  # No double // when an entire element is stripped
+            ("foo/../_.._/./bar", "foo/bar"),  # Never climb up
+            ("../../foo", "foo"),
+            ("/foo/_.._/_.._/bar", "/foo/bar"),
         ],
     )
     def test_strip_path_elements_unix(self, path, result):

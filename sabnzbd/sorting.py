@@ -211,6 +211,11 @@ class Sorter:
         """Fetch the guessed episode number(s)"""
         self.format_series_numbers(self.guess.get("episode", ""), "episode_num")
 
+    def has_absolute_sort_string(self) -> bool:
+        """Only an absolute sort string is allowed to lead outside of the Complete folder"""
+        # On Windows isabs() is False for "\Media", but joining it still drops the Complete folder
+        return bool(self.sort_string) and (os.path.isabs(self.sort_string) or self.sort_string[0] in "/\\")
+
     def get_final_path(self) -> str:
         if self.sorter_active:
             # Construct the final path
@@ -247,7 +252,8 @@ class Sorter:
         """Get the year and the corresponding two and four digit decade values"""
         year = ""
         if self.nzo:
-            year = self.nzo.nzo_info.get("year")
+            # NZB metadata is untrusted: it must stay a single path element
+            year = sanitize_foldername(self.nzo.nzo_info.get("year"))
         if not year:
             year = self.guess.get("year", "")
             if not year:
@@ -755,12 +761,12 @@ def get_titles(
     nzo: Optional[NzbObject], guess: Optional[MatchesDict], jobname: str, titleing: bool = False
 ) -> tuple[str, str, str]:
     """Get the title from NZB metadata or jobname, and return it in various formats. Formatting
-    mostly deals with working around quirks of Python's str.title(). NZB metadata is used as-is,
-    further processing done only for info obtained from guessit or the jobname."""
+    mostly deals with working around quirks of Python's str.title(). NZB metadata is only
+    sanitized, further processing done only for info obtained from guessit or the jobname."""
     title = ""
     if nzo:
-        # Fetch NZB metadata
-        title = nzo.nzo_info.get("propername")
+        # Fetch NZB metadata, which is untrusted: it must stay a single path element
+        title = sanitize_foldername(nzo.nzo_info.get("propername"))
     if not title:
         # Try guessit next
         if guess:
@@ -818,7 +824,8 @@ def get_descriptions(nzo: Optional[NzbObject], guess: Optional[MatchesDict]) -> 
     'Download This' in Show.S01E23.Download.This.1080p.HDTV.x264 and return multiple formats"""
     ep_name = None
     if nzo:
-        ep_name = nzo.nzo_info.get("episodename")
+        # NZB metadata is untrusted: it must stay a single path element
+        ep_name = sanitize_foldername(nzo.nzo_info.get("episodename"))
     if (not ep_name) and guess:
         ep_name = guess.get("episode_title")
     ep_name = ep_name or ""
@@ -846,28 +853,34 @@ def to_lowercase(path: str) -> str:
 def strip_path_elements(path: str) -> str:
     """Return 'path' without leading and trailing spaces and underscores in each element"""
     # Clear the most deviant of UNC notations
-    path = clip_path(path)
+    path = clip_path(path).strip()
     if sabnzbd.WINDOWS:
         path = path.replace("\\", "/")  # Switch to unix style directory separators
-    is_unc = sabnzbd.WINDOWS and path.startswith("//")
 
-    path_elements = path.strip("/").split("/")
-    # Insert an empty element to prevent loss, if path starts with a slash
-    try:
-        if not is_unc and path.strip()[0] in "/":
-            path_elements.insert(0, "")
-    except IndexError:
-        pass
+    # Remember how the path starts, the elements themselves never contain a slash
+    if sabnzbd.WINDOWS and path.startswith("//"):
+        prefix = "\\\\"  # UNC
+    elif path.startswith("/"):
+        prefix = os.sep
+    else:
+        prefix = ""
 
     # For Windows, also remove leading and trailing dots: it cannot handle trailing dots, and
     # leading dots carry no significance like on macOS, Linux, etc.
-    chars = whitespace + "_" + ("." if sabnzbd.WINDOWS else "")
+    chars = whitespace + "_"
+    if sabnzbd.WINDOWS:
+        chars += "."
 
-    # Clean all elements and reconstruct the path
-    path = os.path.normpath("/".join([element.strip(chars) for element in path_elements]))
-    path = path.replace("//", "/")  # Re: https://bugs.python.org/issue26329
+    elements = []
+    for element in path.split("/"):
+        element = element.strip(chars)
+        # Skip what would climb up or leave an empty element behind
+        if element not in ("", ".", ".."):
+            elements.append(element)
 
-    return "\\\\" + path if is_unc else path
+    if not elements:
+        return prefix or "."
+    return prefix + os.sep.join(elements)
 
 
 def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: Optional[list[str]], job_files: list[str]):
