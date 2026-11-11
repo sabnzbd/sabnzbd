@@ -1836,7 +1836,8 @@ class SevenZip:
 
     def open(self, name: str) -> BinaryIO:
         """Read named file from 7Zip and return data"""
-        command = [SEVENZIP_COMMAND, "e", "-p", "-y", "-so", self.path, name]
+        # Names come from the archive: prevent parsing as switch (--) or wildcard (-spd)
+        command = [SEVENZIP_COMMAND, "e", "-p", "-y", "-so", "-spd", "--", self.path, name]
         # Ignore diagnostic output, otherwise it will be appended to content
         with build_and_run_command(command, text_mode=False, stderr=subprocess.DEVNULL) as p:
             data = io.BytesIO(p.stdout.read())

@@ -176,6 +176,16 @@ class TestNewsUnpackFunctions:
         with pytest.raises(TypeError):
             newsunpack.SevenZip("tests/data/basic_rar5/testfile.rar")
 
+    def test_sevenzip_special_names(self):
+        # Names that 7zip could parse as switch, listfile or wildcard
+        # Every file in the archive contains its own name
+        newsunpack.find_programs(".")
+        testzip = newsunpack.SevenZip("tests/data/test_7zip/special_names.7z")
+        names = testzip.namelist()
+        assert sorted(names) == ["*.nzb", "-ir!other.nzb", "?????.nzb", "@list.nzb", "normal.nzb", "other.nzb"]
+        for name in names:
+            assert testzip.open(name).read() == name.encode()
+
 
 class TestPar2Parfiles:
     def test_volumes_a_retry_found_on_disk_are_used(self, tmp_path):
