@@ -55,6 +55,7 @@ from sabnzbd.misc import (
 from sabnzbd.filesystem import (
     points_into_program_dir,
     real_path,
+    same_directory,
     get_unique_dir,
     move_to_path,
     make_script_path,
@@ -815,6 +816,15 @@ def prepare_extraction_path(nzo: NzbObject) -> tuple[str, str, Sorter, bool, Opt
     # Checked again here, as links could have changed or sorting could lead there
     if points_into_program_dir(complete_dir, without_job_folder=not create_job_dir):
         logging.error(T("Folder %s is inside the program folder, this is not allowed"), clip_path(complete_dir))
+        raise IOError
+
+    # Values from the job may never make sorting leave the folder it started in
+    if (
+        file_sorter.sorter_active
+        and not file_sorter.has_absolute_sort_string()
+        and not same_directory(file_sorter.original_path, complete_dir)
+    ):
+        logging.error(T("Folder %s is outside the Complete folder, this is not allowed"), clip_path(complete_dir))
         raise IOError
 
     if not create_job_dir:

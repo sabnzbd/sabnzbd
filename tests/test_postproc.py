@@ -314,6 +314,60 @@ class TestPostProc:
 
         _func()
 
+    @staticmethod
+    def _sorted_nzo(sort_string, final_name="Show.S01E02.720p", nzo_info=None):
+        sabnzbd.config.read_config(os.devnull)
+        ConfigSorter(
+            "sorter__test_containment",
+            {"order": 0, "sort_string": sort_string, "sort_cats": ["tv"], "sort_type": [], "is_active": 1},
+        )
+        ConfigCat("tv", {"order": 0})
+        nzo = make_mock_nzo(final_name=final_name, cat="tv")
+        nzo.nzo_info = nzo_info or {}
+        return nzo
+
+    @pytest.mark.parametrize(
+        "sort_string, final_name, nzo_info",
+        [
+            ("%t/Season %s", "Show.S01E02.720p", {"propername": "../../../../outside/evil"}),
+            ("%t/Season %s", "Show.S01E02.720p", {"propername": ".../.../.../outside/evil"}),
+            ("%t/Season %s", "Show.S01E02.720p", {"propername": "..../..../..../..../outside/evil"}),
+            ("%t/Season %s", "Show.S01E02.720p", {"propername": "..\\..\\..\\outside\\evil"}),
+            ("%t/Season %s", "Show.S01E02.720p", {"propername": "/outside/evil"}),
+            ("%t/Season %s", "Show.S01E02.720p", {"propername": "C:\\outside\\evil"}),
+            ("%t/%en", "Show.S01E02.720p", {"episodename": ".../.../.../outside/evil"}),
+            ("%y/%t", "Show.S01E02.720p", {"year": ".../.../.../outside"}),
+            ("%y/%t", "Show.S01E02.720p", {"year": "/outside"}),
+            ("%dn", "_..._", None),
+            ("%dn/%dn", "_..._", None),
+            ("%dn/%dn", "_.._", None),
+            ("{.}{.}/{.}{.}/%t", "Show.S01E02.720p", None),
+        ],
+    )
+    @pytest.mark.config({"complete_dir": os.path.join(SAB_CACHE_DIR, "complete")})
+    def test_get_complete_directory_sorter_contained(self, sort_string, final_name, nzo_info):
+        """Values taken from the job can never move the sorted folder out of the Complete folder"""
+        complete_dir, _, _ = postproc.get_complete_directory(self._sorted_nzo(sort_string, final_name, nzo_info))
+        base = os.path.join(SAB_CACHE_DIR, "complete")
+        assert os.path.commonpath((base, clip_path(complete_dir))) == base
+
+    @pytest.mark.config({"complete_dir": os.path.join(SAB_CACHE_DIR, "complete")})
+    def test_prepare_extraction_path_sorted_outside_complete(self):
+        """A sorted folder that still ends up outside fails the job"""
+        outside = os.path.join(SAB_CACHE_DIR, "other")
+        with mock.patch.object(postproc.Sorter, "get_final_path", return_value=outside):
+            with pytest.raises(IOError):
+                postproc.prepare_extraction_path(self._sorted_nzo("%t"))
+        assert not os.path.exists(outside)
+
+    @pytest.mark.config({"complete_dir": os.path.join(SAB_CACHE_DIR, "complete")})
+    def test_prepare_extraction_path_absolute_sort_string(self):
+        """An absolute sort string is a choice of the user"""
+        nzo = self._sorted_nzo(os.path.join(SAB_CACHE_DIR, "sorted", "%t"))
+        _, workdir_complete, file_sorter, _, _ = postproc.prepare_extraction_path(nzo)
+        assert clip_path(workdir_complete).startswith(os.path.join(SAB_CACHE_DIR, "sorted", "Show"))
+        assert file_sorter.sorter_active
+
 
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestGetLastLine:
