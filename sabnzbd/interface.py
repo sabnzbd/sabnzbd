@@ -1336,6 +1336,7 @@ def config_rss_index(request: Request):
     pick_cat = conf["categories"] != []
 
     conf["rss_rate"] = cfg.rss_rate()
+    conf["duplicate_detection"] = bool(cfg.no_dupes() or cfg.no_smart_dupes())
 
     rss = {}
     feeds = config.get_rss()
@@ -1413,8 +1414,9 @@ def config_rss_save_rss_feed(request: Request):
     kwargs = dict(params)
     feed_name = params.get("feed")
     cf = config.get_rss().get(feed_name)
-    if "enable" not in kwargs:
-        kwargs["enable"] = 0
+    # Unchecked checkboxes are absent from the POST body, this one is only shown with duplicate detection on
+    if cfg.no_dupes() or cfg.no_smart_dupes():
+        kwargs.setdefault("fetch_duplicates", 0)
     uri = safe_strip(params.get("uri"))
     if cf and uri:
         kwargs["uri"] = uri
@@ -1565,6 +1567,7 @@ def config_rss_download(request: Request):
                     priority=priority,
                     nzbname=nzbname,
                     nzo_info=NzoInfo(RSS=feed),
+                    dup_check=not config.get_rss()[feed].fetch_duplicates(),
                 )
             repo.flag_downloaded(feed, url)
     return _rss_redirect(feed)
