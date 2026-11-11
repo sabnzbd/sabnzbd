@@ -36,6 +36,7 @@ from sabnzbd.constants import (
     GIGI,
     ATTRIB_FILE,
     JOB_ADMIN,
+    NZO_INFO_FROM_META,
     REPAIR_PRIORITY,
     FORCE_PRIORITY,
     HIGH_PRIORITY,
@@ -568,9 +569,9 @@ class NzbObject(TryList):
         # Sort the files in the queue
         self.sort_nzfs()
 
-        # Copy meta fields to nzo_info, if not already set
-        for kw in self.meta:
-            if not self.nzo_info.get(kw):
+        # Copy known meta fields to nzo_info, if not already set
+        for kw in NZO_INFO_FROM_META:
+            if kw in self.meta and not self.nzo_info.get(kw):
                 self.nzo_info[kw] = self.meta[kw][0]
         logging.debug("NZB nzo-info = %s", self.nzo_info)
 
