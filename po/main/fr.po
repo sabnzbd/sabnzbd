@@ -1762,7 +1762,7 @@ msgstr "[%s] Réparé(s) dans %s"
 
 #: sabnzbd/par2repair.py
 msgid "Out of memory"
-msgstr ""
+msgstr "Mémoire insuffisante"
 
 #: sabnzbd/par2repair.py
 msgid "Fetching"
@@ -5148,7 +5148,7 @@ msgstr "Importer le NZB depuis l'URL"
 
 #: sabnzbd/skintext.py
 msgid "Drop NZB files here or click to browse"
-msgstr ""
+msgstr "Déposez vos fichiers NZB ici ou cliquez pour parcourir"
 
 #: sabnzbd/skintext.py
 msgid "Optionally specify a filename"
