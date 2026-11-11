@@ -171,6 +171,9 @@ STAGES = {
 VALID_ARCHIVES = (".zip", ".rar", ".7z")
 VALID_NZB_FILES = (".nzb", ".gz", ".bz2")
 
+# The only NZB <meta> types that are copied to nzo_info, the rest of nzo_info is for internal use
+NZO_INFO_FROM_META = ("propername", "episodename", "year", "failure", "details", "more_info")
+
 CHEETAH_DIRECTIVES = {"directiveStartToken": "<!--#", "directiveEndToken": "#-->", "prioritizeSearchListOverSelf": True}
 
 IGNORED_FILES_AND_FOLDERS = ("@eaDir", ".appleDouble", ".DS_Store")

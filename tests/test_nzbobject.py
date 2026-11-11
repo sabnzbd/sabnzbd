@@ -84,6 +84,26 @@ class TestNZO:
         # TODO: More checks!
 
     @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+    def test_nzo_info_from_meta(self):
+        """Only known meta fields end up in nzo_info, the internal ones cannot be set by an NZB"""
+        ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
+        metadata = {
+            "propername": "Proper Name",
+            "year": "2020",
+            "missing_articles": "5",
+            "bad_articles": "x",
+            "download_time": "x",
+            "RSS": "Fake feed",
+        }
+        nzb_fp = create_and_read_nzb_fp("basic_rar5", metadata=metadata)
+        nzo = NzbObject("test_meta", nzb_fp=nzb_fp, nzo_info={"year": "1999"})
+
+        # Already set values are kept
+        assert nzo.nzo_info == {"propername": "Proper Name", "year": "1999"}
+        nzo.increase_bad_articles_counter("missing_articles")
+        assert nzo.nzo_info["missing_articles"] == 1
+
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     def test_get_unique_filepath_subdirs(self):
         """Par2 can name a file inside a sub-directory of the job, which we have to create"""
         ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
