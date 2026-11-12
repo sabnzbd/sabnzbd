@@ -3987,6 +3987,17 @@ msgstr "Tyyppi"
 msgid "Filter"
 msgstr "Suodata"
 
+#. Config->RSS feed option
+#: sabnzbd/skintext.py
+msgid "Fetch duplicates"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Fetch the NZB before checking for duplicates. Use for feeds that only remove"
+" items once they are fetched."
+msgstr ""
+
 #. Config->RSS filter-type selection menu
 #: sabnzbd/skintext.py
 msgid "Accept"
