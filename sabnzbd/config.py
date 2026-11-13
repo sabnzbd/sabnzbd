@@ -736,7 +736,7 @@ class ConfigRSS(ConfigSection):
     KEYWORDS = ("uri", "cat", "pp", "script", "enable", "priority", "fetch_duplicates")
 
     def create_options(self, section: str):
-        self.uri = OptionList(section, "uri", add=False)
+        self.uri = OptionList(section, "uri", add=False, validation=sabnzbd.cfg.validate_feed_uris)
         self.cat = OptionStr(section, "cat", add=False)
         self.pp = OptionStr(section, "pp", add=False)
         self.script = OptionStr(section, "script", add=False)

@@ -4,82 +4,53 @@
 <!--#import html#-->
 <div class="colmask">
     <!--#if not $active_feed#-->
-    <div class="section">
-        <div class="padTable">
-            <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
-            <p>$T('explain-RSS')</p>
-            <form data-form="add-rss-feed" action="$url('config/rss/add_rss_feed')" method="post" autocomplete="off">
-                <table class="catTable addRssTable">
-                    <tr>
-                        <th>&nbsp;</th>
-                        <th>$T('name')</th>
-                        <th>$T('feed') URLs</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                    <tr class="even">
-                        <td>
-                            <input type="checkbox" name="enable" value="1" checked />
-                        </td>
-                        <td class="new-feed-title">
-                            <input type="text" name="feed" value="$feed" />
-                        </td>
-                        <td class="new-feed-url">
-                            <input type="text" name="uri" placeholder="$T('addMultipleFeeds')" />
-                        </td>
-                        <td class="nowrap">
-                            <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-plus"></span> $T('button-add')</button>
-                        </td>
-                    </tr>
-                </table>
-            </form>
-        </div>
+    <div class="padding alt section">
+        <button type="button" class="btn btn-default" id="addFeedButton" data-name="$feed"><span class="glyphicon glyphicon-plus"></span> $T('button-addFeed')</button>
+        <!--#if $rss#-->
+        <form action="$url('config/rss/rss_now')" method="post" class="pull-right">
+            <button type="submit" class="btn btn-default readAll"><span class="glyphicon glyphicon-sort"></span> $T('button-rssNow')</button>
+        </form>
+        <!--#end if#-->
     </div>
-    <!--#if $rss#-->
+    <!--#if not $rss#-->
     <div class="section">
-        <div class="padTable">
-            <form action="$url('config/rss/save_rss_feed')" method="post" autocomplete="off">
-                <table id="subscriptions">
-                    <tbody>
-                        <!--#set $feeds = sorted($rss.keys(), key=lambda x: x.lower())#-->
-                        <!--#set $odd = False#-->
-                        <!--#for $feed_item in $feeds#-->
-                            <!--#set $odd = not $odd#-->
-                            <!--#set $feed_item_html = html.escape($feed_item)#-->
-                            <tr class="data-row <!--#if $odd then " alt " else " "#-->">
-                                <td class="chk">
-                                    <input type="checkbox" class="toggleFeedCheckbox" name="enable" value="1" <!--#if int($rss[$feed_item]['enable']) !=0 then 'checked="checked"' else ""#--> rel="$feed_item_html" />
-                                </td>
-                                <td class="title">
-                                    <a href="?feed=$rss[$feed_item]['link']" class="subscription-title path feed <!--#if int($rss[$feed_item]['enable']) != 0 then 'feed_enabled' else 'feed_disabled'#-->">
-                                         $feed_item_html
-                                    </a>
-                                </td>
-                                <td class="controls">
-                                    <button type="button" class="btn btn-default testFeed" rel="$feed_item_html"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
-                                    <input type="hidden" name="uri" value="$rss[$feed_item]['uris']" />
-                                    <button type="button" class="btn btn-default editFeed" rel="$feed_item_html" data-fetch-duplicates="$int($rss[$feed_item]['fetch_duplicates'])"><span class="glyphicon glyphicon-pencil"></span> $T('rss-edit')</button>
-                                    <button type="button" class="btn btn-default delFeed" rel="$feed_item_html"><span class="glyphicon glyphicon-trash"></span></button>
-                                </td>
-                            </tr>
-                            <!--#for $uri_index, $uri in enumerate($rss[$feed_item]['uri'])#-->
-                                <tr class="feed-row <!--#if $odd then " alt " else " "#-->">
-                                    <td><div class="favicon" style="background-image: url(//$rss[$feed_item]['baselink'][$uri_index]/favicon.ico);" data-domain="$rss[$feed_item]['baselink'][$uri_index]"></div></td>
-                                    <td colspan="2"><div>$uri</div></td>
-                                </tr>
-                            <!--#end for#-->
-                        <!--#end for#-->
-                    </tbody>
-                </table>
-            </form>
-            <!--#if $feeds#-->
-            <br/>
-            <form action="$url('config/rss/rss_now')" method="post" autocomplete="off">
-                <button type="submit" class="btn btn-default readAll"><span class="glyphicon glyphicon-sort"></span> $T('button-rssNow')</button>
-            </form>
-            <!--#end if#-->
-        </div>
+        <div class="padding">$T('rss-noFeeds')</div>
     </div>
     <!--#end if#-->
+    <!--#for $cur, $feed_item in enumerate(sorted($rss.keys(), key=lambda x: x.lower()))#-->
+    <!--#set $feed_item_html = html.escape($feed_item)#-->
+    <!--#set $feed_enabled = int($rss[$feed_item]['enable']) != 0#-->
+    <div class="section rss-feed <!--#if not $feed_enabled then 'server-disabled' else ''#-->">
+        <div class="col2 <!--#if not $feed_enabled then 'server-disabled' else ''#-->">
+            <h3 title="$feed_item_html">$feed_item_html <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            <table>
+                <tr>
+                    <td><input type="checkbox" class="toggleFeedCheckbox" id="feed_enable_$cur" rel="$feed_item_html" <!--#if $feed_enabled then 'checked="checked"' else ''#--> /></td>
+                    <td><label for="feed_enable_$cur">$T('enabled')</label></td>
+                </tr>
+            </table>
+            <button type="button" class="btn btn-default editFeed" rel="$feed_item_html" data-enable="$int($feed_enabled)" data-fetch-duplicates="$int($rss[$feed_item]['fetch_duplicates'])"><span class="glyphicon glyphicon-pencil"></span> $T('rss-edit')</button>
+            <!--#for $uri in $rss[$feed_item]['uri']#-->
+            <input type="hidden" class="feedUri" value="$uri" />
+            <!--#end for#-->
+            <a href="?feed=$rss[$feed_item]['link']" class="btn btn-default"><span class="glyphicon glyphicon-filter"></span> $T('rss-filters')</a>
+        </div>
+        <div class="col1 padding">
+            <ul class="feed-uris">
+                <!--#for $uri_index, $uri in enumerate($rss[$feed_item]['uri'])#-->
+                <li><div class="favicon" data-domain="$rss[$feed_item]['baselink'][$uri_index]" style="background-image: url(//$rss[$feed_item]['baselink'][$uri_index]/favicon.ico);"></div> $uri</li>
+                <!--#end for#-->
+            </ul>
+            <p class="feed-stats">
+                <span><strong>$rss[$feed_item]['count_matched']</strong> $T('rss-matched')</span>
+                <span><strong>$rss[$feed_item]['count_unmatched']</strong> $T('rss-notMatched')</span>
+                <span><strong>$rss[$feed_item]['count_downloaded']</strong> $T('rss-done')</span>
+            </p>
+
+            <button type="button" class="btn btn-default testFeed" rel="$feed_item_html"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
+        </div>
+    </div>
+    <!--#end for#-->
     <div class="section">
         <form action="$url('config/rss/save_rss_rate')" method="post" autocomplete="off">
             <div class="col1">
@@ -115,7 +86,6 @@
             <!--#end if#-->
             <form action="$url('config/rss/upd_rss_feed')" method="post">
                 <input type="hidden" name="feed" value="$active_feed" />
-                <input type="hidden" name="uri" value="$rss[$feed]['uris']" />
                 <table class="catTable">
                     <thead>
                         <tr>
@@ -513,17 +483,30 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="$T('close')"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="rss-edit-modal-title">$T('Edit') <span id="feed_edit_name_label"></span></h4>
+                <h4 class="modal-title" id="rss-edit-modal-title"><span class="feed-edit-only">$T('Edit') <span id="feed_edit_name_label"></span></span><span class="feed-add-only">$T('button-addFeed')</span></h4>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <label for="feed_edit_new_name">$T('name')</label>
-                    <input type="text" class="form-control" name="feed_new_name" id="feed_edit_new_name" placeholder="$T('name')" size="">
+                    <input type="text" class="form-control" name="feed_new_name" id="feed_edit_new_name" size="" required />
                 </div>
                 <div class="form-group">
-                    <label for="feed_edit_url">$T('feed') URLs</label>
-                    <input type="text" class="form-control" name="uri" id="feed_edit_url" placeholder="$T('feed') URLs" size="">
-                    <span class="help-block">$T('addMultipleFeeds')</span>
+                    <label>$T('feed') URLs</label>
+                    <div class="feed-urls" id="feed_edit_urls">
+                        <div class="input-group feed-url-row">
+                            <input type="url" class="form-control" name="uri" size="" placeholder="https://" required />
+                            <span class="input-group-btn"><button type="button" class="btn btn-default removeFeedUrl" title="$T('rss-removeUrl')"><span class="glyphicon glyphicon-minus"></span></button></span>
+                        </div>
+                        <button type="button" class="btn btn-default addFeedUrl"><span class="glyphicon glyphicon-plus"></span> $T('rss-addUrl')</button>
+                    </div>
+                    <span class="help-block">$T('explain-rss-urls')</span>
+                </div>
+                <div class="form-group">
+                    <label for="feed_edit_enable" class="form-control bar-button bar-button-left">
+                        <input type="checkbox" name="enable" value="1" id="feed_edit_enable" /> $T('enabled')
+                    </label>
+                    <div class="clearfix"></div>
+                    <span class="help-block">$T('explain-rss-enable')</span>
                 </div>
                 <!--#if $duplicate_detection#-->
                 <div class="form-group">
@@ -534,11 +517,16 @@
                     <span class="help-block">$T('explain-rss-fetchDuplicates')</span>
                 </div>
                 <!--#end if#-->
+                <p class="feed-add-only help-block">$T('explain-rss-newFeed')</p>
                 <input type="hidden" name="feed" id="feed_edit_old_name" />
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-default delFeed feed-edit-only pull-left"><span class="glyphicon glyphicon-trash"></span> $T('button-delFeed')</button>
                 <button type="button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> $T('cancel')</button>
-                <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok"></span> $T('rss-accept')</button>
+                <button type="submit" class="btn btn-default">
+                    <span class="feed-add-only"><span class="glyphicon glyphicon-plus"></span> $T('button-addFeed')</span>
+                    <span class="feed-edit-only"><span class="glyphicon glyphicon-ok"></span> $T('button-save')</span>
+                </button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -558,20 +546,57 @@ jQuery(document).ready(function(){
         jQuery(this).tab('show')
     })
 
-    jQuery('.editFeed').click(function(){
-        var oldURI = jQuery(this).prev().val();
-        var whichFeed = jQuery(this).attr("rel");
+    // One input per feed URL, only the first one is required
+    function addFeedUrlRow(uri) {
+        var rows = jQuery('#feed_edit_urls .feed-url-row')
+        return rows.first().clone().insertAfter(rows.last()).find('input').prop('required', false).val(uri)
+    }
 
-        // Fill the values
-        jQuery('#feed_edit_name_label').text(whichFeed)
-        jQuery('#feed_edit_old_name').val(whichFeed)
-        jQuery('#feed_edit_new_name').val(whichFeed)
-        jQuery('#feed_edit_url').val(oldURI)
-        jQuery('#feed_edit_fetch_duplicates').prop('checked', jQuery(this).data('fetch-duplicates') === 1)
+    jQuery('.addFeedUrl').click(function() {
+        addFeedUrlRow('').focus()
+    })
 
-        // Show the modal
-        jQuery('#rss_edit_modal').modal('show');
-    });
+    jQuery('.feed-urls').on('click', '.removeFeedUrl', function() {
+        jQuery(this).closest('.feed-url-row').remove()
+        jQuery('#feed_edit_urls .feed-url-row input').first().prop('required', true)
+    })
+
+    // The same modal is used to add and to edit a feed
+    function showFeedModal(adding, name, uris, enable, fetchDuplicates) {
+        var modal = jQuery('#rss_edit_modal')
+        modal.attr('action', adding ? "$url('config/rss/add_rss_feed')" : "$url('config/rss/save_rss_feed')")
+        modal.find('.feed-add-only').toggle(adding)
+        modal.find('.feed-edit-only').toggle(!adding)
+        modal.find('.delFeed').attr('rel', name)
+        jQuery('#feed_edit_enable').prop('checked', enable)
+        jQuery('#feed_edit_name_label').text(name)
+        jQuery('#feed_edit_old_name').val(adding ? '' : name)
+        jQuery('#feed_edit_new_name').val(name)
+
+        // One row per URL
+        var rows = jQuery('#feed_edit_urls .feed-url-row')
+        rows.slice(1).remove()
+        rows.first().find('input').val(uris[0] || '')
+        jQuery.each(uris.slice(1), function(i, uri) {
+            addFeedUrlRow(uri)
+        })
+        jQuery('#feed_edit_fetch_duplicates').prop('checked', fetchDuplicates)
+        modal.modal('show')
+    }
+
+    // Start typing right away
+    jQuery('#rss_edit_modal').on('shown.bs.modal', function() {
+        jQuery('#feed_edit_new_name').focus().select()
+    })
+
+    jQuery('#addFeedButton').click(function() {
+        showFeedModal(true, jQuery(this).data('name'), [], true, false)
+    })
+
+    jQuery('.editFeed').click(function() {
+        var uris = jQuery(this).siblings('.feedUri').map(function() { return jQuery(this).val() }).get()
+        showFeedModal(false, jQuery(this).attr('rel'), uris, jQuery(this).data('enable') === 1, jQuery(this).data('fetch-duplicates') === 1)
+    })
 
     jQuery('.delFeed').click(function(e){
         e.preventDefault();

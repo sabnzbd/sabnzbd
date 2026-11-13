@@ -1340,8 +1340,13 @@ def config_rss_index(request: Request):
 
     rss = {}
     feeds = config.get_rss()
+    with sabnzbd.rss.rss_repository() as repo:
+        job_counts = repo.count_feed_jobs()
     for feed in feeds:
         rss[feed] = feeds[feed].get_dict()
+        rss[feed]["count_matched"] = job_counts.get((feed, RSSState.GOOD), 0)
+        rss[feed]["count_unmatched"] = job_counts.get((feed, RSSState.BAD), 0)
+        rss[feed]["count_downloaded"] = job_counts.get((feed, RSSState.DOWNLOADED), 0)
         filters = feeds[feed].filters()
         rss[feed]["filters"] = filters
         rss[feed]["filter_states"] = [bool(sabnzbd.rss.convert_filter(f[4])) for f in filters]
@@ -1393,37 +1398,29 @@ def config_rss_upd_rss_feed(request: Request):
     """Update Feed level attributes,
     legacy version: ignores 'enable' parameter
     """
-    params = request_params(request)
-    kwargs = dict(params)
-    if params.get("enable") is not None:
-        del kwargs["enable"]
-    cf = config.get_rss().get(params.get("feed"))
-    uri = safe_strip(params.get("uri"))
-    if cf and uri:
-        kwargs["uri"] = uri
-        cf.set_dict(kwargs)
+    values = request_params(request)
+    values.pop("enable", None)
+    if cf := config.get_rss().get(values.get("feed")):
+        cf.set_dict(values)
         config.save_config()
 
-    return _rss_redirect(params.get("feed"))
+    return _rss_redirect(values.get("feed"))
 
 
 @secured_expose(route="/config/rss/save_rss_feed", check_configlock=True, methods=["POST"])
 def config_rss_save_rss_feed(request: Request):
     """Update Feed level attributes"""
-    params = request_params(request)
-    kwargs = dict(params)
-    feed_name = params.get("feed")
-    cf = config.get_rss().get(feed_name)
-    # Unchecked checkboxes are absent from the POST body, this one is only shown with duplicate detection on
+    values = request_params(request)
+    feed_name = values.get("feed")
+    # Unchecked checkboxes are absent from the POST body, fetch_duplicates is only shown with duplicate detection on
+    values.setdefault("enable", 0)
     if cfg.no_dupes() or cfg.no_smart_dupes():
-        kwargs.setdefault("fetch_duplicates", 0)
-    uri = safe_strip(params.get("uri"))
-    if cf and uri:
-        kwargs["uri"] = uri
-        cf.set_dict(kwargs)
+        values.setdefault("fetch_duplicates", 0)
+    if cf := config.get_rss().get(feed_name):
+        cf.set_dict(values)
 
         # Did we get a new name for this feed?
-        if new_name := safe_strip(params.get("feed_new_name"), " []"):
+        if new_name := safe_strip(values.get("feed_new_name"), " []"):
             feed_name = cf.rename(new_name)
 
         config.save_config()
@@ -1449,12 +1446,10 @@ def config_rss_toggle_rss_feed(request: Request):
 def config_rss_add_rss_feed(request: Request):
     """Add one new RSS feed definition"""
     params = request_params(request)
-    kwargs = dict(params)
-    feed = safe_strip(params.get("feed"), " []")
-    uri = safe_strip(params.get("uri"))
-    if feed and uri:
-        kwargs["uri"] = uri
-        feed = config.ConfigRSS.create(feed, kwargs).name
+    feed = safe_strip(params.get("feed_new_name"), " []")
+    # A feed needs a URL, the validator of the option can't stop the feed from being created
+    if feed and any(uri.strip() for uri in params.getlist("uri")):
+        feed = config.ConfigRSS.create(feed, params).name
         # Clear out any existing reference to this feed name
         # Otherwise first-run detection can fail
         with sabnzbd.rss.rss_repository() as repo:

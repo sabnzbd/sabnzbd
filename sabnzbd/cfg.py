@@ -186,6 +186,13 @@ def validate_url_base(value: str) -> tuple[None, str]:
     return None, value
 
 
+def validate_feed_uris(value: list[str]) -> ValidateResult:
+    """Strip feed URLs and drop empty ones, at least one is required"""
+    if uris := [uri for item in value if (uri := item.strip())]:
+        return None, uris
+    return T("Feed URL required"), None
+
+
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
 
 

@@ -13,9 +13,9 @@
     --clr-surface-alt:     light-dark(#F8F8F8, #444444);   /* alternating rows, .alt elements */
     --clr-surface-hover:   light-dark(#f6f6f6, #666666);   /* hovered rows and buttons */
     --clr-border:          light-dark(#dfdede, #555555);   /* card/section borders */
-    --clr-border-subtle:   light-dark(#E5E5E5, #252525);   /* inner dividers (#subscriptions, data-row) */
+    --clr-border-subtle: light-dark(#E5E5E5, #252525); /* inner dividers (data-row) */
     --clr-text:            light-dark(#000000, #EBEBEB);   /* primary body text */
-    --clr-text-muted:      light-dark(#666666, #c7c7c7);   /* secondary text (.col2 p, .feed-row td) */
+    --clr-text-muted: light-dark(#666666, #c7c7c7); /* secondary text (.col2 p, .feed-uris li) */
     --clr-error:           light-dark(red, #ff3333);       /* errors, failed items */
     --clr-input-bg:        light-dark(#FFFFFF, #555555);   /* form inputs, buttons */
     --clr-input-border:    light-dark(#d4d0c8, #252525);   /* input borders */
@@ -533,9 +533,6 @@ tr.separator {
 .RSS .catTable select {
     max-width: 120px;
 }
-.RSS form[data-form="add-rss-feed"] tr:nth-child(even) {
-    border: 1px solid #E5E5E5;
-}
 .RSS .tab-pane table th:not(.no-sort) {
     cursor: pointer;
 }
@@ -769,15 +766,13 @@ input:has(+ .clearBtn) {
     padding-right: 13px;
 }
 /* --  */
-.RSS .addRssTable,
-.RSS .addRssTable input[type="text"] {
+.feed-url-row {
+    margin-bottom: 4px;
     width: 100%;
 }
-.RSS .addRssTable .new-feed-title {
-    max-width: 250px;
-}
-.RSS .addRssTable .new-feed-url {
-    width: 70%;
+
+.feed-url-row input.form-control {
+    width: 100%;
 }
 h2.activeRSS {
     margin-bottom: 10px;
@@ -819,67 +814,60 @@ h2.activeRSS {
 .source-icon span {
     top: -3px;
 }
-.feed {
-    text-decoration: none;
-}
-.feed_enabled {
-    color: #000;
-}
-.feed_disabled {
-    color: red !important;
-}
-#subscriptions {
-    border: 1px solid var(--clr-border-subtle);
-    width: 100%;
-}
 .data-row {
     border-top: 1px solid var(--clr-border-subtle);
 }
-#subscriptions td {
-    border: 0 none;
-    padding-top: .4em;
+
+.feed-uris {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px;
 }
-#subscriptions .chk {
-    padding: 8px 5px 5px;
-    vertical-align: middle;
-    width: 40px;
-}
-#subscriptions .title {
-    font-weight: bold;
-    padding-right: .3em;
-    width: auto;
-}
-#subscriptions .favicon {
-    margin-left: 7px;
-    margin-top: -2px;
-}
-#subscriptions .glyphicon {
-    margin-top: 3px;
-}
-.subscription-title,
-.subscription-title:hover {
-    width: 20em;
+
+.feed-uris li {
+    color: var(--clr-text-muted);
     overflow: hidden;
     white-space: nowrap;
-    display: block;
-    text-decoration: underline;
-    color: black;
-}
-.controls {
-    text-align: right;
-    padding-right: 5px;
-    white-space: nowrap;
-}
-.feed-row td {
-    color: var(--clr-text-muted);
-    max-width: 515px;
-    padding: 0 0 .5em;
-}
-.feed-row div {
-    overflow:hidden;
-    white-space: nowrap;
     text-overflow: ellipsis;
+    padding: 3px 0;
 }
+
+.feed-uris .favicon {
+    float: none;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.feed-stats {
+    color: var(--clr-text-muted);
+}
+
+.feed-stats span {
+    display: inline-block;
+    margin-right: 6px;
+    padding: 3px 10px;
+    border-radius: var(--radius-md);
+    background-color: var(--clr-surface-alt);
+    white-space: nowrap;
+}
+
+.feed-stats strong {
+    color: var(--clr-text);
+}
+
+/* A single URL can't be removed */
+.feed-url-row:only-of-type .input-group-btn {
+    display: none;
+}
+
+.feed-url-row:only-of-type .form-control {
+    border-radius: var(--radius-md);
+}
+
+.feed-urls .addFeedUrl {
+    margin-top: 4px;
+}
+
 .tab-content .catTable {
     width: 100%;
 }
@@ -1213,9 +1201,11 @@ input[type="checkbox"] {
     opacity: 0.7;
 }
 
-.Servers .col1.padding {
+.Servers .col1.padding,
+.RSS .col1.padding {
     padding: 12px;
 }
+
 
 .Servers .server-amounts-text {
     width: 20%;
@@ -1270,6 +1260,7 @@ input[type="checkbox"] {
 }
 
 .Servers .col2 label,
+.RSS .col2 label,
 .Notify .col2 label {
     margin: 6px 0 0 6px;
     cursor: pointer;
@@ -1830,8 +1821,6 @@ html[data-color-scheme="night" i] {
     .section,
     #addFeed,
     #addFeedContent,
-    #subscriptions,
-    .RSS form[data-form="add-rss-feed"] tr:nth-child(even),
     .Config .table {
         border: 1px solid var(--clr-border);
     }
@@ -1850,7 +1839,7 @@ html[data-color-scheme="night" i] {
     .activeRSS a:visited,
     .btn-default,
     .checkbox label,
-    .feed-row td,
+    .feed-uris li,
     .help-block,
     #content,
     .navbar-default .navbar-nav>li>a,
@@ -2121,8 +2110,6 @@ html[data-color-scheme="night" i] {
         .section,
         #addFeed,
         #addFeedContent,
-        #subscriptions,
-        .RSS form[data-form="add-rss-feed"] tr:nth-child(even),
         .Config .table {
             border: 1px solid var(--clr-border);
         }
@@ -2141,7 +2128,7 @@ html[data-color-scheme="night" i] {
         .activeRSS a:visited,
         .btn-default,
         .checkbox label,
-        .feed-row td,
+        .feed-uris li,
         .help-block,
         #content,
         .navbar-default .navbar-nav>li>a,

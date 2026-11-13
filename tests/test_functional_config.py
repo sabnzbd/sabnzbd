@@ -170,12 +170,12 @@ class TestConfigRSS(SABnzbdBaseTest):
         # Test if base page works
         self.open_page("http://%s:%s/config/rss" % (SAB_HOST, SAB_PORT))
 
-        # Uncheck enabled-checkbox for new feeds
-        add_form = self.page.locator('form[data-form="add-rss-feed"]')
-        add_form.locator("input[name='enable']").click()
-        add_form.locator("input[name='feed']").fill(self.rss_name)
+        # Add the feed through the modal
+        self.page.locator("#addFeedButton").click()
+        add_form = self.page.locator("#rss_edit_modal")
+        add_form.locator("input[name='feed_new_name']").fill(self.rss_name)
         add_form.locator("input[name='uri']").fill(rss_url)
-        add_form.locator("button").click()
+        add_form.locator("button[type='submit']").click()
 
         # Check if we have results
         matched_count = self.page.locator('xpath=//a[@href="#rss-tab-matched"]/span')

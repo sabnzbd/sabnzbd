@@ -619,14 +619,23 @@ SKIN_TEXT = {
     "sch-restart": TT("Restart"),  #:Config->Scheduling
     "sch-create_backup": TT("Create backup"),  #:Config->Scheduling
     # Config->RSS
-    "explain-RSS": TT(
-        'The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".'
+    "rss-noFeeds": TT(
+        "No feeds yet. Add a feed and SABnzbd will automatically download new items that match its filters."
+    ),
+    "explain-rss-enable": TT("Automatically check this feed for new items."),
+    "explain-rss-urls": TT("Add more URLs to combine several feeds into one."),
+    "explain-rss-newFeed": TT(
+        'Only items that appear after adding the feed are downloaded. Use "Force Download" to also get the items already in the feed.'
     ),
     "feed": TT("Feed"),  #: Config->RSS, tab header
-    "addMultipleFeeds": TT("Seperate multiple URLs by a comma"),  #: Config->RSS, placeholder (cannot be too long)
+    "button-addFeed": TT("Add Feed"),  #: Config->RSS button
+    "button-delFeed": TT("Remove Feed"),  #: Config->RSS button
+    "rss-filters": TT("Filters"),  #: Config->RSS button to open the filters of a feed
+    "rss-addUrl": TT("Add URL"),  #: Config->RSS, button to add another feed URL
+    "rss-removeUrl": TT("Remove URL"),  #: Config->RSS, tooltip of button to remove a feed URL
     "button-preFeed": TT("Read Feed"),  #: Config->RSS button
     "button-forceFeed": TT("Force Download"),  #: Config->RSS button
-    "rss-edit": TT("Edit"),  #: Config->RSS edit button
+    "rss-edit": TT("Edit Feed"),  #: Config->RSS edit button
     "rss-nextscan": TT("Next scan at"),  #: Config->RSS when will be the next RSS scan
     "rss-order": TT("Order"),  #: Config->RSS table column header
     "rss-type": TT("Type"),  #: Config->RSS table column header

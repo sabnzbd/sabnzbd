@@ -740,6 +740,14 @@ class RSSRepository:
             for item in self.db.cursor:
                 yield ResolvedEntry.from_sqlite(item)
 
+    def count_feed_jobs(self) -> dict[tuple[str, RSSState], int]:
+        """Number of non-archived records per (feed, state)"""
+        if not self.db.execute(
+            "SELECT feed, state, COUNT(*) AS count FROM rss WHERE archived_at IS NULL GROUP BY feed, state"
+        ):
+            return {}
+        return {(row["feed"], RSSState(row["state"])): row["count"] for row in self.db.cursor}
+
     def find_job_by_url(self, feed: str, url: str) -> Optional[ResolvedEntry]:
         if not feed or not url:
             return None

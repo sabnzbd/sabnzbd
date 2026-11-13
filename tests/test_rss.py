@@ -26,6 +26,7 @@ import random
 
 import pytest
 from pytest_httpserver import HTTPServer
+from starlette.datastructures import MultiDict
 from werkzeug import Response
 from xml.etree.ElementTree import Element, SubElement, tostring
 
@@ -778,6 +779,46 @@ class TestRSS:
             repo.clear_feed(remaining)
             assert remaining not in set(repo.get_feeds())
 
+    def test_rssstore_count_feed_jobs(self, tmp_rss):
+        repo, _ = tmp_rss
+        jobs = [
+            ("A", RSSState.GOOD),
+            ("A", RSSState.GOOD),
+            ("A", RSSState.BAD),
+            ("A", RSSState.DOWNLOADED),
+            ("B", RSSState.BAD),
+        ]
+        for n, (feed, state) in enumerate(jobs):
+            repo.upsert(
+                ResolvedEntry(
+                    feed=feed,
+                    link=f"http://example.test/{n}",
+                    title=f"Title {n}",
+                    infourl=None,
+                    size=1000,
+                    age=datetime.datetime.now(datetime.timezone.utc),
+                    season=None,
+                    episode=None,
+                    category=None,
+                    cat=None,
+                    pp=None,
+                    script=None,
+                    priority=0,
+                    rule=0,
+                    state=state,
+                )
+            )
+        assert repo.count_feed_jobs() == {
+            ("A", RSSState.GOOD): 2,
+            ("A", RSSState.BAD): 1,
+            ("A", RSSState.DOWNLOADED): 1,
+            ("B", RSSState.BAD): 1,
+        }
+
+        # Cleared downloads are archived and no longer counted
+        repo.clear_downloaded("A")
+        assert ("A", RSSState.DOWNLOADED) not in repo.count_feed_jobs()
+
     def test_rssstore_remove_obsolete_marks_and_purges(self, tmp_rss):
         """remove_obsolete should mark old G/B items as X and purge expired X."""
         repo, _reader = tmp_rss
@@ -1251,3 +1292,58 @@ class TestRSS:
         interface.config_rss_download(request)
         add_url.assert_called_once()
         assert add_url.call_args.kwargs["dup_check"] is (not fetch_duplicates)
+
+    # Newznab category lists contain commas, so each URL must stay intact
+    FEED_URIS = ["http://example.test/rss?t=5030,5040", "http://other.test/rss"]
+
+    def test_add_feed_with_multiple_uris(self, tmp_rss, mocker):
+        self.setup_rss("Existing", "http://example.test/existing")
+        mocker.patch("sabnzbd.config.save_config")
+        mocker.patch.object(sabnzbd, "RSSReader", create=True)
+        params = MultiDict(
+            [
+                ("feed_new_name", "New"),
+                ("enable", "1"),
+                ("uri", self.FEED_URIS[0]),
+                ("uri", " "),
+                ("uri", self.FEED_URIS[1]),
+            ]
+        )
+        request = mock_request(method="POST", params=params)
+        request.session = {}
+        interface.config_rss_add_rss_feed(request)
+        feed = sabnzbd.config.get_rss()["New"]
+        assert feed.uri() == self.FEED_URIS
+        assert feed.enable()
+
+        # A feed without URL is not created
+        request = mock_request(method="POST", params=MultiDict([("feed_new_name", "NoUrl"), ("uri", " ")]))
+        interface.config_rss_add_rss_feed(request)
+        assert "NoUrl" not in sabnzbd.config.get_rss()
+
+    def test_save_feed_with_multiple_uris(self, mocker):
+        self.setup_rss("Feed", "http://example.test/old")
+        sabnzbd.config.get_rss()["Feed"].enable.set(True)
+        mocker.patch("sabnzbd.config.save_config")
+        params = MultiDict([("feed", "Feed"), ("uri", self.FEED_URIS[0]), ("uri", ""), ("uri", self.FEED_URIS[1])])
+        interface.config_rss_save_rss_feed(mock_request(method="POST", params=params))
+        feed = sabnzbd.config.get_rss()["Feed"]
+        assert feed.uri() == self.FEED_URIS
+        # The Enabled switch was off
+        assert not feed.enable()
+
+        # Without any URL the stored ones are kept, the rest is still saved
+        params = MultiDict([("feed", "Feed"), ("uri", " "), ("enable", "1")])
+        interface.config_rss_save_rss_feed(mock_request(method="POST", params=params))
+        assert feed.uri() == self.FEED_URIS
+        assert feed.enable()
+
+    def test_update_feed_keeps_uris(self, mocker):
+        self.setup_rss("Feed", "http://example.test/old")
+        sabnzbd.config.get_rss()["Feed"].uri.set(self.FEED_URIS)
+        mocker.patch("sabnzbd.config.save_config")
+        params = MultiDict([("feed", "Feed"), ("priority", "1")])
+        interface.config_rss_upd_rss_feed(mock_request(method="POST", params=params))
+        feed = sabnzbd.config.get_rss()["Feed"]
+        assert feed.uri() == self.FEED_URIS
+        assert feed.priority() == 1
