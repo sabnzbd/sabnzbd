@@ -1,36 +1,41 @@
-Release Notes - SABnzbd 5.2.0 Release Candidate 1
+Release Notes - SABnzbd 5.2.0 Release Candidate 2
 =========================================================
 
-This is the first release candidate of version 5.2.0. Containing several major
+This is the second release candidate of version 5.2.0, containing several major
 improvements to the core download and post-processing handling.
-Additionally, several vulnerabilities were fixed. This also requires extra
-restrictions and removal of some functionality just for security reasons.
+Additionally, several vulnerabilities were fixed. This also required extra
+restrictions and the removal of some functionality for security reasons.
 
 ## New features in 5.2.0
 
 * Downloaded data will be written directly to disk (if your hardware supports it),
-  which greatly reduces memory and CPU usage on systems with SSD's.
+  which greatly reduces memory and CPU usage on systems with SSDs.
   Additionally, several other download performance improvements were made.
 * par2cmdline is now incorporated in SABnzbd, resulting in several improvements:
-    * Verification happens during download, reducing disk load.
-    * Repairs no longer write a copy of the whole file, but repair in-place.
-    * Multi-threading and memory usage is directly controlled by user limits.
-    * Improved support for unicode filenames.
-* Search your Indexers and add downloads directly from within SABnzbd.
+    * Files are checked against par2 while they download, so verification
+      no longer has to read them back from disk.
+    * Damaged files are repaired in place instead of writing a repaired copy.
+    * Multi-threading and memory usage are directly controlled by user limits.
+    * Improved support for Unicode filenames.
+* Search your indexers and add downloads directly from within SABnzbd.
 * Post-Processing, Pre-Queue and Notification Scripts no longer receive
   command-line arguments. Use the `SAB_*` environment variables instead.
-  This prevents an attacker easy access to remote code execution.
+  This prevents attackers from easily gaining remote code execution.
 * Download directories can no longer be inside the program directory.
-  This is also to prevent an attacker easy access to remote code execution.
+  This also prevents attackers from easily gaining remote code execution.
 * Unwanted Extension check now also runs on completed downloads.
-* Changed the internal webserver from CherryPy to Starlette.
+* Changed the internal web framework from CherryPy to Starlette.
 * Overview of Active Sessions is available when username and password are enabled.
-* Only allow proxied requests from hosts configured in `xff_trusted_hosts`.
-* Removed the `scriptlog` link from the `script_log` history field.
+* Updated the RSS overview page and added an option to download duplicate feed items,
+  for RSS feeds (like indexer carts) that only remove items once they are fetched.
+* Proxied requests are only allowed from hosts configured in `xff_trusted_hosts`.
+  This prevents requests through a reverse proxy from being trusted as local.
 * Template folder can no longer be configured manually, preventing abuse.
-* Remove unused fields `completeness`, `meta`, `series`, `id`, and
-  `script_log` from `history`-API response.
-* Cache `Public IPv4 address` for 10 minutes to prevent abuse.
+* Several settings no longer require a restart after changing them.
+* Removed unused fields `completeness`, `meta`, `series`, `id`, and
+  `script_log` from the `history` API response. The `script_log` of a completed
+  download is now only available through the `scriptlog` API call.
+* Cached `Public IPv4 address` for 10 minutes to prevent abuse.
 * Windows/macOS: Updated Python to 3.15.2 and 7-Zip to 26.07.
 * Snap: Several build and runtime improvements.
 
@@ -40,18 +45,19 @@ restrictions and removal of some functionality just for security reasons.
 * Failure to read one RSS URL would stop the whole readout instead of continuing to the next.
 * Prevent potential XSS in the History from malicious Script output (GHSA-rpwc-qfxm-7h2v)
   or malicious NNTP responses (GHSA-c5x2-896f-g5g8).
-* Download names that look like URL's could escape the Download-folder (GHSA-73q2-vw82-jr46).
-* Correct `articles_success` to `articles_failed` in Server statistics API-call.
+* Download names that look like URLs could escape the Download folder (GHSA-73q2-vw82-jr46).
+* Sorting allowed writing outside the Complete Directory through malicious metadata (GHSA-727m-c877-c8gf).
+* Correct `articles_success` to `articles_failed` in Server statistics API call.
 * Downloads could stall in case of unexpected server responses.
 * Remove empty folders left behind by deleted samples.
 * Stalled Unrar could freeze the post-processing queue.
-* File handles could remain open after download completed.
+* File handles could remain open after a download completed.
 * Correctly handle `HEAD` responses during availability checks.
-* Deobfuscation of some sets of RAR-files would be skipped.
-* Quota exceeded responses from news servers would be interpreted wrongly.
-* Downloads with missing articles and no PAR2 would not be marked as failed.
+* Deobfuscation of some sets of RAR files would be skipped.
+* Quota exceeded responses from news servers would be misinterpreted.
+* Downloads with missing articles and no par2 would not be marked as failed.
 * macOS: Tray icon would not show on macOS 27.
-* macOS: Downloads could be unpacked twice due to different unicode handling.
+* macOS: Downloads could be unpacked twice due to different Unicode handling.
 
 ## Upgrade notices
 
