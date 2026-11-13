@@ -495,7 +495,7 @@ tr.separator {
 }
 .Sorting .sorter-switch-container {
     margin: 10px 0px;
-    height: 1.5em;
+    height: 2em;
     display: block;
 }
 .Sorting .sorter-placeholder {
@@ -1059,6 +1059,15 @@ input[type="checkbox"] {
     margin: 9px 10px 0px 5px;
 }
 
+.Scheduling #content .schedules fieldset {
+    padding: 10px;
+}
+
+.Scheduling #content .schedules .field-pair {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
 .navbar .container {
     padding-right: 0;
 }
@@ -1259,9 +1268,7 @@ input[type="checkbox"] {
     animation: highlight-fade 1s ease-in 1;
 }
 
-.Servers .col2 label,
-.RSS .col2 label,
-.Notify .col2 label {
+.col2 label {
     margin: 6px 0 0 6px;
     cursor: pointer;
 }

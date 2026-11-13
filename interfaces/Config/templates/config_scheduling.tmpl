@@ -83,7 +83,7 @@ else:
         <div class="col2">
             <h3>$T('currentSchedules')</h3>
         </div><!-- /col2 -->
-        <div class="col1">
+        <div class="col1 schedules">
             <fieldset>
                 <!--#if $schedlines#-->
                         <!--#set $odd = True#-->
@@ -91,7 +91,7 @@ else:
                             <!--#set $odd = not $odd#-->
                             <form data-form="del-schedule" action="$url('config/scheduling/del_schedule')" method="post">
                                 <input type="hidden" name="line" value="$line"/>
-                                <div class="field-pair infoTableSeperator <!--#if $odd then "" else " alt"#-->">
+                                <div class="field-pair">
                                     <input type="checkbox" name="schedenabled" value="$line" aria-label="$T('enabled')" aria-describedby="schedule-description-$schednum" <!--#if int($taskinfo[$schednum][5]) > 0 then 'checked="checked"' else ""#-->>
                                     <button class="btn btn-default float-left" type="submit" aria-label="$T('nzo-delete')" aria-describedby="schedule-description-$schednum"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
                                     <div class="scheduleEntry" id="schedule-description-$schednum">
