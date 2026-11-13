@@ -22,14 +22,19 @@ tests.test_decoder- Testing functions in decoder.py
 import binascii
 import os
 import pytest
+import threading
+from collections import Counter
+from datetime import datetime
 from io import BytesIO
+from typing import Optional
 
 from random import randint
 from unittest import mock
 
 import sabctools
 import sabnzbd.decoder as decoder
-from sabnzbd.nzb import Article
+from sabnzbd.nzb import Article, NzbFile, NzbObject
+from tests.testhelper import SAB_CACHE_DIR
 
 
 def uu(data: bytes):
@@ -260,7 +265,9 @@ class TestYencBlockCrcs:
 
     def test_the_pieces_are_kept_on_the_article(self):
         payload = bytes(range(256)) * 4
-        article = Article("foo@bar", 1234, mock.Mock())
+        article = Article(
+            "foo@bar", 1234, mock.Mock(lock=threading.RLock(), yenc_sizes=Counter(), yenc_voted=set(), overwritten=[])
+        )
         decoder.decode_yenc(article, self._response(payload, 100, 256))
         assert article.block_size == 256
         assert list(article.block_crcs) == [
@@ -272,7 +279,185 @@ class TestYencBlockCrcs:
         ]
 
     def test_without_a_block_size_there_are_none(self):
-        article = Article("foo@bar", 1234, mock.Mock())
+        article = Article(
+            "foo@bar", 1234, mock.Mock(lock=threading.RLock(), yenc_sizes=Counter(), yenc_voted=set(), overwritten=[])
+        )
         decoder.decode_yenc(article, self._response(b"\x01" * 100, 0, 0))
         assert article.block_size == 0
         assert article.block_crcs is None
+
+
+@pytest.mark.usefixtures("clean_cache_dir")
+@pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+class TestArticleOfAnotherFile:
+    """A server can return another post's article under the Message-ID that was asked for,
+    with a valid CRC of its own, see #3691"""
+
+    PART = 1000
+    PARTS = 10
+    # The file the colliding article really belongs to
+    OTHER_SIZE = 7333
+
+    @pytest.fixture
+    def nzf(self) -> NzbFile:
+        nzo = NzbObject("test")
+        raw_articles = [(f"part{index}@test", self.PART) for index in range(self.PARTS)]
+        nzf = NzbFile(datetime.now(), "foo.bin", raw_articles, self.PART * self.PARTS, nzo)
+        nzf.finish_import()
+        return nzf
+
+    @staticmethod
+    def _response(
+        article: Article, begin: int, file_size: int, length: int, sink: Optional[sabctools.FileWriter] = None
+    ) -> sabctools.NNTPResponse:
+        encoded, crc = sabctools.yenc_encode(os.urandom(length))
+        raw_data = (
+            b"222 0 <foo@bar>\r\n"
+            + f"=ybegin part=1 line=128 size={file_size} name=foo.bin\r\n".encode()
+            + f"=ypart begin={begin + 1} end={begin + length}\r\n".encode()
+            + encoded
+            + f"\r\n=yend size={length} part=1 pcrc32={crc:08x}\r\n.\r\n".encode()
+        )
+        dec = sabctools.Decoder(len(raw_data))
+        dec.expect(article, sink)
+        BytesIO(raw_data).readinto(dec)
+        dec.process(len(raw_data))
+        return next(dec)
+
+    def _own(self, nzf: NzbFile, index: int, sink: Optional[sabctools.FileWriter] = None) -> sabctools.NNTPResponse:
+        """The article the NZB asks for"""
+        return self._response(nzf.decodetable[index], index * self.PART, self.PART * self.PARTS, self.PART, sink)
+
+    def _other(self, nzf: NzbFile, index: int, begin: int, sink=None) -> sabctools.NNTPResponse:
+        """Another file's article, under the same Message-ID"""
+        return self._response(nzf.decodetable[index], begin, self.OTHER_SIZE, self.PART, sink)
+
+    def test_article_of_another_file_is_rejected(self, nzf):
+        for index in range(3):
+            decoder.decode_yenc(nzf.decodetable[index], self._own(nzf, index))
+
+        article = nzf.decodetable[3]
+        with pytest.raises(decoder.BadData) as error:
+            decoder.decode_yenc(article, self._other(nzf, 3, begin=5000))
+        # Nothing to write, and nowhere to write it
+        assert error.value.data is None
+        assert article.data_begin is None
+        assert article.crc32 is None
+
+        # The right article is still accepted when another server has it
+        decoder.decode_yenc(article, self._own(nzf, 3))
+        assert article.data_begin == 3 * self.PART
+
+    def test_another_file_first_does_not_condemn_the_file(self, nzf):
+        # Nothing to compare the first article with, so it gets through
+        decoder.decode_yenc(nzf.decodetable[0], self._other(nzf, 0, begin=5000))
+
+        # The file's own articles must not be judged by it
+        for index in range(1, 4):
+            decoder.decode_yenc(nzf.decodetable[index], self._own(nzf, index))
+            assert nzf.decodetable[index].data_begin == index * self.PART
+
+        with pytest.raises(decoder.BadData):
+            decoder.decode_yenc(nzf.decodetable[4], self._other(nzf, 4, begin=6000))
+
+    def test_every_server_returning_another_file_counts_once(self, nzf):
+        for index in range(3):
+            decoder.decode_yenc(nzf.decodetable[index], self._own(nzf, index))
+
+        # Three servers that all hold the other post under this Message-ID must not
+        # outvote the three articles of the file itself
+        article = nzf.decodetable[3]
+        for _ in range(3):
+            with pytest.raises(decoder.BadData):
+                decoder.decode_yenc(article, self._other(nzf, 3, begin=5000))
+
+    def test_size_votes_survive_saving_the_queue(self, nzf):
+        for index in range(3):
+            decoder.decode_yenc(nzf.decodetable[index], self._own(nzf, index))
+
+        # As when the queue is saved and loaded again after a restart
+        restored = NzbFile.__new__(NzbFile)
+        with mock.patch("sabnzbd.Downloader", create=True) as downloader:
+            downloader.servers = []
+            restored.__setstate__(nzf.__getstate__())
+        for article in restored.decodetable:
+            article.nzf = restored
+
+        with pytest.raises(decoder.BadData):
+            decoder.decode_yenc(restored.decodetable[3], self._other(restored, 3, begin=5000))
+
+    def test_a_few_of_another_file_first_do_not_condemn_the_file(self, nzf):
+        for index in range(2):
+            decoder.decode_yenc(nzf.decodetable[index], self._other(nzf, index, begin=5000 + index * self.PART))
+
+        # Two say otherwise, but that is too few to go on
+        decoder.decode_yenc(nzf.decodetable[2], self._own(nzf, 2))
+        assert nzf.decodetable[2].data_begin == 2 * self.PART
+
+    def test_streamed_article_of_another_file_untrusts_what_it_overwrote(self, nzf, tmp_path):
+        with sabctools.FileWriter(tmp_path / "foo.bin") as writer:
+            for index in range(5):
+                decoder.decode_yenc(nzf.decodetable[index], self._own(nzf, index, writer))
+                nzf.decodetable[index].on_disk = True
+
+            # Already on disk by the time its offset is known, across articles 2 and 3
+            with pytest.raises(decoder.BadData):
+                decoder.decode_yenc(nzf.decodetable[6], self._other(nzf, 6, begin=2500, sink=writer))
+
+            # The rest of the file, including article 6 from a server that has the right one
+            for index in range(5, self.PARTS):
+                decoder.decode_yenc(nzf.decodetable[index], self._own(nzf, index, writer))
+
+        # Their checksums no longer describe what is on disk, so par2 has to read it
+        assert [article.crc32 is None for article in nzf.decodetable] == [False] * 2 + [True] * 2 + [False] * 6
+        nzf.finalize_crc32()
+        assert nzf.crc32 is None
+
+    def test_article_decoded_after_it_was_overwritten_is_not_trusted(self, nzf, tmp_path):
+        with sabctools.FileWriter(tmp_path / "foo.bin") as writer:
+            responses = [self._own(nzf, index, writer) for index in range(5)]
+            # Article 2 is on disk, but still waiting for its turn to be decoded
+            for index in (0, 1, 3, 4):
+                decoder.decode_yenc(nzf.decodetable[index], responses[index])
+                nzf.decodetable[index].on_disk = True
+
+            with pytest.raises(decoder.BadData):
+                decoder.decode_yenc(nzf.decodetable[6], self._other(nzf, 6, begin=2500, sink=writer))
+            decoder.decode_yenc(nzf.decodetable[2], responses[2])
+
+        assert nzf.decodetable[2].data_begin == 2 * self.PART
+        assert nzf.decodetable[2].crc32 is None
+
+    def test_decode_tries_the_next_server(self, nzf):
+        for index in range(3):
+            decoder.decode_yenc(nzf.decodetable[index], self._own(nzf, index))
+
+        article = nzf.decodetable[3]
+        with (
+            mock.patch("sabnzbd.decoder.search_new_server", return_value=True) as search_new_server,
+            mock.patch("sabnzbd.ArticleCache", create=True) as article_cache,
+            mock.patch("sabnzbd.NzbQueue", create=True) as nzb_queue,
+        ):
+            decoder.decode(article, self._other(nzf, 3, begin=5000))
+
+        search_new_server.assert_called_once_with(article)
+        article_cache.save_article.assert_not_called()
+        nzb_queue.register_article.assert_not_called()
+
+    def test_decode_without_another_server_keeps_nothing(self, nzf):
+        for index in range(3):
+            decoder.decode_yenc(nzf.decodetable[index], self._own(nzf, index))
+
+        article = nzf.decodetable[3]
+        with (
+            mock.patch("sabnzbd.decoder.search_new_server", return_value=False),
+            mock.patch("sabnzbd.ArticleCache", create=True) as article_cache,
+            mock.patch("sabnzbd.NzbQueue", create=True) as nzb_queue,
+        ):
+            decoder.decode(article, self._other(nzf, 3, begin=5000))
+
+        # A failed article, with nothing written for it, and no offset for par2 to place it at
+        article_cache.save_article.assert_not_called()
+        nzb_queue.register_article.assert_called_once_with(article, False)
+        assert article.on_disk
+        assert article.data_begin is None

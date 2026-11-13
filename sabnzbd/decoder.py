@@ -215,6 +215,33 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
             raise response.sink_error
         raise SinkFailed
 
+    nzf = article.nzf
+
+    # A server can return another post's article under this Message-ID, with a valid CRC
+    # of its own. Every article of a file names the same size, so once a few agree, one
+    # naming a size fewer of them named is not this file's. Counted whether kept or not,
+    # so articles of another file that happen to arrive first cannot outvote the file.
+    if (file_size := response.file_size) and response.crc is not None:
+        with nzf.lock:
+            # One vote per article and size, however many servers return the same thing
+            if (vote := (article.article, file_size)) not in nzf.yenc_voted:
+                nzf.yenc_voted.add(vote)
+                nzf.yenc_sizes[file_size] += 1
+            expected, votes = nzf.yenc_sizes.most_common(1)[0]
+            foreign = votes >= 3 and nzf.yenc_sizes[file_size] < votes
+            if foreign and response.data is None and response.part_size:
+                # Streamed, so it is on disk already at the other file's offset, and the
+                # checksums of the articles it overwrote no longer vouch for what is there
+                begin = response.part_begin
+                end = begin + response.part_size
+                nzf.overwritten.append((begin, end))
+                for other in nzf.decodetable:
+                    if other.data_size and other.data_begin < end and begin < other.data_begin + other.data_size:
+                        other.crc32 = None
+        if foreign:
+            logging.info("Article %s is from another file, of %d bytes not %d", article.article, file_size, expected)
+            raise BadData(None)
+
     # Let SABCTools do all the heavy lifting
     decoded_data = response.data
     article.file_size = response.file_size
@@ -224,7 +251,6 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
     article.block_size = response.block_size
     article.block_crcs = array.array("I", crcs) if (crcs := response.block_crcs) is not None else None
 
-    nzf = article.nzf
     # Assume it is yenc
     nzf.type = "yenc"
 
@@ -247,7 +273,11 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
         # bytes stay put either way, so par2 has the same chance of repairing it
         raise BadData(decoded_data)
 
-    article.crc32 = crc
+    with nzf.lock:
+        # Not if an article of another file was streamed over it before it got here
+        end = article.data_begin + article.data_size
+        if not any(article.data_begin < other_end and other_begin < end for other_begin, other_end in nzf.overwritten):
+            article.crc32 = crc
 
     return decoded_data
 

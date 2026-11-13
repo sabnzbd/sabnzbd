@@ -24,6 +24,7 @@ import itertools
 import logging
 import os
 import threading
+from collections import Counter
 from operator import attrgetter
 from typing import Optional, Any
 
@@ -71,6 +72,8 @@ NzbFileSaver = (
     "assembled",
     "direct_written",
     "md5of16k",
+    "yenc_sizes",
+    "yenc_voted",
 )
 
 
@@ -78,7 +81,7 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = (*NzbFileSaver, "lock", "file_lock", "assembler_next_index", "writer")
+    __slots__ = (*NzbFileSaver, "lock", "file_lock", "assembler_next_index", "writer", "overwritten")
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
@@ -116,6 +119,12 @@ class NzbFile(TryList):
         self.direct_written: bool = True
         self.md5of16k: Optional[bytes] = None
         self.assembler_next_index: int = 0
+        # How many articles named each =ybegin size, to spot one that belongs to another file
+        self.yenc_sizes: Counter[int] = Counter()
+        # The (Message-ID, size) pairs already counted, so a server retry is not another vote
+        self.yenc_voted: set[tuple[str, int]] = set()
+        # Ranges an article of another file was streamed over
+        self.overwritten: list[tuple[int, int]] = []
 
         # Add first article to decodetable, this way we can check
         # if this is maybe a duplicate nzf
@@ -396,6 +405,8 @@ class NzbFile(TryList):
         dict_ = {}
         for item in NzbFileSaver:
             dict_[item] = getattr(self, item)
+        # A plain dict: the queue's restricted unpickler does not accept Counter
+        dict_["yenc_sizes"] = dict(self.yenc_sizes)
         dict_["try_list"] = super().__getstate__()
         return dict_
 
@@ -411,6 +422,10 @@ class NzbFile(TryList):
         self.file_lock = threading.RLock()
         self.assembler_next_index = 0
         self.writer = None
+        # Saved from this version on, None when loaded from an older queue
+        self.yenc_sizes = Counter(self.yenc_sizes or {})
+        self.yenc_voted = set(self.yenc_voted or ())
+        self.overwritten = []
         if isinstance(self.articles, list):
             # Converted from list to dict
             self.articles = {x: x for x in self.articles}
