@@ -381,6 +381,10 @@ msgid "Incorrect parameter"
 msgstr "Nesprávný parametr"
 
 #: sabnzbd/cfg.py
+msgid "Feed URL required"
+msgstr ""
+
+#: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s není platná e-mailová adresa"
 
@@ -4038,20 +4042,48 @@ msgstr "Aktuální rozvrhy"
 
 #: sabnzbd/skintext.py
 msgid ""
-"The checkbox next to the feed name should be ticked for the feed to be "
-"enabled and be automatically checked for new items.<br />When a feed is "
-"added, it will only pick up new items and not anything already in the RSS "
-"feed unless you press \"Force Download\"."
+"No feeds yet. Add a feed and SABnzbd will automatically download new items "
+"that match its filters."
 msgstr ""
-"Zaškrtávací políčko vedle názvu kanálu by mělo být zaškrtnuto, aby byl kanál"
-" povolen a automaticky kontrolován na nové položky.<br />Když je kanál "
-"přidán, načte pouze nové položky a nikoli to, co již v RSS kanálu je, pokud "
-"nestisknete \"Vynutit stahování\"."
 
-#. Config->RSS, placeholder (cannot be too long)
 #: sabnzbd/skintext.py
-msgid "Seperate multiple URLs by a comma"
-msgstr "Více URL oddělte čárkou"
+msgid "Automatically check this feed for new items."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Add more URLs to combine several feeds into one."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Only items that appear after adding the feed are downloaded. Use \"Force "
+"Download\" to also get the items already in the feed."
+msgstr ""
+
+#. Config->RSS button
+#: sabnzbd/skintext.py
+msgid "Add Feed"
+msgstr ""
+
+#. Config->RSS button
+#: sabnzbd/skintext.py
+msgid "Remove Feed"
+msgstr ""
+
+#. Config->RSS button to open the filters of a feed
+#: sabnzbd/skintext.py
+msgid "Filters"
+msgstr ""
+
+#. Config->RSS, button to add another feed URL
+#: sabnzbd/skintext.py
+msgid "Add URL"
+msgstr ""
+
+#. Config->RSS, tooltip of button to remove a feed URL
+#: sabnzbd/skintext.py
+msgid "Remove URL"
+msgstr ""
 
 #. Config->RSS button
 #: sabnzbd/skintext.py
@@ -4065,8 +4097,8 @@ msgstr "Vynutit stahování"
 
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
-msgid "Edit"
-msgstr "Upravit"
+msgid "Edit Feed"
+msgstr ""
 
 #. Config->RSS when will be the next RSS scan
 #: sabnzbd/skintext.py

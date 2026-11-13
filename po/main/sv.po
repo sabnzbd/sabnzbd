@@ -349,6 +349,10 @@ msgid "Incorrect parameter"
 msgstr "Fel parameter"
 
 #: sabnzbd/cfg.py
+msgid "Feed URL required"
+msgstr ""
+
+#: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s är inte en godkänd e-mail adress"
 
@@ -3915,19 +3919,47 @@ msgstr "Aktuella scheman"
 
 #: sabnzbd/skintext.py
 msgid ""
-"The checkbox next to the feed name should be ticked for the feed to be "
-"enabled and be automatically checked for new items.<br />When a feed is "
-"added, it will only pick up new items and not anything already in the RSS "
-"feed unless you press \"Force Download\"."
+"No feeds yet. Add a feed and SABnzbd will automatically download new items "
+"that match its filters."
 msgstr ""
-"Kryssrutan bredvid flödesnamnet ska aktiveras för att flödet automatiskt ska"
-" kontrolleras för nya objekt.<br />När ett flöde läggs till kommer det bara "
-"att välja nya objekt och inte allt som redan finns i RSS-flöded så länge du "
-"inte klickar på \"Tvinga nedladdning\"."
 
-#. Config->RSS, placeholder (cannot be too long)
 #: sabnzbd/skintext.py
-msgid "Seperate multiple URLs by a comma"
+msgid "Automatically check this feed for new items."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Add more URLs to combine several feeds into one."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Only items that appear after adding the feed are downloaded. Use \"Force "
+"Download\" to also get the items already in the feed."
+msgstr ""
+
+#. Config->RSS button
+#: sabnzbd/skintext.py
+msgid "Add Feed"
+msgstr ""
+
+#. Config->RSS button
+#: sabnzbd/skintext.py
+msgid "Remove Feed"
+msgstr ""
+
+#. Config->RSS button to open the filters of a feed
+#: sabnzbd/skintext.py
+msgid "Filters"
+msgstr ""
+
+#. Config->RSS, button to add another feed URL
+#: sabnzbd/skintext.py
+msgid "Add URL"
+msgstr ""
+
+#. Config->RSS, tooltip of button to remove a feed URL
+#: sabnzbd/skintext.py
+msgid "Remove URL"
 msgstr ""
 
 #. Config->RSS button
@@ -3942,7 +3974,7 @@ msgstr "Tvinga nedladdning"
 
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
-msgid "Edit"
+msgid "Edit Feed"
 msgstr ""
 
 #. Config->RSS when will be the next RSS scan
