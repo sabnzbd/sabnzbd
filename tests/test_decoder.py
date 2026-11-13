@@ -265,7 +265,9 @@ class TestYencBlockCrcs:
 
     def test_the_pieces_are_kept_on_the_article(self):
         payload = bytes(range(256)) * 4
-        article = Article("foo@bar", 1234, mock.Mock(lock=threading.RLock(), yenc_sizes=Counter(), overwritten=[]))
+        article = Article(
+            "foo@bar", 1234, mock.Mock(lock=threading.RLock(), yenc_sizes=Counter(), yenc_voted=set(), overwritten=[])
+        )
         decoder.decode_yenc(article, self._response(payload, 100, 256))
         assert article.block_size == 256
         assert list(article.block_crcs) == [
@@ -277,7 +279,9 @@ class TestYencBlockCrcs:
         ]
 
     def test_without_a_block_size_there_are_none(self):
-        article = Article("foo@bar", 1234, mock.Mock(lock=threading.RLock(), yenc_sizes=Counter(), overwritten=[]))
+        article = Article(
+            "foo@bar", 1234, mock.Mock(lock=threading.RLock(), yenc_sizes=Counter(), yenc_voted=set(), overwritten=[])
+        )
         decoder.decode_yenc(article, self._response(b"\x01" * 100, 0, 0))
         assert article.block_size == 0
         assert article.block_crcs is None
@@ -355,6 +359,32 @@ class TestArticleOfAnotherFile:
 
         with pytest.raises(decoder.BadData):
             decoder.decode_yenc(nzf.decodetable[4], self._other(nzf, 4, begin=6000))
+
+    def test_every_server_returning_another_file_counts_once(self, nzf):
+        for index in range(3):
+            decoder.decode_yenc(nzf.decodetable[index], self._own(nzf, index))
+
+        # Three servers that all hold the other post under this Message-ID must not
+        # outvote the three articles of the file itself
+        article = nzf.decodetable[3]
+        for _ in range(3):
+            with pytest.raises(decoder.BadData):
+                decoder.decode_yenc(article, self._other(nzf, 3, begin=5000))
+
+    def test_size_votes_survive_saving_the_queue(self, nzf):
+        for index in range(3):
+            decoder.decode_yenc(nzf.decodetable[index], self._own(nzf, index))
+
+        # As when the queue is saved and loaded again after a restart
+        restored = NzbFile.__new__(NzbFile)
+        with mock.patch("sabnzbd.Downloader", create=True) as downloader:
+            downloader.servers = []
+            restored.__setstate__(nzf.__getstate__())
+        for article in restored.decodetable:
+            article.nzf = restored
+
+        with pytest.raises(decoder.BadData):
+            decoder.decode_yenc(restored.decodetable[3], self._other(restored, 3, begin=5000))
 
     def test_a_few_of_another_file_first_do_not_condemn_the_file(self, nzf):
         for index in range(2):

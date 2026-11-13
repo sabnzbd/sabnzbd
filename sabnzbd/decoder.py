@@ -223,7 +223,10 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
     # so articles of another file that happen to arrive first cannot outvote the file.
     if (file_size := response.file_size) and response.crc is not None:
         with nzf.lock:
-            nzf.yenc_sizes[file_size] += 1
+            # One vote per article and size, however many servers return the same thing
+            if (vote := (article.article, file_size)) not in nzf.yenc_voted:
+                nzf.yenc_voted.add(vote)
+                nzf.yenc_sizes[file_size] += 1
             expected, votes = nzf.yenc_sizes.most_common(1)[0]
             foreign = votes >= 3 and nzf.yenc_sizes[file_size] < votes
             if foreign and response.data is None and response.part_size:
