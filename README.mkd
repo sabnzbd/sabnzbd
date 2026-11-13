@@ -36,7 +36,7 @@ restrictions and the removal of some functionality for security reasons.
   `script_log` from the `history` API response. The `script_log` of a completed
   download is now only available through the `scriptlog` API call.
 * Cached `Public IPv4 address` for 10 minutes to prevent abuse.
-* Windows/macOS: Updated Python to 3.15.2 and 7-Zip to 26.07.
+* Windows/macOS: Updated Python to 3.15.2 and 7-Zip to 26.06.
 * Snap: Several build and runtime improvements.
 
 ## Bug fixes in 5.2.0
