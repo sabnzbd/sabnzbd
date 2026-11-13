@@ -1794,6 +1794,11 @@ msgstr "Overførsel fuldført"
 
 #. Error message
 #: sabnzbd/postproc.py
+msgid "Folder %s is outside the Complete folder, this is not allowed"
+msgstr ""
+
+#. Error message
+#: sabnzbd/postproc.py
 msgid "Cannot create final folder %s"
 msgstr "Kan ikke oprette endelig mappe %s"
 

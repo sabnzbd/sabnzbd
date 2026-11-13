@@ -1821,6 +1821,11 @@ msgstr "Download voltooid"
 
 #. Error message
 #: sabnzbd/postproc.py
+msgid "Folder %s is outside the Complete folder, this is not allowed"
+msgstr ""
+
+#. Error message
+#: sabnzbd/postproc.py
 msgid "Cannot create final folder %s"
 msgstr "Kan bestemmingsmap %s niet maken"
 
