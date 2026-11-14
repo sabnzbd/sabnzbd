@@ -48,7 +48,7 @@ from sabnzbd.constants import (
     NORMAL_PRIORITY,
 )
 from sabnzbd.misc import SABRarFile
-from tests.testhelper import SAB_BASE_DIR
+from tests.testhelper import SAB_BASE_DIR, make_mock_nzo
 
 
 @pytest.fixture
@@ -1188,6 +1188,21 @@ class TestMisc:
     )
     def test_scan_password(self, argument, name, password):
         assert misc.scan_password(argument) == (name, password)
+
+    @pytest.mark.parametrize(
+        "content, passwords",
+        [
+            ("secret\r\nother\r\n".encode("utf-8-sig"), ["secret", "other"]),  # UTF-8 with BOM, as Notepad saves it
+            ("Łukasz ✨\r\nother\r\n".encode(), ["Łukasz ✨", "other"]),
+            ("Café\r\n".encode("cp1252"), ["Café"]),  # Not UTF-8, so read in the system code page
+        ],
+    )
+    def test_get_all_passwords_from_password_file(self, content, passwords, tmp_path, monkeypatch):
+        password_file = tmp_path / "passwords.txt"
+        password_file.write_bytes(content)
+        monkeypatch.setattr(cfg.password_file, "get_path", lambda: str(password_file))
+        monkeypatch.setattr(misc, "CODEPAGE", "cp1252")
+        assert misc.get_all_passwords(make_mock_nzo(encrypted=1)) == passwords
 
     @pytest.mark.parametrize(
         "subject, filename",
