@@ -61,7 +61,7 @@ from sabnzbd.constants import (
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.decorators import conditional_cache, synchronized
-from sabnzbd.encoding import ubtou, platform_btou
+from sabnzbd.encoding import ubtou, platform_btou, CODEPAGE
 from sabnzbd.filesystem import (
     userxbit,
     make_script_path,
@@ -1261,8 +1261,13 @@ def get_all_passwords(nzo) -> list[str]:
     pw_file = cfg.password_file.get_path()
     if pw_file:
         try:
-            with open(pw_file, "r") as pwf:
-                lines = pwf.read().split("\n")
+            try:
+                with open(pw_file, "r", encoding="utf-8-sig") as pwf:
+                    lines = pwf.read().split("\n")
+            except UnicodeDecodeError:
+                # Not UTF-8, so the file was probably saved in the system code page (ANSI on Windows)
+                with open(pw_file, "r", encoding=CODEPAGE) as pwf:
+                    lines = pwf.read().split("\n")
             # Remove empty lines and space-only passwords and remove surrounding spaces
             pws = [pw.strip("\r\n ") for pw in lines if pw.strip("\r\n ")]
             logging.debug("Read these passwords from file: %s", pws)
