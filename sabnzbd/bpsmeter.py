@@ -511,11 +511,13 @@ class BPSMeter:
             t = time.mktime(tm) + dif * 24 * 3600
             tm = time.localtime(t)
         elif self.q_period == "m":
-            if self.q_day < tm.tm_mday or (
-                self.q_day == tm.tm_mday and (tm.tm_hour * 60 + tm.tm_min) >= (self.q_hour * 60 + self.q_minute)
+            # A reset day past the end of a short month falls on its last day
+            day = min(last_month_day(tm), self.q_day)
+            if day < tm.tm_mday or (
+                day == tm.tm_mday and (tm.tm_hour * 60 + tm.tm_min) >= (self.q_hour * 60 + self.q_minute)
             ):
                 tm = time.localtime(next_month(t))
-            day = min(last_month_day(tm), self.q_day)
+                day = min(last_month_day(tm), self.q_day)
             tm = (tm[0], tm[1], day, self.q_hour, self.q_minute, 0, 0, 0, tm[8])
         else:
             return
