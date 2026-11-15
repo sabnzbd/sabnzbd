@@ -20,7 +20,10 @@ tests.test_cfg - Testing functions in cfg.py
 """
 
 import os
+import socket
 import sys
+from unittest import mock
+
 import pytest
 
 import sabnzbd
@@ -279,6 +282,9 @@ class TestValidators:
         assert cfg.validate_host("::") == (None, "::")
 
         # non-valid input. Should return None as second parameter
-        assert not cfg.validate_host("0.0.0.0.")[1]  # Trailing dot
-        assert not cfg.validate_host("kajkdjflkjasd")[1]  # does not resolve
         assert not cfg.validate_host("100")[1]  # just a number
+
+        # Don't depend on the DNS resolver of the machine, some (search domains, wildcard DNS) resolve anything
+        with mock.patch("socket.getaddrinfo", side_effect=socket.gaierror):
+            assert not cfg.validate_host("0.0.0.0.")[1]  # Trailing dot
+            assert not cfg.validate_host("kajkdjflkjasd")[1]  # does not resolve
