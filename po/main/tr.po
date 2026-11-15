@@ -386,7 +386,7 @@ msgstr "Yanlış parametre"
 
 #: sabnzbd/cfg.py
 msgid "Feed URL required"
-msgstr ""
+msgstr "Besleme URL'i gerekli"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
@@ -1831,7 +1831,7 @@ msgstr "İndirme Tamamlandı"
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Folder %s is outside the Complete folder, this is not allowed"
-msgstr ""
+msgstr "%s dizini Tamamlanmış dizininin dışındadır, buna izin verilmez"
 
 #. Error message
 #: sabnzbd/postproc.py
@@ -4115,45 +4115,51 @@ msgid ""
 "No feeds yet. Add a feed and SABnzbd will automatically download new items "
 "that match its filters."
 msgstr ""
+"Henüz hiçbir besleme yok. Bir besleme ekleyin, ardından SABnzbd "
+"süzgeçleriyle eşleşen yeni unsurları otomatik olarak indirecektir."
 
 #: sabnzbd/skintext.py
 msgid "Automatically check this feed for new items."
-msgstr ""
+msgstr "Bu beslemedeki yeni unsurları otomatik olarak kontrol et."
 
 #: sabnzbd/skintext.py
 msgid "Add more URLs to combine several feeds into one."
 msgstr ""
+"Birden fazla beslemeyi bir beslemede birleştirmek için daha fazla URL ekle."
 
 #: sabnzbd/skintext.py
 msgid ""
 "Only items that appear after adding the feed are downloaded. Use \"Force "
 "Download\" to also get the items already in the feed."
 msgstr ""
+"Sadece besleme eklendikten sonra beliren unsurlar indirilir. Beslemede "
+"hâlihazırda mevcut olan unsurları da almak için \"İndirmeyi Zorla\" "
+"kullanın."
 
 #. Config->RSS button
 #: sabnzbd/skintext.py
 msgid "Add Feed"
-msgstr ""
+msgstr "Besleme Ekle"
 
 #. Config->RSS button
 #: sabnzbd/skintext.py
 msgid "Remove Feed"
-msgstr ""
+msgstr "Beslemeyi Kaldır"
 
 #. Config->RSS button to open the filters of a feed
 #: sabnzbd/skintext.py
 msgid "Filters"
-msgstr ""
+msgstr "Süzgeçler"
 
 #. Config->RSS, button to add another feed URL
 #: sabnzbd/skintext.py
 msgid "Add URL"
-msgstr ""
+msgstr "URL Ekle"
 
 #. Config->RSS, tooltip of button to remove a feed URL
 #: sabnzbd/skintext.py
 msgid "Remove URL"
-msgstr ""
+msgstr "URL Kaldır"
 
 #. Config->RSS button
 #: sabnzbd/skintext.py
@@ -4168,7 +4174,7 @@ msgstr "İndirmeyi Zorla"
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit Feed"
-msgstr ""
+msgstr "Beslemeyi Düzenle"
 
 #. Config->RSS when will be the next RSS scan
 #: sabnzbd/skintext.py
@@ -4193,13 +4199,15 @@ msgstr "Filtre"
 #. Config->RSS feed option
 #: sabnzbd/skintext.py
 msgid "Fetch duplicates"
-msgstr ""
+msgstr "Tekrarlananları getir"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Fetch the NZB before checking for duplicates. Use for feeds that only remove"
 " items once they are fetched."
 msgstr ""
+"NZB dosyasını tekrarlanan unsurları kontrol etmeden önce getir. Unsurları "
+"sadece getirildikten sonra kaldıran beslemeler için kullanın."
 
 #. Config->RSS filter-type selection menu
 #: sabnzbd/skintext.py
@@ -5133,7 +5141,7 @@ msgstr "URL konumundan NZB al"
 
 #: sabnzbd/skintext.py
 msgid "Drop NZB files here or click to browse"
-msgstr ""
+msgstr "NZB dosyalarını buraya bırakın veya taramak için tıklayın"
 
 #: sabnzbd/skintext.py
 msgid "Optionally specify a filename"
