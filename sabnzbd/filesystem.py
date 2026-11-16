@@ -37,7 +37,7 @@ import ctypes
 import random
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Any, Iterable, Optional, BinaryIO
+from typing import Any, Iterable, Optional, BinaryIO, Callable
 
 try:
     import win32api
@@ -899,24 +899,33 @@ def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> str | bool
 
 
 @synchronized(UNIQUE_PATH_LOCK)
-def get_unique_filename(path: str, max_length: Optional[int] = None) -> str:
+def get_unique_filename(
+    path: str, max_length: Optional[int] = None, sanitizer: Optional[Callable[[str], str]] = None
+) -> str:
     """Check if path is unique.
     If not, add number like: "/path/name.NUM.ext".
-    With max_length, keep the number and extension inside the UTF-8 byte budget.
+    With max_length, allocate sanitizer-stable names within the UTF-8 byte budget.
     """
     num = 1
     new_path, filename = os.path.split(path)
     name, ext = os.path.splitext(filename)
+    sanitize = sanitizer or sanitize_filename
     while os.path.lexists(path):
         suffix = ".%d" % num
         if max_length is None:
             filename = name + suffix + ext
         else:
-            if len(suffix) > max_length:
-                raise OSError("Unique filename suffix exceeds byte budget")
-            short_ext = limit_encoded_length(ext, max_length - len(suffix))
-            short_name = limit_encoded_length(name, max_length - len(suffix) - len(utob(short_ext)))
-            filename = short_name + suffix + short_ext
+            # Truncating a stem can expose a reserved device name. Normalize before
+            # checking collisions, and leave room for any normalization expansion.
+            for budget in range(max_length, len(suffix) - 1, -1):
+                short_ext = limit_encoded_length(ext, budget - len(suffix))
+                short_name = limit_encoded_length(name, budget - len(suffix) - len(utob(short_ext)))
+                candidate = sanitize(short_name + suffix + short_ext)
+                if len(utob(candidate)) <= max_length and sanitize(candidate) == candidate:
+                    filename = candidate
+                    break
+            else:
+                raise OSError("Cannot allocate a stable unique filename within byte budget")
         num += 1
         path = os.path.join(new_path, filename)
     return path
@@ -1033,16 +1042,14 @@ def prepare_rename_path(old: str, new: str) -> str:
     path, name = os.path.split(new)
     has_surrogates = SURROGATE_RE.search(name)
     is_folder = os.path.isdir(old)
-    if is_folder:
-        name = sanitize_foldername(name)
-    else:
-        name = sanitize_filename(name)
+    sanitize = sanitize_foldername if is_folder else sanitize_filename
+    name = sanitize(name)
     new = os.path.join(path, name)
 
     # Preserve ordinary rename/overwrite semantics and no-op renames.
     if has_surrogates and old != new:
         max_length = sabnzbd.cfg.max_foldername_length() if is_folder else DEF_FILE_MAX
-        new = get_unique_filename(new, max_length=max_length)
+        new = get_unique_filename(new, max_length=max_length, sanitizer=sanitize)
     return new
 
 

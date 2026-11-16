@@ -184,6 +184,64 @@ class TestSurrogateRenameContracts:
                 filesystem.sanitize_filename(os.path.basename(file)) == os.path.basename(file) for file in sanitized
             )
 
+    @pytest.mark.platform("linux")
+    @pytest.mark.config({"overwrite_files": True, "sanitize_safe": True})
+    @pytest.mark.parametrize("device", ["CON", "PRN", "AUX", "COM1", "LPT1"])
+    @pytest.mark.parametrize("copy_fallback", [False, True])
+    @pytest.mark.parametrize("max_length", [32, DEF_FILE_MAX])
+    def test_reserved_device_collision_preserves_three_payloads(self, fake_fs, device, copy_fallback, max_length):
+        extension = "." + "a" * (max_length - len(device) - 3)
+        sources = [
+            "/download/" + device + "__" + extension,
+            "/download/_" + device + ".1." + "a" * 19,
+            "/download/" + device + "_\udc96" + extension,
+        ]
+        for source, contents in zip(sources, ["safe", "victim", "surrogate"]):
+            fake_fs.create_file(source, contents=contents)
+        fake_fs.create_dir("/complete")
+        with mock.patch.object(filesystem, "DEF_FILE_MAX", max_length):
+            sanitized = filesystem.sanitize_files(filelist=sources)
+            assert len(set(sanitized)) == 3
+            with (
+                mock.patch.object(filesystem.shutil, "move", side_effect=OSError("cross-device"))
+                if copy_fallback
+                else mock.patch.object(filesystem.shutil, "move", wraps=filesystem.shutil.move)
+            ):
+                destinations = []
+                for source in sanitized:
+                    ok, destination = filesystem.move_to_path(
+                        source, "/complete/" + os.path.basename(source), root="/complete"
+                    )
+                    assert ok
+                    destinations.append(destination)
+            assert len(set(destinations)) == 3
+            assert sorted(Path(file).read_text() for file in destinations) == ["safe", "surrogate", "victim"]
+            assert len(os.listdir("/complete")) == 3
+            for source in sanitized:
+                name = os.path.basename(source)
+                assert len(name.encode("utf-8")) <= max_length
+                assert filesystem.sanitize_filename(name) == name
+        assert os.listdir("/download") == []
+
+    @pytest.mark.platform("linux")
+    @pytest.mark.config({"sanitize_safe": True, "max_foldername_length": 32})
+    @pytest.mark.parametrize("folder", [False, True])
+    def test_budgeted_allocator_allows_for_sanitizer_expansion(self, fake_fs, folder):
+        original = "/download/CON__." + "a" * 14
+        if folder:
+            fake_fs.create_dir(original)
+        else:
+            fake_fs.create_file(original, contents="existing")
+        sanitize = filesystem.sanitize_foldername if folder else filesystem.sanitize_filename
+        allocated = filesystem.get_unique_filename(original, max_length=20, sanitizer=sanitize if folder else None)
+        name = os.path.basename(allocated)
+        assert len(name.encode("utf-8")) <= 20
+        assert sanitize(name) == name
+        assert not os.path.lexists(allocated)
+        assert os.path.lexists(original)
+        if not folder:
+            assert Path(original).read_text() == "existing"
+
     @pytest.mark.parametrize("max_length", [32, DEF_FILE_MAX])
     @pytest.mark.parametrize("character", ["x", "日"])
     @pytest.mark.parametrize("extension", [".txt", "." + "é" * 14])
