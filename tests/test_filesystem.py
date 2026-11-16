@@ -41,7 +41,7 @@ from tests.testhelper import SAB_DATA_DIR
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd import cfg
+from sabnzbd import cfg, sorting
 import sabnzbd.filesystem as filesystem
 from sabnzbd.constants import DEF_FOLDER_MAX, DEF_FILE_MAX, JOB_ADMIN, DEF_DOWNLOAD_DIR, DEF_COMPLETE_DIR
 
@@ -505,6 +505,29 @@ class TestSanitizeFiles:
 
 @pytest.mark.platform("linux")
 class TestSurrogateSanitizationCollisions:
+    @pytest.mark.parametrize("collision", [False, True])
+    def test_move_to_path_returns_sanitized_surrogate_destination(self, fake_fs, collision):
+        fake_fs.create_file("/download/original.txt", contents="new")
+        fake_fs.create_dir("/complete")
+        if collision:
+            fake_fs.create_file("/complete/weird_.txt", contents="existing")
+        expected = "/complete/weird_.1.txt" if collision else "/complete/weird_.txt"
+        assert filesystem.move_to_path("/download/original.txt", "/complete/weird\udc96.txt") == (True, expected)
+        assert Path(expected).read_text() == "new"
+        assert not os.path.exists("/download/original.txt")
+        if collision:
+            assert Path("/complete/weird_.txt").read_text() == "existing"
+
+    def test_sorting_tracks_sanitized_surrogate_destination(self, fake_fs):
+        source = "/complete/job/weird\udc96.txt"
+        fake_fs.create_file(source, contents="new")
+        fake_fs.create_file("/complete/weird_.txt", contents="existing")
+        destination, ok, files = sorting.move_to_parent_directory("/complete/job", [source])
+        assert (destination, ok, files) == ("/complete", True, ["/complete/weird_.1.txt"])
+        assert Path(files[0]).read_text() == "new"
+        assert Path("/complete/weird_.txt").read_text() == "existing"
+        assert not os.path.exists(source)
+
     @pytest.mark.parametrize("target_is_directory", [False, True])
     def test_sanitize_files_does_not_replace_existing_targets(self, fake_fs, target_is_directory):
         target = "/download/weird_.txt"

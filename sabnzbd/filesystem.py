@@ -957,8 +957,8 @@ def move_to_path(path: str, new_path: str, root: Optional[str] = None) -> tuple[
         if not os.path.exists(new_path_dir):
             create_all_dirs(os.path.dirname(new_path), apply_permissions=True)
         try:
-            # First try cheap rename
-            renamer(path, new_path)
+            # First try cheap rename, retaining any sanitized or unique destination
+            new_path = renamer(path, new_path)
         except Exception as err:
             # Cannot rename, try copying
             logging.debug("File could not be renamed (error: %s), trying copying: %s", err, path)
