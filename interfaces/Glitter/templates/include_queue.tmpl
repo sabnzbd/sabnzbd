@@ -110,7 +110,12 @@
                 <td class="name">
                     <div class="row-wrap-text" data-bind="visible: !editingName(), css: { 'direct-unpack-text': direct_unpack }">
                          <!-- ko foreach: labels -->
+                            <!-- ko if: \$parent.relatedIds().length && \$data === \$parent.relatedLabel() -->
+                            <a href="#" class="label label-warning" data-bind="text: \$data, click: \$parent.showRelatedJobs, clickBubble: false"></a>
+                            <!-- /ko -->
+                            <!-- ko ifnot: \$parent.relatedIds().length && \$data === \$parent.relatedLabel() -->
                             <span class="label label-warning" data-bind="text: \$data" ></span>
+                            <!-- /ko -->
                         <!-- /ko -->
                         <span data-bind="text: name, attr: { 'title': name_title }"></span>
                         <!-- ko if: password()  -->

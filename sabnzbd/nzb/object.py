@@ -201,6 +201,7 @@ NzbObjectSaver = (
     "bad_articles",
     "duplicate",
     "duplicate_key",
+    "duplicate_of",
     "oversized",
     "precheck",
     "incomplete",
@@ -339,6 +340,7 @@ class NzbObject(TryList):
 
         self.duplicate: Optional[str] = None
         self.duplicate_key: Optional[str] = None
+        self.duplicate_of: Optional[str] = None
 
         self.futuretype = futuretype
         self.removed_from_queue = False
@@ -1816,6 +1818,7 @@ class NzbObject(TryList):
         if repeat:
             self.duplicate = None
             self.duplicate_key = None
+            self.duplicate_of = None
 
         duplicate_in_history = smart_duplicate_in_history = False
         duplicate_in_queue = smart_duplicate_in_queue = False
@@ -1852,12 +1855,18 @@ class NzbObject(TryList):
         # Set the correct status
         if smart_duplicate_in_queue:
             self.duplicate = DuplicateStatus.SMART_DUPLICATE_ALTERNATIVE
+            self.duplicate_of = smart_duplicate_in_queue
         elif duplicate_in_queue:
             self.duplicate = DuplicateStatus.DUPLICATE_ALTERNATIVE
+            self.duplicate_of = duplicate_in_queue
         elif smart_duplicate_in_history:
             self.duplicate = DuplicateStatus.SMART_DUPLICATE
+            self.duplicate_of = smart_duplicate_in_history
         elif duplicate_in_history:
             self.duplicate = DuplicateStatus.DUPLICATE
+            # A backup-only match has no job identity to link to.
+            if isinstance(duplicate_in_history, str):
+                self.duplicate_of = duplicate_in_history
 
     def handle_duplicate_action(self):
         """Handle duplicate detection action"""

@@ -1800,6 +1800,7 @@ def build_queue(
     n = start
     running_bytes = bytes_left_previous_page
     slotinfo = []
+    duplicate_groups = sabnzbd.NzbQueue.get_duplicate_groups()
     for nzo in nzo_list:
         mbleft = nzo.remaining / MEBI
         mb = nzo.bytes / MEBI
@@ -1812,6 +1813,10 @@ def build_queue(
         slot["script"] = nzo.script if nzo.script else "None"
         slot["filename"] = nzo.final_name
         slot["labels"] = nzo.labels
+        slot["duplicate_info"] = {
+            "nzo_ids": duplicate_groups.get(nzo.duplicate_of, []),
+            "label": next((label for label in nzo.labels if label in (T("ALTERNATIVE"), T("DUPLICATE"))), ""),
+        }
         slot["password"] = nzo.password if nzo.password else ""
         slot["cat"] = nzo.cat if nzo.cat else "None"
         slot["mbleft"] = "%.2f" % mbleft

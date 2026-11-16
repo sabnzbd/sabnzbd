@@ -518,36 +518,34 @@ class HistoryDB:
                     jobs.append({"nzo_id": item["nzo_id"], "path": item["path"]})
         return jobs
 
-    def have_duplicate_key(self, duplicate_key: str) -> bool:
+    def have_duplicate_key(self, duplicate_key: str) -> Optional[str]:
         """Check whether History contains this duplicate key"""
         if self.execute(
             """
-            SELECT EXISTS(
-                SELECT 1
-                FROM history
-                WHERE duplicate_key = ? AND status != ?
-            ) as found
+            SELECT nzo_id FROM history
+            WHERE duplicate_key = ? AND status != ?
+            LIMIT 1
             """,
             (duplicate_key, Status.FAILED),
         ):
-            return bool(self.cursor.fetchone()["found"])
-        return False
+            if row := self.cursor.fetchone():
+                return row["nzo_id"]
+        return None
 
-    def have_name_or_md5sum(self, name: str, md5sum: str) -> bool:
+    def have_name_or_md5sum(self, name: str, md5sum: str) -> Optional[str]:
         """Check whether this name or md5sum is already in History"""
         if self.execute(
             """
-            SELECT EXISTS(
-                SELECT 1
-                FROM history
-                WHERE (name = ? COLLATE NOCASE OR md5sum = ?)
-                  AND status != ?
-            ) as found
+            SELECT nzo_id FROM history
+            WHERE (name = ? COLLATE NOCASE OR md5sum = ?)
+              AND status != ?
+            LIMIT 1
             """,
             (name, md5sum, Status.FAILED),
         ):
-            return bool(self.cursor.fetchone()["found"])
-        return False
+            if row := self.cursor.fetchone():
+                return row["nzo_id"]
+        return None
 
     def get_history_size(self) -> tuple[int, int, int]:
         """Returns the total size of the history and

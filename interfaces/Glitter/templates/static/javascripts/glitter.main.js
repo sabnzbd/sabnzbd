@@ -339,7 +339,7 @@ function ViewModel() {
             limit: parseInt(self.queue.paginationLimit())
         }
         if (self.queue.searchTerm()) {
-            parseSearchQuery(api_call, self.queue.searchTerm(), ["cat", "category", "priority", "status"])
+            parseSearchQuery(api_call, self.queue.searchTerm(), ["cat", "category", "priority", "status", "id"])
         }
         var queueApi = callAPI(api_call)
             .done(self.updateQueue)
@@ -369,7 +369,7 @@ function ViewModel() {
             last_history_update: self.history.lastUpdate
         }
         if (self.history.searchTerm()) {
-            parseSearchQuery(history_call, self.history.searchTerm(), ["cat", "category", "status"])
+            parseSearchQuery(history_call, self.history.searchTerm(), ["cat", "category", "status", "id"])
         }
 
         // History
@@ -390,10 +390,11 @@ function ViewModel() {
         var parsed_query = search_query_parse(search, { keywords: keywords })
         api_request["search"] = parsed_query.text
         for (const keyword of keywords) {
+            var parameter = keyword === "id" ? "nzo_ids" : keyword;
             if (Array.isArray(parsed_query[keyword])) {
-                api_request[keyword] = parsed_query[keyword].join(",")
+                api_request[parameter] = parsed_query[keyword].join(",")
             } else {
-                api_request[keyword] = parsed_query[keyword]
+                api_request[parameter] = parsed_query[keyword]
             }
             // Special case for priority, dirty replace of string by numeric value
             if (keyword === "priority" && api_request["priority"]) {
@@ -402,6 +403,21 @@ function ViewModel() {
                 }
             }
         }
+    }
+
+    // Use the existing search/reset/pagination path for both lists. Stay on the
+    // current tab so alternatives remain visible in tabbed mode.
+    self.showRelatedJobs = function(ids) {
+        var query = ids.filter(function(id) {
+            return typeof id === 'string' && /^[A-Za-z0-9_-]+$/.test(id);
+        }).map(function(id) { return 'id:' + id; }).join(' ');
+        if (!query) return;
+        self.history.showFailed(false);
+        self.history.showArchive(false);
+        self.queue.searchTerm(query);
+        self.history.searchTerm(query);
+        self.queue.pagination.moveToPage(1);
+        self.history.pagination.moveToPage(1);
     }
 
     // Set pause action on click of toggle
