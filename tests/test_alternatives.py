@@ -518,6 +518,60 @@ def test_precheck_failure_does_not_checkpoint_replacement(precheck_env, monkeypa
         assert not os.path.exists(old.admin_data_file_path)
 
 
+@pytest.mark.parametrize("dispatch", ["end_job", "send_back"])
+@pytest.mark.config(
+    {
+        "pre_check": 1,
+        "no_dupes": 0,
+        "no_smart_dupes": 0,
+        "action_on_unwanted_extensions": 0,
+        "unwanted_extensions": "rar",
+        "unwanted_extensions_mode": 0,
+    }
+)
+def test_precheck_history_only_result_does_not_checkpoint_replacement(precheck_env, monkeypatch, dispatch):
+    import sabnzbd.nzbqueue as queue_module
+    from sabnzbd.constants import AddNzbFileResult
+
+    queue, postproc, _ = precheck_env
+    old = precheck_job(queue, "policy-changed-during-precheck")
+    old.duplicate_of = "recorded-R"
+    rejected = []
+    postproc.process = lambda nzo: rejected.append(nzo)
+    # Reuse reruns constructor policy after availability pre-check succeeds.
+    cfg.action_on_unwanted_extensions.set(2)
+    real_parser = queue_module.process_single_nzb
+    returns = []
+
+    def observe_parser(*args, **kwargs):
+        result = real_parser(*args, **kwargs)
+        returns.append(result)
+        return result
+
+    saves = []
+    real_save = queue.save
+
+    def observe_save(*args, **kwargs):
+        saves.append(args)
+        return real_save(*args, **kwargs)
+
+    monkeypatch.setattr(queue_module, "process_single_nzb", observe_parser)
+    monkeypatch.setattr(queue, "save", observe_save)
+    error = None
+    try:
+        getattr(queue, dispatch)(old)
+    except ValueError as exc:
+        error = exc
+    assert returns == [(AddNzbFileResult.OK, [old.nzo_id])]
+    assert queue.get_nzo(old.nzo_id) is None
+    assert len(rejected) == 1 and rejected[0].nzo_id == old.nzo_id
+    assert rejected[0].fail_msg == "Aborted, unwanted extension detected"
+    # Removing the old job can checkpoint the manifest, but there is no queued
+    # replacement whose state should be saved or whose position can be restored.
+    assert all(args == (False,) for args in saves)
+    assert error is None, "A history-only OK result is not a queued replacement"
+
+
 @pytest.mark.parametrize("route", ["sqlite", "api"])
 def test_automatic_1001_id_history_filter(related_env, route):
     queue, _, pool = related_env

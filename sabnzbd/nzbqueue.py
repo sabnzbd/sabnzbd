@@ -241,6 +241,9 @@ class NzbQueue:
         if res == AddNzbFileResult.OK and nzo_ids:
             # Swap to old position
             new_nzo = self.get_nzo(nzo_ids[0])
+            # An accepted parse can send a rejected job directly to history.
+            if new_nzo is None:
+                return
             self.__nzo_list.remove(new_nzo)
             self.__nzo_list.insert(old_position, new_nzo)
             # Reset reuse flag to make pause/abort on encryption possible
