@@ -1051,7 +1051,6 @@ def config_special_save(request: Request):
 GENERAL_LIST = (
     "host",
     "port",
-    "username",
     "language",
     "cache_limit",
     "inet_exposure",
@@ -1081,6 +1080,7 @@ def index_config_general(request: Request):
     for kw in GENERAL_LIST:
         conf[kw] = config.get_config("misc", kw)()
 
+    conf["username"] = cfg.username()
     conf["password"] = cfg.password.get_stars()
     conf["nzb_key"] = cfg.nzb_key()
     conf["apikey"] = cfg.api_key()
@@ -1100,7 +1100,8 @@ def config_general_save(request: Request):
         if msg := config.get_config("misc", kw).set(request_params(request).get(kw)):
             return report(request_params(request), error=msg)
 
-    # Handle special options
+    # Only change credentials once every general option has been accepted
+    cfg.username.set(request_params(request).get("username"))
     cfg.password.set(request_params(request).get("password"))
 
     config.save_config()

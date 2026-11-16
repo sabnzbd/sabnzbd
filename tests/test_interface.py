@@ -20,6 +20,7 @@ tests.test_interface - Testing functions in interface.py
 """
 
 import inspect
+import json
 import logging
 import logging.config
 import os
@@ -957,6 +958,56 @@ class TestRenderedToken:
         rendered = self._rendered(None)
         request = page_post(None, csrf=rendered)
         assert config_save_middleware().denied_response(request) is None
+
+
+@pytest.mark.config({"username": "user", "password": "pass", "inet_exposure": 0})
+class TestGeneralConfigSave:
+    @pytest.fixture
+    def general_params(self, monkeypatch):
+        monkeypatch.setattr(sabnzbd, "DIR_INTERFACES", os.path.join(os.path.dirname(__file__), "..", "interfaces"))
+        params = {kw: interface.config.get_config("misc", kw)() for kw in interface.GENERAL_LIST}
+        params.update(username=cfg.username(), password=cfg.password.get_stars())
+        return params
+
+    @pytest.mark.parametrize("change_password", [False, True])
+    def test_failed_save_preserves_credentials_and_session(self, session_store, general_params, change_password):
+        store_session(session_store, "login-token")
+        general_params.update(username="new-user", web_color="nonexistent-color-scheme")
+        if change_password:
+            general_params["password"] = "new-pass"
+        request = mock_request("login-token", params=general_params, method="POST")
+        with patch.object(interface.config, "save_config") as save_config:
+            result = json.loads(interface.config_general_save(request).body)
+        assert result["status"] is False
+        assert result["error"] == "Unknown color scheme"
+        save_config.assert_not_called()
+        assert cfg.username() == "user"
+        assert cfg.password() == "pass"
+        assert security.validate_session(mock_request("login-token"))
+
+    @pytest.mark.parametrize("changed", ["username", "password", "both", "neither"])
+    def test_successful_save_handles_credential_changes(self, session_store, general_params, changed):
+        store_session(session_store, "login-token")
+        if changed in ("username", "both"):
+            general_params["username"] = "new-user"
+        if changed in ("password", "both"):
+            general_params["password"] = "new-pass"
+        request = mock_request("login-token", params=general_params, method="POST")
+        with patch.object(interface.config, "save_config") as save_config:
+            result = json.loads(interface.config_general_save(request).body)["value"]
+        save_config.assert_called_once_with()
+        assert result["success"] is True
+        assert result["login_req"] is (changed != "neither")
+        assert cfg.username() == ("new-user" if changed in ("username", "both") else "user")
+        assert cfg.password() == ("new-pass" if changed in ("password", "both") else "pass")
+        assert security.validate_session(mock_request("login-token")) is (changed == "neither")
+
+    def test_general_form_keeps_username(self, monkeypatch, general_params):
+        monkeypatch.setattr(interface, "build_header", lambda *args, **kwargs: {})
+        monkeypatch.setattr(sabnzbd, "WEB_DIR_CONFIG", os.path.join(sabnzbd.DIR_INTERFACES, "Config", "templates"))
+        with patch.object(interface, "template_filtered_response") as render:
+            interface.index_config_general(mock_request())
+        assert render.call_args.kwargs["search_list"]["username"] == "user"
 
 
 class TestThreadedServerHttpSockets:
