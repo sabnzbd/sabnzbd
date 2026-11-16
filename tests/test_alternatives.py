@@ -13,7 +13,7 @@ from sabnzbd.nzb import NzbObject
 from sabnzbd.nzb.object import NzbRejected, NzbRejectToHistory
 from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.postproc import PostProcessor
-from tests.testhelper import make_mock_nzo
+from tests.testhelper import create_and_read_nzb_fp, make_mock_nzo
 
 
 @pytest.fixture
@@ -375,6 +375,147 @@ def test_promoted_family_queue_and_postproc_checkpoints(related_env, tmp_path, m
     successor._NzbQueue__nzo_list.append(fresh)
     assert fresh.duplicate_of == "A"
     assert successor.get_duplicate_groups() == {"A": ["A", "C", "B", "P"]}
+
+
+@pytest.fixture
+def precheck_env(related_env, tmp_path, monkeypatch):
+    from sabnzbd.articlecache import ArticleCache
+
+    monkeypatch.setattr(cfg.download_dir, "get_path", lambda: str(tmp_path / "incomplete"))
+    monkeypatch.setattr(cfg.admin_dir, "get_path", lambda: str(tmp_path / "admin"))
+    os.makedirs(cfg.admin_dir.get_path())
+    monkeypatch.setattr(sabnzbd, "Downloader", SimpleNamespace(servers=[]), raising=False)
+    monkeypatch.setattr(sabnzbd, "Scheduler", SimpleNamespace(analyse=lambda *args: False), raising=False)
+    monkeypatch.setattr(sabnzbd, "ArticleCache", ArticleCache(), raising=False)
+    monkeypatch.setattr(sabnzbd, "Assembler", SimpleNamespace(clear_ready_bytes=lambda *args: None), raising=False)
+    return related_env
+
+
+def precheck_job(queue, name):
+    with create_and_read_nzb_fp("basic_rar5") as nzb:
+        nzo = NzbObject("test.nzb", nzb_fp=nzb, nzbname=name)
+    queue.add(nzo, quiet=True)
+    return nzo
+
+
+@pytest.mark.parametrize("smart", [False, True])
+@pytest.mark.parametrize("checkpoint", [False, True])
+@pytest.mark.config(
+    lambda params: {
+        "pre_check": 1,
+        "no_dupes": 0 if params["smart"] else 2,
+        "no_smart_dupes": 2 if params["smart"] else 0,
+    }
+)
+def test_precheck_replacement_preserves_promoted_family(precheck_env, smart, checkpoint):
+    queue, postproc, pool = precheck_env
+    original, winner, peer = [precheck_job(queue, "Show.S01E01") for _ in range(3)]
+    # Smart matching is derived from the real parsed name; simple from NZB MD5.
+    assert winner.duplicate_of == peer.duplicate_of == original.nzo_id
+    queue.remove(original.nzo_id, cleanup=False, delete_all_data=False)
+    queue.handle_duplicate_alternatives(original, success=False)
+    assert winner.duplicate is None and winner.duplicate_of == original.nzo_id
+    assert winner.precheck
+    old_id = winner.nzo_id
+    # Exercise end_job -> send_back -> process_single_nzb -> NzbObject(reuse),
+    # not a fabricated replacement or a pickle-only round trip.
+    queue.end_job(winner)
+    replacement = queue.get_nzo(old_id)
+    assert replacement is not winner
+    assert replacement.nzo_id == old_id
+    assert not replacement.precheck
+    assert replacement.duplicate is None
+    if checkpoint:
+        # No extra save here: send_back must checkpoint before returning.
+        replacement = sabnzbd.filesystem.load_data(
+            os.path.basename(replacement.admin_data_file_path), replacement.admin_path, remove=False
+        )
+    assert replacement.duplicate_of == original.nzo_id
+    assert replacement.reuse is None
+    queue.remove(old_id, cleanup=False, delete_all_data=False)
+    replacement.removed_from_queue = True
+    postproc.history_queue = [replacement]
+    queue.handle_duplicate_alternatives(replacement, success=True)
+    assert replacement.duplicate_of is None  # Completed A must not retain R.
+    assert peer.duplicate_of == old_id
+    assert peer.duplicate == (DuplicateStatus.SMART_DUPLICATE if smart else DuplicateStatus.DUPLICATE)
+    with pool.connection() as db:
+        replacement.status = Status.COMPLETED
+        db.add_history_db(replacement, "", 0, "", "")
+    postproc.history_queue = []
+    fresh = job("B", final_name=replacement.final_name)
+    fresh.md5sum = replacement.md5sum
+    fresh.duplicate_key = replacement.duplicate_key
+    NzbObject.duplicate_check(fresh)
+    assert fresh.duplicate_of == old_id
+    assert queue.get_duplicate_groups() == {old_id: [old_id, peer.nzo_id]}
+
+
+@pytest.mark.parametrize("anchor", [None, "legacy"])
+@pytest.mark.config({"pre_check": 1})
+def test_precheck_replacement_without_recorded_anchor(precheck_env, anchor):
+    queue, _, _ = precheck_env
+    old = precheck_job(queue, "ordinary")
+    if anchor == "legacy":
+        state = old.__getstate__()
+        del state["duplicate_of"]
+        old.__setstate__(state)
+    assert old.duplicate_of is None
+    queue.end_job(old)
+    replacement = queue.get_nzo(old.nzo_id)
+    assert replacement is not old and not replacement.precheck
+    assert replacement.duplicate_of is None
+    restored = sabnzbd.filesystem.load_data(
+        os.path.basename(replacement.admin_data_file_path), replacement.admin_path, remove=False
+    )
+    assert restored.duplicate_of is None
+    assert restored.reuse is None
+
+
+@pytest.mark.parametrize("failure", ["precheck", "missing_nzb", "parse"])
+@pytest.mark.config({"pre_check": 1})
+def test_precheck_failure_does_not_checkpoint_replacement(precheck_env, monkeypatch, caplog, failure):
+    queue, _, _ = precheck_env
+    old = precheck_job(queue, "failed")
+    old.duplicate_of = "R"
+    assembled = []
+    monkeypatch.setattr(
+        sabnzbd,
+        "Assembler",
+        SimpleNamespace(process=lambda nzo: assembled.append(nzo), clear_ready_bytes=lambda *args: None),
+        raising=False,
+    )
+    saves = []
+    save = queue.save
+
+    def observe_save(*args, **kwargs):
+        saves.append(args)
+        return save(*args, **kwargs)
+
+    monkeypatch.setattr(queue, "save", observe_save)
+    if failure == "precheck":
+        old.fail_msg = "Not enough articles"
+        queue.end_job(old)
+        assert assembled == [old]
+    else:
+        from sabnzbd.filesystem import globber_full
+
+        for path in globber_full(old.admin_path, "*.gz"):
+            if failure == "missing_nzb":
+                os.remove(path)
+            else:
+                with open(path, "wb") as nzb:
+                    nzb.write(b"not an NZB")
+        queue.send_back(old)
+        assert assembled == []
+    assert queue.get_nzo(old.nzo_id) is (None if failure == "parse" else old)
+    assert old.duplicate_of == "R"
+    # Failed parsing can remove the old entry and save its path-only manifest.
+    assert all(args == (False,) for args in saves)
+    assert "Error while adding" not in caplog.text
+    if failure == "parse":
+        assert "Invalid NZB file" in caplog.text
+        assert not os.path.exists(old.admin_data_file_path)
 
 
 @pytest.mark.parametrize("route", ["sqlite", "api"])

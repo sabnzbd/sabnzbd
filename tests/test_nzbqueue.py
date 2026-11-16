@@ -40,6 +40,7 @@ from sabnzbd.constants import (
     HIGH_PRIORITY,
     FORCE_PRIORITY,
     REPAIR_PRIORITY,
+    AddNzbFileResult,
 )
 from sabnzbd.database import HistoryDB
 from sabnzbd.downloader import Server
@@ -612,7 +613,7 @@ class TestNzbQueue:
             replacement = make_dummy_nzo("new", priority=NORMAL_PRIORITY)
             replacement.nzo_id = kwargs["nzo_id"]
             queue.add(replacement, save=False, quiet=True)
-            return 0, [replacement.nzo_id]
+            return AddNzbFileResult.OK, [replacement.nzo_id]
 
         monkeypatch.setattr("sabnzbd.nzbqueue.process_single_nzb", fake_process_single_nzb)
         queue.send_back(old)

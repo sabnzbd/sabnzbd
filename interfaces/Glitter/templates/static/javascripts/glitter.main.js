@@ -405,19 +405,25 @@ function ViewModel() {
         }
     }
 
-    // Use the existing search/reset/pagination path for both lists. Stay on the
-    // current tab so alternatives remain visible in tabbed mode.
+    // Stay on the current tab so alternatives remain visible in tabbed mode.
     self.showRelatedJobs = function(ids) {
         var query = ids.filter(function(id) {
             return typeof id === 'string' && /^[A-Za-z0-9_-]+$/.test(id);
         }).map(function(id) { return 'id:' + id; }).join(' ');
         if (!query) return;
+        // Reset both lists before any refresh can observe a partial view.
+        // moveToPage refreshes immediately, including the other list's offset.
+        self.queue.pagination.currentPage(1);
+        self.queue.pagination.currentStart(0);
+        self.history.pagination.currentPage(1);
+        self.history.pagination.currentStart(0);
         self.history.showFailed(false);
         self.history.showArchive(false);
         self.queue.searchTerm(query);
         self.history.searchTerm(query);
-        self.queue.pagination.moveToPage(1);
-        self.history.pagination.moveToPage(1);
+        self.queue.pagination.updatePages();
+        self.history.pagination.updatePages();
+        self.refresh(true);
     }
 
     // Set pause action on click of toggle

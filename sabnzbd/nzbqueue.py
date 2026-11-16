@@ -57,6 +57,7 @@ from sabnzbd.constants import (
     IGNORED_FILES_AND_FOLDERS,
     DuplicateStatus,
     NZO_FILE,
+    AddNzbFileResult,
 )
 
 import sabnzbd.cfg as cfg
@@ -233,16 +234,21 @@ class NzbQueue:
 
         # Store old position and create new NZO
         old_position = self.__nzo_list.index(old_nzo)
+        duplicate_of = old_nzo.duplicate_of
         res, nzo_ids = process_single_nzb(
             old_nzo.filename, nzb_path, keep=True, reuse=old_nzo.download_path, nzo_id=old_nzo.nzo_id
         )
-        if res == 0 and nzo_ids:
+        if res == AddNzbFileResult.OK and nzo_ids:
             # Swap to old position
             new_nzo = self.get_nzo(nzo_ids[0])
             self.__nzo_list.remove(new_nzo)
             self.__nzo_list.insert(old_position, new_nzo)
             # Reset reuse flag to make pause/abort on encryption possible
-            self.__nzo_table[nzo_ids[0]].reuse = None
+            new_nzo.reuse = None
+            # Reuse skips duplicate detection. Keep a promoted job's family
+            # anchor and checkpoint the replacement before releasing the lock.
+            new_nzo.duplicate_of = duplicate_of
+            self.save(new_nzo)
 
     @NzbQueueLocker
     def save(self, save_nzo: NzbObject | list[NzbObject] | bool | None = None):
