@@ -5,13 +5,11 @@ apprise==2.1.0
 sabctools==10.0.0
 CT3==3.4.0.post5
 cffi==2.1.1
-pycparser # Version-less for Python 3.10
-pycparser==3.12; python_version > '3.10'
+pycparser==3.12
 feedparser==6.0.14
 configobj==5.0.9
 six==1.17.0
-more-itertools # Version-less for Python 3.10
-more-itertools==11.2.1; python_version > '3.10'
+more-itertools==11.2.1
 python-dateutil==4.0.0
 feedparser-sgmllib==2.1.0
 PySocks==1.7.1
@@ -24,8 +22,7 @@ rebulk==6.0.1
 hachoir==3.4.0
 
 # starlette/uvicorn
-starlette # Version-less for Python 3.10
-starlette==1.10.0; python_version > '3.10'
+starlette==1.10.0
 itsdangerous==2.2.0
 anyio==4.16.0
 typing_extensions==4.16.0
@@ -66,8 +63,7 @@ notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 requests==2.34.2
 requests-oauthlib==2.0.0
 PyYAML==6.0.3
-markdown # Version-less for Python 3.10
-markdown==3.11.2; python_version > '3.10'
+markdown==3.11.2
 paho-mqtt==2.1.0
 
 # Requests Requirements

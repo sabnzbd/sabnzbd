@@ -60,6 +60,11 @@ jobs:
     - name: Install system dependencies
       if: runner.os == 'Linux'
       run: sudo apt-get install unrar 7zip
+    - name: Relax exact version pins on Python 3.10
+      # Untill 5.3 we need to support 3.10, hacky for now
+      # sabctools is excluded: its exact pin is checked against SABCTOOLS_VERSION_REQUIRED by a test.
+      if: matrix.python-version == '3.10'
+      run: sed -i -E "/^sabctools==/! s/^([A-Za-z0-9_.!-]+)==/\1<=/" requirements.txt
     - name: Install Python dependencies
       run: |
         python --version
