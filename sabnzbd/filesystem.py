@@ -899,15 +899,24 @@ def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> str | bool
 
 
 @synchronized(UNIQUE_PATH_LOCK)
-def get_unique_filename(path: str) -> str:
+def get_unique_filename(path: str, max_length: Optional[int] = None) -> str:
     """Check if path is unique.
     If not, add number like: "/path/name.NUM.ext".
+    With max_length, keep the number and extension inside the UTF-8 byte budget.
     """
     num = 1
     new_path, filename = os.path.split(path)
     name, ext = os.path.splitext(filename)
     while os.path.lexists(path):
-        filename = "%s.%d%s" % (name, num, ext)
+        suffix = ".%d" % num
+        if max_length is None:
+            filename = name + suffix + ext
+        else:
+            if len(suffix) > max_length:
+                raise OSError("Unique filename suffix exceeds byte budget")
+            short_ext = limit_encoded_length(ext, max_length - len(suffix))
+            short_name = limit_encoded_length(name, max_length - len(suffix) - len(utob(short_ext)))
+            filename = short_name + suffix + short_ext
         num += 1
         path = os.path.join(new_path, filename)
     return path
@@ -938,7 +947,7 @@ def move_to_path(path: str, new_path: str, root: Optional[str] = None) -> tuple[
     new_path = prepare_rename_path(path, os.path.abspath(new_path))
     new_path_dir = os.path.dirname(new_path)
     if not overwrite:
-        new_path = get_unique_filename(new_path)
+        new_path = get_unique_filename(new_path, max_length=DEF_FILE_MAX)
 
     # Check before deleting anything, a link can redirect the removal outside root
     if root and points_outside(root, new_path):
@@ -952,7 +961,7 @@ def move_to_path(path: str, new_path: str, root: Optional[str] = None) -> tuple[
         except Exception:
             # Same checked directory, and the unique name is never a link
             overwrite = False
-            new_path = get_unique_filename(new_path)
+            new_path = get_unique_filename(new_path, max_length=DEF_FILE_MAX)
 
     if new_path:
         logging.debug("Moving (overwrite: %s) %s => %s", overwrite, path, new_path)
@@ -1023,7 +1032,8 @@ def prepare_rename_path(old: str, new: str) -> str:
     """Sanitize the destination, avoiding collisions introduced by surrogate replacement."""
     path, name = os.path.split(new)
     has_surrogates = SURROGATE_RE.search(name)
-    if os.path.isdir(old):
+    is_folder = os.path.isdir(old)
+    if is_folder:
         name = sanitize_foldername(name)
     else:
         name = sanitize_filename(name)
@@ -1031,7 +1041,8 @@ def prepare_rename_path(old: str, new: str) -> str:
 
     # Preserve ordinary rename/overwrite semantics and no-op renames.
     if has_surrogates and old != new:
-        new = get_unique_filename(new)
+        max_length = sabnzbd.cfg.max_foldername_length() if is_folder else DEF_FILE_MAX
+        new = get_unique_filename(new, max_length=max_length)
     return new
 
 

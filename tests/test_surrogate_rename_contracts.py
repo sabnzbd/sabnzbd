@@ -11,7 +11,7 @@ import pytest
 
 import sabnzbd
 from sabnzbd import deobfuscate_filenames, filesystem, newsunpack, postproc
-from sabnzbd.constants import DEF_FOLDER_MAX
+from sabnzbd.constants import DEF_FILE_MAX, DEF_FOLDER_MAX
 from sabnzbd.nzb import NzbObject
 from sabnzbd.par2file import FilePar2Info
 from tests.testhelper import FakeHistoryDB, make_mock_nzo
@@ -145,6 +145,66 @@ class TestSurrogateRenameContracts:
         if not overwrite:
             assert Path("/complete/file.txt").read_text() == "existing"
 
+    @pytest.mark.parametrize("max_length", [32, DEF_FILE_MAX])
+    @pytest.mark.parametrize("multibyte", [False, True])
+    @pytest.mark.parametrize("copy_fallback", [False, True])
+    @pytest.mark.parametrize("reverse_order", [False, True])
+    @pytest.mark.config({"overwrite_files": True})
+    def test_sanitize_then_move_preserves_long_surrogate_collision(
+        self, fake_fs, max_length, multibyte, copy_fallback, reverse_order
+    ):
+        prefix = "日" * ((max_length - 5) // 3) + "x" * ((max_length - 5) % 3) if multibyte else "x" * (max_length - 5)
+        sources = ["/download/" + prefix + "_.txt", "/download/" + prefix + "\udc96.txt"]
+        for file, contents in zip(sources, ["safe", "surrogate"]):
+            fake_fs.create_file(file, contents=contents)
+        fake_fs.create_dir("/complete")
+        with mock.patch.object(filesystem, "DEF_FILE_MAX", max_length):
+            sanitized = filesystem.sanitize_files(filelist=sources)
+            assert len(set(sanitized)) == 2
+            moves = reversed(sanitized) if reverse_order else sanitized
+            with (
+                mock.patch.object(filesystem.shutil, "move", side_effect=OSError("cross-device"))
+                if copy_fallback
+                else mock.patch.object(filesystem.shutil, "move", wraps=filesystem.shutil.move)
+            ):
+                destinations = []
+                for source in moves:
+                    ok, destination = filesystem.move_to_path(
+                        source, "/complete/" + os.path.basename(source), root="/complete"
+                    )
+                    assert ok
+                    destinations.append(destination)
+        assert len(set(destinations)) == 2
+        assert sorted(Path(file).read_text() for file in destinations) == ["safe", "surrogate"]
+        assert len(os.listdir("/complete")) == 2
+        assert os.listdir("/download") == []
+        assert all(len(os.path.basename(file).encode("utf-8")) <= max_length for file in sanitized)
+        with mock.patch.object(filesystem, "DEF_FILE_MAX", max_length):
+            assert all(
+                filesystem.sanitize_filename(os.path.basename(file)) == os.path.basename(file) for file in sanitized
+            )
+
+    @pytest.mark.parametrize("max_length", [32, DEF_FILE_MAX])
+    @pytest.mark.parametrize("character", ["x", "日"])
+    @pytest.mark.parametrize("extension", [".txt", "." + "é" * 14])
+    def test_budgeted_collision_names_remain_stable(self, fake_fs, max_length, character, extension):
+        budget = max_length - len(extension.encode("utf-8"))
+        width = len(character.encode("utf-8"))
+        name = character * (budget // width) + "x" * (budget % width) + extension
+        original = "/download/" + name
+        fake_fs.create_file(original, contents="existing")
+        allocated = []
+        for index in range(12):
+            candidate = filesystem.get_unique_filename(original, max_length=max_length)
+            assert candidate not in allocated
+            assert len(os.path.basename(candidate).encode("utf-8")) <= max_length
+            with mock.patch.object(filesystem, "DEF_FILE_MAX", max_length):
+                assert filesystem.sanitize_filename(os.path.basename(candidate)) == os.path.basename(candidate)
+            fake_fs.create_file(candidate, contents=str(index))
+            allocated.append(candidate)
+        assert [Path(file).read_text() for file in allocated] == [str(index) for index in range(12)]
+        assert Path(original).read_text() == "existing"
+
     @pytest.mark.parametrize("copy_fallback", [False, True])
     def test_prepared_surrogate_collision_suffix_is_not_sanitized_again(self, fake_fs, copy_fallback):
         source = "/download/original.txt"
@@ -152,7 +212,7 @@ class TestSurrogateRenameContracts:
         existing = "/complete/" + "x" * 27 + "_.txt"
         requested = "/complete/" + "x" * 27 + "\udc96.txt"
         fake_fs.create_file(existing, contents="existing")
-        expected = "/complete/" + "x" * 27 + "_.1.txt"
+        expected = "/complete/" + "x" * 26 + ".1.txt"
         with (
             mock.patch.object(filesystem, "DEF_FILE_MAX", 32),
             (
