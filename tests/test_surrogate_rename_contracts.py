@@ -269,7 +269,7 @@ class TestSurrogateRenameContracts:
         assert "Cannot inspect or repair history path" in caplog.text
 
     @pytest.mark.parametrize("collapse", [False, True])
-    def test_collapse_returns_actual_folder_and_files(self, fake_fs, collapse):
+    def test_collapse_returns_actual_folder_and_files(self, fake_fs, collapse, caplog):
         source = "/complete/_UNPACK_job" + ("/child" if collapse else "")
         fake_fs.create_file(source + "/one.txt", contents="one")
         fake_fs.create_file(source + "/two.txt", contents="two")
@@ -282,6 +282,8 @@ class TestSurrogateRenameContracts:
         assert [Path(file).read_text() for file in files] == ["one", "two"]
         assert Path("/complete/job_/keep").read_text() == "existing"
         assert not os.path.exists("/complete/_UNPACK_job")
+        # Parallel pytest workers must be able to serialize captured log text.
+        caplog.text.encode("utf-8")
 
     @pytest.mark.parametrize("nested", [False, True])
     @pytest.mark.parametrize("error", [OSError("read-only"), UnicodeEncodeError("utf-8", "\ud800", 0, 1, "surrogate")])

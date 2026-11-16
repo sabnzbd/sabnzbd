@@ -1417,7 +1417,7 @@ def rename_and_collapse_folder(oldpath: str, newpath: str, files: list[str]) -> 
         folder = items[0]
         folder_path = os.path.join(oldpath, folder)
         if os.path.isdir(folder_path) and folder.lower() not in IGNORED_MOVIE_FOLDERS:
-            logging.info("Collapsing %s", os.path.join(newpath, folder))
+            logging.info("Collapsing %r", os.path.join(newpath, folder))
             oldpath = folder_path
 
     oldpath = os.path.normpath(oldpath)
