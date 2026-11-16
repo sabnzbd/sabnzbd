@@ -553,6 +553,11 @@ function QueueModel(parent, data) {
     self.index = ko.observable(data.index);
     self.status = ko.observable(data.status);
     self.labels = ko.observableArray(data.labels);
+    self.relatedIds = ko.observableArray(data.duplicate_info ? data.duplicate_info.nzo_ids : []);
+    self.relatedLabel = ko.observable(data.duplicate_info ? data.duplicate_info.label : '');
+    self.showRelatedJobs = function() {
+        parent.parent.showRelatedJobs(self.relatedIds());
+    }
     self.isGrabbing = ko.observable(data.status === 'Grabbing' || !parseFloat(data.mb)) // mb===0 catches paused URL-grab jobs (status 'Paused'), needed to block show-files
     self.isFetchingBlocks = data.status === 'Fetching' || data.priority === 'Repair' // No need to update
     self.totalMB = ko.observable(parseFloat(data.mb));
@@ -694,6 +699,8 @@ function QueueModel(parent, data) {
             self.labels(data.labels);
             self.rawLabels = data.labels.toString();
         }
+        self.relatedIds(data.duplicate_info ? data.duplicate_info.nzo_ids : []);
+        self.relatedLabel(data.duplicate_info ? data.duplicate_info.label : '');
     };
 
     // Pause individual download

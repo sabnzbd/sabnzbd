@@ -57,6 +57,7 @@ from sabnzbd.constants import (
     IGNORED_FILES_AND_FOLDERS,
     DuplicateStatus,
     NZO_FILE,
+    AddNzbFileResult,
 )
 
 import sabnzbd.cfg as cfg
@@ -233,16 +234,24 @@ class NzbQueue:
 
         # Store old position and create new NZO
         old_position = self.__nzo_list.index(old_nzo)
+        duplicate_of = old_nzo.duplicate_of
         res, nzo_ids = process_single_nzb(
             old_nzo.filename, nzb_path, keep=True, reuse=old_nzo.download_path, nzo_id=old_nzo.nzo_id
         )
-        if res == 0 and nzo_ids:
+        if res == AddNzbFileResult.OK and nzo_ids:
             # Swap to old position
             new_nzo = self.get_nzo(nzo_ids[0])
+            # An accepted parse can send a rejected job directly to history.
+            if new_nzo is None:
+                return
             self.__nzo_list.remove(new_nzo)
             self.__nzo_list.insert(old_position, new_nzo)
             # Reset reuse flag to make pause/abort on encryption possible
-            self.__nzo_table[nzo_ids[0]].reuse = None
+            new_nzo.reuse = None
+            # Reuse skips duplicate detection. Keep a promoted job's family
+            # anchor and checkpoint the replacement before releasing the lock.
+            new_nzo.duplicate_of = duplicate_of
+            self.save(new_nzo)
 
     @NzbQueueLocker
     def save(self, save_nzo: NzbObject | list[NzbObject] | bool | None = None):
@@ -954,7 +963,7 @@ class NzbQueue:
         return lst
 
     @NzbQueueLocker
-    def have_name_or_md5sum(self, name: str, md5sum: str) -> bool:
+    def have_name_or_md5sum(self, name: str, md5sum: str) -> Optional[str]:
         """Check whether this name or md5sum is already
         in the queue or the post-processing queue"""
         lname = name.lower()
@@ -964,18 +973,33 @@ class NzbQueue:
             if not nzo.duplicate and (
                 nzo.final_name.lower() == lname or (nzo.md5sum and md5sum and nzo.md5sum == md5sum)
             ):
-                return True
-        return False
+                return nzo.duplicate_of or nzo.nzo_id
+        return None
 
     @NzbQueueLocker
-    def have_duplicate_key(self, duplicate_key: str) -> bool:
+    def have_duplicate_key(self, duplicate_key: str) -> Optional[str]:
         """Check whether this duplicate key is already
         in the queue or the post-processing queue"""
         for nzo in chain(self.__nzo_list, sabnzbd.PostProcessor.get_queue()):
             # Skip any jobs already marked as duplicate, to prevent double-triggers
             if not nzo.duplicate and nzo.duplicate_key == duplicate_key:
-                return True
-        return False
+                return nzo.duplicate_of or nzo.nzo_id
+        return None
+
+    @NzbQueueLocker
+    def get_duplicate_groups(self) -> dict[str, list[str]]:
+        """Group known relationships once per API response, not once per row.
+
+        Keep the original ID even after it leaves the queue (or is deleted).
+        Never infer relationships from names for legacy jobs without metadata.
+        """
+        groups = {}
+        for nzo in chain(self.__nzo_list, sabnzbd.PostProcessor.get_queue()):
+            if nzo.duplicate_of:
+                group = groups.setdefault(nzo.duplicate_of, [nzo.duplicate_of])
+                if nzo.nzo_id != nzo.duplicate_of:
+                    group.append(nzo.nzo_id)
+        return groups
 
     @NzbQueueLocker
     def handle_duplicate_alternatives(self, finished_nzo: NzbObject, success: bool):
@@ -983,6 +1007,23 @@ class NzbQueue:
         or start the next alternative if the job failed"""
         if not cfg.no_dupes() and not cfg.no_smart_dupes():
             return
+
+        if success and finished_nzo.duplicate_of:
+            # A promoted alternative is now the actual successful download.
+            # Retarget only recorded, still-active family references, before
+            # the existing action loop can return after its first re-tag.
+            old_anchor = finished_nzo.duplicate_of
+            postproc = sabnzbd.PostProcessor.get_queue()
+            postproc_ids = {nzo.nzo_id for nzo in postproc}
+            for nzo in chain(self.__nzo_list, postproc):
+                if nzo.duplicate_of == old_anchor:
+                    nzo.duplicate_of = finished_nzo.nzo_id if nzo.nzo_id != finished_nzo.nzo_id else None
+                    if nzo.nzo_id in postproc_ids and nzo.admin_data_file_path:
+                        # PP checkpoints store paths, not NZOs; save_to_disk
+                        # skips these jobs because removed_from_queue is set.
+                        sabnzbd.filesystem.save_data(nzo, os.path.basename(nzo.admin_data_file_path), nzo.admin_path)
+            # Also cover a caller that already removed the winner from PP.
+            finished_nzo.duplicate_of = None
 
         # Unfortunately we need a copy, since we might remove items from the list
         for nzo in self.__nzo_list[:]:

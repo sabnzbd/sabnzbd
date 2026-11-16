@@ -472,9 +472,7 @@ class HistoryDB:
             post += ")"
             command_args.extend(statuses)
         if nzo_ids:
-            post += " AND (nzo_id = ?"
-            post += " OR nzo_id = ? " * (len(nzo_ids) - 1)
-            post += ")"
+            post += " AND nzo_id IN (%s)" % ",".join("?" for _ in nzo_ids)
             command_args.extend(nzo_ids)
 
         cmd = "SELECT COUNT(*) FROM history WHERE name LIKE ?"
@@ -518,36 +516,36 @@ class HistoryDB:
                     jobs.append({"nzo_id": item["nzo_id"], "path": item["path"]})
         return jobs
 
-    def have_duplicate_key(self, duplicate_key: str) -> bool:
-        """Check whether History contains this duplicate key"""
+    def have_duplicate_key(self, duplicate_key: str) -> Optional[str | bool]:
+        """Return a matching ID, or True for a match without a usable ID."""
         if self.execute(
             """
-            SELECT EXISTS(
-                SELECT 1
-                FROM history
-                WHERE duplicate_key = ? AND status != ?
-            ) as found
+            SELECT nzo_id FROM history
+            WHERE duplicate_key = ? AND status != ?
+            ORDER BY (nzo_id IS NULL OR nzo_id = ''), id
+            LIMIT 1
             """,
             (duplicate_key, Status.FAILED),
         ):
-            return bool(self.cursor.fetchone()["found"])
-        return False
+            if row := self.cursor.fetchone():
+                return row["nzo_id"] or True
+        return None
 
-    def have_name_or_md5sum(self, name: str, md5sum: str) -> bool:
-        """Check whether this name or md5sum is already in History"""
+    def have_name_or_md5sum(self, name: str, md5sum: str) -> Optional[str | bool]:
+        """Return a matching ID, or True for a match without a usable ID."""
         if self.execute(
             """
-            SELECT EXISTS(
-                SELECT 1
-                FROM history
-                WHERE (name = ? COLLATE NOCASE OR md5sum = ?)
-                  AND status != ?
-            ) as found
+            SELECT nzo_id FROM history
+            WHERE (name = ? COLLATE NOCASE OR md5sum = ?)
+              AND status != ?
+            ORDER BY (nzo_id IS NULL OR nzo_id = ''), id
+            LIMIT 1
             """,
             (name, md5sum, Status.FAILED),
         ):
-            return bool(self.cursor.fetchone()["found"])
-        return False
+            if row := self.cursor.fetchone():
+                return row["nzo_id"] or True
+        return None
 
     def get_history_size(self) -> tuple[int, int, int]:
         """Returns the total size of the history and
