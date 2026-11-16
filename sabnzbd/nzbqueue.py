@@ -988,7 +988,8 @@ class NzbQueue:
         for nzo in chain(self.__nzo_list, sabnzbd.PostProcessor.get_queue()):
             if nzo.duplicate_of:
                 group = groups.setdefault(nzo.duplicate_of, [nzo.duplicate_of])
-                group.append(nzo.nzo_id)
+                if nzo.nzo_id != nzo.duplicate_of:
+                    group.append(nzo.nzo_id)
         return groups
 
     @NzbQueueLocker
@@ -997,6 +998,23 @@ class NzbQueue:
         or start the next alternative if the job failed"""
         if not cfg.no_dupes() and not cfg.no_smart_dupes():
             return
+
+        if success and finished_nzo.duplicate_of:
+            # A promoted alternative is now the actual successful download.
+            # Retarget only recorded, still-active family references, before
+            # the existing action loop can return after its first re-tag.
+            old_anchor = finished_nzo.duplicate_of
+            postproc = sabnzbd.PostProcessor.get_queue()
+            postproc_ids = {nzo.nzo_id for nzo in postproc}
+            for nzo in chain(self.__nzo_list, postproc):
+                if nzo.duplicate_of == old_anchor:
+                    nzo.duplicate_of = finished_nzo.nzo_id if nzo.nzo_id != finished_nzo.nzo_id else None
+                    if nzo.nzo_id in postproc_ids and nzo.admin_data_file_path:
+                        # PP checkpoints store paths, not NZOs; save_to_disk
+                        # skips these jobs because removed_from_queue is set.
+                        sabnzbd.filesystem.save_data(nzo, os.path.basename(nzo.admin_data_file_path), nzo.admin_path)
+            # Also cover a caller that already removed the winner from PP.
+            finished_nzo.duplicate_of = None
 
         # Unfortunately we need a copy, since we might remove items from the list
         for nzo in self.__nzo_list[:]:

@@ -1861,7 +1861,8 @@ class NzbObject(TryList):
             self.duplicate_of = duplicate_in_queue
         elif smart_duplicate_in_history:
             self.duplicate = DuplicateStatus.SMART_DUPLICATE
-            self.duplicate_of = smart_duplicate_in_history
+            if isinstance(smart_duplicate_in_history, str):
+                self.duplicate_of = smart_duplicate_in_history
         elif duplicate_in_history:
             self.duplicate = DuplicateStatus.DUPLICATE
             # A backup-only match has no job identity to link to.
