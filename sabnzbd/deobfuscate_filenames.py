@@ -74,7 +74,7 @@ def decode_par2(parfile: str) -> list[str]:
                 unique_filename = get_unique_filename(new_path)
                 # Untrusted par2 name: contain it, skip on traversal
                 try:
-                    renamer(filepath, unique_filename, create_local_directories=True)
+                    unique_filename = renamer(filepath, unique_filename, create_local_directories=True)
                 except OSError:
                     logging.info("Skipping par2 rename of %s to %s", filepath, unique_filename)
                     continue

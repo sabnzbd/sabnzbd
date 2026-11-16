@@ -1517,11 +1517,12 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                     # Note: file can and is allowed to be in a subdirectory.
                     # Subdirectories in par2 always contain "/", not "\" so we need to normalize
                     file = os.path.normpath(file)
-                    renamer(
+                    new_path = renamer(
                         os.path.join(nzo.download_path, nzf.filename),
                         os.path.join(nzo.download_path, file),
                         create_local_directories=True,
                     )
+                    file = os.path.relpath(new_path, nzo.download_path)
                     renames[file] = nzf.filename
                     rename_deobfuscated_nzf(nzo, nzf, file)
                     result &= True
@@ -1686,11 +1687,12 @@ def sfv_check(sfvs: list[str], nzo: NzbObject) -> bool:
                     logging.debug("SFV-check will rename %s to %s", nzf.filename, file)
                     # Untrusted sfv name: normalize separators and contain
                     file = os.path.normpath(file)
-                    renamer(
+                    new_path = renamer(
                         os.path.join(nzo.download_path, nzf.filename),
                         os.path.join(nzo.download_path, file),
                         create_local_directories=True,
                     )
+                    file = os.path.relpath(new_path, nzo.download_path)
                     renames[file] = nzf.filename
                     rename_deobfuscated_nzf(nzo, nzf, file)
                     result &= True

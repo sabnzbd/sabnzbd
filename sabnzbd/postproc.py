@@ -61,6 +61,8 @@ from sabnzbd.filesystem import (
     make_script_path,
     clip_path,
     renamer,
+    prepare_rename_path,
+    rename_prepared_path,
     remove_dir,
     globber,
     globber_full,
@@ -70,6 +72,7 @@ from sabnzbd.filesystem import (
     fix_unix_encoding,
     sanitize_and_trim_path,
     sanitize_files,
+    sanitize_foldername,
     remove_file,
     listdir_full,
     setname_from_path,
@@ -80,6 +83,7 @@ from sabnzbd.filesystem import (
     has_unwanted_extension,
     RAR_RE,
     RAR_FIRST_VOLUME_RE,
+    SURROGATE_RE,
 )
 from sabnzbd.nzb import NzbObject
 from sabnzbd.sorting import Sorter
@@ -608,7 +612,9 @@ def process_job(nzo: NzbObject) -> bool:
                     workdir_complete = get_unique_dir(workdir_complete, create_dir=False)
 
                 try:
-                    newfiles = rename_and_collapse_folder(tmp_workdir_complete, workdir_complete, newfiles)
+                    workdir_complete, newfiles = rename_and_collapse_folder(
+                        tmp_workdir_complete, workdir_complete, newfiles
+                    )
                 except Exception:
                     logging.error(
                         T('Error renaming "%s" to "%s"'),
@@ -830,7 +836,9 @@ def prepare_extraction_path(nzo: NzbObject) -> tuple[str, str, Sorter, bool, Opt
     if not create_job_dir:
         workdir_complete = create_all_dirs(complete_dir, apply_permissions=True)
     else:
-        workdir_complete = get_unique_dir(os.path.join(complete_dir, nzo.final_name), create_dir=True)
+        workdir_complete = get_unique_dir(
+            os.path.join(complete_dir, sanitize_foldername(nzo.final_name)), create_dir=True
+        )
         marker_file = set_marker(workdir_complete)
 
     if not workdir_complete or not os.path.exists(workdir_complete):
@@ -838,16 +846,16 @@ def prepare_extraction_path(nzo: NzbObject) -> tuple[str, str, Sorter, bool, Opt
         raise IOError
 
     if create_job_dir and cfg.folder_rename():
-        prefixed_path = prefix(workdir_complete, "_UNPACK_")
-        tmp_workdir_complete = get_unique_dir(prefix(workdir_complete, "_UNPACK_"), create_dir=False)
+        prefixed_path = prepare_rename_path(workdir_complete, prefix(workdir_complete, "_UNPACK_"))
+        tmp_workdir_complete = get_unique_dir(prefixed_path, create_dir=False)
 
         try:
-            renamer(workdir_complete, tmp_workdir_complete)
+            tmp_workdir_complete = rename_prepared_path(workdir_complete, tmp_workdir_complete)
         except Exception:
-            pass  # On failure, just use the original name
+            tmp_workdir_complete = workdir_complete  # On failure, just use the original name
 
         # Is the unique path different? Then we also need to modify the final path
-        if prefixed_path != tmp_workdir_complete:
+        if tmp_workdir_complete != workdir_complete and prefixed_path != tmp_workdir_complete:
             # The unique path adds an "extension"
             workdir_complete = workdir_complete + get_ext(tmp_workdir_complete)
     else:
@@ -1326,22 +1334,22 @@ def process_nzb_only_download(workdir: str, nzo: NzbObject) -> Optional[list[str
 
 def one_file_or_folder(folder: str) -> str:
     """If the dir only contains one file or folder, join that file/folder onto the path"""
-    # Never sanitize descendants of a link into an unrelated directory.
-    if os.path.exists(folder) and os.path.isdir(folder) and not os.path.islink(folder):
-        try:
+    try:
+        # Never sanitize descendants of a link into an unrelated directory.
+        if os.path.exists(folder) and os.path.isdir(folder) and not os.path.islink(folder):
             cont = os.listdir(folder)
             if len(cont) == 1:
                 child = os.path.join(folder, cont[0])
                 # Unpacker output can differ from the actual on-disk name. Repair
                 # only the path we are about to report, including directory parts,
                 # so the history/API path remains usable and UTF-8 encodable.
-                if re.search(r"[\ud800-\udfff]", cont[0]):
+                if SURROGATE_RE.search(cont[0]):
                     child = renamer(child, child)
                 folder = child
                 folder = one_file_or_folder(folder)
-        except OSError:
-            # Can occur on paths it doesn't like, for example "C:"
-            pass
+    except (OSError, UnicodeError):
+        # Keep the existing safe ancestor if inspection or repair is refused.
+        logging.debug("Cannot inspect or repair history path in %r", folder, exc_info=True)
     return folder
 
 
@@ -1398,10 +1406,10 @@ def remove_samples(path: str):
         logging.info("Skipping sample-removal, false-positive")
 
 
-def rename_and_collapse_folder(oldpath: str, newpath: str, files: list[str]) -> list[str]:
+def rename_and_collapse_folder(oldpath: str, newpath: str, files: list[str]) -> tuple[str, list[str]]:
     """Rename folder, collapsing when there's just a single subfolder
     oldpath --> newpath OR oldpath/subfolder --> newpath
-    Modify list of filenames accordingly
+    Return the actual destination and modify list of filenames accordingly
     """
     orgpath = oldpath
     items = globber(oldpath)
@@ -1414,14 +1422,13 @@ def rename_and_collapse_folder(oldpath: str, newpath: str, files: list[str]) -> 
 
     oldpath = os.path.normpath(oldpath)
     newpath = os.path.normpath(newpath)
+    newpath = renamer(oldpath, newpath)
     files = [os.path.normpath(f).replace(oldpath, newpath) for f in files]
-
-    renamer(oldpath, newpath)
     try:
         remove_dir(orgpath)
     except Exception:
         pass
-    return files
+    return newpath, files
 
 
 def set_marker(folder: str) -> Optional[str]:

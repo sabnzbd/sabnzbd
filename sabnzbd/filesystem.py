@@ -933,7 +933,9 @@ def move_to_path(path: str, new_path: str, root: Optional[str] = None) -> tuple[
     """
     ok = True
     overwrite = sabnzbd.cfg.overwrite_files()
-    new_path = os.path.abspath(new_path)
+    # Choose the actual destination before overwrite checks or rename/copy. In
+    # particular, surrogate replacement must never overwrite a colliding name.
+    new_path = prepare_rename_path(path, os.path.abspath(new_path))
     new_path_dir = os.path.dirname(new_path)
     if not overwrite:
         new_path = get_unique_filename(new_path)
@@ -957,8 +959,8 @@ def move_to_path(path: str, new_path: str, root: Optional[str] = None) -> tuple[
         if not os.path.exists(new_path_dir):
             create_all_dirs(os.path.dirname(new_path), apply_permissions=True)
         try:
-            # First try cheap rename, retaining any sanitized or unique destination
-            new_path = renamer(path, new_path)
+            # First try cheap rename using the already prepared destination.
+            rename_prepared_path(path, new_path)
         except Exception as err:
             # Cannot rename, try copying
             logging.debug("File could not be renamed (error: %s), trying copying: %s", err, path)
@@ -1017,11 +1019,8 @@ def remove_empty_parent_directories(base_dir: str, files: list[str]):
             check_dir = os.path.dirname(check_dir)
 
 
-def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
-    """Rename file/folder with retries for Win32
-    Optionally allows the creation of local directories if they don't exist yet
-    Returns new filename (which could be changed due to sanitize_filename) on success"""
-    # Sanitize last part of new name, just to be sure
+def prepare_rename_path(old: str, new: str) -> str:
+    """Sanitize the destination, avoiding collisions introduced by surrogate replacement."""
     path, name = os.path.split(new)
     has_surrogates = SURROGATE_RE.search(name)
     if os.path.isdir(old):
@@ -1030,14 +1029,26 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
         name = sanitize_filename(name)
     new = os.path.join(path, name)
 
+    # Preserve ordinary rename/overwrite semantics and no-op renames.
+    if has_surrogates and old != new:
+        new = get_unique_filename(new)
+    return new
+
+
+def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
+    """Rename file/folder with retries for Win32
+    Optionally allows the creation of local directories if they don't exist yet
+    Returns new filename (which could be changed due to sanitize_filename) on success"""
+    return rename_prepared_path(old, prepare_rename_path(old, new), create_local_directories)
+
+
+def rename_prepared_path(old: str, new: str, create_local_directories: bool = False) -> str:
+    """Rename to a prepared destination without sanitizing away a unique-name suffix."""
+    path = os.path.dirname(new)
+
     # Skip if nothing changes
     if old == new:
         return new
-
-    # Replacing surrogates can map different names to the same target. Never overwrite or
-    # move into an existing directory as a side effect of that transformation.
-    if has_surrogates:
-        new = get_unique_filename(new)
 
     # In case we want nonexistent directories to be created, check for directory escape (forbidden)
     if create_local_directories:

@@ -738,7 +738,7 @@ class NzbObject(TryList):
             # Do cheap renaming so it gets better picked up by par2
             # Only basename has to be the same
             new_fname = get_unique_filename(os.path.join(self.download_path, "%s.par2" % setname))
-            renamer(filepath, new_fname)
+            new_fname = renamer(filepath, new_fname)
             self.renamed_file(get_filename(new_fname), nzf.filename)
             nzf.filename = get_filename(new_fname)
 
