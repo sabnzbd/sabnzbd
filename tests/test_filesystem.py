@@ -68,6 +68,17 @@ needs_symlinks = pytest.mark.skipif(
 
 
 class TestFileFolderNameSanitizer:
+    @pytest.mark.parametrize("sanitize", [filesystem.sanitize_filename, filesystem.sanitize_foldername])
+    @pytest.mark.parametrize("surrogate", ["\ud800", "\udc96", "\udfff", "\ud83d\ude00"])
+    def test_surrogate_characters(self, sanitize, surrogate):
+        assert sanitize("日本語_é_😀" + surrogate + ".txt") == "日本語_é_😀" + "_" * len(surrogate) + ".txt"
+
+    @pytest.mark.parametrize("sanitize", [filesystem.sanitize_filename, filesystem.sanitize_foldername])
+    @pytest.mark.config({"max_foldername_length": DEF_FILE_MAX})
+    def test_surrogates_before_length_limit(self, sanitize):
+        name = sanitize("日" * 200 + "\udc96.txt")
+        assert len(name.encode("utf-8")) <= DEF_FILE_MAX
+
     def test_empty(self):
         assert filesystem.sanitize_filename(None) is None
         assert filesystem.sanitize_foldername(None) is None
@@ -490,6 +501,47 @@ class TestSanitizeFiles:
                 assert os.path.exists(file)
                 os.remove(file)
                 assert not os.path.exists(file)
+
+
+@pytest.mark.platform("linux")
+class TestSurrogateSanitizationCollisions:
+    @pytest.mark.parametrize("target_is_directory", [False, True])
+    def test_sanitize_files_does_not_replace_existing_targets(self, fake_fs, target_is_directory):
+        target = "/download/weird_.txt"
+        if target_is_directory:
+            fake_fs.create_dir(target)
+        else:
+            fake_fs.create_file(target, contents="existing")
+        sources = ["/download/weird\udc96.txt", "/download/weird\udc97.txt"]
+        for index, source in enumerate(sources):
+            fake_fs.create_file(source, contents=str(index))
+
+        result = filesystem.sanitize_files(filelist=sources)
+
+        assert result == ["/download/weird_.1.txt", "/download/weird_.2.txt"]
+        for index, path in enumerate(result):
+            assert Path(path).read_text() == str(index)
+        if target_is_directory:
+            assert os.listdir(target) == []
+        else:
+            assert Path(target).read_text() == "existing"
+        assert not any(os.path.exists(source) for source in sources)
+
+    def test_sanitize_directory_does_not_merge_existing_target(self, fake_fs):
+        fake_fs.create_file("/download/folder_/existing.txt", contents="existing")
+        fake_fs.create_file("/download/folder\udc96/new.txt", contents="new")
+        result = filesystem.renamer("/download/folder\udc96", "/download/folder\udc96")
+        assert result == "/download/folder_.1"
+        assert Path(result, "new.txt").read_text() == "new"
+        assert os.listdir("/download/folder_") == ["existing.txt"]
+
+    def test_sanitize_does_not_overwrite_dangling_link(self, fake_fs):
+        fake_fs.create_file("/download/weird\udc96.txt", contents="original")
+        os.symlink("/missing", "/download/weird_.txt")
+        result = filesystem.sanitize_files(filelist=["/download/weird\udc96.txt"])
+        assert result == ["/download/weird_.1.txt"]
+        assert Path(result[0]).read_text() == "original"
+        assert os.readlink("/download/weird_.txt") == "/missing"
 
 
 class TestSameDirectory:

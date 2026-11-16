@@ -23,6 +23,9 @@ import functools
 import os
 import re
 import shutil
+import sys
+from contextlib import nullcontext
+from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -36,7 +39,7 @@ from sabnzbd.deobfuscate_filenames import deobfuscate
 from sabnzbd.filesystem import clip_path, globber_full
 from sabnzbd.misc import sort_to_opts
 from sabnzbd.nzb import NzbObject
-from tests.testhelper import SAB_CACHE_DIR, SAB_DATA_DIR, make_mock_nzo
+from tests.testhelper import SAB_CACHE_DIR, SAB_DATA_DIR, FakeHistoryDB, make_mock_nzo
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
@@ -810,6 +813,100 @@ class TestNzbOnlyDownload:
 
         # Verify process_single_nzb was NOT called
         mock_process_single_nzb.assert_not_called()
+
+
+@pytest.mark.platform("linux")
+class TestSurrogateHistoryPaths:
+    @pytest.mark.config({"folder_rename": False, "deobfuscate_final_filenames": False})
+    @pytest.mark.parametrize(
+        "names, reported_names, expected",
+        [
+            (["weird.\udc96.txt"], ["weird.\udc96.txt"], "weird._.txt"),
+            # Unrar's reported name need not match the name returned by os.listdir (#2947).
+            (["weird.\udc96.txt"], ["weird.\ufffe\ue096.txt"], "weird._.txt"),
+            (
+                ["folder\udc96/inner\udc97/日本語_é_😀.txt"],
+                ["folder\udc96/inner\udc97/日本語_é_😀.txt"],
+                "folder_/inner_/日本語_é_😀.txt",
+            ),
+            (
+                ["folder\udc96/one.txt", "folder\udc96/two.txt"],
+                ["folder\udc96/one.txt", "folder\udc96/two.txt"],
+                "folder_",
+            ),
+            (["日本語_é_😀.txt"], [], "日本語_é_😀.txt"),
+            # Do not recursively rename unrelated directories when history points at their parent.
+            (["one\udc96/a.txt", "two\udc97/b.txt"], [], ""),
+        ],
+    )
+    def test_process_job_records_existing_utf8_storage(self, fake_fs, names, reported_names, expected):
+        root = "/complete/job"
+        for name in names:
+            fake_fs.create_file(root + "/" + name, contents=name.encode("utf-8", "backslashreplace"))
+        nzo = make_mock_nzo(download_path="/incomplete/job", unpack=True, pp_active=True, md5sum="")
+        sorter = mock.Mock(sorter_active=False)
+        with (
+            FakeHistoryDB(":memory:") as history_db,
+            mock.patch.object(sabnzbd, "db_pool", create=True) as pool,
+            mock.patch.object(sabnzbd, "NzbQueue", create=True),
+            mock.patch.multiple(
+                postproc,
+                globber=mock.Mock(return_value=["__admin__", "archive.rar"]),
+                listdir_full=mock.Mock(return_value=[]),
+                parring=mock.Mock(return_value=(False, False)),
+                wait_for_direct_unpacker=mock.DEFAULT,
+                prepare_extraction_path=mock.Mock(return_value=(root, root, sorter, False, None)),
+                unpacker=mock.Mock(return_value=(0, [root + "/" + name for name in reported_names])),
+                set_permissions=mock.DEFAULT,
+                make_script_path=mock.Mock(return_value=None),
+                notifier=mock.DEFAULT,
+                history_updated=mock.DEFAULT,
+            ),
+        ):
+            pool.connection.return_value = nullcontext(history_db)
+            postproc.process_job(nzo)
+            history_db.execute("SELECT storage, path, status FROM history")
+            rows = history_db.cursor.fetchall()
+
+        assert len(rows) == 1
+        storage, download_path, status = rows[0]
+        assert status == Status.COMPLETED
+        assert download_path == nzo.download_path
+        assert storage == root + ("/" + expected if expected else "")
+        assert os.path.exists(storage)
+        storage.encode("utf-8")
+        if os.path.isfile(storage):
+            assert Path(storage).read_bytes() == names[0].encode("utf-8", "backslashreplace")
+        elif not expected:
+            assert set(os.listdir(root)) == {"one\udc96", "two\udc97"}
+
+    def test_does_not_sanitize_through_symlink(self, fake_fs):
+        fake_fs.create_file("/outside/weird\udc96.txt", contents="outside")
+        fake_fs.create_dir("/complete/job")
+        os.symlink("/outside", "/complete/job/link")
+        assert postproc.one_file_or_folder("/complete/job") == "/complete/job/link"
+        assert os.listdir("/outside") == ["weird\udc96.txt"]
+
+    def test_failed_rename_keeps_existing_parent(self, fake_fs):
+        fake_fs.create_file("/complete/job/weird\udc96.txt", contents="original")
+        with mock.patch.object(postproc, "renamer", side_effect=OSError("read-only")):
+            assert postproc.one_file_or_folder("/complete/job") == "/complete/job"
+        assert os.listdir("/complete/job") == ["weird\udc96.txt"]
+
+    @pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Linux raw-byte filenames")
+    def test_raw_byte_filename_on_disk(self, tmp_path):
+        raw_name = os.fsencode(tmp_path) + b"/weird.\x96.txt"
+        with open(raw_name, "wb") as output:
+            output.write(b"contents")
+        storage = postproc.one_file_or_folder(str(tmp_path))
+        with FakeHistoryDB(":memory:") as history_db:
+            nzo = make_mock_nzo(download_path=str(tmp_path), md5sum="")
+            history_db.add_history_db(nzo, storage, 0, "", "")
+            history_db.execute("SELECT storage FROM history")
+            rows = history_db.cursor.fetchall()
+        assert [tuple(row) for row in rows] == [(str(tmp_path / "weird._.txt"),)]
+        assert Path(storage).read_bytes() == b"contents"
+        assert not os.path.exists(raw_name)
 
 
 class TestProcessJobMissingArticles:

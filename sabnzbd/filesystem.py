@@ -216,6 +216,7 @@ def has_win_device(filename: str) -> bool:
 
 
 CH_ILLEGAL = "\0/"
+SURROGATE_RE = re.compile(r"[\ud800-\udfff]")
 CH_ILLEGAL_WIN = '\\/<>?*|":'
 for i in range(1, 32):
     CH_ILLEGAL_WIN += chr(i)
@@ -254,7 +255,8 @@ def sanitize_filename(filename: str, allow_subdirs: bool = False) -> str:
             return "unknown"
         return os.path.join(*parts)
 
-    filename = unicode_nfc_normalize(filename)
+    # Filesystem surrogate escapes cannot be stored as SQLite text.
+    filename = unicode_nfc_normalize(SURROGATE_RE.sub("_", filename))
 
     illegal = CH_ILLEGAL
     if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
@@ -302,7 +304,7 @@ def sanitize_foldername(foldername: str) -> str:
     if not foldername:
         return foldername
 
-    foldername = unicode_nfc_normalize(foldername)
+    foldername = unicode_nfc_normalize(SURROGATE_RE.sub("_", foldername))
 
     illegal = CH_ILLEGAL + ':"'
 
@@ -1021,6 +1023,7 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     Returns new filename (which could be changed due to sanitize_filename) on success"""
     # Sanitize last part of new name, just to be sure
     path, name = os.path.split(new)
+    has_surrogates = SURROGATE_RE.search(name)
     if os.path.isdir(old):
         name = sanitize_foldername(name)
     else:
@@ -1030,6 +1033,11 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     # Skip if nothing changes
     if old == new:
         return new
+
+    # Replacing surrogates can map different names to the same target. Never overwrite or
+    # move into an existing directory as a side effect of that transformation.
+    if has_surrogates:
+        new = get_unique_filename(new)
 
     # In case we want nonexistent directories to be created, check for directory escape (forbidden)
     if create_local_directories:

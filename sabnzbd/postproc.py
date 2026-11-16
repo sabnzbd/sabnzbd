@@ -1326,11 +1326,18 @@ def process_nzb_only_download(workdir: str, nzo: NzbObject) -> Optional[list[str
 
 def one_file_or_folder(folder: str) -> str:
     """If the dir only contains one file or folder, join that file/folder onto the path"""
-    if os.path.exists(folder) and os.path.isdir(folder):
+    # Never sanitize descendants of a link into an unrelated directory.
+    if os.path.exists(folder) and os.path.isdir(folder) and not os.path.islink(folder):
         try:
             cont = os.listdir(folder)
             if len(cont) == 1:
-                folder = os.path.join(folder, cont[0])
+                child = os.path.join(folder, cont[0])
+                # Unpacker output can differ from the actual on-disk name. Repair
+                # only the path we are about to report, including directory parts,
+                # so the history/API path remains usable and UTF-8 encodable.
+                if re.search(r"[\ud800-\udfff]", cont[0]):
+                    child = renamer(child, child)
+                folder = child
                 folder = one_file_or_folder(folder)
         except OSError:
             # Can occur on paths it doesn't like, for example "C:"
