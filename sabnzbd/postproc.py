@@ -1421,8 +1421,12 @@ def rename_and_collapse_folder(oldpath: str, newpath: str, files: list[str]) -> 
             oldpath = folder_path
 
     oldpath = os.path.normpath(oldpath)
-    newpath = os.path.normpath(newpath)
-    newpath = renamer(oldpath, newpath)
+    newpath = prepare_rename_path(oldpath, os.path.normpath(newpath))
+    # Sanitizing an allocated long name can remove its unique suffix. Allocate
+    # again after preparation, then execute without truncating that suffix.
+    if oldpath != newpath:
+        newpath = get_unique_dir(newpath, create_dir=False)
+    newpath = rename_prepared_path(oldpath, newpath)
     files = [os.path.normpath(f).replace(oldpath, newpath) for f in files]
     try:
         remove_dir(orgpath)

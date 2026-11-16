@@ -11,6 +11,7 @@ import pytest
 
 import sabnzbd
 from sabnzbd import deobfuscate_filenames, filesystem, newsunpack, postproc
+from sabnzbd.constants import DEF_FOLDER_MAX
 from sabnzbd.nzb import NzbObject
 from sabnzbd.par2file import FilePar2Info
 from tests.testhelper import FakeHistoryDB, make_mock_nzo
@@ -232,6 +233,31 @@ class TestSurrogateRenameContracts:
         assert os.listdir(temporary) == []
         assert os.listdir(occupied) == ["keep"]
         assert Path(occupied, "keep").read_text() == "existing"
+
+    @pytest.mark.parametrize("max_length", [32, DEF_FOLDER_MAX])
+    @pytest.mark.parametrize("surrogate", [False, True])
+    @pytest.mark.parametrize("collapse", [False, True])
+    @pytest.mark.config(
+        lambda params: {"folder_rename": True, "marker_file": "", "max_foldername_length": params["max_length"]}
+    )
+    def test_preparation_to_finalization_preserves_unique_folder(self, fake_fs, max_length, surrogate, collapse):
+        name = "x" * (max_length - 1) + ("\udc96" if surrogate else "_")
+        occupied = "/complete/" + "x" * (max_length - 1) + "_"
+        fake_fs.create_file(occupied + "/keep", contents="existing")
+        sorter = mock.Mock(sorter_active=False)
+        with mock.patch.object(postproc, "get_complete_directory", return_value=("/complete", sorter, True)):
+            temporary, final, _, _, _ = postproc.prepare_extraction_path(make_mock_nzo(final_name=name))
+        source = temporary + ("/child" if collapse else "")
+        files = [source + "/one.txt", source + "/two.txt"]
+        for file in files:
+            fake_fs.create_file(file, contents="payload")
+        actual_root, actual_files = postproc.rename_and_collapse_folder(temporary, final, files)
+        assert actual_root == final
+        assert actual_files == [final + "/one.txt", final + "/two.txt"]
+        assert [Path(file).read_text() for file in actual_files] == ["payload", "payload"]
+        assert os.listdir(occupied) == ["keep"]
+        assert Path(occupied, "keep").read_text() == "existing"
+        assert not os.path.exists(temporary)
 
     @pytest.mark.parametrize("operation", ["exists", "isdir", "listdir"])
     def test_history_inspection_unicode_failure_is_logged(self, fake_fs, caplog, operation):
