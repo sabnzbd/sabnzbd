@@ -30,6 +30,7 @@ import pytest
 
 import sabnzbd
 from sabnzbd.constants import (
+    AddNzbFileResult,
     JOB_ADMIN,
     ONDISK_VERSION,
     ONDISK_FILE,
@@ -612,7 +613,7 @@ class TestNzbQueue:
             replacement = make_dummy_nzo("new", priority=NORMAL_PRIORITY)
             replacement.nzo_id = kwargs["nzo_id"]
             queue.add(replacement, save=False, quiet=True)
-            return 0, [replacement.nzo_id]
+            return AddNzbFileResult.OK, [replacement.nzo_id]
 
         monkeypatch.setattr("sabnzbd.nzbqueue.process_single_nzb", fake_process_single_nzb)
         queue.send_back(old)
@@ -620,6 +621,21 @@ class TestNzbQueue:
         # Removing must still find the job even though the replacement resolved another priority
         nzo_id = queue.queue_info()[3][0].nzo_id
         assert queue.remove(nzo_id, cleanup=False, delete_all_data=False)
+        assert queue.queue_info()[3] == []
+
+    def test_send_back_replacement_rejected_to_history(self, queue, monkeypatch):
+        """The parser can return OK for a job that went straight to history instead of the queue"""
+        old = make_dummy_nzo("old")
+        queue.add(old, save=False, quiet=True)
+        monkeypatch.setattr(old, "download_path", "/tmp/old", raising=False)
+        monkeypatch.setattr("sabnzbd.nzbqueue.globber_full", lambda *a, **k: ["/tmp/old.nzb.gz"])
+
+        def fake_process_single_nzb(*args, **kwargs):
+            queue.remove(kwargs["nzo_id"], cleanup=False, delete_all_data=False)
+            return AddNzbFileResult.OK, [kwargs["nzo_id"]]
+
+        monkeypatch.setattr("sabnzbd.nzbqueue.process_single_nzb", fake_process_single_nzb)
+        queue.send_back(old)
         assert queue.queue_info()[3] == []
 
     @pytest.mark.parametrize(
