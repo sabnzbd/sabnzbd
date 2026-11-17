@@ -82,6 +82,7 @@ RAR_V3_RE = re.compile(r"\.(?P<ext>part\d*)$", re.I)
 RAR_EXTRACTFROM_RE = re.compile(r"^Extracting\sfrom\s(.+)")
 RAR_EXTRACTED_RE = re.compile(r"^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$")
 SEVENZIP_PATH_RE = re.compile("^Path = (.+)")
+UNRAR_MAPPED_BYTE_RE = re.compile("[\ue080-\ue0ff]")
 
 # Constants
 SEVENZIP_ID = b"7z\xbc\xaf'\x1c"
@@ -692,6 +693,14 @@ def rar_extract(
     return fail, new_files, rars
 
 
+def unrar_name_to_path(name: str) -> str:
+    """Convert UnRAR's display form of undecodable filename bytes (U+FFFE marker
+    followed by U+E000 + byte) to the surrogate-escaped name Python uses on disk"""
+    if "\ufffe" not in name:
+        return name
+    return UNRAR_MAPPED_BYTE_RE.sub(lambda m: chr(ord(m.group()) - 0xE000 + 0xDC00), name.replace("\ufffe", ""))
+
+
 def rar_extract_core(
     rarfile_path: str, numrars: int, one_folder: bool, nzo: NzbObject, setname: str, extraction_path: str, password: str
 ) -> tuple[int, list[str], list[str]]:
@@ -901,7 +910,7 @@ def rar_extract_core(
 
             elif m := re.search(RAR_EXTRACTED_RE, line):
                 # In case of flat-unpack, UnRar still prints the whole path (?!)
-                unpacked_file = m.group(2)
+                unpacked_file = unrar_name_to_path(m.group(2))
                 if cfg.flat_unpack():
                     unpacked_file = get_filename(unpacked_file)
                 extracted.append(real_path(extraction_path, unpacked_file))

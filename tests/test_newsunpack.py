@@ -66,6 +66,25 @@ def _isolate_newsunpack_globals(monkeypatch):
 
 
 class TestNewsUnpackFunctions:
+    def test_unrar_name_to_path(self):
+        assert newsunpack.unrar_name_to_path("/c/weird.\ufffe\ue096.txt") == "/c/weird.\udc96.txt"
+        assert newsunpack.unrar_name_to_path("/c/private\ue096.txt") == "/c/private\ue096.txt"
+        assert newsunpack.unrar_name_to_path("/c/plain.txt") == "/c/plain.txt"
+
+    @pytest.mark.skipif(
+        not sys.platform.startswith("linux"), reason="Requires a filesystem that allows non-UTF-8 names"
+    )
+    def test_unrar_undecodable_name_is_sanitized(self, tmp_path):
+        with open(os.path.join(os.fsencode(tmp_path), b"weird.\x96.txt"), "wb"):
+            pass
+        unrar_reported = os.path.join(str(tmp_path), "weird.\ufffe\ue096.txt")
+
+        newfiles = sabnzbd.filesystem.sanitize_files(filelist=[newsunpack.unrar_name_to_path(unrar_reported)])
+
+        assert newfiles == [os.path.join(str(tmp_path), "weird.\x96.txt")]
+        assert os.listdir(tmp_path) == ["weird.\x96.txt"]
+        newfiles[0].encode("utf-8")
+
     def test_is_sfv_file(self):
         assert newsunpack.is_sfv_file("tests/data/good_sfv_unicode.sfv")
         assert newsunpack.is_sfv_file("tests/data/one_line.sfv")

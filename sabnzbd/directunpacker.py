@@ -34,7 +34,7 @@ from sabnzbd.filesystem import remove_all, real_path, remove_file, get_basename,
 from sabnzbd.nzb import NzbFile, NzbObject
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
-from sabnzbd.newsunpack import RAR_EXTRACTFROM_RE, RAR_EXTRACTED_RE, rar_volumelist, add_time_left
+from sabnzbd.newsunpack import RAR_EXTRACTFROM_RE, RAR_EXTRACTED_RE, rar_volumelist, add_time_left, unrar_name_to_path
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.misc import SABRarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
@@ -293,7 +293,7 @@ class DirectUnpacker(threading.Thread):
                 elif m := re.search(RAR_EXTRACTED_RE, linebuf_encoded):
                     # List files we extracted
                     # In case of flat-unpack, UnRar still prints the whole path (?!)
-                    unpacked_file = m.group(2)
+                    unpacked_file = unrar_name_to_path(m.group(2))
                     if cfg.flat_unpack():
                         unpacked_file = get_filename(unpacked_file)
                     extracted.append(real_path(self.unpack_dir_info[0], unpacked_file))
