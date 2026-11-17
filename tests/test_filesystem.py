@@ -297,6 +297,10 @@ class TestFileFolderNameSanitizer:
         # NFC input must pass through unchanged (idempotent)
         assert filesystem.sanitize_foldername(nfc_folder) == nfc_folder
 
+    def test_undecodable_bytes(self):
+        assert filesystem.sanitize_filename("weird.characters.\udc96.txt") == "weird.characters.\x96.txt"
+        assert filesystem.sanitize_foldername("demot\udcf6wers") == "demotöwers"
+
     def test_filename_dot(self):
         # All dots should survive in filenames
         assert filesystem.sanitize_filename(".test") == ".test"

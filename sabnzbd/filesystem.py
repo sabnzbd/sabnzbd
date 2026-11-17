@@ -61,7 +61,7 @@ from sabnzbd.constants import (
     DEF_DOWNLOAD_DIR,
     DEF_COMPLETE_DIR,
 )
-from sabnzbd.encoding import correct_unknown_encoding, unicode_nfc_normalize, utob, limit_encoded_length
+from sabnzbd.encoding import correct_unknown_encoding, utob, limit_encoded_length
 import rarfile
 
 # For Windows: determine executable extensions
@@ -254,7 +254,7 @@ def sanitize_filename(filename: str, allow_subdirs: bool = False) -> str:
             return "unknown"
         return os.path.join(*parts)
 
-    filename = unicode_nfc_normalize(filename)
+    filename = correct_unknown_encoding(filename)
 
     illegal = CH_ILLEGAL
     if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
@@ -302,7 +302,7 @@ def sanitize_foldername(foldername: str) -> str:
     if not foldername:
         return foldername
 
-    foldername = unicode_nfc_normalize(foldername)
+    foldername = correct_unknown_encoding(foldername)
 
     illegal = CH_ILLEGAL + ':"'
 
