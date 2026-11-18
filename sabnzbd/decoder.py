@@ -225,14 +225,14 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
     nzf = article.nzf
     # Reuse the size objects of the previously decoded article of this file
     if held := nzf.sizes_article:
-        if file_size == held.file_size:
-            file_size = held.file_size
-        if data_size == held.data_size:
-            data_size = held.data_size
-        if decoded_size == held.decoded_size:
-            decoded_size = held.decoded_size
-        if block_size == held.block_size:
-            block_size = held.block_size
+        if file_size == (shared := held.file_size):
+            file_size = shared
+        if data_size == (shared := held.data_size):
+            data_size = shared
+        if decoded_size == (shared := held.decoded_size):
+            decoded_size = shared
+        if block_size == (shared := held.block_size):
+            block_size = shared
 
     article.file_size = file_size
     article.data_begin = response.part_begin
