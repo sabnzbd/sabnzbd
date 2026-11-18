@@ -245,7 +245,13 @@ class TestNewsWrapper:
         [
             (None, "TLSv1.3", None, True),  # Default, highest
             (ssl.TLSVersion.TLSv1_2, "TLSv1.2", None, True),  # Server with just TLSv1.2
-            (ssl.TLSVersion.SSLv3, None, None, False),  # No connection for old TLS/SSL
+            pytest.param(
+                ssl.TLSVersion.SSLv3,
+                None,
+                None,
+                False,
+                marks=pytest.mark.skipif(not ssl.HAS_SSLv3, reason="No SSLv3 in OpenSSL 4.x"),
+            ),  # No connection for old TLS/SSL
             (ssl.TLSVersion.TLSv1, None, None, False),
             (ssl.TLSVersion.TLSv1_1, None, None, False),
             (None, None, "RC4-MD5", False),  # No connection for old cipher
