@@ -78,7 +78,7 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = (*NzbFileSaver, "lock", "file_lock", "assembler_next_index", "writer")
+    __slots__ = (*NzbFileSaver, "lock", "file_lock", "assembler_next_index", "writer", "sizes_article")
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
@@ -116,6 +116,8 @@ class NzbFile(TryList):
         self.direct_written: bool = True
         self.md5of16k: Optional[bytes] = None
         self.assembler_next_index: int = 0
+        # Last decoded article, whose size objects the next decoded article reuses
+        self.sizes_article: Optional[Article] = None
 
         # Add first article to decodetable, this way we can check
         # if this is maybe a duplicate nzf
@@ -411,6 +413,7 @@ class NzbFile(TryList):
         self.file_lock = threading.RLock()
         self.assembler_next_index = 0
         self.writer = None
+        self.sizes_article = None
         if isinstance(self.articles, list):
             # Converted from list to dict
             self.articles = {x: x for x in self.articles}

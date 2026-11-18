@@ -217,14 +217,31 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
 
     # Let SABCTools do all the heavy lifting
     decoded_data = response.data
-    article.file_size = response.file_size
-    article.data_begin = response.part_begin
-    article.data_size = response.part_size
-    article.decoded_size = response.bytes_decoded
-    article.block_size = response.block_size
-    article.block_crcs = array.array("I", crcs) if (crcs := response.block_crcs) is not None else None
+    file_size = response.file_size
+    data_size = response.part_size
+    decoded_size = response.bytes_decoded
+    block_size = response.block_size
 
     nzf = article.nzf
+    # Reuse the size objects of the previously decoded article of this file
+    if held := nzf.sizes_article:
+        if file_size == held.file_size:
+            file_size = held.file_size
+        if data_size == held.data_size:
+            data_size = held.data_size
+        if decoded_size == held.decoded_size:
+            decoded_size = held.decoded_size
+        if block_size == held.block_size:
+            block_size = held.block_size
+
+    article.file_size = file_size
+    article.data_begin = response.part_begin
+    article.data_size = data_size
+    article.decoded_size = decoded_size
+    article.block_size = block_size
+    article.block_crcs = array.array("I", crcs) if (crcs := response.block_crcs) is not None else None
+    nzf.sizes_article = article
+
     # Assume it is yenc
     nzf.type = "yenc"
 

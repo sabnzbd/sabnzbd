@@ -20,6 +20,7 @@ tests.test_decoder- Testing functions in decoder.py
 """
 
 import binascii
+import datetime
 import os
 import pytest
 from io import BytesIO
@@ -29,7 +30,8 @@ from unittest import mock
 
 import sabctools
 import sabnzbd.decoder as decoder
-from sabnzbd.nzb import Article
+from sabnzbd.nzb import Article, NzbFile, NzbObject
+from tests.testhelper import SAB_CACHE_DIR
 
 
 def uu(data: bytes):
@@ -243,11 +245,11 @@ class TestUuDecoder:
 
 class TestYencBlockCrcs:
     @staticmethod
-    def _response(payload: bytes, begin: int, block_size: int) -> sabctools.NNTPResponse:
+    def _response(payload: bytes, begin: int, block_size: int, file_size: int = 0) -> sabctools.NNTPResponse:
         encoded, crc = sabctools.yenc_encode(payload)
         raw_data = (
             b"222 0 <foo@bar>\r\n"
-            + f"=ybegin part=1 line=128 size={begin + len(payload)} name=foo.bin\r\n".encode()
+            + f"=ybegin part=1 line=128 size={file_size or begin + len(payload)} name=foo.bin\r\n".encode()
             + f"=ypart begin={begin + 1} end={begin + len(payload)}\r\n".encode()
             + encoded
             + f"\r\n=yend size={len(payload)} part=1 pcrc32={crc:08x}\r\n.\r\n".encode()
@@ -276,3 +278,40 @@ class TestYencBlockCrcs:
         decoder.decode_yenc(article, self._response(b"\x01" * 100, 0, 0))
         assert article.block_size == 0
         assert article.block_crcs is None
+
+
+@pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+class TestYencSharedSizes:
+    def test_articles_of_a_file_share_their_sizes(self):
+        nzf = NzbFile(datetime.datetime(2026, 1, 1), "foo.bin", [], 2500, NzbObject("test_shared_sizes"))
+        articles = []
+        for begin in range(0, 2500, 1000):
+            article = Article(f"<{begin}@bar>", 1234, nzf)
+            payload = bytes(range(250)) * 4
+            decoder.decode_yenc(article, TestYencBlockCrcs._response(payload[: 2500 - begin], begin, 1024, 2500))
+            articles.append(article)
+        first, second, last = articles
+
+        assert (second.file_size, second.data_size, second.decoded_size, second.block_size) == (2500, 1000, 1000, 1024)
+        assert second.file_size is first.file_size
+        assert second.data_size is first.data_size
+        assert second.decoded_size is first.decoded_size
+        assert second.block_size is first.block_size
+
+        assert (last.file_size, last.data_begin, last.data_size, last.decoded_size) == (2500, 2000, 500, 500)
+        assert last.file_size is first.file_size
+        assert last.block_size is first.block_size
+
+    def test_sizes_are_shared_when_the_last_article_decodes_first(self):
+        nzf = NzbFile(datetime.datetime(2026, 1, 1), "foo.bin", [], 2500, NzbObject("test_shared_sizes"))
+        articles = {}
+        for begin in (2000, 0, 1000):
+            article = Article(f"<{begin}@bar>", 1234, nzf)
+            payload = bytes(range(250)) * 4
+            decoder.decode_yenc(article, TestYencBlockCrcs._response(payload[: 2500 - begin], begin, 1024, 2500))
+            articles[begin] = article
+
+        assert articles[1000].data_size == 1000
+        assert articles[1000].data_size is articles[0].data_size
+        assert articles[1000].decoded_size is articles[0].decoded_size
+        assert articles[2000].data_size == 500
