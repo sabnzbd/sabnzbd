@@ -21,6 +21,7 @@ sabnzbd.newsunpack
 
 import os
 import sys
+import locale
 import json
 import re
 import subprocess
@@ -92,6 +93,21 @@ IONICE_COMMAND = None
 RAR_PROBLEM = False
 RAR_VERSION = 0
 SEVENZIP_VERSION = ""
+
+
+def unrar_env() -> Optional[dict[str, str]]:
+    """UnRar upper-cases its switches with towupper(), which turns "i" into "İ" in the
+    Turkish, Azerbaijani, Crimean Tatar, Kurdish and Latin Tatar locales of glibc,
+    so switches like -idp and -ai are rejected as unknown options"""
+    if sabnzbd.WINDOWS or sabnzbd.MACOS:
+        return None
+    current_locale = locale.setlocale(locale.LC_CTYPE).lower()
+    if not current_locale.startswith(("tr_", "az_", "crh_", "ku_")) and "@iqtelif" not in current_locale:
+        return None
+    env = dict(os.environ, LC_CTYPE="C.UTF-8")
+    # LC_ALL would take precedence over LC_CTYPE
+    env.pop("LC_ALL", None)
+    return env
 
 
 def find_programs(curdir: str):
@@ -754,7 +770,7 @@ def rar_extract_core(
 
     # On Windows, UnRar uses a custom argument parser
     # See: https://github.com/sabnzbd/sabnzbd/issues/1043
-    p = build_and_run_command(command, windows_unrar_command=True, stdin=subprocess.PIPE)
+    p = build_and_run_command(command, windows_unrar_command=True, stdin=subprocess.PIPE, env=unrar_env())
     sabnzbd.PostProcessor.external_process = p
 
     nzo.set_action_line(T("Unpacking"), "00/%02d" % numrars)

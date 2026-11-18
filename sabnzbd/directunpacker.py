@@ -449,7 +449,11 @@ class DirectUnpacker(threading.Thread):
         # On Windows, UnRar uses a custom argument parser
         # See: https://github.com/sabnzbd/sabnzbd/issues/1043
         self.active_instance = build_and_run_command(
-            command, windows_unrar_command=True, text_mode=False, stdin=subprocess.PIPE
+            command,
+            windows_unrar_command=True,
+            text_mode=False,
+            stdin=subprocess.PIPE,
+            env=sabnzbd.newsunpack.unrar_env(),
         )
 
         # Add to runners

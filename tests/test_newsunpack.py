@@ -187,6 +187,45 @@ class TestNewsUnpackFunctions:
             assert testzip.open(name).read() == name.encode()
 
 
+class TestUnrarEnv:
+    @pytest.fixture(autouse=True)
+    def _linux(self, monkeypatch):
+        monkeypatch.setattr(sabnzbd, "WINDOWS", False)
+        monkeypatch.setattr(sabnzbd, "MACOS", False)
+
+    @pytest.mark.parametrize(
+        "current_locale", ["tr_TR.UTF-8", "az_AZ.UTF-8", "crh_UA.UTF-8", "ku_TR.UTF-8", "tt_RU.UTF-8@iqtelif"]
+    )
+    def test_locale_with_dotted_capital_i_runs_unrar_with_c_utf8(self, monkeypatch, current_locale):
+        monkeypatch.setattr(newsunpack.locale, "setlocale", lambda category: current_locale)
+        monkeypatch.setenv("LC_ALL", current_locale)
+        env = newsunpack.unrar_env()
+        assert env["LC_CTYPE"] == "C.UTF-8"
+        assert "LC_ALL" not in env
+
+    @pytest.mark.parametrize("current_locale", ["en_US.UTF-8", "C.UTF-8", "tt_RU.UTF-8", "ru_UA.UTF-8"])
+    def test_other_locales_keep_the_inherited_environment(self, monkeypatch, current_locale):
+        monkeypatch.setattr(newsunpack.locale, "setlocale", lambda category: current_locale)
+        assert newsunpack.unrar_env() is None
+
+    def test_rar_extract_passes_the_unrar_env(self, monkeypatch, tmp_path):
+        monkeypatch.setattr(newsunpack.locale, "setlocale", lambda category: "tr_TR.UTF-8")
+        monkeypatch.setattr(newsunpack, "RAR_COMMAND", "unrar")
+        run = mock.Mock(side_effect=OSError)
+        monkeypatch.setattr(newsunpack, "build_and_run_command", run)
+        with pytest.raises(OSError):
+            newsunpack.rar_extract_core(
+                os.path.join("tests", "data", "basic_rar5", "testfile.rar"),
+                1,
+                False,
+                make_mock_nzo(),
+                "testfile",
+                str(tmp_path),
+                "",
+            )
+        assert run.call_args.kwargs["env"]["LC_CTYPE"] == "C.UTF-8"
+
+
 class TestPar2Parfiles:
     def test_volumes_a_retry_found_on_disk_are_used(self, tmp_path):
         for name in ("set.par2", "set.vol0+1.par2", "set.vol1+2.par2", "set.vol3+4.par2", "data.bin"):
