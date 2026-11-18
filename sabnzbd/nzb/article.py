@@ -32,6 +32,7 @@ from sabnzbd.decorators import synchronized
 ##############################################################################
 # Trylist
 ##############################################################################
+EMPTY_TRY_LIST: frozenset[Server] = frozenset()
 
 
 class TryList:
@@ -42,7 +43,7 @@ class TryList:
 
     def __init__(self):
         # Sets are faster than lists
-        self.try_list: set[Server] = set()
+        self.try_list: set[Server] | frozenset[Server] = EMPTY_TRY_LIST
 
     @synchronized()
     def server_in_try_list(self, server: Server) -> bool:
@@ -58,25 +59,28 @@ class TryList:
     def add_to_try_list(self, server: Server):
         """Register server as having been tried already"""
         # Sets cannot contain duplicate items
-        self.try_list.add(server)
+        if self.try_list:
+            self.try_list.add(server)
+        else:
+            self.try_list = {server}
 
     @synchronized()
     def remove_from_try_list(self, server: Server):
         """Remove server from list of tried servers"""
-        # Discard does not require the item to be present
-        self.try_list.discard(server)
+        if self.try_list:
+            self.try_list.discard(server)
 
     @synchronized()
     def reset_try_list(self):
         """Clean the list"""
-        self.try_list = set()
+        self.try_list = EMPTY_TRY_LIST
 
     def __getstate__(self):
         """Save the servers"""
         return {server.id for server in self.try_list}
 
     def __setstate__(self, servers_ids: list[str]):
-        self.try_list = set()
+        self.try_list = EMPTY_TRY_LIST
         for server in sabnzbd.Downloader.servers:
             if server.id in servers_ids:
                 self.add_to_try_list(server)

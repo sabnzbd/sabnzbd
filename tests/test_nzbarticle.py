@@ -71,3 +71,14 @@ class TestArticle:
         server = servers[2]
         assert article.get_article(server, servers) == article
         assert article.tries == 3
+
+    def test_untried_article_has_no_set(self):
+        article = Article("test@host.sab", 1234, mock.MagicMock())
+        server = Server("testserver1", 0, True)
+        assert not isinstance(article.try_list, set)
+        article.remove_from_try_list(server)
+        article.add_to_try_list(server)
+        assert article.server_in_try_list(server)
+        article.reset_try_list()
+        assert not article.server_in_try_list(server)
+        assert not isinstance(article.try_list, set)
