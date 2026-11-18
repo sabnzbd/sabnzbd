@@ -625,9 +625,16 @@ class NNTP:
             # Did the user set a custom cipher-string?
             if self.nw.server.ssl_ciphers:
                 # At their own risk, socket will error out in case it was invalid
-                self.nw.server.ssl_context.set_ciphers(self.nw.server.ssl_ciphers)
-                # Python does not allow setting ciphers on TLSv1.3, so have to force TLSv1.2 as the maximum
-                self.nw.server.ssl_context.maximum_version = ssl.TLSVersion.TLSv1_2
+                ciphers = self.nw.server.ssl_ciphers
+                if "TLS_" in ciphers and hasattr(self.nw.server.ssl_context, "set_ciphersuites"):
+                    # Python 3.15+: TLSv1.3 suites given, so we assume user knows that the server supports TLSv1.3
+                    self.nw.server.ssl_context.set_ciphersuites(ciphers)
+                    # Same TLSv1.2 fallback as without custom ciphers, in case the server is TLSv1.2 only
+                    self.nw.server.ssl_context.set_ciphers("HIGH")
+                else:
+                    self.nw.server.ssl_context.set_ciphers(ciphers)
+                    # No TLSv1.3 suites, so force TLSv1.2 as the maximum so custom ciphers are actually applied
+                    self.nw.server.ssl_context.maximum_version = ssl.TLSVersion.TLSv1_2
             else:
                 # Support at least TLSv1.2+ ciphers, as some essential ones are removed by default in Python 3.10
                 self.nw.server.ssl_context.set_ciphers("HIGH")

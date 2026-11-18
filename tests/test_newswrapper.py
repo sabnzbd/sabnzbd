@@ -250,7 +250,26 @@ class TestNewsWrapper:
             (ssl.TLSVersion.TLSv1_1, None, None, False),
             (None, None, "RC4-MD5", False),  # No connection for old cipher
             (None, "TLSv1.2", "AES256-SHA", True),  # Forced to TLSv1.2 if ciphers set
-            (None, None, "TLS_AES_128_CCM_SHA256", False),  # Cannot force use of TLSv1.3 cipher
+            pytest.param(
+                None,
+                None,
+                "TLS_AES_128_CCM_SHA256",
+                False,
+                marks=pytest.mark.skipif(
+                    hasattr(ssl.SSLContext, "set_ciphersuites"), reason="TLSv1.3 suites supported"
+                ),
+                id="tls13-suite-unsupported",
+            ),  # Cannot force use of TLSv1.3 cipher before Python 3.15
+            pytest.param(
+                None,
+                "TLSv1.3",
+                "TLS_AES_128_GCM_SHA256",
+                True,
+                marks=pytest.mark.skipif(
+                    not hasattr(ssl.SSLContext, "set_ciphersuites"), reason="Needs ssl.SSLContext.set_ciphersuites"
+                ),
+                id="tls13-suite",
+            ),
         ],
     )
     def test_newswrapper(
