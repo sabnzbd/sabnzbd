@@ -23,6 +23,7 @@ import array
 import logging
 import threading
 from typing import Optional
+from weakref import WeakValueDictionary
 
 import sabnzbd
 from sabnzbd.downloader import Server
@@ -32,7 +33,6 @@ from sabnzbd.decorators import synchronized
 ##############################################################################
 # Trylist
 ##############################################################################
-EMPTY_TRY_LIST: frozenset[Server] = frozenset()
 
 
 class TryList:
@@ -41,9 +41,19 @@ class TryList:
     # Pre-define attributes to save memory
     __slots__ = ("try_list",)
 
+    # Articles with the same tried servers share one frozenset.
+    # Weak, so a replaced Server is not kept alive once no article refers to it anymore.
+    _shared_try_lists: WeakValueDictionary[tuple[Server, ...], frozenset[Server]] = WeakValueDictionary()
+
     def __init__(self):
-        # Sets are faster than lists
-        self.try_list: set[Server] | frozenset[Server] = EMPTY_TRY_LIST
+        # Frozensets are never modified, so they can be shared between objects
+        self.try_list: frozenset[Server] = self._use_shared_try_list()
+
+    @classmethod
+    def _use_shared_try_list(cls, servers: frozenset[Server] = frozenset()) -> frozenset[Server]:
+        """Return the shared frozenset for this combination of servers"""
+        # The key must be another object than the value, otherwise the key keeps the value alive
+        return cls._shared_try_lists.setdefault(tuple(sorted(servers, key=id)), servers)
 
     @synchronized()
     def server_in_try_list(self, server: Server) -> bool:
@@ -58,32 +68,30 @@ class TryList:
     @synchronized()
     def add_to_try_list(self, server: Server):
         """Register server as having been tried already"""
-        # Sets cannot contain duplicate items
-        if self.try_list:
-            self.try_list.add(server)
-        else:
-            self.try_list = {server}
+        if server not in self.try_list:
+            self.try_list = self._use_shared_try_list(self.try_list.union((server,)))
 
     @synchronized()
     def remove_from_try_list(self, server: Server):
         """Remove server from list of tried servers"""
-        if self.try_list:
-            self.try_list.discard(server)
+        if server in self.try_list:
+            self.try_list = self._use_shared_try_list(self.try_list.difference((server,)))
 
     @synchronized()
     def reset_try_list(self):
         """Clean the list"""
-        self.try_list = EMPTY_TRY_LIST
+        self.try_list = self._use_shared_try_list()
 
     def __getstate__(self):
         """Save the servers"""
         return {server.id for server in self.try_list}
 
     def __setstate__(self, servers_ids: list[str]):
-        self.try_list = EMPTY_TRY_LIST
-        for server in sabnzbd.Downloader.servers:
-            if server.id in servers_ids:
-                self.add_to_try_list(server)
+        self.try_list = self._use_shared_try_list()
+        if servers_ids:
+            for server in sabnzbd.Downloader.servers:
+                if server.id in servers_ids:
+                    self.add_to_try_list(server)
 
 
 ##############################################################################
