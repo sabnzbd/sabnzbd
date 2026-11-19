@@ -418,7 +418,8 @@ class NzbFile(TryList):
         if isinstance(self.articles, list):
             # Converted from list to dict
             self.articles = {x: x for x in self.articles}
-        for article in self.articles:
+        # Also the finished articles, which are no longer in self.articles
+        for article in self.decodetable:
             article.lock = self.lock
         super().__setstate__(dict_.get("try_list", []))
 

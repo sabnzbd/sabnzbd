@@ -19,11 +19,14 @@
 tests.test_nzbfile - Testing functions in nzb/file.py
 """
 
+import pickle
 import sys
 from datetime import datetime
+from unittest import mock
 
 import pytest
 
+import sabnzbd
 from sabnzbd.nzb import NzbFile, NzbObject
 from tests.testhelper import SAB_CACHE_DIR
 
@@ -108,3 +111,22 @@ class TestNzbFile:
         assert nzf.remove_article(articles[2], True)
         # Articles stay reachable for the assembler and par2
         assert len(nzf.decodetable) == 3
+
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+    def test_restored_articles_share_file_lock(self):
+        """Finished articles are not in nzf.articles, but must still share the file lock"""
+        nzo = NzbObject("test")
+        nzf = NzbFile(datetime.now(), "file.bin", [("a", 10), ("b", 10), ("c", 10)], 30, nzo)
+        nzf.finish_import()
+        nzf.remove_article(nzf.decodetable[0], True)
+        assert len(nzf.articles) == 2
+
+        # Restore the state like the queue file does, the nzo is not part of this test
+        state = nzf.__getstate__()
+        state["nzo"] = None
+        with mock.patch.object(sabnzbd, "Downloader", mock.Mock(servers=[]), create=True):
+            restored = NzbFile.__new__(NzbFile)
+            restored.__setstate__(pickle.loads(pickle.dumps(state)))
+
+        assert len(restored.decodetable) == 3
+        assert all(article.lock is restored.lock for article in restored.decodetable)
