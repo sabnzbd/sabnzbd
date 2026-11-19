@@ -19,6 +19,7 @@
 tests.test_nzbfile - Testing functions in nzb/file.py
 """
 
+import sys
 from datetime import datetime
 
 import pytest
@@ -85,3 +86,25 @@ class TestNzbFile:
         files2.sort()
 
         assert [f.filename for f in files1] == [f.filename for f in files2]
+
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
+    def test_remove_article_releases_table(self):
+        """The articles dict never shrinks on pop, so it is cleared once the file is done"""
+        nzo = NzbObject("test")
+        nzf = NzbFile(datetime.now(), "file.bin", [("a", 10), ("b", 10), ("c", 10)], 30, nzo)
+        nzf.finish_import()
+        nzf.import_finished = True
+        articles = list(nzf.articles)
+        assert len(articles) == 3
+        size_before = sys.getsizeof(nzf.articles)
+
+        assert not nzf.remove_article(articles[0], True)
+        assert not nzf.remove_article(articles[1], True)
+        assert nzf.remove_article(articles[2], True)
+        assert not nzf.articles
+        assert sys.getsizeof(nzf.articles) < size_before
+        assert nzf.bytes_left == 0
+        # Removing again is harmless and still reports done
+        assert nzf.remove_article(articles[2], True)
+        # Articles stay reachable for the assembler and par2
+        assert len(nzf.decodetable) == 3

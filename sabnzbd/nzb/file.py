@@ -187,7 +187,11 @@ class NzbFile(TryList):
             else:
                 article.failed = True
         # Only on fully loaded files we can know if it's really done
-        return self.import_finished and not self.articles
+        if self.import_finished and not self.articles:
+            # Popping never shrinks a dict, clear it to release its table
+            self.articles.clear()
+            return True
+        return False
 
     def set_par2(self, setname, vol, blocks):
         """Designate this file as a par2 file"""
