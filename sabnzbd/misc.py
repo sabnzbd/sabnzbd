@@ -1707,6 +1707,23 @@ def run_script(script: str):
             logging.info("Failed script %s, Traceback: ", script, exc_info=True)
 
 
+class ProxiedSocket(socks.socksocket):
+    """Socket that connects through the proxy, but still reports the peer of incoming connections.
+
+    PySocks only knows the peer of connections it made itself and returns None otherwise,
+    which would hide the client address of connections accepted by our own web server."""
+
+    def getpeername(self):
+        if self.proxy_peername:
+            return self.proxy_peername
+        try:
+            # Skip the PySocks override to get the real peer
+            return super(socks.socksocket, self).getpeername()
+        except OSError:
+            # Must not raise for unconnected sockets, PySocks calls this from settimeout()
+            return None
+
+
 def set_socks5_proxy():
     if cfg.socks5_proxy_url():
         proxy = urllib.parse.urlparse(cfg.socks5_proxy_url())
@@ -1719,7 +1736,7 @@ def set_socks5_proxy():
             proxy.username,
             proxy.password,
         )
-        socket.socket = socks.socksocket
+        socket.socket = ProxiedSocket
 
 
 def set_https_verification(value: bool) -> bool:
