@@ -1260,6 +1260,8 @@ _SAFE_GLOBALS = {
     ("builtins", "frozenset"),
     ("builtins", "bytearray"),
     ("builtins", "complex"),
+    ("array", "array"),
+    ("array", "_array_reconstructor"),
     ("copyreg", "_reconstructor"),
     ("sabnzbd.nzb.object", "NzbObject"),
     ("sabnzbd.nzb.file", "NzbFile"),
