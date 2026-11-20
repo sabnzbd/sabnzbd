@@ -217,7 +217,6 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
 
     # Let SABCTools do all the heavy lifting
     decoded_data = response.data
-    article.file_size = response.file_size
     article.data_begin = response.part_begin
     article.data_size = response.part_size
     article.decoded_size = response.bytes_decoded
@@ -227,6 +226,8 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
     nzf = article.nzf
     # Assume it is yenc
     nzf.type = "yenc"
+    if nzf.file_size is None and article.data_size:
+        nzf.file_size = response.file_size
 
     # Only set the name if it was found and not obfuscated. Streamed articles never
     # reach here: a sink is only handed out once the filename has been checked, exactly

@@ -100,7 +100,6 @@ class TestAssembler:
         article.decoded = decoded
         article.data_begin = offset
         article.data_size = len(data) if can_direct_write else None
-        article.file_size = nzf.bytes
         article.decoded_size = len(data)
         article.crc32 = crc32(data)
         article.tries = 1  # force aborts if never tried
@@ -119,8 +118,7 @@ class TestAssembler:
         nzf.bytes = len(expected)
         sabnzbd.ArticleCache.load_article = mock.Mock(side_effect=lambda article: article_data.get(article))
 
-        for article, _ in articles:
-            article.file_size = nzf.bytes
+        nzf.file_size = nzf.bytes
 
         return article_data.values(), expected
 
@@ -130,7 +128,7 @@ class TestAssembler:
             content = f.read()
         assert content == expected
         assert nzf.assembler_next_index == len(nzf.decodetable)
-        assert nzf.contiguous_offset() == nzf.decodetable[0].file_size
+        assert nzf.contiguous_offset() == nzf.file_size
         # crc32 is finalized in post-processing, not during assembly. Once combined in decodetable
         # order it must match the file regardless of the order articles were written to disk
         nzf.finalize_crc32()
@@ -337,8 +335,7 @@ class TestAssembler:
             ],
         )
         # The yEnc headers overstate the size, which par2 records correctly
-        for article in self.nzf.decodetable:
-            article.file_size = 16
+        self.nzf.file_size = 16
         self.nzo.par2packs = {"set": {self.nzf.filename: FilePar2Info(self.nzf.filename, b"", 10)}}
         Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
         with open(self.nzf.filepath, "rb") as f:
@@ -353,8 +350,7 @@ class TestAssembler:
                 self._make_article(self.nzf, offset=0, data=bytearray(b"efg"), can_direct_write=False),
             ],
         )
-        for article in self.nzf.decodetable:
-            article.file_size = None
+        self.nzf.file_size = None
         self.nzo.par2packs = {"set": {self.nzf.filename: FilePar2Info(self.nzf.filename, b"", 7)}}
         with mock.patch.object(sabnzbd.cfg.direct_write, "get", return_value=True):
             Assembler.assemble(
