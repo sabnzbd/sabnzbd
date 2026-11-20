@@ -1743,7 +1743,6 @@ class TestQueuePickleTypes:
             "bytes": 1000,
             "lowest_partnum": True,
             "decoded": True,
-            "file_size": 5000,
             "data_begin": 0,
             "data_size": 990,
             "on_disk": True,
@@ -1776,6 +1775,7 @@ class TestQueuePickleTypes:
             "assembled": True,
             "direct_written": True,
             "md5of16k": b"\x00" * 16,
+            "file_size": 5000,
         }
         nzo_values = {
             "filename": "test.nzb",

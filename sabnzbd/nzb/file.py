@@ -71,6 +71,7 @@ NzbFileSaver = (
     "assembled",
     "direct_written",
     "md5of16k",
+    "file_size",
 )
 
 
@@ -115,6 +116,7 @@ class NzbFile(TryList):
         # Cleared once an article is packed at a running offset
         self.direct_written: bool = True
         self.md5of16k: Optional[bytes] = None
+        self.file_size: Optional[int] = None
         self.assembler_next_index: int = 0
 
         # Add first article to decodetable, this way we can check

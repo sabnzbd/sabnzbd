@@ -103,7 +103,6 @@ ArticleSaver = (
     "bytes",
     "lowest_partnum",
     "decoded",
-    "file_size",
     "data_begin",
     "data_size",
     "on_disk",
@@ -132,7 +131,6 @@ class Article(TryList):
         self.fetcher_priority: int = 0
         self.tries: int = 0  # Try count
         self.decoded: bool = False
-        self.file_size: Optional[int] = None
         self.data_begin: Optional[int] = None
         self.data_size: Optional[int] = None
         self.decoded_size: Optional[int] = None  # Size of the decoded article
