@@ -53,6 +53,7 @@ from sabnzbd.constants import (
     DEF_ARTICLE_CACHE_DEFAULT,
     DEF_ARTICLE_CACHE_MAX,
     REPAIR_REQUEST,
+    OPEN_FILE_LIMIT_TARGET,
     GUESSIT_SORT_TYPES,
     PP_LOOKUP,
     VALID_ARCHIVES,
@@ -91,6 +92,9 @@ if sabnzbd.WINDOWS:
 
 if sabnzbd.MACOS:
     from sabnzbd.utils import sleepless
+
+if not sabnzbd.WINDOWS:
+    import resource
 
 
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
@@ -856,6 +860,21 @@ def get_cache_limit() -> str:
 
     # If failed, leave empty for Linux so user needs to decide
     return ""
+
+
+def raise_open_file_limit() -> None:
+    """Raise the soft limit on open files to OPEN_FILE_LIMIT_TARGET, within the hard limit"""
+    if sabnzbd.WINDOWS:
+        return
+    soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+    target = OPEN_FILE_LIMIT_TARGET if hard == resource.RLIM_INFINITY else min(hard, OPEN_FILE_LIMIT_TARGET)
+    if soft == resource.RLIM_INFINITY or target <= soft:
+        return
+    try:
+        resource.setrlimit(resource.RLIMIT_NOFILE, (target, hard))
+        logging.info("Raised the open file limit from %d to %d", soft, target)
+    except (ValueError, OSError):
+        logging.debug("Could not raise the open file limit from %d to %d", soft, target)
 
 
 def get_memory() -> int:

@@ -290,6 +290,8 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
         repair = 2
         pause_downloader = True
 
+    misc.raise_open_file_limit()
+
     # Initialize threads
     sabnzbd.ArticleCache = sabnzbd.articlecache.ArticleCache()
     sabnzbd.BPSMeter = sabnzbd.bpsmeter.BPSMeter()
