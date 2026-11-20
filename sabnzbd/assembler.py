@@ -641,25 +641,37 @@ class Assembler(Thread):
         """
         with nzf.file_lock:
             writer = sabnzbd.Assembler.get_writer(nzf)
-            if (file_size := nzf.file_size) and (par2_size := nzf.nzo.par2_file_size(nzf.filename)):
-                file_size = min(file_size, par2_size)
             # Every write carries its own offset, so the file position is never read and
             # does not need seeking to the append point
             offset = nzf.contiguous_offset()
             if direct_write:
-                if not file_size:
-                    direct_write = False
-                # Read from the handle just opened, so it cannot disagree with the file
-                # being written
-                if writer.size == 0:
-                    set_permissions(nzf.filepath)
+                direct_write = Assembler.preallocate(nzf, writer)
+            return writer, offset, direct_write
+
+    @staticmethod
+    def preallocate(nzf: NzbFile, writer: sabctools.FileWriter) -> bool:
+        """Size the file the first time it is opened for writes at offsets
+
+        :returns whether writes can be placed at their offsets
+        """
+        with nzf.file_lock:
+            if not (file_size := nzf.file_size):
+                return False
+            if par2_size := nzf.nzo.par2_file_size(nzf.filename):
+                file_size = min(file_size, par2_size)
+            if not nzf.preallocated:
+                set_permissions(nzf.filepath)
+                # Read from the handle, so it cannot disagree with the file being written
+                if writer.size < file_size:
                     try:
                         writer.preallocate(file_size)
                     except sabctools.SparseUnsupported:
                         logging.debug("Sparse call failed for %s", nzf.filepath)
                         cfg.direct_write.set(False)
-                        direct_write = False
-            return writer, offset, direct_write
+                        return False
+                # Only once the file is sized, article_sink reads this without the lock
+                nzf.preallocated = True
+            return True
 
 
 RE_SUBS = re.compile(r"\W+sub|subs|subpack|subtitle|subtitles(?![a-z])", re.I)
