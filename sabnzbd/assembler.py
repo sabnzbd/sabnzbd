@@ -55,6 +55,7 @@ from sabnzbd.constants import (
     ASSEMBLER_WRITE_INTERVAL,
     ASSEMBLER_TRIGGER_PERCENTAGE,
     ASSEMBLER_MAX_IDLE_WRITERS,
+    ASSEMBLER_MAX_STREAM_WRITERS,
 )
 import sabnzbd.cfg as cfg
 from sabnzbd.nzb import NzbFile, NzbObject, Article
@@ -159,6 +160,9 @@ class Assembler(Thread):
         dropped from those stays open while a pending request holds it, and is handed
         out again rather than opening the file a second time.
 
+        A stream that would take the handles open past ASSEMBLER_MAX_STREAM_WRITERS
+        gets None and decodes to memory. The assembler always gets a handle.
+
         A stream gets no new handle once the file or job is finished, and nothing gets
         one once the job is deleted.
         """
@@ -169,6 +173,9 @@ class Assembler(Thread):
 
                 if nzf.nzo.status is Status.DELETED:
                     raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), nzf.filepath)
+
+                if stream and len(self.writers) >= ASSEMBLER_MAX_STREAM_WRITERS:
+                    return None
 
                 writer = sabctools.FileWriter(nzf.filepath)
                 self.writers[nzf.nzf_id] = writer

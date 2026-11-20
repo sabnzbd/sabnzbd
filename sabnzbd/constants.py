@@ -118,10 +118,12 @@ ASSEMBLER_DRAIN_MARGIN = 0.9
 # Percentage of cache to use before adding file to assembler
 ASSEMBLER_TRIGGER_PERCENTAGE = 0.05
 # Idle handles kept open so an article does not cost an open/close pair. Handles held
-# by pending requests stay open on top of these.
+# by pending requests stay open on top of these, bounded by ASSEMBLER_MAX_STREAM_WRITERS.
 ASSEMBLER_MAX_IDLE_WRITERS = 32
 # Soft limit on open files raised to at startup, within the hard limit
 OPEN_FILE_LIMIT_TARGET = 4096
+# Most handles open at once before a stream decodes to memory instead
+ASSEMBLER_MAX_STREAM_WRITERS = 512
 ASSEMBLER_WRITE_INTERVAL = 5.0
 NNTP_BUFFER_SIZE = int(256 * KIBI)
 NTTP_MAX_BUFFER_SIZE = int(10 * MEBI)
