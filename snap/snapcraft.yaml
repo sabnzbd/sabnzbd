@@ -97,15 +97,19 @@ parts:
     source: .
     plugin: nil
     build-packages:
-      - jq
       - curl
     build-environment:
       - LDFLAGS: -s
     override-pull: |
       SEVENZIP_TARBALL_PATH="$CRAFT_PROJECT_DIR/snap/7zip.tar.gz"
       if [ ! -f "$SEVENZIP_TARBALL_PATH" ]; then
-        SEVENZIP_TARBALL="$(curl -sL https://api.github.com/repos/ip7z/7zip/releases/latest | jq -r '.tarball_url')"
-        curl -o "$SEVENZIP_TARBALL_PATH" -L "$SEVENZIP_TARBALL"
+        SEVENZIP_LATEST_URL="$(curl -sfL --retry 5 --retry-all-errors -o /dev/null -w '%{url_effective}' https://github.com/ip7z/7zip/releases/latest)"
+        SEVENZIP_TAG="${SEVENZIP_LATEST_URL##*/tag/}"
+        if [ -z "$SEVENZIP_TAG" ] || [ "$SEVENZIP_TAG" = "$SEVENZIP_LATEST_URL" ]; then
+          echo "failed to determine latest 7zip release from $SEVENZIP_LATEST_URL"
+          exit 42
+        fi
+        curl -fL --retry 5 --retry-all-errors -o "$SEVENZIP_TARBALL_PATH" "https://github.com/ip7z/7zip/archive/refs/tags/$SEVENZIP_TAG.tar.gz"
       else
         echo "Using cached snap/7zip.tar.gz"
       fi
@@ -126,14 +130,14 @@ parts:
     override-pull: |
       UNRAR_TARBALL_PATH="$CRAFT_PROJECT_DIR/snap/unrar.tar.gz"
       if [ ! -f "$UNRAR_TARBALL_PATH" ]; then
-        UNRAR_TARBALL_LINK="$(curl -sL https://www.rarlab.com/rar_add.htm | sed -z -n -e s%'.*<a href="\(rar/unrarsrc-[.0-9]\+.tar.gz\)">UnRAR\ source</a>.*%\1%p')"
+        UNRAR_TARBALL_LINK="$(curl -sfL --retry 5 --retry-all-errors https://www.rarlab.com/rar_add.htm | sed -z -n -e s%'.*<a href="\(rar/unrarsrc-[.0-9]\+.tar.gz\)">UnRAR\ source</a>.*%\1%p')"
         if [ ! -z "$UNRAR_TARBALL_LINK" ]; then
           UNRAR_TARBALL="https://www.rarlab.com/$UNRAR_TARBALL_LINK"
         else
           echo "failed to extract unrar tarball link"
           exit 42
         fi
-        curl -o "$UNRAR_TARBALL_PATH" -L "$UNRAR_TARBALL"
+        curl -fL --retry 5 --retry-all-errors -o "$UNRAR_TARBALL_PATH" "$UNRAR_TARBALL"
       else
         echo "Using cached snap/unrar.tar.gz"
       fi
