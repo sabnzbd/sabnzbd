@@ -164,6 +164,7 @@ WIN_SERVICE = None  # Instance of our Win32 Service Class
 BROWSER_URL = None
 
 NO_DOWNLOADING = False  # When essentials are missing (SABCTools/par2/unrar)
+OPEN_FILE_LIMIT: Optional[int] = None  # Soft limit on open files, None when there is none
 
 WEB_DIR = None
 WEB_DIR_CONFIG = None

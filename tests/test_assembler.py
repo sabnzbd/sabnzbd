@@ -1011,6 +1011,17 @@ class TestWriterCache:
         assembler.close_writer(victim)
         assert held.closed is True
 
+    def test_a_stream_past_the_ceiling_falls_back_to_memory(self, assembler, tmp_path):
+        assembler.max_stream_writers = ASSEMBLER_MAX_IDLE_WRITERS + 8
+        decoder = sabctools.Decoder(1024)
+        for index in range(assembler.max_stream_writers):
+            nzf = self.make_nzf(tmp_path, "pinned%d" % index)
+            decoder.expect(nzf, assembler.get_writer(nzf, stream=True))
+
+        assert assembler.get_writer(self.make_nzf(tmp_path, "one_more"), stream=True) is None
+        # The assembler still gets one
+        assert assembler.get_writer(self.make_nzf(tmp_path, "assembled")) is not None
+
     def test_close_all_writers(self, assembler, tmp_path):
         files = [self.make_nzf(tmp_path, "shutdown%d" % index) for index in range(5)]
         writers = [assembler.get_writer(nzf) for nzf in files]

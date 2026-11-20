@@ -863,18 +863,22 @@ def get_cache_limit() -> str:
 
 
 def raise_open_file_limit() -> None:
-    """Raise the soft limit on open files to OPEN_FILE_LIMIT_TARGET, within the hard limit"""
+    """Raise the soft limit on open files to OPEN_FILE_LIMIT_TARGET, within the hard limit,
+    and store the soft limit in force in sabnzbd.OPEN_FILE_LIMIT"""
     if sabnzbd.WINDOWS:
         return
     soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
-    target = OPEN_FILE_LIMIT_TARGET if hard == resource.RLIM_INFINITY else min(hard, OPEN_FILE_LIMIT_TARGET)
-    if soft == resource.RLIM_INFINITY or target <= soft:
+    if soft == resource.RLIM_INFINITY:
         return
-    try:
-        resource.setrlimit(resource.RLIMIT_NOFILE, (target, hard))
-        logging.info("Raised the open file limit from %d to %d", soft, target)
-    except (ValueError, OSError):
-        logging.debug("Could not raise the open file limit from %d to %d", soft, target)
+    target = OPEN_FILE_LIMIT_TARGET if hard == resource.RLIM_INFINITY else min(hard, OPEN_FILE_LIMIT_TARGET)
+    if target > soft:
+        try:
+            resource.setrlimit(resource.RLIMIT_NOFILE, (target, hard))
+            logging.info("Raised the open file limit from %d to %d", soft, target)
+            soft = target
+        except (ValueError, OSError):
+            logging.debug("Could not raise the open file limit from %d to %d", soft, target)
+    sabnzbd.OPEN_FILE_LIMIT = soft
 
 
 def get_memory() -> int:
