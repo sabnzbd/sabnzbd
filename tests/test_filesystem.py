@@ -19,6 +19,7 @@
 tests.test_filesystem - Testing functions in filesystem.py
 """
 
+import array
 import datetime
 import errno
 import io
@@ -43,7 +44,21 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd import cfg
 import sabnzbd.filesystem as filesystem
-from sabnzbd.constants import DEF_FOLDER_MAX, DEF_FILE_MAX, JOB_ADMIN, DEF_DOWNLOAD_DIR, DEF_COMPLETE_DIR
+from sabnzbd.constants import (
+    DEF_FOLDER_MAX,
+    DEF_FILE_MAX,
+    JOB_ADMIN,
+    DEF_DOWNLOAD_DIR,
+    DEF_COMPLETE_DIR,
+    NORMAL_PRIORITY,
+    DuplicateStatus,
+    Status,
+)
+from sabnzbd.nzb import NzbObject
+from sabnzbd.nzb.article import Article, ArticleSaver
+from sabnzbd.nzb.file import NzbFile, NzbFileSaver
+from sabnzbd.nzb.object import NzbObjectSaver
+from sabnzbd.par2file import FilePar2Info
 
 # Set the global uid for fake filesystems to a non-root user;
 # by default this depends on the user running pytest.
@@ -1710,6 +1725,146 @@ class TestRestrictedUnpickler:
         assert isinstance(data, dict) and data
         feed_jobs = next(iter(data.values()))
         assert isinstance(feed_jobs, dict) and feed_jobs
+
+
+class TestQueuePickleTypes:
+    """Every attribute saved for a queued job, filled with the type it holds at runtime"""
+
+    @staticmethod
+    def queue_objects():
+        nzo = NzbObject.__new__(NzbObject)
+        nzf = NzbFile.__new__(NzbFile)
+        article = Article.__new__(Article)
+        nzf_id = "SABnzbd_nzf_test"
+
+        article_values = {
+            "article": "part1of2@example",
+            "art_id": "SABnzbd_article_test",
+            "bytes": 1000,
+            "lowest_partnum": True,
+            "decoded": True,
+            "file_size": 5000,
+            "data_begin": 0,
+            "data_size": 990,
+            "on_disk": True,
+            "failed": False,
+            "nzf": nzf,
+            "crc32": 0x1234ABCD,
+            "decoded_size": 990,
+            "block_size": 512,
+            "block_crcs": array.array("I", [1, 2, 3]),
+        }
+        nzf_values = {
+            "date": datetime.datetime(2024, 1, 1, 12, 0),
+            "filename": "test.part01.rar",
+            "filename_checked": True,
+            "filepath": "/downloads/incomplete/test/test.part01.rar",
+            "type": "yenc",
+            "is_par2": False,
+            "vol": 1,
+            "blocks": 2,
+            "setname": "test",
+            "articles": {article: article},
+            "decodetable": [article],
+            "bytes": 1000,
+            "bytes_left": 0,
+            "nzo": nzo,
+            "nzf_id": nzf_id,
+            "deleted": False,
+            "import_finished": True,
+            "crc32": 0x1234ABCD,
+            "assembled": True,
+            "direct_written": True,
+            "md5of16k": b"\x00" * 16,
+        }
+        nzo_values = {
+            "filename": "test.nzb",
+            "work_name": "test",
+            "final_name": "test",
+            "bytes": 1000,
+            "bytes_downloaded": 1000,
+            "bytes_tried": 1000,
+            "bytes_missing": 0,
+            "bytes_par2": 0,
+            "repair": True,
+            "unpack": True,
+            "delete": True,
+            "script": "script.py",
+            "cat": "tv",
+            "url": "https://example.com/test.nzb",
+            "groups": ["alt.binaries.test"],
+            "avg_date": datetime.datetime(2024, 1, 1, 12, 0),
+            "propagation_delay": 1.5,
+            "md5of16k": {b"\x00" * 16: "test.part01.rar"},
+            "extrapars": {"test": [nzf]},
+            "par2packs": {"test": {"00" * 16: FilePar2Info("test.part01.rar", b"\x00" * 16, 5000)}},
+            "files": [nzf],
+            "files_table": {nzf_id: nzf},
+            "finished_files": [nzf],
+            "status": Status.QUEUED,
+            "avg_bps_freq": 1,
+            "avg_bps_total": 1000,
+            "priority": NORMAL_PRIORITY,
+            "saved_articles": {article},
+            "nzo_id": "SABnzbd_nzo_test",
+            "futuretype": False,
+            "removed_from_queue": False,
+            "action_line": "Downloading",
+            "unpack_info": {"Unpack": ["Unpacked 1 files"]},
+            "fail_msg": "Failed",
+            "nzo_info": {"RSS": "feed"},
+            "custom_name": "test",
+            "password": "secret",
+            "correct_password": "secret",
+            "next_save": 1704110400.0,
+            "save_timeout": 120.0,
+            "encrypted": 0,
+            "bad_articles": 0,
+            "duplicate": DuplicateStatus.DUPLICATE,
+            "duplicate_key": "test",
+            "oversized": False,
+            "precheck": False,
+            "incomplete": False,
+            "reuse": "/downloads/incomplete/test",
+            "meta": {"password": ["secret"]},
+            "first_articles": [article],
+            "first_articles_count": 1,
+            "md5sum": "d41d8cd98f00b204e9800998ecf8427e",
+            "download_path": "/downloads/incomplete/test",
+            "servercount": {"server": 1000},
+            "unwanted_ext": 0,
+            "renames": {"old.rar": "test.part01.rar"},
+            "time_added": 1704110400,
+        }
+
+        objects = {
+            Article: (article, article_values, ArticleSaver),
+            NzbFile: (nzf, nzf_values, NzbFileSaver),
+            NzbObject: (nzo, nzo_values, NzbObjectSaver),
+        }
+        for obj, values, _ in objects.values():
+            obj.try_list = frozenset()
+            for name, value in values.items():
+                setattr(obj, name, value)
+        return objects
+
+    @pytest.mark.parametrize("cls", [Article, NzbFile, NzbObject], ids=lambda cls: cls.__name__)
+    def test_every_saved_attribute_unpickles(self, cls):
+        _, values, saver = self.queue_objects()[cls]
+        assert set(values) == set(saver), "Add a runtime-typed value for every attribute in the Saver"
+
+        nzo = self.queue_objects()[NzbObject][0]
+        restored_nzo = filesystem.RestrictedUnpickler(
+            io.BytesIO(pickle.dumps(nzo, protocol=pickle.HIGHEST_PROTOCOL))
+        ).load()
+        restored = {
+            NzbObject: restored_nzo,
+            NzbFile: restored_nzo.files[0],
+            Article: restored_nzo.files[0].decodetable[0],
+        }[cls]
+
+        for name, value in values.items():
+            assert type(getattr(restored, name)) is type(value), name
 
 
 class TestUnwantedExtensions:
