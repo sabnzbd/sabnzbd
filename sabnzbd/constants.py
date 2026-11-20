@@ -117,10 +117,9 @@ ASSEMBLER_MAX_DELAY = 0.5
 ASSEMBLER_DRAIN_MARGIN = 0.9
 # Percentage of cache to use before adding file to assembler
 ASSEMBLER_TRIGGER_PERCENTAGE = 0.05
-# Files kept open for writing at once. Handles are cached so an article does not cost an
-# open/close pair, but they are a limited resource shared with every socket the
-# downloader holds, so the cache is bounded rather than growing with the queue.
-ASSEMBLER_MAX_OPEN_WRITERS = 32
+# Idle handles kept open so an article does not cost an open/close pair. Handles held
+# by pending requests stay open on top of these.
+ASSEMBLER_MAX_IDLE_WRITERS = 32
 # Soft limit on open files raised to at startup, within the hard limit
 OPEN_FILE_LIMIT_TARGET = 4096
 ASSEMBLER_WRITE_INTERVAL = 5.0
