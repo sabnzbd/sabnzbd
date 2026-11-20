@@ -33,6 +33,7 @@ from sabnzbd.assembler import Assembler
 from sabnzbd.constants import ASSEMBLER_MAX_OPEN_WRITERS, GIGI, Status
 from sabnzbd.filesystem import Diskspace
 from sabnzbd.misc import pp_to_opts
+from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.nzb import Article, NzbFile, NzbObject
 from sabnzbd.par2file import FilePar2Info
 from tests.testhelper import make_mock_nzo
@@ -325,6 +326,46 @@ class TestAssembler:
             Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
         with open(self.nzf.filepath, "rb") as f:
             assert f.read() == b"hello"
+
+    @pytest.fixture
+    def streaming(self):
+        with (
+            mock.patch.object(sabnzbd.cfg.direct_decode, "get", return_value=True),
+            mock.patch.object(sabnzbd.cfg.direct_write, "get", return_value=True),
+            mock.patch.object(sabnzbd, "WriteMonitor", SimpleNamespace(allow_direct_decode=True), create=True),
+        ):
+            yield
+
+    def test_stream_before_first_article_preallocates(self, assembler, streaming):
+        _data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world")),
+            ],
+        )
+        writer = NewsWrapper.article_sink(None, self.nzf.decodetable[1])
+        assert writer is not None
+        assert self.nzf.preallocated
+        assert writer.size == len(expected)
+        writer.write(b"world", 5)
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
+        self._assert_expected_content(self.nzf, expected)
+
+    def test_no_stream_until_file_size_is_known(self, assembler, streaming):
+        _data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world")),
+            ],
+        )
+        self.nzf.file_size = None
+        assert NewsWrapper.article_sink(None, self.nzf.decodetable[1]) is None
+        assert not self.nzf.preallocated
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
+        with open(self.nzf.filepath, "rb") as f:
+            assert f.read() == expected
 
     def test_direct_write_allocates_the_size_par2_records(self, assembler):
         self._make_request(

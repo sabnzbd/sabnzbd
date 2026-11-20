@@ -208,11 +208,14 @@ class NewsWrapper:
             return None
 
         try:
-            return sabnzbd.Assembler.get_writer(nzf, stream=True)
+            writer = sabnzbd.Assembler.get_writer(nzf, stream=True)
+            # Size the file before anything lands in it, so it can still be made sparse
+            if writer and (nzf.preallocated or sabnzbd.Assembler.preallocate(nzf, writer)):
+                return writer
         except OSError:
             # Cannot open the file: fall back to memory rather than failing the article
             logging.debug("Could not open %s for streaming", nzf.filepath, exc_info=True)
-            return None
+        return None
 
     def queue_command(
         self,
