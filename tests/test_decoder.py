@@ -276,3 +276,32 @@ class TestYencBlockCrcs:
         decoder.decode_yenc(article, self._response(b"\x01" * 100, 0, 0))
         assert article.block_size == 0
         assert article.block_crcs is None
+
+
+class TestYencFileSize:
+    @staticmethod
+    def _response(payload: bytes, size: int, crc_ok: bool = True) -> sabctools.NNTPResponse:
+        encoded, crc = sabctools.yenc_encode(payload)
+        if not crc_ok:
+            crc ^= 0xFFFFFFFF
+        raw_data = (
+            b"222 0 <foo@bar>\r\n"
+            + f"=ybegin part=1 line=128 size={size} name=foo.bin\r\n".encode()
+            + f"=ypart begin=1 end={len(payload)}\r\n".encode()
+            + encoded
+            + f"\r\n=yend size={len(payload)} part=1 pcrc32={crc:08x}\r\n.\r\n".encode()
+        )
+        dec = sabctools.Decoder(len(raw_data))
+        dec.expect(None)
+        BytesIO(raw_data).readinto(dec)
+        dec.process(len(raw_data))
+        return next(dec)
+
+    def test_size_from_a_crc_failure_is_not_kept(self):
+        payload = b"\x01" * 100
+        nzf = mock.Mock(file_size=None, filename_checked=True)
+        with pytest.raises(decoder.BadData):
+            decoder.decode_yenc(Article("foo@bar", 1234, nzf), self._response(payload, 5000, crc_ok=False))
+        assert nzf.file_size is None
+        decoder.decode_yenc(Article("foo@bar", 1234, nzf), self._response(payload, 1000))
+        assert nzf.file_size == 1000
