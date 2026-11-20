@@ -344,6 +344,25 @@ class TestAssembler:
         with open(self.nzf.filepath, "rb") as f:
             assert f.read() == b"helloworld"
 
+    @pytest.mark.parametrize("direct_write", [True, False])
+    def test_append_with_par2_size_and_unknown_article_size(self, assembler, direct_write):
+        _data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"abcd"), can_direct_write=False),
+                self._make_article(self.nzf, offset=0, data=bytearray(b"efg"), can_direct_write=False),
+            ],
+        )
+        for article in self.nzf.decodetable:
+            article.file_size = None
+        self.nzo.par2packs = {"set": {self.nzf.filename: FilePar2Info(self.nzf.filename, b"", 7)}}
+        with mock.patch.object(sabnzbd.cfg.direct_write, "get", return_value=True):
+            Assembler.assemble(
+                self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=direct_write
+            )
+        with open(self.nzf.filepath, "rb") as f:
+            assert f.read() == expected
+
     def test_append_without_offsets_packs_at_a_running_offset(self, assembler):
         _data, expected = self._make_request(
             self.nzf,

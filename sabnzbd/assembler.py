@@ -526,7 +526,7 @@ class Assembler(Thread):
             # Lost articles at the end leave the file short of its full size
             if file_done and cfg.direct_write():
                 file_size = next((a.file_size for a in decodetable if a.on_disk and a.data_size), 0)
-                if par2_size := nzf.nzo.par2_file_size(nzf.filename):
+                if file_size and (par2_size := nzf.nzo.par2_file_size(nzf.filename)):
                     file_size = min(file_size, par2_size)
                 if file_size:
                     writer = writer or sabnzbd.Assembler.get_writer(nzf)
@@ -635,7 +635,7 @@ class Assembler(Thread):
         return written
 
     @staticmethod
-    def open(nzf: NzbFile, direct_write: bool, file_size: int) -> tuple[sabctools.FileWriter, int, bool]:
+    def open(nzf: NzbFile, direct_write: bool, file_size: Optional[int]) -> tuple[sabctools.FileWriter, int, bool]:
         """Open file for nzf
 
          Use direct_write if requested, with a fallback to an append offset
@@ -643,7 +643,7 @@ class Assembler(Thread):
         """
         with nzf.file_lock:
             writer = sabnzbd.Assembler.get_writer(nzf)
-            if par2_size := nzf.nzo.par2_file_size(nzf.filename):
+            if file_size and (par2_size := nzf.nzo.par2_file_size(nzf.filename)):
                 file_size = min(file_size, par2_size)
             # Every write carries its own offset, so the file position is never read and
             # does not need seeking to the append point
