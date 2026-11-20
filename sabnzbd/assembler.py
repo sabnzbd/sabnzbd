@@ -27,7 +27,6 @@ from collections import OrderedDict
 import re
 import threading
 from threading import Thread
-import ctypes
 from typing import Optional, NamedTuple
 import rarfile
 import time
@@ -357,11 +356,7 @@ class Assembler(Thread):
                                 logging.error(T("Disk error on creating file %s"), clip_path(filepath))
                             # Log traceback
                             if sabnzbd.WINDOWS:
-                                logging.info(
-                                    "Winerror: %s - %s",
-                                    err.winerror,
-                                    hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2**32),
-                                )
+                                logging.info("Winerror: %s", err.winerror)
                             logging.info("Traceback: ", exc_info=True)
                             # Pause without saving
                             sabnzbd.Downloader.pause()
