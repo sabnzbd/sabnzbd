@@ -284,9 +284,8 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
                     # "PAR 2.0\0IFSC\0\0\0\0"
                     fileid = data[32:48].hex()
                     if not filecrc32.get(fileid):
-                        filecrc32[fileid] = []
-                        for i in range(48, pack_len - 32, 20):
-                            filecrc32[fileid].append(struct.unpack("<I", data[i + 16 : i + 20])[0])
+                        # Per block: 16 bytes of MD5, then the CRC32
+                        filecrc32[fileid] = [crc for _, crc in struct.iter_unpack("<16sI", memoryview(data)[48:])]
 
             # Process all the data
             for fileid in filepar2info.keys():
