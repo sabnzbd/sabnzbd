@@ -248,7 +248,9 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
 
     article.crc32 = crc
     if nzf.file_size is None and article.data_size:
-        nzf.file_size = response.file_size
+        with nzf.file_lock:
+            if nzf.file_size is None:
+                nzf.file_size = nzf.nzo.par2_file_size(nzf.filename) or response.file_size
 
     return decoded_data
 

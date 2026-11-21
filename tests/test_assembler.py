@@ -396,6 +396,7 @@ class TestAssembler:
         # The yEnc headers overstate the size, which par2 records correctly
         self.nzf.file_size = 16
         self.nzo.par2packs = {"set": {self.nzf.filename: FilePar2Info(self.nzf.filename, b"", 10)}}
+        self.nzf.apply_par2_file_size()
         Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
         with open(self.nzf.filepath, "rb") as f:
             assert f.read() == b"helloworld"
@@ -410,7 +411,6 @@ class TestAssembler:
             ],
         )
         self.nzf.file_size = None
-        self.nzo.par2packs = {"set": {self.nzf.filename: FilePar2Info(self.nzf.filename, b"", 7)}}
         with mock.patch.object(sabnzbd.cfg.direct_write, "get", return_value=True):
             Assembler.assemble(
                 self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=direct_write

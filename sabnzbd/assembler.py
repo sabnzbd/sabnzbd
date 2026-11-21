@@ -651,8 +651,6 @@ class Assembler(Thread):
         with nzf.file_lock:
             if not (file_size := nzf.file_size):
                 return False
-            if par2_size := nzf.nzo.par2_file_size(nzf.filename):
-                file_size = min(file_size, par2_size)
             if not nzf.preallocated:
                 set_permissions(nzf.filepath)
                 # Read from the handle, so it cannot disagree with the file being written

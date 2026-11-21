@@ -21,6 +21,7 @@ tests.test_decoder- Testing functions in decoder.py
 
 import binascii
 import os
+import threading
 import pytest
 from io import BytesIO
 
@@ -297,11 +298,13 @@ class TestYencFileSize:
         dec.process(len(raw_data))
         return next(dec)
 
-    def test_size_from_a_crc_failure_is_not_kept(self):
+    @pytest.mark.parametrize("par2_size, expected", [(None, 1000), (600, 600)])
+    def test_size_from_a_crc_failure_is_not_kept(self, par2_size, expected):
         payload = b"\x01" * 100
-        nzf = mock.Mock(file_size=None, filename_checked=True)
+        nzf = mock.Mock(file_size=None, filename_checked=True, file_lock=threading.RLock())
+        nzf.nzo.par2_file_size.return_value = par2_size
         with pytest.raises(decoder.BadData):
             decoder.decode_yenc(Article("foo@bar", 1234, nzf), self._response(payload, 5000, crc_ok=False))
         assert nzf.file_size is None
         decoder.decode_yenc(Article("foo@bar", 1234, nzf), self._response(payload, 1000))
-        assert nzf.file_size == 1000
+        assert nzf.file_size == expected

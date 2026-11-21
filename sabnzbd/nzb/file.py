@@ -202,6 +202,16 @@ class NzbFile(TryList):
         self.vol = vol
         self.blocks = int_conv(blocks)
 
+    def apply_par2_file_size(self, old_filename: Optional[str] = None):
+        """Take the size of the file from par2 rather than yEnc, when a set describes it,
+        and drop a par2 size that only described the old filename"""
+        with self.file_lock:
+            par2_size = self.nzo.par2_file_size(self.filename)
+            if par2_size or (old_filename and self.nzo.par2_file_size(old_filename)):
+                if self.file_size != par2_size:
+                    self.file_size = par2_size
+                    self.preallocated = False
+
     @synchronized()
     def lost_blocks(self, blocksize: int, blockcount: int, filesize: int) -> int:
         """Par2 blocks the failed articles of a file still downloading may have destroyed.
