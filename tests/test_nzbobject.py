@@ -37,8 +37,8 @@ from sabnzbd.filesystem import globber, sanitize_filename, create_all_dirs, long
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
+@pytest.mark.config({"download_dir": SAB_CACHE_DIR})
 class TestNZO:
-    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     def test_nzo_basic(self):
         # Need to create the Default category, as we would in normal instance
         # Otherwise it will try to save the config
@@ -83,7 +83,6 @@ class TestNZO:
 
         # TODO: More checks!
 
-    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     def test_nzo_info_from_meta(self):
         """Only known meta fields end up in nzo_info, the internal ones cannot be set by an NZB"""
         ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
@@ -103,7 +102,6 @@ class TestNZO:
         nzo.increase_bad_articles_counter("missing_articles")
         assert nzo.nzo_info["missing_articles"] == 1
 
-    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     def test_get_unique_filepath_subdirs(self):
         """Par2 can name a file inside a sub-directory of the job, which we have to create"""
         ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
@@ -119,7 +117,6 @@ class TestNZO:
         filename, _path = nzo.get_unique_filepath(sanitize_filename("sub/testfile.rar", allow_subdirs=True))
         assert filename == os.path.join("sub", "testfile.1.rar")
 
-    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     def test_check_existing_files_matches_subdirs(self):
         """On a retry the volumes can already be in the folder par2 named them in"""
         ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
@@ -142,7 +139,6 @@ class TestNZO:
         assert nzf.filename == os.path.join("sub", "testfile.rar"), "sub-directory was not matched, re-downloading"
         assert nzf.filepath == existing_path
 
-    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     @pytest.mark.parametrize(
         "hostile_name",
         ["../escape.rar", "/escape.rar", "sub/../../escape.rar", "../../../../etc/escape.rar"],
@@ -160,7 +156,6 @@ class TestNZO:
             resolved,
         )
 
-    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     @pytest.mark.parametrize("hostile_name", ["http://../../../escape", "https://../escape", "a://../escape"])
     def test_url_nzbname_cannot_escape_download_dir(self, hostile_name):
         """A job name that looks like a URL is not exempt from sanitizing"""
@@ -171,7 +166,6 @@ class TestNZO:
         assert os.sep not in nzo.final_name
         assert os.path.dirname(os.path.normpath(nzo.download_path)) == os.path.normpath(long_path(SAB_CACHE_DIR))
 
-    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     def test_purge_releases_par2_sessions(self):
         ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
         nzo = NzbObject("test_purge_sessions")
@@ -184,6 +178,25 @@ class TestNZO:
             nzo.purge_data()
         session.close.assert_called_once()
         assert nzo.par2_sessions == {}
+
+    @pytest.mark.parametrize(
+        "name, new_name, expected",
+        [
+            ("abc123.bin", "Real.Movie.2020.rar", 1000),
+            ("abc123.bin", "Other.Movie.2020.rar", 1200),
+            ("Real.Movie.2020.rar", "Other.Movie.2020.rar", None),
+        ],
+    )
+    def test_rename_takes_par2_file_size(self, name, new_name, expected):
+        nzo = NzbObject("test_par2_file_size")
+        nzf = NzbFile(datetime.datetime(2026, 1, 1), name, [], 1000, nzo)
+        nzf.filename = name
+        nzf.file_size = 1200
+        nzo.par2packs = {"set": {"Real.Movie.2020.rar": FilePar2Info("Real.Movie.2020.rar", b"\0" * 16, 1000)}}
+        nzf.apply_par2_file_size()
+        nzo.verify_nzf_filename(nzf, new_name)
+        assert nzf.filename == new_name
+        assert nzf.file_size == expected
 
 
 class TestCheckAvailabilityRatio:

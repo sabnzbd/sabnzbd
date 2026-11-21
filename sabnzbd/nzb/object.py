@@ -25,6 +25,7 @@ import logging
 import datetime
 import threading
 import difflib
+import itertools
 from typing import Literal, Optional, TypedDict, BinaryIO
 from collections import deque
 
@@ -712,6 +713,8 @@ class NzbObject(TryList):
                     setname = set_id
                 # Replaced whole and never changed in place, so readers need no lock
                 self.par2packs = {**self.par2packs, setname: pack}
+                for xnzf in itertools.chain(self.files, (xnzf for xnzf in self.finished_files if not xnzf.assembled)):
+                    xnzf.apply_par2_file_size()
                 # See if we need to postpone some pars
                 self.postpone_pars(setname)
             else:
@@ -1535,6 +1538,7 @@ class NzbObject(TryList):
                     logging.info("Detected filename based on par2: %s -> %s", nzf.filename, new_filename)
                     self.renamed_file(new_filename, nzf.filename)
                     nzf.filename = new_filename
+                    nzf.apply_par2_file_size()
                 nzf.filename_checked = True
                 return
             else:
@@ -1550,8 +1554,10 @@ class NzbObject(TryList):
             and not sabnzbd.par2file.has_par2_in_filename(nzf.filename)
         ):
             logging.info("Detected filename from yenc or uu: %s -> %s", nzf.filename, yenc_filename)
-            self.renamed_file(yenc_filename, nzf.filename)
+            old_filename = nzf.filename
+            self.renamed_file(yenc_filename, old_filename)
             nzf.filename = yenc_filename
+            nzf.apply_par2_file_size(old_filename)
 
     @synchronized()
     def verify_all_filenames_and_resort(self):
@@ -1946,6 +1952,8 @@ class NzbObject(TryList):
             self.download_path = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
         if self.par2packs is None:
             self.par2packs = {}
+        for nzf in self.files:
+            nzf.apply_par2_file_size()
         if not isinstance(self.saved_articles, set):
             # Converted from list to set
             self.saved_articles = set(self.saved_articles)
