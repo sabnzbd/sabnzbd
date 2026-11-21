@@ -423,6 +423,42 @@ class TestAssembler:
         with open(self.nzf.filepath, "rb") as f:
             assert f.read() == b"helloworld"
 
+    def test_direct_write_stops_at_the_end_of_the_range(self, assembler):
+        self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world")),
+                self._make_article(self.nzf, offset=0, data=bytearray(b"helloXXX")),
+            ],
+        )
+        # The body is longer than its =ypart range says
+        self.nzf.decodetable[1].data_size = 5
+        self.nzf.file_size = 10
+        for article in self.nzf.decodetable:
+            Assembler.assemble_article(article, sabnzbd.ArticleCache.load_article(article))
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
+        with open(self.nzf.filepath, "rb") as f:
+            assert f.read() == b"helloworld"
+
+    @pytest.mark.parametrize("par2_size", [None, 8])
+    def test_no_direct_write_past_the_end_of_the_file(self, assembler, par2_size):
+        self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world")),
+            ],
+        )
+        if par2_size:
+            # As when a par2 set arrives: its size replaces the one from the yEnc headers
+            self.nzo.par2packs = {"set": {self.nzf.filename: FilePar2Info(self.nzf.filename, b"", par2_size)}}
+            self.nzf.apply_par2_file_size()
+        else:
+            self.nzf.file_size = 8
+        assert self.nzf.decodetable[0].can_direct_write
+        assert not self.nzf.decodetable[1].can_direct_write
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
+
     @pytest.mark.parametrize("direct_write", [True, False])
     def test_append_with_par2_size_and_unknown_article_size(self, assembler, direct_write):
         _data, expected = self._make_request(

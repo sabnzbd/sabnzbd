@@ -483,11 +483,13 @@ class NewsWrapper:
                         logging.debug("%s@%s: Partial send", self.thrdnum, server.host)
                         self.nntp.write_buffer = command[sent:]
 
-                    # The par2 block size to split the article's CRC at, 0 while no par2 set describes its file
-                    block_size = 0
+                    block_size = max_end = None
                     if article:
+                        # The par2 block size to split the article's CRC at, 0 while no par2 set describes its file
                         block_size = article.nzf.nzo.par2_block_size(article.nzf.filename)
-                    self.decoder.expect(article, self.article_sink(article), block_size=block_size)
+                        # Bounds a streamed body to the file: one whose range ends past it is discarded
+                        max_end = article.nzf.file_size
+                    self.decoder.expect(article, self.article_sink(article), block_size=block_size, max_end=max_end)
                     self.next_request = None
                 else:
                     # Concurrency limit reached; wait until a response is read to prevent hot looping on EVENT_WRITE
