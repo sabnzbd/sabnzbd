@@ -26,6 +26,7 @@ import logging
 from collections import OrderedDict
 import re
 import threading
+import weakref
 from threading import Thread
 from typing import Optional, NamedTuple
 import rarfile
@@ -53,7 +54,8 @@ from sabnzbd.constants import (
     DOWNLOADER_TICK,
     ASSEMBLER_WRITE_INTERVAL,
     ASSEMBLER_TRIGGER_PERCENTAGE,
-    ASSEMBLER_MAX_OPEN_WRITERS,
+    ASSEMBLER_MAX_IDLE_WRITERS,
+    ASSEMBLER_MAX_STREAM_WRITERS,
 )
 import sabnzbd.cfg as cfg
 from sabnzbd.nzb import NzbFile, NzbObject, Article
@@ -84,7 +86,13 @@ class Assembler(Thread):
         self.ready_bytes_lock = threading.Lock()
         self.ready_bytes: dict[str, int] = {}
         self.writers_lock = threading.Lock()
-        self.open_writers: OrderedDict[str, NzbFile] = OrderedDict()
+        self.max_stream_writers = ASSEMBLER_MAX_STREAM_WRITERS
+        if sabnzbd.OPEN_FILE_LIMIT is not None:
+            self.max_stream_writers = min(sabnzbd.OPEN_FILE_LIMIT // 4, ASSEMBLER_MAX_STREAM_WRITERS)
+        # Every handle still open, whether kept by recent_writers or by a pending request
+        self.writers: weakref.WeakValueDictionary[str, sabctools.FileWriter] = weakref.WeakValueDictionary()
+        # Keeps the most recently used handles open while nothing else holds them
+        self.recent_writers: OrderedDict[str, sabctools.FileWriter] = OrderedDict()
 
     def stop(self):
         self.queue.put(AssemblerTask())
@@ -150,42 +158,46 @@ class Assembler(Thread):
 
         Opening per write costs an open and a close for every article, which at the
         article rates this is built for outweighs the write itself. Handles are kept
-        instead, bounded by ASSEMBLER_MAX_OPEN_WRITERS because they are a limited
-        resource shared with every socket the downloader holds.
+        instead, the ASSEMBLER_MAX_IDLE_WRITERS most recently used ones, because they
+        are a limited resource shared with every socket the downloader holds. A handle
+        dropped from those stays open while a pending request holds it, and is handed
+        out again rather than opening the file a second time.
+
+        A stream that would take the handles open past max_stream_writers gets None
+        and decodes to memory. The assembler always gets a handle.
 
         A stream gets no new handle once the file or job is finished, and nothing gets
         one once the job is deleted.
         """
         with self.writers_lock:
-            if (writer := nzf.writer) is not None:
-                self.open_writers.move_to_end(nzf.nzf_id)
-                return writer
+            if (writer := self.writers.get(nzf.nzf_id)) is None:
+                if stream and (nzf.deleted or nzf.nzo.removed_from_queue):
+                    return None
 
-            if stream and (nzf.deleted or nzf.nzo.removed_from_queue):
-                return None
+                if nzf.nzo.status is Status.DELETED:
+                    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), nzf.filepath)
 
-            if nzf.nzo.status is Status.DELETED:
-                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), nzf.filepath)
+                if stream and len(self.writers) >= self.max_stream_writers:
+                    return None
 
-            writer = sabctools.FileWriter(nzf.filepath)
-            nzf.writer = writer
-            self.open_writers[nzf.nzf_id] = nzf
+                writer = sabctools.FileWriter(nzf.filepath)
+                self.writers[nzf.nzf_id] = writer
 
-            while len(self.open_writers) > ASSEMBLER_MAX_OPEN_WRITERS:
-                _, evicted = self.open_writers.popitem(last=False)
+            self.recent_writers[nzf.nzf_id] = writer
+            self.recent_writers.move_to_end(nzf.nzf_id)
+            if len(self.recent_writers) > ASSEMBLER_MAX_IDLE_WRITERS:
                 # Dropped rather than closed. Another thread may be inside a write on
                 # this very handle, and closing it would turn that write into an error;
                 # letting the last reference go closes it once that write returns.
-                evicted.writer = None
+                self.recent_writers.popitem(last=False)
 
             return writer
 
     def close_writer(self, nzf: NzbFile) -> None:
         """Close the handle for this file, if one is open"""
         with self.writers_lock:
-            self.open_writers.pop(nzf.nzf_id, None)
-            writer = nzf.writer
-            nzf.writer = None
+            self.recent_writers.pop(nzf.nzf_id, None)
+            writer = self.writers.pop(nzf.nzf_id, None)
 
         if writer is not None:
             # Outside the lock: close waits for writes still in flight
@@ -194,14 +206,12 @@ class Assembler(Thread):
     def close_all_writers(self) -> None:
         """Release every open handle, on shutdown"""
         with self.writers_lock:
-            writers = [nzf.writer for nzf in self.open_writers.values()]
-            for nzf in self.open_writers.values():
-                nzf.writer = None
-            self.open_writers.clear()
+            writers = list(self.writers.values())
+            self.recent_writers.clear()
+            self.writers.clear()
 
         for writer in writers:
-            if writer is not None:
-                writer.close()
+            writer.close()
 
     def process(
         self,

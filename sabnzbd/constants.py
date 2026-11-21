@@ -53,7 +53,7 @@ ATTRIB_FILE = "SABnzbd_attrib"
 NZO_FILE = "SABnzbd_nzo_data"
 REPAIR_REQUEST = "repair-all.sab"
 
-SABCTOOLS_VERSION_REQUIRED = "10.0.0"
+SABCTOOLS_VERSION_REQUIRED = "10.1.0"
 
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = "history%s.db" % DB_HISTORY_VERSION
@@ -117,12 +117,13 @@ ASSEMBLER_MAX_DELAY = 0.5
 ASSEMBLER_DRAIN_MARGIN = 0.9
 # Percentage of cache to use before adding file to assembler
 ASSEMBLER_TRIGGER_PERCENTAGE = 0.05
-# Files kept open for writing at once. Handles are cached so an article does not cost an
-# open/close pair, but they are a limited resource shared with every socket the
-# downloader holds, so the cache is bounded rather than growing with the queue.
-ASSEMBLER_MAX_OPEN_WRITERS = 32
+# Idle handles kept open so an article does not cost an open/close pair. Handles held
+# by pending requests stay open on top of these, bounded by ASSEMBLER_MAX_STREAM_WRITERS.
+ASSEMBLER_MAX_IDLE_WRITERS = 32
 # Soft limit on open files raised to at startup, within the hard limit
 OPEN_FILE_LIMIT_TARGET = 4096
+# Handles open for streaming at once, a quarter of the open file limit up to this many
+ASSEMBLER_MAX_STREAM_WRITERS = 512
 ASSEMBLER_WRITE_INTERVAL = 5.0
 NNTP_BUFFER_SIZE = int(256 * KIBI)
 NTTP_MAX_BUFFER_SIZE = int(10 * MEBI)

@@ -79,14 +79,13 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = (*NzbFileSaver, "lock", "file_lock", "assembler_next_index", "writer", "preallocated")
+    __slots__ = (*NzbFileSaver, "lock", "file_lock", "assembler_next_index", "preallocated")
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
         super().__init__()
         self.lock: threading.RLock = threading.RLock()
         self.file_lock: threading.RLock = threading.RLock()
-        self.writer: Optional[sabctools.FileWriter] = None
         self.preallocated: bool = False
 
         self.date: datetime.datetime = date
@@ -417,7 +416,6 @@ class NzbFile(TryList):
         self.lock = threading.RLock()
         self.file_lock = threading.RLock()
         self.assembler_next_index = 0
-        self.writer = None
         self.preallocated = False
         if isinstance(self.articles, list):
             # Converted from list to dict
