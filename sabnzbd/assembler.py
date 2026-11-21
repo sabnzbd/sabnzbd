@@ -656,6 +656,8 @@ class Assembler(Thread):
 
         :returns whether writes can be placed at their offsets
         """
+        if nzf.preallocated:
+            return True
         with nzf.file_lock:
             if not (file_size := nzf.file_size):
                 return False
