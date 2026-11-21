@@ -55,7 +55,8 @@ class TestPrecheckResponses:
     @pytest.fixture
     def precheck_connection(self, monkeypatch):
         server = mock.Mock(active=False, ssl=False, timeout=10, have_stat=True, have_body=True)
-        nw = newswrapper.NewsWrapper(server, 0)
+        # Blocking, so the mock socket is read with recv_into
+        nw = newswrapper.NewsWrapper(server, 0, block=True)
         nw.ready = True
         nw.decoder = sabctools.Decoder(4096)
         nw.nntp = mock.Mock(write_buffer=b"")

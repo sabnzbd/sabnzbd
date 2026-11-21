@@ -330,7 +330,7 @@ class NewsWrapper:
         generation: Optional[int] = None,
     ) -> tuple[int, Optional[int]]:
         """Receive data, return #bytes, #pendingbytes
-        :param nbytes: maximum number of bytes to read
+        :param nbytes: maximum number of bytes to read, ignored by Decoder.recv
         :param on_response: callback for each complete response received
         :param generation: expected reset generation
         :return: #bytes, #pendingbytes
@@ -343,24 +343,26 @@ class NewsWrapper:
             return 0, None
 
         # Receive data into the decoder pre-allocated buffer
-        if not nbytes and self.nntp.nw.server.ssl and not self.nntp.nw.blocking and sabctools.openssl_linked:
-            # Use patched version when downloading
-            bytes_recv = sabctools.unlocked_ssl_recv_into(self.nntp.sock, self.decoder)
+        if self.decoder.expected and not self.blocking and sabctools.openssl_linked:
+            # Reads and decodes all that is ready, including what OpenSSL holds
+            bytes_recv = self.decoder.recv(self.nntp.sock)
         else:
+            # Server test, or OpenSSL not linked
             bytes_recv = self.nntp.sock.recv_into(self.decoder, nbytes=nbytes)
+            if bytes_recv:
+                # Data without a request, such as an idle timeout notice
+                if not self.decoder.expected:
+                    raise ConnectionError("Unsolicited data from server")
+                self.decoder.process(bytes_recv)
 
         # No data received
         if bytes_recv == 0:
             raise ConnectionError("Server closed connection")
 
-        # Data without a request, such as an idle timeout notice
-        if not self.decoder.expected:
-            raise ConnectionError("Unsolicited data from server")
-
         # Success, move timeout
         self.timeout = time.time() + self.server.timeout
 
-        self.decoder.process(bytes_recv)
+        # True when responses are complete, so only after processing
         if self.decoder:
             for response in self.decoder:
                 with self.lock:
@@ -393,7 +395,7 @@ class NewsWrapper:
 
         # The SSL-layer might still contain data even though the socket does not. Another Downloader-loop would
         # not identify this socket anymore as it is not returned by select(). So, we have to forcefully trigger
-        # another recv_chunk so the buffer is increased and the data from the SSL-layer is read. See #2752.
+        # another read. Decoder.recv already drains it, so this is mostly after recv_into. See #2752.
         if self.server.ssl and self.nntp and (pending := self.nntp.sock.pending()):
             return bytes_recv, pending
         return bytes_recv, None
