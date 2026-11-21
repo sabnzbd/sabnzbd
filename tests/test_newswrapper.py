@@ -169,6 +169,29 @@ class TestPrecheckResponses:
         queue.register_article.assert_called_once_with(article, False)
 
 
+class TestRequestBounds:
+    @pytest.mark.parametrize("sink", [mock.sentinel.writer, None])
+    @pytest.mark.parametrize("max_end", [1000, None])
+    def test_streamed_articles_are_bounded_by_the_file_size(self, monkeypatch, sink, max_end):
+        server = mock.Mock(pipelining_requests=1)
+        nw = newswrapper.NewsWrapper(server, 0)
+        nw.nntp = mock.Mock(write_buffer=b"")
+        nw.nntp.sock.send.side_effect = len
+        nw.decoder = mock.Mock(expected=0)
+        article = mock.Mock()
+        article.nzf.nzo.removed_from_queue = False
+        article.nzf.nzo.par2_block_size.return_value = 0
+        # None while the file's size is unknown, passed on as is
+        article.nzf.file_size = max_end
+        nw.next_request = (b"BODY <test@example.invalid>\r\n", article)
+        monkeypatch.setattr(newswrapper.NewsWrapper, "prepare_request", mock.Mock(return_value=True))
+        monkeypatch.setattr(newswrapper.NewsWrapper, "article_sink", mock.Mock(return_value=sink))
+
+        nw.write()
+
+        nw.decoder.expect.assert_called_once_with(article, sink, block_size=0, max_end=max_end)
+
+
 class IPProtocolVersion(Enum):
     IPV4 = 4
     IPV6 = 6

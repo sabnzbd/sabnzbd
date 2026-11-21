@@ -605,6 +605,9 @@ class Assembler(Thread):
     ) -> int:
         """Write data at position in a file"""
         pos = article.data_begin if offset is None else offset
+        # A body longer than its declared range must not overwrite the next article
+        if article.data_size and len(data) > article.data_size:
+            data = memoryview(data)[: article.data_size]
         # FileWriter writes at an absolute offset and retries short writes itself, so
         # this no longer needs a loop, and no longer needs nzf.file_lock on Windows:
         # WriteFile with an OVERLAPPED offset is positional, which os.pwrite is not
