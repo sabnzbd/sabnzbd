@@ -198,6 +198,7 @@ class TestConnectionStateMachine:
 
         # Read the 200 Welcome
         nw.nntp.sock.setblocking(True)
+        nw.blocking = True
         nw.nntp.sock.settimeout(2)
 
         try:
@@ -231,6 +232,7 @@ class TestConnectionStateMachine:
 
         # Read the 200 Welcome
         nw.nntp.sock.setblocking(True)
+        nw.blocking = True
         nw.nntp.sock.settimeout(2)
 
         try:
@@ -278,6 +280,7 @@ class TestRequestTracking:
 
         # Read the 200 Welcome
         nw.nntp.sock.setblocking(True)
+        nw.blocking = True
         nw.nntp.sock.settimeout(2)
         nw.read()
         assert nw.ready is True
