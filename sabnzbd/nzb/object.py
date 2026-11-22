@@ -713,7 +713,7 @@ class NzbObject(TryList):
                     setname = set_id
                 # Replaced whole and never changed in place, so readers need no lock
                 self.par2packs = {**self.par2packs, setname: pack}
-                for xnzf in itertools.chain(self.files, (xnzf for xnzf in self.finished_files if not xnzf.assembled)):
+                for xnzf in itertools.chain(self.files, self.finished_files):
                     xnzf.apply_par2_file_size()
                 # See if we need to postpone some pars
                 self.postpone_pars(setname)
