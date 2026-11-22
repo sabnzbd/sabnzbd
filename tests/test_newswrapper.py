@@ -76,7 +76,7 @@ class TestPrecheckResponses:
 
         def receive(data):
             stream = BytesIO(data)
-            nw.nntp.sock.recv_into.side_effect = lambda buffer, nbytes: stream.readinto(buffer)
+            nw.nntp.sock.recv_into.side_effect = lambda buffer, nbytes=0: stream.readinto(buffer)
             nw.read()
 
         return nw, article, downloader, queue, cache, receive
