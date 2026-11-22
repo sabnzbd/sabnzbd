@@ -524,8 +524,11 @@ class Assembler(Thread):
                     offset += Assembler.write(writer, idx, nzf, article, data, offset)
 
             # Lost articles at the end leave the file short of its full size
-            if file_done and cfg.direct_write() and nzf.file_size and not nzf.preallocated:
-                Assembler.preallocate(nzf, writer or sabnzbd.Assembler.get_writer(nzf))
+            if file_done and cfg.direct_write():
+                with nzf.file_lock:
+                    if nzf.file_size and not nzf.preallocated:
+                        Assembler.preallocate(nzf, writer or sabnzbd.Assembler.get_writer(nzf))
+                    nzf.assembled = True
 
         finally:
             # Deliberately not closed here. The next articles for this file are moments

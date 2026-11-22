@@ -205,7 +205,11 @@ class NzbFile(TryList):
     def apply_par2_file_size(self, old_filename: Optional[str] = None):
         """Take the size of the file from par2 rather than yEnc, when a set describes it,
         and drop a par2 size that only described the old filename"""
+        if self.assembled:
+            return
         with self.file_lock:
+            if self.assembled:
+                return
             par2_size = self.nzo.par2_file_size(self.filename)
             if par2_size or (old_filename and self.nzo.par2_file_size(old_filename)):
                 if self.file_size != par2_size:
