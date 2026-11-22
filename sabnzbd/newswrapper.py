@@ -325,35 +325,40 @@ class NewsWrapper:
 
     def read(
         self,
-        nbytes: int = 0,
         on_response: Optional[Callable[[int, str], None]] = None,
         generation: Optional[int] = None,
-    ) -> tuple[int, Optional[int]]:
-        """Receive data, return #bytes, #pendingbytes
-        :param nbytes: maximum number of bytes to read, ignored by Decoder.recv
+    ) -> int:
+        """Receive data, return #bytes
         :param on_response: callback for each complete response received
         :param generation: expected reset generation
-        :return: #bytes, #pendingbytes
+        :return: #bytes
         """
         if generation is None:
             generation = self.generation
 
         # NewsWrapper is being reset
         if self.decoder is None:
-            return 0, None
+            return 0
 
         # Receive data into the decoder pre-allocated buffer
         if self.decoder.expected and not self.blocking and sabctools.openssl_linked:
-            # Reads and decodes all that is ready, including what OpenSSL holds
+            # Reads and decodes up to the free buffer space, including what OpenSSL holds
             bytes_recv = self.decoder.recv(self.nntp.sock)
         else:
             # Server test, or OpenSSL not linked
-            bytes_recv = self.nntp.sock.recv_into(self.decoder, nbytes=nbytes)
+            bytes_recv = self.nntp.sock.recv_into(self.decoder)
             if bytes_recv:
                 # Data without a request, such as an idle timeout notice
                 if not self.decoder.expected:
                     raise ConnectionError("Unsolicited data from server")
                 self.decoder.process(bytes_recv)
+
+                # The SSL-layer might still contain data even though the socket does not. Another Downloader-loop
+                # would not identify this socket anymore as it is not returned by select(). See #2752.
+                if self.server.ssl and (pending := self.nntp.sock.pending()):
+                    if pending_recv := self.nntp.sock.recv_into(self.decoder, nbytes=pending):
+                        self.decoder.process(pending_recv)
+                        bytes_recv += pending_recv
 
         # No data received
         if bytes_recv == 0:
@@ -362,13 +367,12 @@ class NewsWrapper:
         # Success, move timeout
         self.timeout = time.time() + self.server.timeout
 
-        # True when responses are complete, so only after processing
         if self.decoder:
             for response in self.decoder:
                 with self.lock:
                     # Check generation under lock to avoid racing with hard_reset
                     if self.generation != generation:
-                        return bytes_recv, None
+                        return bytes_recv
                 article = response.context
                 if on_response:
                     on_response(response.status_code, response.message)
@@ -376,7 +380,7 @@ class NewsWrapper:
 
             # on_response may have reset the connection
             if self.generation != generation:
-                return bytes_recv, None
+                return bytes_recv
 
             # After each response this socket may need to be made available to write the next request,
             # or removed from socket monitoring to prevent hot looping.
@@ -384,21 +388,13 @@ class NewsWrapper:
                 # There is either a next_request, partial send, or an inflight request.
                 self.modify_for_write()
             else:
-                # Only remove the socket if it's not SSL or has no pending data, otherwise the recursive call may
-                # call prepare_request again and find a request, but the socket would have already been removed.
-                if not self.server.ssl or not self.nntp or not self.nntp.sock.pending():
-                    # No further work for this socket
-                    sabnzbd.Downloader.remove_socket(self)
+                # No further work for this socket
+                sabnzbd.Downloader.remove_socket(self)
         elif self.nntp and self.nntp.write_buffer:
             # No complete responses, but may be able to send partial writes.
             self.modify_for_write()
 
-        # The SSL-layer might still contain data even though the socket does not. Another Downloader-loop would
-        # not identify this socket anymore as it is not returned by select(). So, we have to forcefully trigger
-        # another read. Decoder.recv already drains it, so this is mostly after recv_into. See #2752.
-        if self.server.ssl and self.nntp and (pending := self.nntp.sock.pending()):
-            return bytes_recv, pending
-        return bytes_recv, None
+        return bytes_recv
 
     def modify_for_write(self):
         """

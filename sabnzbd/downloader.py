@@ -774,45 +774,40 @@ class Downloader(Thread):
             nw.write()
 
     def process_nw_read(self, nw: NewsWrapper, generation: int) -> None:
-        bytes_received: int = 0
-        bytes_pending: int = 0
-
-        while (
-            nw.connected
-            and nw.generation == generation
-            and not self.force_disconnect
-            and not self.shutdown
-            and not (nw.timeout and time.time() > nw.timeout)
+        if (
+            not nw.connected
+            or nw.generation != generation
+            or self.force_disconnect
+            or self.shutdown
+            or (nw.timeout and time.time() > nw.timeout)
         ):
-            try:
-                n, bytes_pending = nw.read(nbytes=bytes_pending, generation=generation)
-                bytes_received += n
-                nw.tls_wants_write = False
-            except ssl.SSLWantReadError:
-                return
-            except ssl.SSLWantWriteError:
-                # TLS needs to write handshake/key-update data before we can continue reading
-                nw.tls_wants_write = True
-                self.modify_socket(nw, selectors.EVENT_READ | selectors.EVENT_WRITE)
-                return
-            except (ConnectionError, ConnectionAbortedError):
-                # The ConnectionAbortedError is also thrown by sabctools in case of fatal SSL-layer problems
-                self.reset_nw(nw, "Server closed connection", wait=False)
-                return
-            except BufferError:
-                # The BufferError is thrown when exceeding maximum buffer size
-                # Make sure to discard the article
-                self.reset_nw(nw, "Maximum data buffer size exceeded", wait=False, retry_article=False)
-                return
-            except OSError as err:
-                # A streamed article could not be written: out of space, or the file
-                # went away underneath us. Not the connection's fault, so the article is
-                # retried rather than discarded.
-                self.reset_nw(nw, "Failed to write article: %s" % err, wait=False)
-                return
+            return
 
-            if not bytes_pending:
-                break
+        try:
+            bytes_received = nw.read(generation=generation)
+            nw.tls_wants_write = False
+        except ssl.SSLWantReadError:
+            return
+        except ssl.SSLWantWriteError:
+            # TLS needs to write handshake/key-update data before we can continue reading
+            nw.tls_wants_write = True
+            self.modify_socket(nw, selectors.EVENT_READ | selectors.EVENT_WRITE)
+            return
+        except (ConnectionError, ConnectionAbortedError):
+            # The ConnectionAbortedError is also thrown by sabctools in case of fatal SSL-layer problems
+            self.reset_nw(nw, "Server closed connection", wait=False)
+            return
+        except BufferError:
+            # The BufferError is thrown when exceeding maximum buffer size
+            # Make sure to discard the article
+            self.reset_nw(nw, "Maximum data buffer size exceeded", wait=False, retry_article=False)
+            return
+        except OSError as err:
+            # A streamed article could not be written: out of space, or the file
+            # went away underneath us. Not the connection's fault, so the article is
+            # retried rather than discarded.
+            self.reset_nw(nw, "Failed to write article: %s" % err, wait=False)
+            return
 
         # Ignore metrics for reset connections
         if nw.generation != generation:
