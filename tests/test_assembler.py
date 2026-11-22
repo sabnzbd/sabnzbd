@@ -369,6 +369,22 @@ class TestAssembler:
         with open(self.nzf.filepath, "rb") as f:
             assert f.read() == expected
 
+    def test_finished_file_already_sized_is_not_reopened(self, assembler):
+        self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world")),
+            ],
+        )
+        self.nzf.file_size = 10
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=False, direct_write=True)
+        assert self.nzf.preallocated
+        sabnzbd.Assembler.close_writer(self.nzf)
+        with mock.patch.object(sabnzbd.Assembler, "get_writer") as get_writer:
+            Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
+        get_writer.assert_not_called()
+
     def test_direct_write_allocates_the_size_par2_records(self, assembler):
         self._make_request(
             self.nzf,

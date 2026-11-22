@@ -524,18 +524,8 @@ class Assembler(Thread):
                     offset += Assembler.write(writer, idx, nzf, article, data, offset)
 
             # Lost articles at the end leave the file short of its full size
-            if file_done and cfg.direct_write():
-                file_size = nzf.file_size
-                if file_size and (par2_size := nzf.nzo.par2_file_size(nzf.filename)):
-                    file_size = min(file_size, par2_size)
-                if file_size:
-                    writer = writer or sabnzbd.Assembler.get_writer(nzf)
-                    if writer.size < file_size:
-                        try:
-                            writer.preallocate(file_size)
-                        except sabctools.SparseUnsupported:
-                            logging.debug("Sparse call failed for %s", nzf.filepath)
-                            cfg.direct_write.set(False)
+            if file_done and cfg.direct_write() and nzf.file_size and not nzf.preallocated:
+                Assembler.preallocate(nzf, writer or sabnzbd.Assembler.get_writer(nzf))
 
         finally:
             # Deliberately not closed here. The next articles for this file are moments
