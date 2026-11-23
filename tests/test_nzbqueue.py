@@ -274,14 +274,15 @@ class TestNzbQueue:
         assert len(nzo.files) == 4
         assert len(nzo.finished_files) == 1
         assert len(nzo.extrapars["par-files"]) == 8
-        assert len(nzo.saved_articles) == 22
+        # The fixture holds none of the cached article data, so those articles are downloaded again
+        assert len(nzo.saved_articles) == 0
 
         assert nzo.bytes == 114967316
-        assert nzo.bytes_downloaded == 18532805
+        assert nzo.bytes_downloaded == 2261480
         assert nzo.bytes_missing == 0
         assert nzo.bytes_par2 == 42560
-        assert nzo.bytes_tried == 30077349
-        assert nzo.remaining == 84889967
+        assert nzo.bytes_tried == 13806024
+        assert nzo.remaining == 101161292
 
         # Validate we can also load legacy NZF pickles from the restored NZO
         for nzf in nzo.files:
@@ -292,11 +293,11 @@ class TestNzbQueue:
         assert cnzf.nzo == nzo
         assert cnzf.filename == "rar-files.part1.rar"
         assert cnzf.md5of16k == b"e\xc4^\x93\xc4\x92\xf9s\x057Oe!\x9dA\xe7"
-        assert len(cnzf.articles) == 51
+        assert len(cnzf.articles) == 70
         assert len(cnzf.decodetable) == 73
 
         assert cnzf.bytes == 27049565
-        assert cnzf.bytes_left == 10777869
+        assert cnzf.bytes_left == 24830645
         assert cnzf.crc32 is None
 
     def test_nzo_reuse(self, make_nzb_workdir):
