@@ -1198,6 +1198,36 @@ class NzbObject(TryList):
             self.duplicate = DuplicateStatus.DUPLICATE_IGNORED
 
     @synchronized()
+    def reset_lost_articles(self):
+        """Download again the decoded articles of a restored job that were neither written nor saved"""
+        refetch = []
+        for nzf in itertools.chain(self.files, self.finished_files):
+            # A finished file with articles left was removed by the user
+            if nzf.assembled or (nzf.deleted and nzf.articles):
+                continue
+            with nzf.lock:
+                for article in nzf.decodetable:
+                    if not article.decoded or article.on_disk or article.failed:
+                        continue
+                    if article.art_id and os.path.exists(os.path.join(self.admin_path, article.art_id)):
+                        continue
+                    logging.info("Data of %s was lost, downloading it again", article)
+                    article.decoded = False
+                    article.crc32 = None
+                    self.saved_articles.discard(article)
+                    if article not in nzf.articles:
+                        nzf.articles[article] = article
+                        nzf.bytes_left += article.bytes
+                        self.bytes_downloaded -= article.bytes
+                        self.bytes_tried -= article.bytes
+                if nzf.deleted and nzf.articles:
+                    refetch.append(nzf)
+        for nzf in refetch:
+            self.finished_files.remove(nzf)
+            self.files.insert(0, nzf)
+            nzf.deleted = False
+
+    @synchronized()
     def add_parfile(self, parfile: NzbFile) -> bool:
         """Add parfile to the files to be downloaded
         Add it to the start so we try it first

@@ -123,6 +123,7 @@ class NzbQueue:
             for path, filename, remove in attempts:
                 nzo = sabnzbd.filesystem.load_data(filename, path, remove=remove)
                 if nzo:
+                    nzo.reset_lost_articles()
                     self.add(nzo, save=False, quiet=True)
                     folders.append(folder)
                     break
