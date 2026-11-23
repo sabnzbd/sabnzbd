@@ -188,6 +188,41 @@ class TestNzbQueue:
         # Try list restored
         assert sabnzbd.Downloader.servers[0] in next(iter(joba.files[0].articles)).try_list
 
+    def test_restore_downloads_articles_lost_from_the_cache_again(self):
+        """Articles that were decoded but only held in memory when the process was killed"""
+        q = NzbQueue()
+        nzo = make_dummy_nzo("lost", files=2, articles=3)
+        q.add(nzo)
+
+        for nzf in nzo.files[:]:
+            nzf.finish_import()
+            written, lost, cached = nzf.decodetable
+            for article in nzf.decodetable:
+                article.decoded = True
+                article.crc32 = 1
+                nzo.remove_article(article, True)
+            written.on_disk = True
+            save_data(bytearray(b"data"), cached.get_art_id(), nzo.admin_path, do_pickle=False)
+        assert not nzo.files
+        q.save()
+
+        q = NzbQueue()
+        q.read_queue(0)
+        restored = q.get_nzo(nzo.nzo_id)
+        assert restored
+        assert len(restored.files) == 2
+        assert not restored.finished_files
+        for rnzf in restored.files:
+            written, lost, cached = rnzf.decodetable
+            assert list(rnzf.articles) == [lost]
+            assert not lost.decoded
+            assert lost.crc32 is None
+            assert written.on_disk
+            assert cached.decoded
+            assert not rnzf.deleted
+            assert rnzf.bytes_left == lost.bytes
+        assert restored.bytes_downloaded == 2 * (written.bytes + cached.bytes)
+
     def test_stop_idle_jobs_no_crash_on_exhausted_articles(self):
         """Regression test: stop_idle_jobs must not raise RuntimeError when
         register_article removes an article from nzf.articles (a dict) while
