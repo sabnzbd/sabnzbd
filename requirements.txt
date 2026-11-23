@@ -1,7 +1,7 @@
 # Main requirements
 # All sub-dependencies are listed in order to prevent any supply-chain attacks
 # Installation can (and should) be performed with "--no-deps" parameter
-apprise==2.1.0
+apprise==2.2.0
 sabctools==10.1.0
 CT3==3.4.0.post5
 cffi==2.1.1
@@ -28,7 +28,7 @@ anyio==4.16.0
 typing_extensions==4.16.0
 sniffio==1.3.1
 uvicorn==0.54.0
-click==8.5.0
+click==8.5.1
 h11==0.16.0
 python-multipart==0.0.33
 httptools==0.9.0
@@ -40,7 +40,7 @@ cryptography>=3.0
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
-ujson==6.0.0
+ujson==6.1.0
 orjson==3.13.0
 
 # Windows system integration
@@ -63,8 +63,8 @@ notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 requests==2.34.2
 requests-oauthlib==2.0.0
 PyYAML==6.0.3
-markdown==3.11.2
-paho-mqtt==2.1.0
+markdown==3.11.3
+paho-mqtt==2.2.0
 
 # Requests Requirements
 charset_normalizer==3.5.2
