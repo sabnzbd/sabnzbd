@@ -297,6 +297,28 @@ class TestAssembler:
             assert f.read() == b"hello" + bytes(5) + b"12345"
         assert self.nzf.direct_written
 
+    def test_an_article_whose_data_was_lost_fails(self, assembler):
+        """A decoded article that has no data left cannot vouch for the file in the quick check"""
+        self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world")),
+                self._make_article(self.nzf, offset=10, data=bytearray(b"12345")),
+            ],
+        )
+        lost = self.nzf.decodetable[1]
+        load_article = sabnzbd.ArticleCache.load_article
+        sabnzbd.ArticleCache.load_article = mock.Mock(
+            side_effect=lambda article: None if article is lost else load_article(article)
+        )
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
+        with open(self.nzf.filepath, "rb") as f:
+            assert f.read() == b"hello" + bytes(5) + b"12345"
+        assert lost.failed
+        self.nzf.finalize_crc32()
+        assert self.nzf.crc32 is None
+
     def test_append_extends_a_file_whose_last_article_was_lost(self, assembler):
         self._make_request(
             self.nzf,

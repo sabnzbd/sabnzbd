@@ -503,6 +503,8 @@ class Assembler(Thread):
                 data = load_article(article)
                 if not data:
                     logging.info("No data found when trying to write %s", article)
+                    article.failed = True
+                    article.crc32 = None
                     continue
 
                 # If required open the file
