@@ -252,6 +252,14 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
             if nzf.file_size is None:
                 nzf.file_size = nzf.nzo.par2_file_size(nzf.filename) or response.file_size
 
+    # A streamed body is only written up to its range and the end of the file, while its
+    # CRC covers all of it, so the CRC no longer describes the file
+    if decoded_data is None and (
+        (article.data_size and article.decoded_size > article.data_size)
+        or (nzf.file_size and article.data_begin + article.decoded_size > nzf.file_size)
+    ):
+        article.crc32 = None
+
     return decoded_data
 
 

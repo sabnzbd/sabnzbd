@@ -478,8 +478,8 @@ class Assembler(Thread):
                 # Skip already written articles
                 if article.on_disk or article.failed:
                     if writer is not None and article.decoded_size is not None:
-                        # Move the append offset forward past this article
-                        offset += article.decoded_size
+                        # Move the append offset forward past this article, by what write() kept of it
+                        offset += min(article.decoded_size, article.data_size or article.decoded_size)
                     if not skipped:
                         with nzf.lock:
                             if nzf.assembler_next_index == idx:
@@ -605,9 +605,16 @@ class Assembler(Thread):
     ) -> int:
         """Write data at position in a file"""
         pos = article.data_begin if offset is None else offset
+        size = len(data)
         # A body longer than its declared range must not overwrite the next article
         if article.data_size and len(data) > article.data_size:
             data = memoryview(data)[: article.data_size]
+        # Nor may anything land past the end of the file, whatever offset the article claims
+        if (file_size := nzf.file_size) and pos + len(data) > file_size:
+            data = memoryview(data)[: max(0, file_size - pos)]
+        if len(data) < size:
+            # Its CRC covers the bytes that were cut, so it no longer describes the file
+            article.crc32 = None
         # FileWriter writes at an absolute offset and retries short writes itself, so
         # this no longer needs a loop, and no longer needs nzf.file_lock on Windows:
         # WriteFile with an OVERLAPPED offset is positional, which os.pwrite is not

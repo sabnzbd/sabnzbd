@@ -24,6 +24,7 @@ import ipaddress
 import logging
 import os
 import os.path
+import select
 import socket
 import ssl
 import sys
@@ -51,36 +52,37 @@ TEST_PORT = misc.find_free_port(TEST_HOST, 10000)
 TEST_DATA = b"connection_test"
 
 
+@pytest.fixture
+def precheck_connection(monkeypatch):
+    server = mock.Mock(active=False, ssl=False, timeout=10, have_stat=True, have_body=True)
+    # Blocking, so the mock socket is read with recv_into
+    nw = newswrapper.NewsWrapper(server, 0, block=True)
+    nw.ready = True
+    nw.decoder = sabctools.Decoder(4096)
+    nw.nntp = mock.Mock(write_buffer=b"")
+
+    article = mock.Mock(article="test@example.invalid", tries=0, decoded=False, on_disk=False)
+    article.nzf.nzo.precheck = True
+    article.nzf.nzo.removed_from_queue = False
+
+    downloader = mock.Mock()
+    downloader.decode.side_effect = decoder.decode
+    queue = mock.Mock()
+    cache = mock.Mock()
+    monkeypatch.setattr(sabnzbd, "Downloader", downloader, raising=False)
+    monkeypatch.setattr(sabnzbd, "NzbQueue", queue, raising=False)
+    monkeypatch.setattr(sabnzbd, "ArticleCache", cache, raising=False)
+    monkeypatch.setattr(decoder, "search_new_server", mock.Mock(return_value=False))
+
+    def receive(data):
+        stream = BytesIO(data)
+        nw.nntp.sock.recv_into.side_effect = lambda buffer, nbytes=0: stream.readinto(buffer)
+        nw.read()
+
+    return nw, article, downloader, queue, cache, receive
+
+
 class TestPrecheckResponses:
-    @pytest.fixture
-    def precheck_connection(self, monkeypatch):
-        server = mock.Mock(active=False, ssl=False, timeout=10, have_stat=True, have_body=True)
-        # Blocking, so the mock socket is read with recv_into
-        nw = newswrapper.NewsWrapper(server, 0, block=True)
-        nw.ready = True
-        nw.decoder = sabctools.Decoder(4096)
-        nw.nntp = mock.Mock(write_buffer=b"")
-
-        article = mock.Mock(article="test@example.invalid", tries=0, decoded=False, on_disk=False)
-        article.nzf.nzo.precheck = True
-        article.nzf.nzo.removed_from_queue = False
-
-        downloader = mock.Mock()
-        downloader.decode.side_effect = decoder.decode
-        queue = mock.Mock()
-        cache = mock.Mock()
-        monkeypatch.setattr(sabnzbd, "Downloader", downloader, raising=False)
-        monkeypatch.setattr(sabnzbd, "NzbQueue", queue, raising=False)
-        monkeypatch.setattr(sabnzbd, "ArticleCache", cache, raising=False)
-        monkeypatch.setattr(decoder, "search_new_server", mock.Mock(return_value=False))
-
-        def receive(data):
-            stream = BytesIO(data)
-            nw.nntp.sock.recv_into.side_effect = lambda buffer, nbytes=0: stream.readinto(buffer)
-            nw.read()
-
-        return nw, article, downloader, queue, cache, receive
-
     @pytest.mark.parametrize(
         "article_id, headers, expected_success",
         [
@@ -170,26 +172,76 @@ class TestPrecheckResponses:
 
 
 class TestRequestBounds:
-    @pytest.mark.parametrize("sink", [mock.sentinel.writer, None])
-    @pytest.mark.parametrize("max_end", [1000, None])
-    def test_streamed_articles_are_bounded_by_the_file_size(self, monkeypatch, sink, max_end):
+    @pytest.mark.parametrize("file_size", [1000, None])
+    @pytest.mark.parametrize("block_size", [16384, 0])
+    def test_requests_carry_the_file_size_and_block_size(self, monkeypatch, file_size, block_size):
         server = mock.Mock(pipelining_requests=1)
         nw = newswrapper.NewsWrapper(server, 0)
         nw.nntp = mock.Mock(write_buffer=b"")
         nw.nntp.sock.send.side_effect = len
-        nw.decoder = mock.Mock(expected=0)
+        # A real Decoder underneath, so sabctools itself checks the arguments
+        real_decoder = sabctools.Decoder(4096)
+        nw.decoder = mock.Mock(wraps=real_decoder, expected=0)
         article = mock.Mock()
         article.nzf.nzo.removed_from_queue = False
-        article.nzf.nzo.par2_block_size.return_value = 0
+        article.nzf.nzo.par2_block_size.return_value = block_size
         # None while the file's size is unknown, passed on as is
-        article.nzf.file_size = max_end
+        article.nzf.file_size = file_size
         nw.next_request = (b"BODY <test@example.invalid>\r\n", article)
         monkeypatch.setattr(newswrapper.NewsWrapper, "prepare_request", mock.Mock(return_value=True))
-        monkeypatch.setattr(newswrapper.NewsWrapper, "article_sink", mock.Mock(return_value=sink))
+        monkeypatch.setattr(newswrapper.NewsWrapper, "article_sink", mock.Mock(return_value=None))
 
         nw.write()
 
-        nw.decoder.expect.assert_called_once_with(article, sink, block_size=0, max_end=max_end)
+        nw.decoder.expect.assert_called_once_with(article, None, block_size=block_size, max_end=file_size)
+        assert real_decoder.pending == (article,)
+
+
+class TestReadPath:
+    @pytest.mark.skipif(not sabctools.openssl_linked, reason="Decoder.recv needs the linked OpenSSL")
+    def test_a_non_blocking_socket_is_read_by_the_decoder(self, precheck_connection):
+        nw, article, _, queue, _, _ = precheck_connection
+        nw.blocking = False
+
+        class NoRecvInto(socket.socket):
+            def recv_into(self, *args, **kwargs):
+                raise AssertionError("read with recv_into instead of Decoder.recv")
+
+        reader, writer = socket.socketpair()
+        sock = NoRecvInto(fileno=reader.detach())
+        sock.setblocking(False)
+        nw.nntp.sock = sock
+        try:
+            nw.decoder.expect(article)
+            writer.sendall(b"223 0 <test@example.invalid> article exists\r\n")
+            select.select([sock], [], [], 5)
+            nw.read()
+        finally:
+            sock.close()
+            writer.close()
+
+        queue.register_article.assert_called_once_with(article, True)
+
+    def test_the_fallback_reads_what_openssl_still_holds(self, precheck_connection):
+        """select() would not report decrypted bytes OpenSSL kept back, so the same read takes them"""
+        nw, article, _, queue, _, _ = precheck_connection
+        nw.server.ssl = True
+        response = b"223 0 <test@example.invalid> article exists\r\n"
+        chunks = [response[:-2], response[-2:]]
+
+        def recv_into(buffer, nbytes=0):
+            chunk = chunks.pop(0)
+            with memoryview(buffer) as view:
+                view[: len(chunk)] = chunk
+            return len(chunk)
+
+        nw.nntp.sock.recv_into.side_effect = recv_into
+        nw.nntp.sock.pending.side_effect = lambda: len(chunks[0]) if chunks else 0
+        nw.decoder.expect(article)
+        nw.read()
+
+        queue.register_article.assert_called_once_with(article, True)
+        assert nw.nntp.sock.recv_into.call_args.kwargs == {"nbytes": 2}
 
 
 class IPProtocolVersion(Enum):
