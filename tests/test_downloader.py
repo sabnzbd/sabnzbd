@@ -267,6 +267,19 @@ class TestConnectionStateMachine:
         assert nw.ready is False
 
 
+def test_one_read_per_select_event(monkeypatch):
+    """Decoder.recv drains what OpenSSL holds, so nothing reads again for it"""
+    nw = mock.Mock(connected=True, generation=1, timeout=None)
+    nw.read.return_value = 100
+    downloader = mock.Mock(force_disconnect=False, shutdown=False, sleep_time=0, bandwidth_limit=0)
+    monkeypatch.setattr(sabnzbd, "BPSMeter", mock.Mock(), raising=False)
+
+    Downloader.process_nw_read(downloader, nw, 1)
+
+    nw.read.assert_called_once_with(generation=1)
+    sabnzbd.BPSMeter.update.assert_called_once_with(nw.server.id, 100)
+
+
 class TestRequestTracking:
     """Requests in flight are counted by the decoder"""
 

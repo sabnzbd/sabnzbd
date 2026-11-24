@@ -279,6 +279,48 @@ class TestYencBlockCrcs:
         assert article.block_crcs is None
 
 
+class TestYencStreamedCrc:
+    @staticmethod
+    def _streamed(tmp_path, payload: bytes, end: int) -> sabctools.NNTPResponse:
+        """Stream a body declaring the range 1..end into a file"""
+        encoded, crc = sabctools.yenc_encode(payload)
+        raw_data = (
+            b"222 0 <foo@bar>\r\n"
+            + b"=ybegin part=1 line=128 size=1000 name=foo.bin\r\n"
+            + f"=ypart begin=1 end={end}\r\n".encode()
+            + encoded
+            + f"\r\n=yend size={len(payload)} part=1 pcrc32={crc:08x}\r\n.\r\n".encode()
+        )
+        writer = sabctools.FileWriter(str(tmp_path / "foo.bin"))
+        dec = sabctools.Decoder(len(raw_data))
+        dec.expect(None, writer)
+        BytesIO(raw_data).readinto(dec)
+        dec.process(len(raw_data))
+        response = next(dec)
+        writer.close()
+        return response
+
+    @pytest.mark.parametrize(
+        "end, file_size, kept",
+        [
+            (8, 1000, True),
+            # Longer than its range: only the first 5 bytes were written
+            (5, 1000, False),
+            # Ends past the file, as when a par2 set made it smaller after the request
+            (8, 6, False),
+        ],
+    )
+    def test_the_crc_only_describes_what_was_written(self, tmp_path, end, file_size, kept):
+        nzf = mock.Mock(file_size=file_size, filename_checked=True, file_lock=threading.RLock())
+        article = Article("foo@bar", 1234, nzf)
+        response = self._streamed(tmp_path, b"abcdefgh", end)
+        assert response.data is None and response.crc is not None
+
+        decoder.decode_yenc(article, response)
+
+        assert (article.crc32 is not None) is kept
+
+
 class TestYencFileSize:
     @staticmethod
     def _response(payload: bytes, size: int, crc_ok: bool = True) -> sabctools.NNTPResponse:
