@@ -341,6 +341,9 @@ class NzbFile(TryList):
         offset = 0
         for article in self.decodetable[: self.assembler_next_index]:
             if not article.on_disk:
+                # A failed article was never written, so it takes no room
+                if article.failed:
+                    continue
                 break
             if article.data_size:
                 offset = article.data_begin + article.decoded_size

@@ -476,6 +476,30 @@ class TestAssembler:
         self._assert_expected_content(self.nzf, expected)
         assert not self.nzf.direct_written
 
+    def test_append_after_reopen_continues_past_a_failed_article(self, assembler):
+        """A failed article that was never written takes no room when the append offset is recomputed"""
+        self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello"), can_direct_write=False),
+                self._make_article(self.nzf, offset=0, data=bytearray(b"world"), can_direct_write=False),
+                self._make_article(self.nzf, offset=0, data=bytearray(b"123"), can_direct_write=False),
+                self._make_article(self.nzf, offset=0, data=bytearray(b"xyz"), can_direct_write=False, decoded=False),
+            ],
+        )
+        self.nzf.type = "uu"
+        self.nzf.file_size = None
+        failed = self.nzf.decodetable[1]
+        failed.decoded, failed.failed, failed.decoded_size, failed.crc32 = False, True, None, None
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=False, direct_write=False)
+
+        # The handle is closed in between, so the append offset comes from contiguous_offset
+        sabnzbd.Assembler.close_writer(self.nzf)
+        self.nzf.decodetable[3].decoded = True
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
+        with open(self.nzf.filepath, "rb") as f:
+            assert f.read() == b"hello123xyz"
+
     def test_force_append(self, assembler):
         """Force in direct_write mode, then fill in gaps in append mode"""
         _data, expected = self._make_request(

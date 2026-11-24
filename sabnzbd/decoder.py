@@ -187,10 +187,9 @@ def decode(article: Article, decoder: sabctools.NNTPResponse):
         # Causing the decoder-queue to fill up and delay the downloader
         sabnzbd.ArticleCache.save_article(article, decoded_data)
         article.decoded = True
-    elif not nzo.precheck:
-        # Either there was nothing to save, or the decoder streamed it straight to the
-        # file. Both are on disk as far as the rest of the pipeline is concerned; the
-        # assembler advances past an on_disk article on its own when it next runs.
+    elif article_success and not nzo.precheck:
+        # The decoder streamed it straight to the file. A failed article is not on disk,
+        # so a retry of the job fetches it again; the assembler skips it as failed.
         article.on_disk = True
 
     sabnzbd.NzbQueue.register_article(article, article_success)

@@ -29,6 +29,7 @@ from random import randint
 from unittest import mock
 
 import sabctools
+import sabnzbd
 import sabnzbd.decoder as decoder
 from sabnzbd.nzb import Article
 
@@ -348,3 +349,50 @@ class TestYencFileSize:
         assert nzf.file_size is None
         decoder.decode_yenc(Article("foo@bar", 1234, nzf), self._response(payload, 1000))
         assert nzf.file_size == expected
+
+
+class TestDecodeOnDisk:
+    """Only an article that streamed to its file is on disk, a failed one is fetched again on a retry"""
+
+    @pytest.fixture
+    def decode_streamed(self, monkeypatch, tmp_path):
+        queue = mock.Mock()
+        monkeypatch.setattr(sabnzbd, "NzbQueue", queue, raising=False)
+        monkeypatch.setattr(sabnzbd, "ArticleCache", mock.Mock(), raising=False)
+        monkeypatch.setattr(decoder, "search_new_server", mock.Mock(return_value=False))
+
+        def stream_and_decode(crc_ok: bool = True, close_writer: bool = False) -> Article:
+            payload = b"\x01" * 100
+            encoded, crc = sabctools.yenc_encode(payload)
+            if not crc_ok:
+                crc ^= 0xFFFFFFFF
+            raw_data = (
+                b"222 0 <foo@bar>\r\n=ybegin part=1 line=128 size=100 name=foo.bin\r\n=ypart begin=1 end=100\r\n"
+                + encoded
+                + f"\r\n=yend size=100 part=1 pcrc32={crc:08x}\r\n.\r\n".encode()
+            )
+            writer = sabctools.FileWriter(str(tmp_path / "foo.bin"))
+            if close_writer:
+                writer.close()
+            dec = sabctools.Decoder(len(raw_data))
+            dec.expect(None, writer, max_end=100)
+            BytesIO(raw_data).readinto(dec)
+            dec.process(len(raw_data))
+            writer.close()
+
+            article = Article("foo@bar", 1234, mock.Mock(file_size=100, filename_checked=True))
+            article.nzf.nzo.precheck = False
+            decoder.decode(article, next(dec))
+            queue.register_article.assert_called_once_with(article, crc_ok and not close_writer)
+            return article
+
+        return stream_and_decode
+
+    def test_streamed(self, decode_streamed):
+        assert decode_streamed().on_disk is True
+
+    def test_streamed_crc_error(self, decode_streamed):
+        assert decode_streamed(crc_ok=False).on_disk is False
+
+    def test_sink_failed(self, decode_streamed):
+        assert decode_streamed(close_writer=True).on_disk is False
