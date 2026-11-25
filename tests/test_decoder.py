@@ -279,10 +279,14 @@ class TestYencBlockCrcs:
         assert article.block_crcs is None
 
 
-class TestYencStreamedCrc:
-    @staticmethod
-    def _streamed(tmp_path, payload: bytes, end: int) -> sabctools.NNTPResponse:
-        """Stream a body declaring the range 1..end into a file"""
+class TestYencKeptBytes:
+    @pytest.mark.parametrize("streamed", [True, False])
+    @pytest.mark.parametrize("end", [8, 5])
+    def test_an_article_describes_only_the_bytes_kept(self, tmp_path, streamed, end):
+        """A body longer than its range is cut by the decoder. The article's size and data
+        are then the bytes that go to the file, on either write path, and it keeps no CRC,
+        as the one reported covers the whole body."""
+        payload = b"abcdefgh"
         encoded, crc = sabctools.yenc_encode(payload)
         raw_data = (
             b"222 0 <foo@bar>\r\n"
@@ -291,34 +295,28 @@ class TestYencStreamedCrc:
             + encoded
             + f"\r\n=yend size={len(payload)} part=1 pcrc32={crc:08x}\r\n.\r\n".encode()
         )
-        writer = sabctools.FileWriter(str(tmp_path / "foo.bin"))
+        writer = sabctools.FileWriter(str(tmp_path / "foo.bin")) if streamed else None
         dec = sabctools.Decoder(len(raw_data))
         dec.expect(None, writer)
         BytesIO(raw_data).readinto(dec)
         dec.process(len(raw_data))
         response = next(dec)
-        writer.close()
-        return response
-
-    @pytest.mark.parametrize(
-        "end, file_size, kept",
-        [
-            (8, 1000, True),
-            # Longer than its range: only the first 5 bytes were written
-            (5, 1000, False),
-            # Ends past the file, as when a par2 set made it smaller after the request
-            (8, 6, False),
-        ],
-    )
-    def test_the_crc_only_describes_what_was_written(self, tmp_path, end, file_size, kept):
-        nzf = mock.Mock(file_size=file_size, filename_checked=True, file_lock=threading.RLock())
+        if writer:
+            writer.close()
+        nzf = mock.Mock(file_size=1000, filename_checked=True, file_lock=threading.RLock())
         article = Article("foo@bar", 1234, nzf)
-        response = self._streamed(tmp_path, b"abcdefgh", end)
-        assert response.data is None and response.crc is not None
 
-        decoder.decode_yenc(article, response)
+        data = decoder.decode_yenc(article, response)
 
-        assert (article.crc32 is not None) is kept
+        kept = payload[:end]
+        assert response.crc == crc
+        assert article.decoded_size == article.data_size == end
+        assert article.crc32 == (crc if end == len(payload) else None)
+        if streamed:
+            assert data is None
+            assert open(tmp_path / "foo.bin", "rb").read() == kept
+        else:
+            assert data == kept
 
 
 class TestYencFileSize:
