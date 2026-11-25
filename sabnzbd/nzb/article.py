@@ -214,8 +214,8 @@ class Article(TryList):
         return bool(
             self.data_size
             and self.nzf.type == "yenc"
-            # The decoder only bounds bodies it streams to a sink, so never write an article
-            # from memory past the file's end
+            # The decoder can only bound an article to a file size known when it was
+            # requested, so check its range against the size as it is now
             and (file_size := self.nzf.file_size)
             and self.data_begin + self.data_size <= file_size
             and self.nzf.prepare_filepath()

@@ -423,28 +423,8 @@ class TestAssembler:
         with open(self.nzf.filepath, "rb") as f:
             assert f.read() == b"helloworld"
 
-    def test_direct_write_stops_at_the_end_of_the_range(self, assembler):
-        self._make_request(
-            self.nzf,
-            [
-                self._make_article(self.nzf, offset=5, data=bytearray(b"world")),
-                self._make_article(self.nzf, offset=0, data=bytearray(b"helloXXX")),
-            ],
-        )
-        # The body is longer than its =ypart range says
-        self.nzf.decodetable[1].data_size = 5
-        self.nzf.file_size = 10
-        for article in self.nzf.decodetable:
-            Assembler.assemble_article(article, sabnzbd.ArticleCache.load_article(article))
-        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
-        with open(self.nzf.filepath, "rb") as f:
-            assert f.read() == b"helloworld"
-        # Only the cut article loses the CRC that no longer describes the file
-        assert self.nzf.decodetable[0].crc32 is not None
-        assert self.nzf.decodetable[1].crc32 is None
-
     @pytest.mark.parametrize("par2_size", [None, 8])
-    def test_no_direct_write_past_the_end_of_the_file(self, assembler, par2_size):
+    def test_an_article_past_the_end_of_the_file_is_not_written(self, assembler, par2_size):
         self._make_request(
             self.nzf,
             [
@@ -461,11 +441,11 @@ class TestAssembler:
         assert self.nzf.decodetable[0].can_direct_write
         assert not self.nzf.decodetable[1].can_direct_write
         Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
-        # The rejected article is still appended, but cut at the end of the file
+        # Its offsets are wrong, so it is lost for par2 to repair, and the file keeps its size
         with open(self.nzf.filepath, "rb") as f:
-            assert f.read() == b"hellowor"
-        assert self.nzf.decodetable[0].crc32 is not None
-        assert self.nzf.decodetable[1].crc32 is None
+            assert f.read() == b"hello\x00\x00\x00"
+        assert not self.nzf.decodetable[0].failed and self.nzf.decodetable[0].crc32 is not None
+        assert self.nzf.decodetable[1].failed and self.nzf.decodetable[1].crc32 is None
 
     @pytest.mark.parametrize("direct_write", [True, False])
     def test_append_with_par2_size_and_unknown_article_size(self, assembler, direct_write):
@@ -483,25 +463,6 @@ class TestAssembler:
             )
         with open(self.nzf.filepath, "rb") as f:
             assert f.read() == expected
-
-    def test_append_continues_after_a_cut_article(self, assembler):
-        """An article longer than its range, written ahead, only moves the append offset by its range"""
-        self._make_request(
-            self.nzf,
-            [
-                self._make_article(self.nzf, offset=0, data=bytearray(b"abcde")),
-                self._make_article(self.nzf, offset=5, data=bytearray(b"fghijXXX")),
-                self._make_article(self.nzf, offset=0, data=bytearray(b"klm"), can_direct_write=False),
-            ],
-        )
-        overrun = self.nzf.decodetable[1]
-        overrun.data_size = 5
-        self.nzf.file_size = 13
-        Assembler.assemble_article(overrun, sabnzbd.ArticleCache.load_article(overrun))
-        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
-        with open(self.nzf.filepath, "rb") as f:
-            assert f.read() == b"abcdefghijklm"
-        assert self.nzf.contiguous_offset() == 13
 
     def test_append_without_offsets_packs_at_a_running_offset(self, assembler):
         _data, expected = self._make_request(

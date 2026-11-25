@@ -245,20 +245,16 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> Optional[
         # A streamed article is already on disk, so there is nothing to hand back; the
         # bytes stay put either way, so par2 has the same chance of repairing it
         raise BadData(decoded_data)
-
+    if response.bytes_decoded != response.end_size:
+        # crc covers the whole body, so once the decoder dropped part of it, it no longer
+        # describes the bytes in the file and the data should not be considered valid
+        crc = None
     article.crc32 = crc
+
     if nzf.file_size is None and article.data_size:
         with nzf.file_lock:
             if nzf.file_size is None:
                 nzf.file_size = nzf.nzo.par2_file_size(nzf.filename) or response.file_size
-
-    # A streamed body is only written up to its range and the end of the file, while its
-    # CRC covers all of it, so the CRC no longer describes the file
-    if decoded_data is None and (
-        (article.data_size and article.decoded_size > article.data_size)
-        or (nzf.file_size and article.data_begin + article.decoded_size > nzf.file_size)
-    ):
-        article.crc32 = None
 
     return decoded_data
 

@@ -343,8 +343,7 @@ class NzbFile(TryList):
             if not article.on_disk:
                 break
             if article.data_size:
-                # A body longer than its range was cut at the range's end
-                offset = article.data_begin + min(article.decoded_size, article.data_size)
+                offset = article.data_begin + article.decoded_size
             elif article.decoded_size is not None:
                 # queues from <= 4.5.5 do not have this attribute
                 offset += article.decoded_size
