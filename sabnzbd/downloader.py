@@ -798,9 +798,10 @@ class Downloader(Thread):
             self.reset_nw(nw, "Server closed connection", wait=False)
             return
         except BufferError:
-            # The BufferError is thrown when exceeding maximum buffer size
-            # Make sure to discard the article
-            self.reset_nw(nw, "Maximum data buffer size exceeded", wait=False, retry_article=False)
+            # The decoder's buffer is full of a line it cannot process, so the connection
+            # cannot continue. An oversized article is not an error: it keeps nothing and
+            # is fetched from another server like any bad article.
+            self.reset_nw(nw, "Decoder buffer full", wait=False)
             return
         except OSError as err:
             # A streamed article could not be written: out of space, or the file
