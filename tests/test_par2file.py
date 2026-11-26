@@ -36,6 +36,7 @@ from sabnzbd.par2file import (
     PAR_SLICE_ID,
     PAR_UNICODE_FILE_ID,
     FilePar2Info,
+    analyse_par2,
     parse_par2_file,
     uncovered_blocks,
 )
@@ -328,6 +329,29 @@ class TestPar2Parsing:
         _, table = parse_par2_file(str(extra_entry), {})
         assert table["rss_feed_test.xml"].blocksize == 0
         assert table["rss_feed_test.xml"].blockcount == 0
+
+
+class TestAnalysePar2:
+    @pytest.mark.parametrize(
+        "name, setname, vol, block",
+        [
+            ("Release.vol07+08.par2", "Release", 7, 8),
+            ("Release.vol-01.par2", "Release", 1, 0),
+            ("Release.vol-010.par2", "Release", 10, 0),
+            ("Release.par2", "Release", 0, 0),
+        ],
+    )
+    def test_name(self, name, setname, vol, block):
+        result = analyse_par2(name)
+        assert result[0] == setname
+        assert int(result[1]) == vol
+        assert int(result[2]) == block
+
+    def test_single_number_volume_counts_its_blocks_on_disk(self, tmp_path):
+        volume = tmp_path / "Release.vol-03.par2"
+        with open(os.path.join(SAB_DATA_DIR, "unicode_rar", "我喜欢编程.vol002+04.par2"), "rb") as source:
+            volume.write_bytes(source.read())
+        assert analyse_par2(volume.name, str(volume)) == ("Release", "03", 4)
 
 
 class TestUncoveredBlocks:

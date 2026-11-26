@@ -115,13 +115,18 @@ def analyse_par2(name: str, filepath: Optional[str] = None) -> tuple[str, int, i
     """
     name = name.strip()
     vol = block = 0
-    if m := PROBABLY_PAR2_RE.search(name):
+    if (m := PROBABLY_PAR2_RE.search(name)) and m.group(2):
         setname = m.group(1)
         vol = m.group(2)
         block = m.group(3)
     else:
-        # Base-par2 file
-        setname = get_basename(name).strip()
+        if m:
+            # Single-number volume (e.g. ".vol-01.par2"), the number is an index and not a block count
+            setname = m.group(1)
+            vol = m.group(3)
+        else:
+            # Base-par2 file
+            setname = get_basename(name).strip()
         # Could not parse the filename, need deep inspection
         # We already know it's a par2 from the is_parfile
         if filepath:
