@@ -43,6 +43,7 @@ PAR_CREATOR_ID = b"PAR 2.0\x00Creator\x00"
 PAR_SLICE_ID = b"PAR 2.0\x00IFSC\x00\x00\x00\x00"
 PAR_RECOVERY_ID = b"RecvSlic"
 PAR_RECOVERY_SLICE_ID = b"PAR 2.0\x00" + PAR_RECOVERY_ID
+PAR_RECOVERY_HEADER_SIZE = 68  # 64-byte packet header + 4-byte exponent
 
 
 @dataclass(slots=True)
@@ -108,7 +109,47 @@ def is_par2_file(filepath: str) -> bool:
     return False
 
 
-def analyse_par2(name: str, filepath: Optional[str] = None) -> tuple[str, int, int]:
+def count_recovery_blocks(filepath: str) -> int:
+    """Count complete recovery slice packets in a PAR2 file"""
+    blocks = 0
+    try:
+        total_size = os.path.getsize(filepath)
+        with open(filepath, "rb") as f:
+            while find_packet(f):
+                packet_start = f.tell()
+                f.seek(len(PAR_PKT_ID), os.SEEK_CUR)
+                length = f.read(8)
+                if len(length) < 8:
+                    break
+                pack_len = struct.unpack("<Q", length)[0]
+                if pack_len % 4 or not 64 <= pack_len <= total_size - packet_start:
+                    f.seek(packet_start + len(PAR_PKT_ID))
+                    continue
+                f.seek(16, os.SEEK_CUR)  # skip packet MD5
+                set_and_type = f.read(32)
+                if len(set_and_type) < 32:
+                    break
+                if set_and_type[16:32] == PAR_RECOVERY_SLICE_ID and pack_len >= PAR_RECOVERY_HEADER_SIZE:
+                    blocks += 1
+                f.seek(packet_start + pack_len)
+    except Exception:
+        pass
+    return blocks
+
+
+def estimate_recovery_blocks(filesize: int, blocksize: int) -> int:
+    """Upper-bound estimate of recovery blocks in an undownloaded PAR2 volume from its byte size"""
+    if filesize <= 0 or blocksize <= 0:
+        return 0
+    return filesize // (blocksize + PAR_RECOVERY_HEADER_SIZE)
+
+
+def analyse_par2(
+    name: str,
+    filepath: Optional[str] = None,
+    filesize: int = 0,
+    blocksize: int = 0,
+) -> tuple[str, int, int]:
     """Check if file is a par2-file and determine vol/block
     return setname, vol, block
     setname is empty when not a par2 file
@@ -117,26 +158,23 @@ def analyse_par2(name: str, filepath: Optional[str] = None) -> tuple[str, int, i
     vol = block = 0
     if m := PROBABLY_PAR2_RE.search(name):
         setname = m.group(1)
-        vol = m.group(2)
-        block = m.group(3)
+        if m.group(2) and m.group(3):
+            vol = int(m.group(2))
+            block = int(m.group(3))
+        else:
+            # Single-number volume name (e.g. ".vol-01.par2") carries an index, not a block count
+            vol = int(m.group(3) or m.group(2) or 0)
+            if filepath:
+                block = count_recovery_blocks(filepath)
+            else:
+                block = estimate_recovery_blocks(filesize, blocksize)
     else:
         # Base-par2 file
         setname = get_basename(name).strip()
         # Could not parse the filename, need deep inspection
         # We already know it's a par2 from the is_parfile
         if filepath:
-            try:
-                # Quick loop to find number blocks
-                # Assumes blocks are larger than 128 bytes
-                # Worst case, we only count 1, still good
-                with open(filepath, "rb") as f:
-                    buf = f.read(128)
-                    while buf:
-                        if PAR_RECOVERY_ID in buf:
-                            block += 1
-                        buf = f.read(128)
-            except Exception:
-                pass
+            block = count_recovery_blocks(filepath)
     return setname, vol, block
 
 

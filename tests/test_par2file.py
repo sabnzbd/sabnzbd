@@ -32,10 +32,14 @@ from sabnzbd.par2file import (
     PAR_FILE_ID,
     PAR_MAIN_ID,
     PAR_PKT_ID,
+    PAR_RECOVERY_HEADER_SIZE,
     PAR_RECOVERY_SLICE_ID,
     PAR_SLICE_ID,
     PAR_UNICODE_FILE_ID,
     FilePar2Info,
+    analyse_par2,
+    count_recovery_blocks,
+    estimate_recovery_blocks,
     parse_par2_file,
     uncovered_blocks,
 )
@@ -365,3 +369,60 @@ class TestUncoveredBlocks:
         arrived = [(0, 2500), (5000, 9500)]
         assert uncovered_blocks(arrived, 1000, 10, 9500) == 3
         assert uncovered_blocks(arrived, 5000, 2, 9500) == 1
+
+
+class TestAnalysePar2:
+    @pytest.mark.parametrize(
+        "filename, expected",
+        [
+            ("release.vol00+01.par2", ("release", 0, 1)),
+            ("release.vol001+002.par2", ("release", 1, 2)),
+            ("release.vol003-004.par2", ("release", 3, 4)),
+            ("release.vol-01.par2", ("release", 1, 0)),
+            ("release.vol-010.par2", ("release", 10, 0)),
+            ("release.vol+05.par2", ("release", 5, 0)),
+            ("release.vol05-.par2", ("release", 5, 0)),
+            ("release.par2", ("release", 0, 0)),
+        ],
+    )
+    def test_filename_only_parsing(self, filename, expected):
+        assert analyse_par2(filename) == expected
+
+    def test_single_number_volume_estimates_blocks_from_size(self):
+        blocksize = 768_000
+        # Index-only vol-01 is smaller than a single recovery packet
+        assert analyse_par2("release.vol-01.par2", filesize=280_420, blocksize=blocksize) == ("release", 1, 0)
+        # vol-010 holds 256 recovery blocks plus critical packets, never 10
+        vol10_size = 256 * (blocksize + PAR_RECOVERY_HEADER_SIZE) + 9 * 280_000
+        assert analyse_par2("release.vol-010.par2", filesize=vol10_size, blocksize=blocksize) == (
+            "release",
+            10,
+            estimate_recovery_blocks(vol10_size, blocksize),
+        )
+        assert estimate_recovery_blocks(vol10_size, blocksize) >= 256
+
+    def test_base_par2_is_not_estimated_from_size_without_filepath(self):
+        """Undownloaded base .par2 files must stay at 0 blocks so postpone_pars leaves them queued."""
+        assert analyse_par2("release.par2", filesize=10_000_000, blocksize=768_000) == ("release", 0, 0)
+
+    def test_count_recovery_blocks_from_disk(self, tmp_path):
+        packets = TestPar2Parsing._fixture_packets()
+        set_id = packets[PAR_FILE_ID][32:48]
+        index_only = tmp_path / "release.vol-01.par2"
+        index_only.write_bytes(b"".join(packets.values()))
+        assert count_recovery_blocks(str(index_only)) == 0
+        assert analyse_par2("release.vol-01.par2", filepath=str(index_only)) == ("release", 1, 0)
+
+        recovery_packets = b"".join(
+            TestPar2Parsing._packet(set_id, PAR_RECOVERY_SLICE_ID, i.to_bytes(4, "little") + b"\xaa" * 64)
+            for i in range(5)
+        )
+        # Trailing truncated recovery slice must not be counted
+        truncated = TestPar2Parsing._packet(set_id, PAR_RECOVERY_SLICE_ID, (5).to_bytes(4, "little") + b"\xbb" * 64)[
+            :-10
+        ]
+        vol = tmp_path / "release.vol-04.par2"
+        vol.write_bytes(b"\xff" * 13 + b"".join(packets.values()) + recovery_packets + truncated)
+        assert count_recovery_blocks(str(vol)) == 5
+        assert analyse_par2("release.vol-04.par2", filepath=str(vol)) == ("release", 4, 5)
+        assert analyse_par2("obfuscated.bin", filepath=str(vol)) == ("obfuscated", 0, 5)

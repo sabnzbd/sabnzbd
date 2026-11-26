@@ -667,9 +667,22 @@ class NzbObject(TryList):
         if parset not in self.extrapars:
             self.extrapars[parset] = []
 
+        blocksize = next((info.blocksize for info in self.par2packs.get(parset, {}).values() if info.blocksize), 0)
+
+        # Refresh estimates for already-postponed volumes once blocksize is known
+        if blocksize:
+            for xnzf in self.extrapars[parset]:
+                if not xnzf.completed and not xnzf.assembled:
+                    setname, vol, block = analyse_par2(xnzf.filename, filesize=xnzf.bytes, blocksize=blocksize)
+                    if block and parset.lower() == setname.lower():
+                        xnzf.set_par2(parset, vol, block)
+
         for xnzf in self.files[:]:
             # Allow re-analysis in case the name was changed by yEnc-header
-            setname, vol, block = analyse_par2(xnzf.filename)
+            setname, vol, block = analyse_par2(xnzf.filename, filesize=xnzf.bytes, blocksize=blocksize)
+            # Single-number volumes like ".vol-02.par2" cannot be sized until a par2 file gives blocksize
+            if not block and not blocksize and vol:
+                block = 1
             # Don't postpone header-only-files, so we can extract all
             # possible md5of16k and par2packs's even if the filenames are bad
             # Usually they are all downloaded as first_articles
