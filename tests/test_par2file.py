@@ -347,10 +347,12 @@ class TestAnalysePar2:
         assert int(result[1]) == vol
         assert int(result[2]) == block
 
-    def test_single_number_volume_counts_its_blocks_on_disk(self, tmp_path):
+    @pytest.mark.parametrize("offset", [0, 12, 68, 2**16 - 60])
+    def test_single_number_volume_counts_its_blocks_on_disk(self, tmp_path, offset):
+        """An offset can place a recovery marker across two reads"""
         volume = tmp_path / "Release.vol-03.par2"
         with open(os.path.join(SAB_DATA_DIR, "unicode_rar", "我喜欢编程.vol002+04.par2"), "rb") as source:
-            volume.write_bytes(source.read())
+            volume.write_bytes(b"\0" * offset + source.read())
         assert analyse_par2(volume.name, str(volume)) == ("Release", "03", 4)
 
 

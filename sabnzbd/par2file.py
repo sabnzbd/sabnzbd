@@ -132,14 +132,13 @@ def analyse_par2(name: str, filepath: Optional[str] = None) -> tuple[str, int, i
         if filepath:
             try:
                 # Quick loop to find number blocks
-                # Assumes blocks are larger than 128 bytes
-                # Worst case, we only count 1, still good
                 with open(filepath, "rb") as f:
-                    buf = f.read(128)
-                    while buf:
-                        if PAR_RECOVERY_ID in buf:
-                            block += 1
-                        buf = f.read(128)
+                    tail = b""
+                    while buf := f.read(PACKET_SEARCH_CHUNK):
+                        buf = tail + buf
+                        block += buf.count(PAR_RECOVERY_ID)
+                        # A marker can span two reads
+                        tail = buf[1 - len(PAR_RECOVERY_ID) :]
             except Exception:
                 pass
     return setname, vol, block
