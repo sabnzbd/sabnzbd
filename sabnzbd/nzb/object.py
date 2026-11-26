@@ -101,6 +101,8 @@ from sabnzbd.par2file import (
     FilePar2Info,
     has_par2_in_filename,
     analyse_par2,
+    estimate_recovery_blocks,
+    is_single_number_par2_volume,
     parse_par2_file,
     is_par2_file,
     uncovered_blocks,
@@ -659,6 +661,10 @@ class NzbObject(TryList):
             nzf.reset_all_try_lists()
         self.reset_try_list()
 
+    def _par2_set_blocksize(self, parset: str) -> int:
+        """Block size of a parsed par2 set, or 0 when not yet known"""
+        return next((info.blocksize for info in (self.par2packs.get(parset) or {}).values() if info.blocksize), 0)
+
     @synchronized()
     def postpone_pars(self, parset: str):
         """Move all vol-par files matching 'parset' to the extrapars table"""
@@ -667,38 +673,50 @@ class NzbObject(TryList):
         if parset not in self.extrapars:
             self.extrapars[parset] = []
 
-        blocksize = next((info.blocksize for info in self.par2packs.get(parset, {}).values() if info.blocksize), 0)
+        blocksize = self._par2_set_blocksize(parset)
 
-        # Refresh estimates for already-postponed volumes once blocksize is known
+        # Refresh estimates for already-postponed single-number volumes once blocksize is known
         if blocksize:
-            for xnzf in self.extrapars[parset]:
-                if not xnzf.completed and not xnzf.assembled:
-                    setname, vol, block = analyse_par2(xnzf.filename, filesize=xnzf.bytes, blocksize=blocksize)
-                    if block and parset.lower() == setname.lower():
-                        xnzf.set_par2(parset, vol, block)
+            for existing_set in self.extrapars:
+                if existing_set.lower() == parset.lower():
+                    for xnzf in self.extrapars[existing_set]:
+                        if not xnzf.completed and not xnzf.assembled and is_single_number_par2_volume(xnzf.filename):
+                            setname, vol, _ = analyse_par2(xnzf.filename)
+                            if parset.lower() == setname.lower():
+                                xnzf.set_par2(existing_set, vol, estimate_recovery_blocks(xnzf.bytes, blocksize))
 
+        already_postponed = {
+            xnzf
+            for existing_set, pars in self.extrapars.items()
+            if existing_set.lower() == parset.lower()
+            for xnzf in pars
+        }
         for xnzf in self.files[:]:
+            # Skip par2 files already tracked in extrapars (e.g. re-queued by promote_par2/add_parfile)
+            if xnzf in already_postponed:
+                continue
             # Allow re-analysis in case the name was changed by yEnc-header
-            setname, vol, block = analyse_par2(xnzf.filename, filesize=xnzf.bytes, blocksize=blocksize)
-            # Single-number volumes like ".vol-02.par2" cannot be sized until a par2 file gives blocksize
-            if not block and not blocksize and vol:
-                block = 1
+            setname, vol, block = analyse_par2(xnzf.filename)
+            single_vol = not block and is_single_number_par2_volume(xnzf.filename)
+            if single_vol and blocksize:
+                block = estimate_recovery_blocks(xnzf.bytes, blocksize)
             # Don't postpone header-only-files, so we can extract all
             # possible md5of16k and par2packs's even if the filenames are bad
             # Usually they are all downloaded as first_articles
             # We match on exact match
-            if setname and block and parset.lower() == setname.lower():
+            if setname and (block or (single_vol and not blocksize)) and parset.lower() == setname.lower():
                 xnzf.set_par2(parset, vol, block)
                 # Don't postpone if all par2 are desired and should be kept or not repairing
                 if self.repair and not (cfg.enable_all_par() and not cfg.enable_par_cleanup()):
                     self.extrapars[parset].append(xnzf)
+                    already_postponed.add(xnzf)
                     self.files.remove(xnzf)
                     # Already count these bytes as done
                     self.bytes_tried += xnzf.bytes_left
 
-        # Sort the sets
+        # Sort the sets (smallest block count first, breaking ties by file size)
         for setname in self.extrapars:
-            self.extrapars[setname].sort(key=lambda x: x.blocks)
+            self.extrapars[setname].sort(key=lambda x: (x.blocks, x.bytes))
 
         # Also re-parse all filenames in case par2 came after first articles
         self.verify_all_filenames_and_resort()
@@ -857,19 +875,24 @@ class NzbObject(TryList):
 
         avail_blocks = 0
         block_list = []
+        unsized = []
         for setname_search in self.extrapars:
             # Do it for our set, or highlight matching one
             # We might catch too many par2's, but that's okay
             if setname_search == setname or difflib.SequenceMatcher(None, setname, setname_search).ratio() > 0.85:
+                set_blocksize = self._par2_set_blocksize(setname_search)
                 for nzf in self.extrapars[setname_search]:
                     # Don't count extrapars that are completed already
                     if nzf.completed or nzf in self.finished_files:
                         continue
-                    block_list.append(nzf)
-                    avail_blocks += nzf.blocks
+                    if nzf.blocks:
+                        block_list.append(nzf)
+                        avail_blocks += nzf.blocks
+                    elif not set_blocksize and is_single_number_par2_volume(nzf.filename):
+                        unsized.append(nzf)
 
-        # Sort the smallest blocks first
-        block_list.sort(key=lambda x: x.blocks, reverse=False)
+        # Sort the smallest blocks first, breaking ties by file size
+        block_list.sort(key=lambda x: (x.blocks, x.bytes), reverse=False)
         logging.info("%s blocks available", avail_blocks)
 
         # Enough?
@@ -886,6 +909,15 @@ class NzbObject(TryList):
 
             logging.info("Added %s blocks to %s", added_blocks, self.final_name)
             return added_blocks
+        elif unsized:
+            # Single-number volumes have unknown block counts until blocksize is parsed;
+            # fetch the smallest one rather than refusing repair prematurely
+            unsized.sort(key=lambda x: x.bytes)
+            for new_nzf in unsized:
+                if self.add_parfile(new_nzf):
+                    logging.info("Added unsized par2 volume %s to %s", new_nzf.filename, self.final_name)
+                    return 1
+            return 0
         else:
             # Not enough
             return 0
@@ -1315,6 +1347,8 @@ class NzbObject(TryList):
                     # Enough now?
                     if blocks_have >= needed:
                         break
+                    if not new_nzf.blocks:
+                        continue
                     if self.add_parfile(new_nzf):
                         blocks_have += new_nzf.blocks
                         blocks_new += new_nzf.blocks

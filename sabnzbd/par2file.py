@@ -41,9 +41,9 @@ PAR_FILE_ID = b"PAR 2.0\x00FileDesc"
 PAR_UNICODE_FILE_ID = b"PAR 2.0\x00UniFileN"
 PAR_CREATOR_ID = b"PAR 2.0\x00Creator\x00"
 PAR_SLICE_ID = b"PAR 2.0\x00IFSC\x00\x00\x00\x00"
-PAR_RECOVERY_ID = b"RecvSlic"
-PAR_RECOVERY_SLICE_ID = b"PAR 2.0\x00" + PAR_RECOVERY_ID
-PAR_RECOVERY_HEADER_SIZE = 68  # 64-byte packet header + 4-byte exponent
+PAR_RECOVERY_SLICE_ID = b"PAR 2.0\x00RecvSlic"
+PAR_PACKET_HEADER_SIZE = 64
+PAR_RECOVERY_HEADER_SIZE = PAR_PACKET_HEADER_SIZE + 4  # 64-byte packet header + 4-byte exponent
 
 
 @dataclass(slots=True)
@@ -109,6 +109,39 @@ def is_par2_file(filepath: str) -> bool:
     return False
 
 
+def _read_packet_header(f: BinaryIO, total_size: int) -> Optional[tuple[int, int, bytes, bytes]]:
+    """Read and validate the 64-byte PAR2 packet header at f's current position.
+    Returns (packet_start, pack_len, md5sum, set_and_type), or None if invalid/EOF
+    (having advanced past PAR_PKT_ID so scanning can resume)."""
+    # All packets start with a 64-byte header before the body:
+    # 8  : PAR2\x00PKT
+    # 8  : Length of the entire packet (multiple of 4, at least 64, includes header)
+    # 16 : MD5 hash of packet (from Recovery Set ID through end of packet)
+    # 16 : Recovery Set ID
+    # 16 : Packet Type
+    packet_start = f.tell()
+    f.seek(len(PAR_PKT_ID), os.SEEK_CUR)
+    length = f.read(8)
+    if len(length) < 8:
+        return None
+    pack_len = struct.unpack("<Q", length)[0]
+    if pack_len % 4 or not PAR_PACKET_HEADER_SIZE <= pack_len <= total_size - packet_start:
+        # The next packet may start anywhere after this header
+        f.seek(packet_start + len(PAR_PKT_ID))
+        return None
+    md5sum = f.read(16)
+    set_and_type = f.read(32)
+    if len(md5sum) < 16 or len(set_and_type) < 32:
+        return None
+    return packet_start, pack_len, md5sum, set_and_type
+
+
+def is_single_number_par2_volume(name: str) -> bool:
+    """Whether filename is a PAR2 volume with a single index instead of vol<start>+<count> (e.g. '.vol-01.par2')"""
+    m = PROBABLY_PAR2_RE.search(name.strip())
+    return bool(m and not (m.group(2) and m.group(3)))
+
+
 def count_recovery_blocks(filepath: str) -> int:
     """Count complete recovery slice packets in a PAR2 file"""
     blocks = 0
@@ -116,40 +149,35 @@ def count_recovery_blocks(filepath: str) -> int:
         total_size = os.path.getsize(filepath)
         with open(filepath, "rb") as f:
             while find_packet(f):
-                packet_start = f.tell()
-                f.seek(len(PAR_PKT_ID), os.SEEK_CUR)
-                length = f.read(8)
-                if len(length) < 8:
-                    break
-                pack_len = struct.unpack("<Q", length)[0]
-                if pack_len % 4 or not 64 <= pack_len <= total_size - packet_start:
-                    f.seek(packet_start + len(PAR_PKT_ID))
+                header = _read_packet_header(f, total_size)
+                if header is None:
                     continue
-                f.seek(16, os.SEEK_CUR)  # skip packet MD5
-                set_and_type = f.read(32)
-                if len(set_and_type) < 32:
-                    break
-                if set_and_type[16:32] == PAR_RECOVERY_SLICE_ID and pack_len >= PAR_RECOVERY_HEADER_SIZE:
-                    blocks += 1
-                f.seek(packet_start + pack_len)
+                packet_start, pack_len, md5sum, set_and_type = header
+                if set_and_type[16:32] == PAR_RECOVERY_SLICE_ID:
+                    # A valid recovery slice holds at least one 4-byte slice payload after the 4-byte exponent
+                    if pack_len > PAR_RECOVERY_HEADER_SIZE:
+                        blocks += 1
+                    f.seek(packet_start + pack_len)
+                    continue
+                # Validate non-recovery packets before trusting their declared length
+                data = set_and_type + f.read(pack_len - PAR_PACKET_HEADER_SIZE)
+                if md5sum != hashlib.md5(data).digest():
+                    f.seek(packet_start + len(PAR_PKT_ID))
     except Exception:
         pass
     return blocks
 
 
 def estimate_recovery_blocks(filesize: int, blocksize: int) -> int:
-    """Upper-bound estimate of recovery blocks in an undownloaded PAR2 volume from its byte size"""
+    """Upper-bound estimate of recovery blocks in an undownloaded PAR2 volume from its byte size.
+    Intentionally never underestimates (each recovery packet is at least blocksize + 68 bytes and
+    yEnc only inflates segment sizes) so blocks_beyond_recovery/get_extra_blocks cannot falsely abort."""
     if filesize <= 0 or blocksize <= 0:
         return 0
     return filesize // (blocksize + PAR_RECOVERY_HEADER_SIZE)
 
 
-def analyse_par2(
-    name: str,
-    filepath: Optional[str] = None,
-    filesize: int = 0,
-    blocksize: int = 0,
-) -> tuple[str, int, int]:
+def analyse_par2(name: str, filepath: Optional[str] = None) -> tuple[str, int, int]:
     """Check if file is a par2-file and determine vol/block
     return setname, vol, block
     setname is empty when not a par2 file
@@ -166,8 +194,6 @@ def analyse_par2(
             vol = int(m.group(3) or m.group(2) or 0)
             if filepath:
                 block = count_recovery_blocks(filepath)
-            else:
-                block = estimate_recovery_blocks(filesize, blocksize)
     else:
         # Base-par2 file
         setname = get_basename(name).strip()
@@ -217,39 +243,18 @@ def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[s
         total_size = os.path.getsize(fname)
         with open(fname, "rb") as f:
             while find_packet(f):
-                packet_start = f.tell()
-                f.seek(len(PAR_PKT_ID), os.SEEK_CUR)
-
-                # All packages start with a header before the body
-                # 8	  : PAR2\x00PKT
-                # 8	  : Length of the entire packet. Must be multiple of 4. (NB: Includes length of header.)
-                # 16  : MD5 Hash of packet.
-                # 16  : Recovery Set ID.
-                # 16  : Type of packet.
-                # ?*4 : Body of Packet. Must be a multiple of 4 bytes.
-
-                # Length must be multiple of 4, at least 64 and fit in the file
-                length = f.read(8)
-                if len(length) < 8:
-                    break
-                pack_len = struct.unpack("<Q", length)[0]
-                if pack_len % 4 or not 64 <= pack_len <= total_size - f.tell() + 16:
-                    # The next packet may start anywhere after this header
-                    f.seek(packet_start + len(PAR_PKT_ID))
+                header = _read_packet_header(f, total_size)
+                if header is None:
                     continue
-
-                # Next 16 bytes is md5sum of this packet
-                md5sum = f.read(16)
+                packet_start, pack_len, md5sum, set_and_type = header
 
                 # Recovery packets are skipped over unread
-                set_and_type = f.read(32)
                 if set_and_type[16:32] == PAR_RECOVERY_SLICE_ID:
-                    f.seek(pack_len - 64, os.SEEK_CUR)
+                    f.seek(packet_start + pack_len)
                     continue
 
                 # Read and check the data
-                # Subtract 64 because we already read these bytes of the header
-                data = set_and_type + f.read(pack_len - 64)
+                data = set_and_type + f.read(pack_len - PAR_PACKET_HEADER_SIZE)
                 if md5sum != hashlib.md5(data).digest():
                     f.seek(packet_start + len(PAR_PKT_ID))
                     continue

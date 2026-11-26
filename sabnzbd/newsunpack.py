@@ -1300,9 +1300,11 @@ def par2_verify_and_repair(
             par2repair.discard(nzo, setname)
 
             # Look for the smallest par2 file we have not tried yet
-            block_table = {nzf.blocks: nzf for nzf in nzo.extrapars[setname] if not nzf.completed}
-            if block_table:
-                nzf = block_table[min(block_table)]
+            if nzf := min(
+                (nzf for nzf in nzo.extrapars[setname] if not nzf.completed),
+                key=lambda nzf: (nzf.blocks, nzf.bytes),
+                default=None,
+            ):
                 logging.info("Found new par2file %s", nzf.filename)
                 nzo.add_parfile(nzf)
                 return False, True, [], []

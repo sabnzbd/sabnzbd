@@ -585,10 +585,19 @@ class TestBlockAccounting:
 
 
 class TestSingleNumberPar2Volumes:
-    """Single-number PAR2 volumes like '.vol-02.par2' carry a sequence number, not a block count."""
+    """Single-number PAR2 volumes (e.g. NZBgeek's '.vol-01.par2'..'.vol-011.par2')
+    carry a sequence number rather than a block count."""
 
     BLOCKSIZE = 768_000
     RECOVERY_PACKET = BLOCKSIZE + 68
+    # Realistic NZBgeek naming uses a literal '0' prefix (vol-01..vol-09, vol-010, vol-011),
+    # and NZB segment byte counts include ~3% yEnc encoding overhead plus repeated critical packets
+    REAL_COUNTS = [1, 2, 4, 8, 16, 32, 64, 128, 256, 129]
+
+    @classmethod
+    def _yenc_vol_bytes(cls, block_count: int, critical_copies: int) -> int:
+        decoded = block_count * cls.RECOVERY_PACKET + critical_copies * 280_000
+        return int(decoded * 1.03)
 
     @staticmethod
     def _make_vol(nzo: NzbObject, filename: str, file_bytes: int, completed: bool = False) -> NzbFile:
@@ -600,80 +609,178 @@ class TestSingleNumberPar2Volumes:
             nzf.decodetable.append(article)
         return nzf
 
-    def _make_nzo_with_single_number_vols(self) -> NzbObject:
+    def _make_nzo_with_single_number_vols(self) -> tuple[NzbObject, dict[str, int]]:
         nzo = NzbObject("test_single_number_vols")
         nzo.repair = True
-        # 10 recovery volumes (vol-02..vol-011) holding 1..256 + 129 blocks (640 total)
-        real_counts = [1, 2, 4, 8, 16, 32, 64, 128, 256, 129]
         nzo.par2packs["release"] = {
             "release.part01.rar": FilePar2Info(
                 "release.part01.rar", b"\0" * 16, self.BLOCKSIZE * 100, None, False, self.BLOCKSIZE, 100
             )
         }
         # Index-only vol-01 already finished with 0 recovery blocks
-        vol01 = self._make_vol(nzo, "release.vol-01.par2", 280_000, completed=True)
+        vol01 = self._make_vol(nzo, "release.vol-01.par2", 289_000, completed=True)
         vol01.set_par2("release", 1, 0)
         nzo.finished_files = [vol01]
         nzo.extrapars["release"] = [vol01]
 
-        for idx, count in enumerate(real_counts, start=2):
-            # Include typical critical-packet overhead
-            nzo.files.append(self._make_vol(nzo, f"release.vol-0{idx}.par2", count * self.RECOVERY_PACKET + 280_000))
-        return nzo
+        expected_estimates = {}
+        for idx, count in enumerate(self.REAL_COUNTS, start=2):
+            name = f"release.vol-0{idx}.par2"
+            size = self._yenc_vol_bytes(count, critical_copies=idx - 1)
+            expected_estimates[name] = size // self.RECOVERY_PACKET
+            nzo.files.append(self._make_vol(nzo, name, size))
+        # Match real NZB import ordering: lexicographically vol-010 and vol-011 sort before vol-02
+        nzo.sort_nzfs()
+        assert nzo.files[0].filename == "release.vol-010.par2"
+        return nzo, expected_estimates
 
     def test_postpone_pars_sizes_and_fetches_only_needed_volumes(self):
-        nzo = self._make_nzo_with_single_number_vols()
+        nzo, expected = self._make_nzo_with_single_number_vols()
         with mock.patch.object(nzo, "verify_all_filenames_and_resort"):
             nzo.postpone_pars("release")
 
         assert nzo.files == []
         pending = [nzf for nzf in nzo.extrapars["release"] if not nzf.completed]
-        assert len(pending) == 10
+        assert {nzf.filename: nzf.blocks for nzf in pending} == expected
         # Previously summed vol numbers (2+3+...+11 = 65) and failed when 84 blocks were needed
-        assert sum(nzf.blocks for nzf in pending) >= 640
+        assert sum(nzf.blocks for nzf in pending) == sum(expected.values())
 
-        with mock.patch.object(nzo, "add_parfile", return_value=True) as add_parfile:
-            added = nzo.get_extra_blocks("release", 84)
-
-        assert added >= 84
-        # Fetches smallest volumes first (vol-02..vol-08 = 127 blocks), leaving vol-09..vol-011 untouched
-        fetched = [call.args[0].filename for call in add_parfile.call_args_list]
-        assert "release.vol-010.par2" not in fetched
-        assert "release.vol-09.par2" not in fetched
-        assert "release.vol-011.par2" not in fetched
+        added = nzo.get_extra_blocks("release", 84)
+        # Smallest volumes first (vol-02..vol-08): 1+2+5+9+18+35+68 = 138 est (127 real blocks)
+        expected_fetched = [f"release.vol-0{i}.par2" for i in range(2, 9)]
+        assert added == sum(expected[name] for name in expected_fetched)
+        queued = {nzf.filename for nzf in nzo.files}
+        assert queued == set(expected_fetched)
+        assert "release.vol-09.par2" not in queued
+        assert "release.vol-010.par2" not in queued
+        assert "release.vol-011.par2" not in queued
 
     def test_blocks_beyond_recovery_does_not_falsely_abort(self):
-        nzo = self._make_nzo_with_single_number_vols()
+        nzo, expected = self._make_nzo_with_single_number_vols()
         with mock.patch.object(nzo, "verify_all_filenames_and_resort"):
             nzo.postpone_pars("release")
 
-        # 84 lost blocks exceeds the old misparsed total (66) but is well within the real 640 blocks
+        # 84 lost blocks exceeds the old misparsed total (66) but is well within the real 640+ blocks
         with mock.patch.object(nzo, "blocks_destroyed", return_value=84):
             assert nzo.blocks_beyond_recovery() is False
-        with mock.patch.object(nzo, "blocks_destroyed", return_value=700):
+        with mock.patch.object(nzo, "blocks_destroyed", return_value=sum(expected.values()) + 1):
             assert nzo.blocks_beyond_recovery() is True
 
-    def test_promote_par2_before_geometry_then_refreshes_blocks(self):
-        """If vol-01 is corrupt before par2packs is populated, promote_par2 still finds vol-02
-        and a later postpone_pars refreshes the remaining volumes once blocksize is known."""
-        nzo = self._make_nzo_with_single_number_vols()
+    def test_promote_par2_picks_smallest_by_bytes_and_refreshes_without_duplicating(self):
+        """When vol-01 fails before par2packs is populated, promote_par2 must pick vol-02 (smallest
+        by bytes, not lexicographically-first vol-010), and a subsequent postpone_pars once
+        blocksize is known must refresh all volumes without duplicating vol-02 in extrapars."""
+        nzo, expected = self._make_nzo_with_single_number_vols()
         saved_pack = nzo.par2packs.pop("release")
         nzo.extrapars.clear()
         broken_vol01 = nzo.finished_files[0]
+        # Also test an uncompleted index-only vol-00 postponed before blocksize is known
+        index_vol00 = self._make_vol(nzo, "release.vol-00.par2", 289_000)
+        nzo.files.append(index_vol00)
+        nzo.sort_nzfs()
 
-        with (
-            mock.patch.object(nzo, "verify_all_filenames_and_resort"),
-            mock.patch.object(nzo, "add_parfile", return_value=True) as add_parfile,
-        ):
+        with mock.patch.object(nzo, "verify_all_filenames_and_resort"):
             assert nzo.promote_par2(broken_vol01) is True
-        assert add_parfile.call_count == 1
-        assert len(nzo.extrapars["release"]) == 10
 
-        # Once a valid par2 file gives blocksize, postpone_pars refreshes the placeholder estimates
+        # Smallest unsized file by bytes is index_vol00 (289 KB), promoted into nzo.files without mocking
+        assert [nzf.filename for nzf in nzo.files] == ["release.vol-00.par2"]
+        # Promote one more: next smallest by bytes is vol-02 (~1 MB), not vol-010 (~200 MB)
+        with mock.patch.object(nzo, "verify_all_filenames_and_resort"):
+            assert nzo.promote_par2(broken_vol01) is True
+        assert [nzf.filename for nzf in nzo.files] == ["release.vol-02.par2", "release.vol-00.par2"]
+        assert all(nzf.blocks == 0 for nzf in nzo.extrapars["release"])
+
+        # Once a valid par2 file gives blocksize, postpone_pars refreshes estimates and does not duplicate
         nzo.par2packs["release"] = saved_pack
         with mock.patch.object(nzo, "verify_all_filenames_and_resort"):
             nzo.postpone_pars("release")
 
+        # Actively-queued files stay in nzo.files and appear only once in extrapars
+        assert {nzf.filename for nzf in nzo.files} == {"release.vol-02.par2", "release.vol-00.par2"}
+        names = [nzf.filename for nzf in nzo.extrapars["release"]]
+        assert len(names) == len(set(names)) == 11
         by_name = {nzf.filename: nzf.blocks for nzf in nzo.extrapars["release"]}
-        assert by_name["release.vol-010.par2"] >= 256
-        assert by_name["release.vol-02.par2"] == 1
+        assert by_name["release.vol-00.par2"] == 0
+        for name, est in expected.items():
+            assert by_name[name] == est
+
+    def test_get_extra_blocks_fetches_smallest_unsized_volume_when_blocksize_unknown(self):
+        """Unsized single-number volumes (blocksize unknown) must not act as a capacity cap."""
+        nzo, _ = self._make_nzo_with_single_number_vols()
+        nzo.par2packs["release"] = None
+        nzo.extrapars.clear()
+        with mock.patch.object(nzo, "verify_all_filenames_and_resort"):
+            nzo.postpone_pars("release")
+
+        assert nzo.files == []
+        assert nzo.get_extra_blocks("release", 84) == 1
+        assert [nzf.filename for nzf in nzo.files] == ["release.vol-02.par2"]
+
+    def test_explicit_zero_block_two_number_volume_is_not_postponed(self):
+        nzo = NzbObject("test_explicit_zero")
+        nzo.repair = True
+        zero_vol = self._make_vol(nzo, "release.vol01+00.par2", 1_000_000)
+        nzo.files.append(zero_vol)
+        with mock.patch.object(nzo, "verify_all_filenames_and_resort"):
+            nzo.postpone_pars("release")
+        assert zero_vol in nzo.files
+        assert nzo.extrapars["release"] == []
+
+    def test_prospective_add_skips_zero_block_and_adds_sized_single_number_volumes(self):
+        nzo, _ = self._make_nzo_with_single_number_vols()
+        with mock.patch.object(nzo, "verify_all_filenames_and_resort"):
+            nzo.postpone_pars("release")
+
+        # Add an uncompleted 0-block index file to extrapars; prospective_add must skip it
+        index_vol00 = self._make_vol(nzo, "release.vol-00.par2", 289_000)
+        index_vol00.set_par2("release", 0, 0)
+        nzo.extrapars["release"].insert(0, index_vol00)
+
+        data_file = self._make_vol(nzo, "release.part01.rar", self.BLOCKSIZE * 100)
+        with mock.patch.object(nzo, "blocks_destroyed", return_value=10):
+            nzo.prospective_add(data_file)
+
+        # vol-02 (1) + vol-03 (2) + vol-04 (5) + vol-05 (9) = 17 >= 10; vol-00 skipped
+        queued = {nzf.filename for nzf in nzo.files}
+        assert "release.vol-00.par2" not in queued
+        assert queued == {
+            "release.vol-02.par2",
+            "release.vol-03.par2",
+            "release.vol-04.par2",
+            "release.vol-05.par2",
+        }
+
+    def test_handle_par2_replaces_estimate_with_exact_on_disk_count(self, tmp_path):
+        from sabnzbd.par2file import PAR_FILE_ID, PAR_RECOVERY_SLICE_ID
+        from tests.test_par2file import TestPar2Parsing
+
+        packets = TestPar2Parsing._fixture_packets()
+        set_id = packets[PAR_FILE_ID][32:48]
+        index_path = tmp_path / "release.vol-01.par2"
+        index_path.write_bytes(b"".join(packets.values()))
+
+        recovery = b"".join(
+            TestPar2Parsing._packet(set_id, PAR_RECOVERY_SLICE_ID, i.to_bytes(4, "little") + b"\xaa" * 64)
+            for i in range(5)
+        )
+        vol04_path = tmp_path / "release.vol-04.par2"
+        vol04_path.write_bytes(b"".join(packets.values()) + recovery)
+
+        nzo = NzbObject("test_handle_par2_single_num")
+        nzo.repair = True
+        nzo.download_path = str(tmp_path)
+        vol01 = self._make_vol(nzo, "release.vol-01.par2", index_path.stat().st_size, completed=True)
+        # Inflated byte size so pre-download estimate differs from exact on-disk count (5)
+        vol04 = self._make_vol(nzo, "release.vol-04.par2", 384_000 * 8)
+        nzo.files = [vol04]
+
+        with mock.patch.object(nzo, "verify_all_filenames_and_resort"):
+            nzo.handle_par2(vol01, str(index_path))
+
+        assert vol01.blocks == 0
+        assert vol04 in nzo.extrapars["release"]
+        assert vol04.blocks == (384_000 * 8) // (384_000 + 68)
+
+        # Once vol-04 finishes downloading, handle_par2 replaces the estimate with the exact count (5)
+        nzo.handle_par2(vol04, str(vol04_path))
+        assert vol04.blocks == 5
