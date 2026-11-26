@@ -477,8 +477,8 @@ class Assembler(Thread):
 
                 # Skip already written articles
                 if article.on_disk or article.failed:
-                    if writer is not None and article.decoded_size is not None:
-                        # Move the append offset forward past this article
+                    if writer is not None and article.on_disk and article.decoded_size is not None:
+                        # Move the append offset forward past this article, unless it was never written
                         offset += article.decoded_size
                     if not skipped:
                         with nzf.lock:
