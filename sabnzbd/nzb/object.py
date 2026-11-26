@@ -99,6 +99,7 @@ from sabnzbd.filesystem import (
 )
 from sabnzbd.par2file import (
     FilePar2Info,
+    PROBABLY_PAR2_RE,
     has_par2_in_filename,
     analyse_par2,
     parse_par2_file,
@@ -667,9 +668,14 @@ class NzbObject(TryList):
         if parset not in self.extrapars:
             self.extrapars[parset] = []
 
+        blocksize = next((info.blocksize for info in (self.par2packs.get(parset) or {}).values() if info.blocksize), 0)
+
         for xnzf in self.files[:]:
             # Allow re-analysis in case the name was changed by yEnc-header
             setname, vol, block = analyse_par2(xnzf.filename)
+            if not block and blocksize and PROBABLY_PAR2_RE.search(xnzf.filename):
+                # Estimate from the size, each recovery block is the blocksize plus a 68 byte header
+                block = xnzf.bytes // (blocksize + 68)
             # Don't postpone header-only-files, so we can extract all
             # possible md5of16k and par2packs's even if the filenames are bad
             # Usually they are all downloaded as first_articles
