@@ -31,6 +31,7 @@ from typing import BinaryIO, Optional
 from sabnzbd.constants import MEBI
 from sabnzbd.encoding import correct_unknown_encoding, unicode_nfc_normalize
 from sabnzbd.filesystem import get_basename, get_filename
+from sabnzbd.misc import int_conv
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 SCAN_LIMIT = 10 * MEBI
@@ -108,39 +109,43 @@ def is_par2_file(filepath: str) -> bool:
     return False
 
 
-def analyse_par2(name: str, filepath: Optional[str] = None) -> tuple[str, int, int]:
-    """Check if file is a par2-file and determine vol/block
+def analyse_par2(name: str, filepath: Optional[str] = None, size: int = 0, blocksize: int = 0) -> tuple[str, int, int]:
+    """Parse the name of a par2-file into its set, volume number and number of recovery blocks
+    Without a block count in the name, the blocks are counted in filepath or else
+    estimated from the size and blocksize of a single-number volume (e.g. ".vol-01.par2")
     return setname, vol, block
-    setname is empty when not a par2 file
     """
     name = name.strip()
-    vol = block = 0
-    if (m := PROBABLY_PAR2_RE.search(name)) and m.group(2):
+    m = PROBABLY_PAR2_RE.search(name)
+    if m and m.group(2):
+        return m.group(1), int_conv(m.group(2)), int_conv(m.group(3))
+
+    block = 0
+    if m:
+        # Single-number volume, the number is an index and not a block count
         setname = m.group(1)
-        vol = m.group(2)
-        block = m.group(3)
+        vol = int_conv(m.group(3))
     else:
-        if m:
-            # Single-number volume (e.g. ".vol-01.par2"), the number is an index and not a block count
-            setname = m.group(1)
-            vol = m.group(3)
-        else:
-            # Base-par2 file
-            setname = get_basename(name).strip()
-        # Could not parse the filename, need deep inspection
-        # We already know it's a par2 from the is_parfile
-        if filepath:
-            try:
-                # Quick loop to find number blocks
-                with open(filepath, "rb") as f:
-                    tail = b""
-                    while buf := f.read(PACKET_SEARCH_CHUNK):
-                        buf = tail + buf
-                        block += buf.count(PAR_RECOVERY_ID)
-                        # A marker can span two reads
-                        tail = buf[1 - len(PAR_RECOVERY_ID) :]
-            except Exception:
-                pass
+        # Base-par2 file
+        setname = get_basename(name).strip()
+        vol = 0
+
+    # No block count in the name, need deep inspection
+    # We already know it's a par2 from the is_parfile
+    if filepath:
+        try:
+            with open(filepath, "rb") as f:
+                tail = b""
+                while buf := f.read(PACKET_SEARCH_CHUNK):
+                    buf = tail + buf
+                    block += buf.count(PAR_RECOVERY_SLICE_ID)
+                    # A marker can span two reads
+                    tail = buf[1 - len(PAR_RECOVERY_SLICE_ID) :]
+        except Exception:
+            pass
+    if m and not block and size and blocksize:
+        # Each recovery block is the blocksize plus a 68 byte packet header
+        block = size // (blocksize + 68)
     return setname, vol, block
 
 

@@ -470,8 +470,8 @@ class TestBlockAccounting:
         nzo.postpone_pars("myset")
         assert set(nzo.files) == {index, data}
         assert nzo.extrapars["myset"] == [small, large]
-        assert (small.vol, small.blocks) == ("02", 3)
-        assert (large.vol, large.blocks) == ("010", 20)
+        assert (small.vol, small.blocks) == (2, 3)
+        assert (large.vol, large.blocks) == (10, 20)
 
     def test_postpone_pars_leaves_single_number_volumes_without_a_block_size(self):
         nzo = self._make_nzo()

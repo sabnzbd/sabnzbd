@@ -347,13 +347,20 @@ class TestAnalysePar2:
         assert int(result[1]) == vol
         assert int(result[2]) == block
 
+    def test_single_number_volume_estimates_blocks_from_size(self):
+        assert analyse_par2("Release.vol-02.par2", size=3 * (1000 + 68) + 100, blocksize=1000) == ("Release", 2, 3)
+        # Index-only volume, without a block size, and a volume with a start number are not estimated
+        assert analyse_par2("Release.vol-01.par2", size=500, blocksize=1000)[2] == 0
+        assert analyse_par2("Release.vol-02.par2", size=5000)[2] == 0
+        assert analyse_par2("Release.vol07+08.par2", size=99999, blocksize=1000)[2] == 8
+
     @pytest.mark.parametrize("offset", [0, 12, 68, 2**16 - 60])
     def test_single_number_volume_counts_its_blocks_on_disk(self, tmp_path, offset):
         """An offset can place a recovery marker across two reads"""
         volume = tmp_path / "Release.vol-03.par2"
         with open(os.path.join(SAB_DATA_DIR, "unicode_rar", "我喜欢编程.vol002+04.par2"), "rb") as source:
             volume.write_bytes(b"\0" * offset + source.read())
-        assert analyse_par2(volume.name, str(volume)) == ("Release", "03", 4)
+        assert analyse_par2(volume.name, str(volume)) == ("Release", 3, 4)
 
 
 class TestUncoveredBlocks:
