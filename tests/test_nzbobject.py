@@ -446,6 +446,54 @@ class TestBlockAccounting:
         nzo.par2packs.clear()
         assert nzo.blocks_beyond_recovery() is False
 
+    def _make_volumes(self, nzo: NzbObject, sizes: dict[str, int]) -> list[NzbFile]:
+        nzo.repair = True
+        nzo.extrapars.clear()
+        nzo.files = []
+        for name, size in sizes.items():
+            nzf = NzbFile(datetime.datetime(2026, 1, 1), name, [], size, nzo)
+            nzf.filename = name
+            nzo.files.append(nzf)
+        return nzo.files[:]
+
+    def test_postpone_pars_estimates_single_number_volumes_by_size(self):
+        nzo = self._make_nzo()
+        index, small, large, data = self._make_volumes(
+            nzo,
+            {
+                "myset.vol-01.par2": 500,
+                "myset.vol-02.par2": 3 * (self.BLOCKSIZE + 68) + 100,
+                "myset.vol-010.par2": 20 * (self.BLOCKSIZE + 68) + 100,
+                "myset.rar": self.FILESIZE,
+            },
+        )
+        nzo.postpone_pars("myset")
+        assert set(nzo.files) == {index, data}
+        assert nzo.extrapars["myset"] == [small, large]
+        assert (small.vol, small.blocks) == (2, 3)
+        assert (large.vol, large.blocks) == (10, 20)
+
+    def test_postpone_pars_leaves_single_number_volumes_without_a_block_size(self):
+        nzo = self._make_nzo()
+        volumes = self._make_volumes(nzo, {"myset.vol-01.par2": 500, "myset.vol-02.par2": 5000})
+        nzo.par2packs.clear()
+        nzo.postpone_pars("myset")
+        assert set(nzo.files) == set(volumes)
+        assert nzo.extrapars["myset"] == []
+
+    def test_single_number_volumes_count_towards_recovery(self):
+        nzo = self._make_nzo(failed_articles=(0, 1, 2, 3))
+        self._make_volumes(
+            nzo,
+            {
+                "myset.vol-02.par2": 3 * (self.BLOCKSIZE + 68) + 100,
+                "myset.vol-04.par2": 20 * (self.BLOCKSIZE + 68) + 100,
+            },
+        )
+        nzo.postpone_pars("myset")
+        assert nzo.blocks_destroyed("myset") == self.BLOCKCOUNT
+        assert nzo.blocks_beyond_recovery() is False
+
     def test_prospective_add_sizes_against_the_blocks_destroyed(self):
         nzo = self._make_nzo(failed_articles=(1,))
         nzo.prospective_add(nzo.finished_files[0])
