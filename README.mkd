@@ -1,10 +1,14 @@
-Release Notes - SABnzbd 5.2.0 Release Candidate 2
+Release Notes - SABnzbd 5.2.0 Release Candidate 3
 =========================================================
 
-This is the second release candidate of version 5.2.0, containing several major
-improvements to the core download and post-processing handling.
+This is the third and lsat release candidate of version 5.2.0, containing several
+major improvements to the core download and post-processing handling.
 Additionally, several vulnerabilities were fixed. This also required extra
 restrictions and the removal of some functionality for security reasons.
+
+## Changes in 5.2.0 Release Candidate 3
+* Reworked large parts of the connection handling and disk writing that
+  was introduced in 5.2.0, for improved performance and stability.
 
 ## New features in 5.2.0
 
